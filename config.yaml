@@ -25,3 +25,54 @@ subscriptions:
     stage: A
     diff_threshold_pct: 15
   keyword_recall_mode: or
+  intent_profiles:
+    - tag: ce
+      description: 基于文本到图像自回归模型的概念擦除相关论文
+      enabled: true
+      paper_sources:
+        - arxiv
+      keywords:
+        - keyword: concept erasure
+          keyword_cn: 概念擦除
+          query: concept erasure in machine learning models
+        - keyword: text-to-image autoregressive model
+          keyword_cn: 文本到图像自回归模型
+          query: autoregressive model for text to image generation
+        - keyword: machine unlearning
+          keyword_cn: 机器遗忘
+          query: machine unlearning for image generation
+        - keyword: autoregressive image generation
+          keyword_cn: 自回归图像生成
+          query: autoregressive image generation models
+      intent_queries:
+        - query: How to erase concepts in text to image autoregressive models
+          query_cn: 如何在文本到图像自回归模型中擦除概念
+          enabled: true
+          source: manual
+          note: ''
+        - query: Concept erasure methods for autoregressive image generation
+          query_cn: 自回归图像生成的概念擦除方法
+          enabled: true
+          source: manual
+          note: ''
+        - query: Remove concepts from autoregressive text to image models
+          query_cn: 从自回归文本到图像模型中移除概念
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-06-04T02:02:45.197Z'
+source_backends:
+  arxiv:
+    papers_table: arxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_arxiv_papers
+    vector_rpc_exact: match_arxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_arxiv_papers_bm25
+    sync_table: arxiv_sync_status
+    sync_success_value: success
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq
