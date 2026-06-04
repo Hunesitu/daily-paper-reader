@@ -1,0 +1,5043 @@
+Title: Editable Concept Bottleneck Models
+
+URL Source: https://openreview.net/pdf?id=R0R3MRD8vh
+
+Number of Pages: 49
+
+Markdown Content:
+# Editable Concept Bottleneck Models 
+
+Lijie Hu * 1 2 Chenyang Ren * 1 2 3 Zhengyu Hu * 4 1 Hongbin Lin 4 1 
+
+Cheng-Long Wang 1 2 Zhen Tan 5 Weimin Lyu 6 Jingfeng Zhang 7 1 2 Hui Xiong 4 Di Wang 1 2 
+
+## Abstract 
+
+Concept Bottleneck Models (CBMs) have gar-nered much attention for their ability to eluci-date the prediction process through a human-understandable concept layer. However, most previous studies focused on cases where the data, including concepts, are clean. In many scenar-ios, we often need to remove/insert some training data or new concepts from trained CBMs for rea-sons such as privacy concerns, data mislabelling, spurious concepts, and concept annotation errors. Thus, deriving efficient editable CBMs without re-training from scratch remains a challenge, particu-larly in large-scale applications. To address these challenges, we propose Editable Concept Bottle-neck Models (ECBMs). Specifically, ECBMs support three different levels of data removal: concept-label-level, concept-level, and data-level. ECBMs enjoy mathematically rigorous closed-form approximations derived from influence func-tions that obviate the need for retraining. Ex-perimental results demonstrate the efficiency and adaptability of our ECBMs, affirming their practi-cal value in CBMs. Code is available on https: //github.com/kaustpradalab/ECBM 
+
+## 1. Introduction 
+
+Modern deep learning models, such as large language mod-els (Zhao et al., 2023; Yang et al., 2024a;b; Xu et al., 2023; Yang et al., 2024c) and large multimodal (Yin et al., 2023; Ali et al., 2024; Cheng et al., 2024), often exhibit intricate 
+
+> *
+
+Equal contribution 1Provable Responsible AI and Data Ana-lytics (PRADA) Lab 2King Abdullah University of Science and Technology 3Shanghai Jiao Tong University 4Thrust of Artificial Intelligence, The Hong Kong University of Science and Technol-ogy (Guangzhou), China Department of Computer Science and Engineering, The Hong Kong University of Science and Technol-ogy, Hong Kong SAR, China 5Arizona State University 6Stony Brook University 7The University of Auckland. Correspondence to: Di Wang <di.wang@kaust.edu.sa >.
+
+Proceedings of the 42 nd International Conference on Machine Learning , Vancouver, Canada. PMLR 267, 2025. Copyright 2025 by the author(s). 
+
+non-linear architectures, posing challenges for end-users seeking to comprehend and trust their decisions. This lack of interpretability presents a significant barrier to adoption, particularly in critical domains such as healthcare (Ahmad et al., 2018; Yu et al., 2018) and finance (Cao, 2022), where transparency is paramount. To address this demand, explain-able artificial intelligence (XAI) models (Das & Rad, 2020; Hu et al., 2023b;a) have emerged, offering explanations for their behavior and insights into their internal mecha-nisms. Among these, Concept Bottleneck Models (CBMs) (Koh et al., 2020) have gained prominence for explaining the prediction process of end-to-end AI models. CBMs add a bottleneck layer for placing human-understandable concepts. In the prediction process, CBMs first predict the concept labels using the original input and then predict the final classification label using the predicted concept in the bottleneck layer, which provides a self-explained decision to users. Delete 𝑝 𝓇 ∈ 𝒸                                              
+
+> Input 𝓍 𝒾
+> CNN
+> Concept 𝒸
+> wing color undert‐ ail color …beak length incorrect
+> wing color beak length …
+> Edited 𝒸′
+> Concept‐level Data‐level
+> Dataset 𝐷 ൌ ሼሺ𝓍 ௜𝑐 ௜, 𝑦 ௜, ሻሽ ௜ୀଵ ே
+> Remove data
+> ሺ𝓍 𝒾 , 𝒸 𝒾 , 𝑦 𝒾 )
+> 𝓍 ଵ𝑐 ଵ𝑦 ଵ
+> incorrect 𝑐 ௜𝑦 ௜𝓍 ୧
+> …
+> …
+> 𝓍 ୬𝑐 ௡𝑦 ௡
+> …
+> 𝓍 ଵ𝑐 ଵ𝑦 ଵ
+> Dataset 𝐷′ ൌ ሼሺ𝓍 ௜𝑐 ௜, 𝑦 ௜, ሻሽ ௜ୀଵ ேିଵ
+> …
+> 𝓍 ୬ିଵ 𝑐 ௡ିଵ 𝑦 ௡ିଵ
+> Concept label‐level
+> 𝑐 ௜𝓍 𝒾 𝑦 ௜
+> Data ሺ𝓍 𝒾 , 𝒸 𝒾 , 𝑦 𝒾 )
+> wing color
+> undert‐ ail color …incorrect
+> bird spec ‐ies
+> Delete/Correct 𝒸 𝒾
+> Data ሺ𝓍 𝒾 , 𝒸 𝒾 ′, 𝑦 𝒾 )
+> 𝑐 ௜𝓍 𝒾 𝑦 ௜
+> beak length
+> wing color …
+> beak length
+> bird spec ‐ies
+
+Figure 1: An illustration of Editable Concept Bottleneck Models with three settings. Existing research on CBMs predominantly addresses two primary concerns: Firstly, CBMs heavily rely on laborious dataset annotation. Researchers have explored solutions to these challenges in unlabeled settings (Oikarinen et al., 2023; Yuksekgonul et al., 2023; Lai et al., 2023). Secondly, the performance of CBMs often lags behind that of origi-nal models lacking the concept bottleneck layer, attributed to incomplete information extraction from original data to bottleneck features. Researchers aim to bridge this utility gap (Sheth & Ebrahimi Kahou, 2023; Yuksekgonul et al., 2023; Espinosa Zarlenga et al., 2022). However, few of them considered the adaptivity or editability of CBMs, cru-1Editable Concept Bottleneck Models 
+
+cial aspects encompassing annotation errors, data privacy considerations, or concept updates. Actually, these demands are increasingly pertinent in the era of large models. We de-lineate the editable setting into three key aspects (illustrated in Figure 1): • Concept-label-level: In most scenarios, concept labels are annotated by humans or experts. Thus, it is unavoid-able that there are some annotation errors, indicating that there is a need to correct some concept labels in a trained CBM. • Concept-level: In CBMs, the concept set is pre-defined by LLMs or experts. However, in many cases, evolv-ing situations demand concept updates, as evidenced by discoveries such as chronic obstructive pulmonary disease as a risk factor for lung cancer, and doctors have the requirements to add related concepts. For another example, recent research found a new factor, obesity (Sattar et al., 2020) are risky for severe COVID-19 and factors (e.g., older age, male gender, Asian race) are risk associated with COVID-19 infection (Rozen-feld et al., 2020). On the other hand, one may also want to remove some spurious or unrelated concepts for the task. This demand is even more urgent in some rapidly evolving domains like the pandemic. • Data-level: Data issues can arise in CBMs when train-ing data is erroneous or poisoned. For example, if a doctor identifies a case as erroneous or poisoned, this data sample becomes unsuitable for training. There-fore, it is essential to have the capability to completely delete such data from the learned models. We need such an editable model that can interact effectively with doctors. The most direct way to address the above three problems is retraining from scratch on the data after correction. How-ever, retraining models in such cases prove prohibitively expensive, especially in large models, which is resource-intensive and time-consuming. Therefore, developing an efficient method to approximate prediction changes becomes paramount. Providing users with an adaptive and editable CBM is both crucial and urgent. We propose Editable Concept Bottleneck Models (ECBMs) to tackle these challenges. Specifically, compared to retrain-ing, ECBMs provide a mathematically rigorous closed-form approximation for the above three settings to address ed-itability within CBMs efficiently. Leveraging the influence function (Cook, 2000; Cook & Weisberg, 1980), we quan-tify the impact of individual data points, individual concept labels, and the concept for all data on model parameters. De-spite the growing attention and utility of influence functions in machine learning (Koh & Liang, 2017), their application in CBMs remains largely unexplored due to their composite structure, i.e., the intermediate representation layer. To the best of our knowledge, we are the first to work to fill this gap by demonstrating the effectiveness of influence functions in elucidating the behavior of CBMs, especially in identifying mislabeled data and discerning the data influ-ence. Comprehensive experiments on benchmark datasets show that our ECBMs are efficient and effective. Our con-tributions are summarized as follows. • We delineate three different settings that need various levels of data or concept removal in CBMs: concept-label-level, concept-level, and data-level. To the best of our knowledge, our research marks the first exploration of data removal issues within CBMs. • To make CBMs able to remove data or concept in-fluence without retraining, we propose the Editable Concept Bottleneck Models (ECBMs). Our approach in ECBMs offers a mathematically rigorous closed-form approximation. Furthermore, to improve com-putational efficiency, we present streamlined versions integrating Eigenvalue-corrected Kronecker-Factored Approximate Curvature (EK-FAC). • To showcase the effectiveness and efficiency of our ECBMs, we conduct comprehensive experiments across various benchmark datasets to demonstrate our superior performance. 
+
+## 2. Related Work 
+
+Concept Bottleneck Models. CBM (Koh et al., 2020) stands out as an innovative deep-learning approach for im-age classification and visual reasoning. It introduces a con-cept bottleneck layer into deep neural networks, enhanc-ing model generalization and interpretability by learning specific concepts. However, CBM faces two primary chal-lenges: its performance often lags behind that of original models lacking the concept bottleneck layer, attributed to incomplete information extraction from the original data to bottleneck features. Additionally, CBM relies on laborious dataset annotation. Researchers have explored solutions to these challenges. Chauhan et al. (2023) extend CBM into interactive prediction settings, introducing an interaction policy to determine which concepts to label, thereby improv-ing final predictions. Oikarinen et al. (2023) address CBM limitations and propose a novel framework called Label-free CBM. This innovative approach enables the transformation of any neural network into an interpretable CBM without requiring labeled concept data, all while maintaining high accuracy. Post-hoc Concept Bottleneck models (Yuksek-gonul et al., 2023) can be applied to various neural networks without compromising model performance, preserving in-terpretability advantages. CBMs work on the image field 2Editable Concept Bottleneck Models 
+
+also includes the works of Havasi et al. (2022),Kim et al. (2023),Keser et al. (2023),Sawada & Nakamura (2022) and Sheth & Kahou (2023). Despite many works on CBMs, we are the first to investigate the interactive influence between concepts through influence functions. Our research endeav-ors to bridge this gap by utilizing influence functions in CBMs, thereby deciphering the interaction of concept mod-els and providing an adaptive solution to concept editing. For more related work, please refer to Appendix I. 
+
+## 3. Preliminaries 
+
+Concept Bottleneck Models. In this paper, we consider the original CBM, and we adopt the notations used by Koh et al. (2020). We consider a classification task with a concept set denoted as {p1, · · · , p k} with each pi being a concept given by experts or LLMs, and a training dataset represented as 
+
+D = {zi}ni=1 , where zi = ( xi, y i, c i). Here, for i ∈ [n],
+
+xi ∈ Rdi represents the input feature vector, yi ∈ Rdo
+
+denotes the label (with do corresponding to the number of classes) and ci = ( c1 
+
+> i
+
+, · · · , c ki ) ∈ Rk represents the concept vector. In this context, cji represents the label of the concept pj of the i-th data. In CBMs, our goal is to learn two representations: one called concept predictor that transforms the input space into the concept space, denoted as g : Rdi → Rk, and the other called label predictor which maps the concept space to the prediction space, denoted as 
+
+f : Rk → Rdo . Usually, here the map f is linear. For each training sample zi = ( xi, y i, c i), we consider two empirical loss functions: concept predictor ˆg and label predictor ˆf :
+
+ˆg = arg min 
+
+> gn
+
+X
+
+> i=1
+> k
+
+X
+
+> j=1
+
+gj (xi)⊤ log( cji ), (1) where gj (∗) is the predicted j-th concept. For brevity, write the loss function as LC (g(xi), c i) = Pkj=1 LjC (g(xi), c i)
+
+for data (xi, c i). Once we obtain the concept predictor ˆg,the label predictor is defined as: 
+
+ˆf = arg min 
+
+> fn
+
+X
+
+> i=1
+
+LY
+
+ f (ˆ g(xi)) , y i
+
+, (2) where LY represents the cross-entropy loss, similar to (1) .CBMs enforce dual precision in predicting interpretable concept vectors ˆc = ˆ g(x) (matching concept c) and final outputs ˆy = ˆf (ˆ c) (matching label y), ensuring transparent reasoning through explicit concept mediation. Furthermore, in this paper, we focus primarily on the scenarios in which the label predictor f is a linear transformation, motivated by their interpretability advantages in tracing concept-to-label relationships. For details on the symbols used, please refer to the notation table in Appendix 2. 
+
+Influence Function. The influence function measures the dependence of an estimator on the value of individ-ual point in the sample. Consider a neural network ˆθ =arg min θ
+
+Pni=1 ℓ(zi; θ) with loss function ℓ and dataset 
+
+D = {zi}ni=1 . If we remove zm from the training dataset, the parameters become ˆθ−zm = arg min θ
+
+P  
+
+> i̸=m
+
+ℓ(zi; θ).The influence function provides an efficient model approx-imation by defining a series of ϵ-parameterized models as 
+
+ˆθϵ, −zm = argmin Pni=1 ℓ(zi; θ) + ϵℓ (zm; θ). By perform-ing a first-order Taylor expansion on the gradient of the objective function corresponding to the arg min process, the influence function is defined as: 
+
+Iˆθ (zm) ≜ dˆθϵ, −zm
+
+dϵ ϵ=0 
+
+= −H−1ˆθ · ∇ θ ℓ(zm; ˆθ),
+
+where H−1ˆθ = ∇2
+
+> θ
+
+Pni=1 ℓ(zi; ˆθ) is the Hessian matrix. When the loss function ℓ is twice-differentiable and strongly convex in θ, the Hessian Hˆθ is positive definite and thus the influence function is well-defined. For non-convex loss functions, Bartlett (1953) proposed replacing the Hessian 
+
+Hˆθ with ˆH = Gˆθ + δI , where Gˆθ is the Fisher information matrix defined as Pni=1 ∇θ ℓ(zi; θ)T∇θ ℓ(zi; θ), and δ is the damping term used to ensure the positive definiteness of 
+
+ˆH. We can employ the Eigenvalue-corrected Kronecker-Factored Approximate Curvature (EK-FAC) method to fur-ther accelerate the computation. See Appendix C for addi-tional details. 
+
+## 4. Editable Concept Bottleneck Models 
+
+In this section, we introduce our EBCMs for the three set-tings mentioned in the introduction, leveraging the influence function. Specifically, at the concept-label level, we calcu-late the influence of a set of data samples’ individual concept labels; at the concept level, we calculate the influence of multiple concepts; and at the data level, we calculate the influence of multiple samples. 
+
+4.1. Concept Label-level Editable CBM 
+
+In many cases, certain data samples contain erroneous an-notations for specific concepts, yet their other information remains valuable. This is particularly relevant in domains such as medical imaging, where acquiring data is often costly and time-consuming. In such scenarios, it is common to correct the erroneous concept annotations rather than removing the entire data from the dataset. Estimating the re-trained model parameter is crucial in this context. We refer to this scenario as the concept label-level editable CBM. Mathematically, we have a set of erroneous data De and its associated index set Se ⊆ [n] × [k] such that for each 
+
+(w, r ) ∈ Se, (xw, y w, c w) ∈ De with crw is mislabeled and 
+
+˜crw is corrected concept label. Our goal is to estimate the retrained CBM. The retrained concept predictor and label 3Editable Concept Bottleneck Models 
+
+predictor are represented as follows: 
+
+ˆge = arg min 
+
+> g
+
+X 
+
+> (i,j )/∈Se
+
+LjC (g(xi), c i)+ X
+
+> (i,j )∈Se
+
+LjC (g(xi), ˜ci) ,
+
+(3) 
+
+ˆfe = arg min 
+
+> fn
+
+X
+
+> i=1
+
+LY (f (ˆ ge (xi)) , y i) . (4) For simple neural networks, we can use the influence func-tion approach directly to estimate the retrained model. How-ever, for CBM architecture, if we intervene with the true concepts, the concept predictor ˆg fluctuates to ˆge accord-ingly. Observe that the input data of the label predictor comes from the output of the concept predictor, which is also subject to change. Therefore, we need to adopt a two-stage editing approach. Here we consider the influence function for (3) and (4) separately. We first edit the concept predictor from ˆg to ¯ge, and then edit from ˆf to ¯fe based on our approximated concept predictor. To begin, we provide the following definitions: 
+
+Definition 4.1. Define the gradient of the j-th concept pre-dictor and the label predictor for the i-th data point xi as: 
+
+GjC (xi, c i; g) ≜ ∇g LjC (g(xi), c i) ,GY (xi; g, f ) ≜ ∇f LY (f (g(xi)) , y i) .
+
+Theorem 4.2. The retrained concept predictor ˆge defined by (3) can be approximated by ¯ge, defined by: 
+
+ˆg − H−1ˆg · X
+
+> (w,r )∈Se
+
+(GrC (xw, ˜cw; ˆ g) − GrC (xw, c w; ˆ g)) ,
+
+where Hˆg = ∇ˆg
+
+P 
+
+> i,j
+
+GjC (xi, c i; ˆ g) is the Hessian matrix of the loss function with respect to ˆg.
+
+Theorem 4.3. The retrained label predictor ˆfe defined by 
+
+(4) can be approximated by ¯fe, defined by: 
+
+ˆf + H−1ˆf ·
+
+> n
+
+X
+
+> i=1
+
+
+
+GY (xi; ˆ g, ˆf ) − GY (xi; ¯ ge, ˆf )
+
+
+
+,
+
+where H ˆf = ∇ ˆf
+
+Pni=1 GY (xi; ˆ g, ˆf ) is the Hessian matrix, and ¯ge is given in Theorem 4.2. 
+
+Difference from Test-Time Intervention. The ability to intervene in CBMs allows human users to interact with the model during the prediction process. For example, a medical expert can directly replace an erroneously predicted concept value ˆc and observe its impact on the final prediction 
+
+ˆy. However, the underlying flaws in the concept predictor remain unaddressed, meaning similar errors may persist when applied to new test data. In contrast, under the editable CBM framework, not only can test-time interventions be performed, but the concept predictor of the CBM can also be further refined based on test data that repeatedly produces errors. Our ECBM method incorporates the corrected test data into the training dataset without requiring full retraining. This approach extends the rectification process from the data level to the model level. 
+
+4.2. Concept-level Editable CBM 
+
+In this case, a set of concepts is removed due to incorrect attribution or spurious concepts, termed concept-level edit. 
+
+> 1
+
+Specifically, for the concept set, denote the erroneous con-cept index set as M ⊂ [k], we aim to delete these concept labels in all training samples. We aim to investigate the im-pact of updating the concept set within the training data on the model’s predictions. It is notable that compared to the above concept label case, the dimension of output (input) of the retrained concept predictor (label predictor) will change. If we delete t concepts from the dataset, then g becomes 
+
+g′ : Rdi → Rk−t and f becomes f ′ : Rk−t → Rdo . More specifically, if we retrain the CBM with the revised dataset, the corresponding concept predictor becomes: 
+
+ˆg−pM = arg min 
+
+> g′
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (g′(xi), c i). (5) The variation of the parameters in dimension renders the application of influence function-based editing challenging for the concept predictor. This is because the influence function implements the editorial predictor by approximate parameter change from the original base after ϵ-weighting the corresponding loss for a given sample, and thus, it is unable to deal with changes in parameter dimensions. To overcome the challenge, our strategy is to develop some transformations that need to be performed on ˆg−pM to align its dimension with ˆg so that we can apply the influence function to edit the CBM. We achieve this by mapping 
+
+ˆg−pM to ˆg∗−pM ≜ P(ˆ g−pM ), which has the same amount of parameters as ˆg and has the same predicted concepts 
+
+ˆg∗−pM (j) as ˆg−pM (j) for all j ∈ [di] − M . We achieve this effect by inserting a zero row vector into the r-th row of the matrix in the final layer of ˆg−pM for r ∈ M . Thus, we can see that the mapping P is one-to-one. Moreover, assume the parameter space of ˆg is T and that of ˆg∗−pM , T0 is the subset of T . Noting that ˆg∗−pM is the optimal model of the following objective function: 
+
+ˆg∗−pM = arg min 
+
+> g′∈T0
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (g′(xi), c i), (6) i.e., it is the optimal model of the concept predictor loss on the remaining concepts under the constraint T0. Now we 
+
+> 1For convenience, in this paper, we only consider concept removal; our method can directly extend to concept insertion.
+
+4Editable Concept Bottleneck Models 
+
+can apply the influence function to edit ˆg to approximate 
+
+ˆg∗−pM with the restriction on the value of 0 for rows indexed by M with the last layer of the neural network, denoted as 
+
+¯g∗−pM . After that, we remove from ¯g∗−pM the parameters initially inserted to fill in the dimensional difference, which always equals 0 because of the restriction we applied in the editing stage, thus approximating the true edited concept predictor ˆg−pM . We now detail the editing process from ˆg
+
+to ˆg∗−pM using the following theorem. 
+
+Theorem 4.4. For the retrained concept predictor ˆg−pM
+
+defined in (5) , we map it to ˆg∗−pM as (6) . And we can edit the initial ˆg to ˆg∗−pM , defined as: 
+
+¯g∗−pM ≜ ˆg − H−1ˆg · X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+GjC (xi, c i; ˆ g),
+
+where Hˆg = ∇g
+
+P
+
+> j / ∈M
+
+Pni=1 GjC (xi, c i; ˆ g). Then, by re-moving all zero rows inserted during the mapping phase, we can naturally approximate ˆg−pM ≈ P−1(ˆ g∗−pM ).
+
+For the second stage of training, assume we aim to remove concept pr for r ∈ M and the new optimal model is ˆf−pM .We will encounter the same difficulty as in the first stage, i.e., the number of parameters of the label predictor will change. To address the issue, our key observation is that in the exist-ing literature on CBMs, we always use linear transformation for the label predictor, meaning that the dimensions of the input with values of 0 will have no contribution to the final prediction. To leverage this property, we fill the missing values in the input of the updated predictor with 0, that is, replacing ˆg−pM with ˆg∗−pM and consider ˆfpM =0 defined by 
+
+ˆfpM =0 = arg min 
+
+> fn
+
+X
+
+> i=1
+
+LY
+
+ f  ˆg∗−pM (xi) , y i
+
+ . (7) In total, we have the following lemma: 
+
+Lemma 4.5. In the CBM, if the label predictor utilizes linear transformations of the form ˆf ·c with input c, then, for each r ∈ M , we remove the r-th concept from c and denote the new input as c′; set the r-th concept to 0 and denote the new input as c0. Then we have ˆf−pM · c′ = ˆfpM =0 · c0 for any input c.
+
+Lemma 4.5 demonstrates that the retrained ˆf−pM and 
+
+ˆfpM =0 , when given inputs ˆg−pM (x) and ˆg∗−pM (x) respec-tively, yield identical outputs. Consequently, we can utilize 
+
+ˆfpM =0 as the editing target in place of ˆf−pM .
+
+Theorem 4.6. For the revised retrained label predictor 
+
+ˆfpM =0 defined by (7) , we can edit the initial label predictor 
+
+ˆf to ¯fpM =0 by the following equation as a substitute for 
+
+ˆfpM =0 :
+
+ˆfpM =0 ≈ ¯fpM =0 ≜ ˆf − H−1ˆf ·
+
+> n
+
+X
+
+> l=1
+
+GY (xl; ¯ g∗−pM , ˆf ),
+
+where H ˆf = ∇ ˆf
+
+Pni=1 GY (xl; ¯ g∗−pM , ˆf ) is the Hessian matrix. Deleting the r-th dimension of ¯fpM =0 for r ∈ M ,then we can map it to ¯f−pM , which is the approximation of the final edited label predictor ˆf−pM under concept level. 
+
+4.3. Data-level Editable CBM 
+
+In this scenario, we are more concerned about fully remov-ing the influence of data samples on CBMs due to different reasons, such as the training data involving poisoned or er-roneous issues. Specifically, we have a set of samples to be removed {(xi, y i, c i)}i∈G with G ⊂ [n]. Then, we define the retrained concept predictor as 
+
+ˆg−zG = arg min 
+
+> gk
+
+X
+
+> j=1
+
+X
+
+> i∈[n]−G
+
+LjC (g(xi), c i), (8) which can be evaluated by the following theorem: 
+
+Theorem 4.7. For dataset D = {(xi, y i, c i)}ni=1 , given a set of data zr = ( xr , y r , c r ), r ∈ G to be removed. Suppose the updated concept predictor ˆg−zG is defined by (8) , then we have the following approximation for ˆg−zG
+
+ˆg−zG ≈ ¯g−zG ≜ ˆg + H−1ˆg · X
+
+> r∈GM
+
+X
+
+> j=1
+
+GjC (xr , c r ; ˆ g), (9) 
+
+where Hˆg = ∇g
+
+P 
+
+> i,j
+
+GjC (xi, c i; ˆ g) is the Hessian matrix of the loss function with respect to ˆg.
+
+Based on ˆg−zG , the label predictor becomes ˆf−zG which is defined by 
+
+ˆf−zG = arg min 
+
+> f
+
+X
+
+> i∈[n]−G
+
+LY (f (ˆ g−zG (xi) , y i) . (10) Compared with the original loss before unlearning in (2) ,we can observe two changes in (10) . First, we remove |G|
+
+data points in the loss function LY . Secondly, the input for the loss is also changed from ˆg(xi) to ˆg−zG . Therefore, it is difficult to estimate directly with an influence function. Here we introduce an intermediate label predictor as 
+
+˜f−zG = arg min X
+
+> i∈[n]−G
+
+LY (f (ˆ g(xi), y i), (11) and split the estimate of ˆf−zG − ˆf into ˆf−zG − ˜f−zG and 
+
+˜f−zG − ˆf .
+
+Theorem 4.8. For dataset D = {(xi, y i, c i)}ni=1 , given a set of data zr = ( xr , y r , c r ), r ∈ G to be removed. The intermediate label predictor ˜f−zG is defined in (11) . Then we have 
+
+˜f−zG − ˆf ≈ H−1ˆf
+
+X
+
+> i∈[n]−G
+
+GY (xi; ˆ g, ˆf ) ≜ AG.
+
+5Editable Concept Bottleneck Models 
+
+We denote the edited version of ˜f−zG as ¯f ∗−zG ≜ ˆf + AG.Define BG as 
+
+−H−1¯f ∗−zG
+
+X
+
+> i∈[n]−G
+
+GY (xi; ¯ g−zG , ¯f ∗−zG ) − GY (xi; ˆ g, ¯f ∗−zG ),
+
+where H ¯f ∗−zG
+
+= ∇ ¯f
+
+P 
+
+> i∈[n]−G
+
+GY (xi; ˆ g, ¯f ∗−zG ) is the Hes-sian matrix concerning ¯f ∗−zG . Then ˆf−zG can be estimated by ˜f−zG + BG. Combining the above two-stage approxi-mation, then, the final edited label predictor ¯f−zG can be obtained by 
+
+¯f−zG = ¯f ∗−zG + BG = ˆf + AG + BG. (12) 
+
+Acceleration via EK-FAC. As mentioned in Section 3, the loss function in CBMs is non-convex, meaning the Hessian matrices in all our theorems may not be well-defined. To address this, we adopt the EK-FAC approach, where the Hessian is approximated as ˆHθ = Gθ + δI . Here, Gθ rep-resents the Fisher information matrix of the model θ, and 
+
+δ is a small damping term introduced to ensure positive definiteness. For details on applying EK-FAC to CBMs, see Appendix C.1. Additionally, refer to Algorithms 6-8 in the Appendix for the EK-FAC-based algorithms correspond-ing to our three levels, with their original (Hessian-based) versions provided in Algorithms 1-3, respectively. 
+
+Theoretical Bounds. We provide error bounds for the con-cept predictor between retraining and ECBM across all three levels; see Appendix D.2, E.2 and F.2 for details. We show that under certain scenarios, the approximation error be-comes tolerable theoretically when leveraging some damp-ing term δ regularized in the Hessian matrix. 
+
+## 5. Experiments 
+
+In this section, we demonstrate our main experimental results on utility evaluation, edition efficiency, and inter-pretability evaluation. Details and additional results are in Appendix H due to space limit. 
+
+5.1. Experimental Settings Dataset. We utilize three datasets: X-ray Grading (OAI) (Nevitt et al., 2006), Bird Identification (CUB) (Wah et al., 2011), and the Large-scale CelebFaces Attributes Dataset (CelebA) (Liu et al., 2015). OAI is a multi-center ob-servational study of knee osteoarthritis, comprising 36,369 data points. Specifically, we configure n=10 concepts that characterize crucial osteoarthritis indicators such as joint space narrowing, osteophytes, and calcification. Bird iden-tification (CUB) 2 consists of 11,788 data points, which be-long to 200 classes and include 112 binary attributes to 
+
+> 2The original dataset is processed. Detailed explanation can be found in H.
+
+describe detailed visual features of birds. CelebA comprises 202,599 celebrity images, each annotated with 40 binary attributes that detail facial features, such as hair color, eye-glasses, and smiling. As the dataset lacks predefined clas-sification tasks, following (Espinosa Zarlenga et al., 2022), we designate 8 attributes as labels and the remaining 32 attributes as concepts. For all the above datasets, we follow the same network architecture and settings outlined in (Koh et al., 2020). 
+
+Ground Truth and Baselines. We use retrain as the ground truth method. Retrain : We retrain the CBM from scratch by removing the samples, concept labels, or concepts from the training set. We employ two baseline methods: CBM-IF, and ECBM. CBM-IF : This method is a direct implemen-tation of our previous theorems of model updates in the three settings. See Algorithms 1-3 in Appendix for details. 
+
+ECBM : As we discussed above, all of our model updates can be further accelerated via EK-FAC, ECBM corresponds to the EK-FAC accelerated version of Algorithms 1-3 (refer to Algorithms 6-8 in Appendix). 
+
+Evaluation Metric. We utilize two primary evaluation met-rics to assess our models: the F1 score and runtime (RT). 
+
+F1 score measures the model performance by balancing pre-cision and recall. Runtime , measured in minutes, evaluates the total running time of each method to update the model. 
+
+Implementation Details. Our experiments utilized an Intel Xeon CPU and an RTX 3090 GPU. For utility evaluation, at the concept level, one concept was randomly removed for the OAI dataset and repeated while ten concepts were randomly removed for the CUB dataset, with five different seeds. At the data level, 3% of the data points were randomly deleted and repeated 10 times with different seeds. At the concept-label level, we randomly selected 3% of the data points and modified one concept of each data randomly, repeating this 10 times for consistency across iterations. 
+
+5.2. Evaluation of Utility and Editing Efficiency 
+
+Our experimental results, as illustrated in Table 1, demon-strate the effectiveness of ECBMs compared to traditional retraining and CBM-IF, particularly emphasizing computa-tional efficiency without compromising accuracy. Specif-ically, ECBMs achieved F1 scores close to those of re-training (0.8808 vs. 0.8825) while significantly reducing the runtime from 297.77 minutes to 2.36 minutes. This pattern is consistent in the CUB dataset, where the run-time was decreased from 85.56 minutes for retraining to 0.65 minutes for ECBMs, with a negligible difference in the F1 score (0.7971 to 0.7963). These results highlight the potential of ECBMs to provide substantial time sav-ings—approximately 22-30% of the computational time required for retraining—while maintaining comparable ac-curacy. Compared to CBM-IF, ECBM also showed a slight 6Editable Concept Bottleneck Models 
+
+Table 1: Performance comparison of different methods on the three datasets.                                                                
+
+> Edit Level Method OAI CUB CelebA F1 score RT (minute) F1 score RT (minute) F1 score RT (minute)
+> Concept Label Retrain 0.8825 ±0.0054 297.77 ±35.01 0.7971 ±0.0066 85.56 ±4.22 0.3827 ±0.0272 304.71 ±35.15 CBM-IF(Ours) 0.8639 ±0.0033 4.63 ±0.89 0.7699 ±0.0035 1.33 ±0.09 0.3561 ±0.0134 5.54 ±0.82 ECBM(Ours) 0.8808 ±0.0039 2.36 ±0.54 0.7963 ±0.0050 0.65 ±0.08 0.3845 ±0.0327 2.49 ±0.53
+> Concept Retrain 0.8448 ±0.0191 258.84 ±42.48 0.7811 ±0.0047 87.21 ±7.62 0.3776 ±0.0350 355.85 ±25.39 CBM-IF(Ours) 0.8214 ±0.0071 4.94 ±0.91 0.7579 ±0.0065 1.45 ±0.08 0.3609 ±0.0202 5.51 ±0.89 ECBM(Ours) 0.8403 ±0.0090 2.36 ±0.60 0.7787 ±0.0058 0.59 ±0.17 0.3761 ±0.0280 2.48 ±0.52
+> Data Retrain 0.8811 ±0.0065 319.37 ±31.08 0.7838 ±0.0051 86.20 ±7.74 0.3797 ±0.0375 325.62 ±50.59 CBM-IF(Ours) 0.8472 ±0.0046 5.07 ±0.75 0.7623 ±0.0031 1.46 ±0.08 0.3536 ±0.0166 5.97 ±0.75 ECBM(Ours) 0.8797 ±0.0038 2.50 ±0.49 0.7827 ±0.0088 0.65 ±0.19 0.3748 ±0.0347 2.49 ±0.61
+
+reduction in runtime and a significant improvement in F1 score. The former verifies the effective acceleration of our algorithm by EK-FAC. This efficiency is particularly crucial in scenarios where frequent updates to model annotations are needed, confirming the utility of ECBMs in dynamic environments where running time and accuracy are critical. We can also see that the original version of ECBM, i.e., CBM-IF, also has a lower runtime than retraining but a lower F1 score than ECBM. Such results may be due to dif-ferent reasons. For example, our original theorems depend on the inverse of the Hessian matrices, which may not be well-defined for non-convex loss. Moreover, these Hessian matrices may be ill-conditioned or singular, which makes calculating their inverse imprecise and unstable. 
+
+Editing Multiple Samples. To comprehensively evalu-ate the editing capabilities of ECBM in various scenarios, we conducted experiments on the performance with mul-tiple samples that need to be removed. Specifically, for the concept label/data levels, we consider the different ra-tios of samples (1-10%) for edit, while for the concept level, we consider removing different numbers of concepts 
+
+∈ { 2, 4, 6, · · · , 20 }. We compared the performance of re-training, CBM-IF, and ECBM methods. As shown in Figure 2, except for certain cases at the concept level, the F1 score of the ECBM method is generally around 0.0025 lower than that of the retrain method, which is significantly better than the corresponding results of the CBM-IF method. Recall-ing Table 1, the speed of ECBM is more than three times faster than that of retraining. Consequently, ECBM is an editing method that achieves a trade-off between speed and effectiveness. 
+
+5.3. Results on Interpretability ECBM can measure concepts importance. The origi-nal motivation of the influence function is to calculate the importance score of each sample. Here, we will show that the influence function for the concept level in Theorem 4.4 can be used to calculate the importance of each concept in CBMs, which provides an explainable tool for CBMs. In detail, we conduct our experiments on the CUB dataset. We first select 1-10 most influential and 1-10 least influential concepts by our influence function. Then, we will remove these concepts and update the model via retraining or our ECBM and analyze the change (F1 Score Difference) w.r.t. the original CBM before removal. The results in Figure 3(a) demonstrate that when we remove the 1-10 most influential concepts identified by the ECBM method, the F1 score decreases by more than 0.025 com-pared to the CBM before removal. In contrast, Figure 3(b) shows that the change in the F1 score remains consistently below 0.005 when removing the least influential concepts. These findings strongly indicate that the influence function in ECBM can successfully determine the importance of con-cepts. Furthermore, we observe that the gap between the F1 score of retraining and ECBM is consistently smaller than 0.005, and even smaller in the case of least important con-cepts. This further suggests that when ECBM edits various concepts, its performance is very close to the ground truth. 
+
+ECBMs can erase data influence. For the data level, ECBMs aim to facilitate an efficient removal of samples. We perform membership inference attacks (MIAs) to provide direct evidence that ECBMs can indeed erase data influence. MIA is a privacy attack that aims to infer whether a specific data sample was part of the training dataset used to train a model. The attacker exploits the model’s behavior, such as overconfidence or overfitting, to distinguish between train-ing (member) and non-training (non-member) data points. In MIAs, the attacker typically queries the model with a data sample and observes its prediction confidence or loss values, which tend to be higher for members of the training set than non-members (Shokri et al., 2017). To quantify the success of these edits, we calculate the RMIA (Removed Membership Inference Attack) score for each category. The RMIA score is defined as the model’s confidence in classifying whether a given sample belongs to the training set. Lower RMIA values indicate that the sample behaves more like a test set (non-member) sam-ple (Zarifzadeh et al., 2024). This metric is especially cru-cial for edited samples, as a successful ECBM should make the removed members behave similarly to non-members, 7Editable Concept Bottleneck Models 2 4 6 8 10 
+
+Ratio of Edition 
+
+> 0.770
+> 0.775
+> 0.780
+> 0.785
+> 0.790
+> 0.795
+> 0.800
+> F1 Score
+
+Concept-label-level        
+
+> Strategy
+> Retrain
+> CBM-IF
+> ECBMs 2.5 5.0 7.5 10.0 12.5 15.0 17.5 20.0
+
+Number of Deletion 
+
+> 0.755
+> 0.760
+> 0.765
+> 0.770
+> 0.775
+> 0.780
+> 0.785
+> 0.790
+> F1 Score
+
+Concept-level     
+
+> Strategy
+> Retrain
+> CBM-IF
+> ECBMs 246810
+
+Ratio of Deletion 
+
+> 0.755
+> 0.760
+> 0.765
+> 0.770
+> 0.775
+> 0.780
+> 0.785
+> 0.790
+> F1 Score
+
+Data-level 
+
+> Strategy
+> Retrain
+> CBM-IF
+> ECBMs
+
+Figure 2: Impact of edition ratio on three settings on CUB dataset. 1 2 3 4 5 6 7 8 9 10 
+
+Number of Deletions 
+
+> 0.025
+> 0.020
+> 0.015
+> 0.010
+> 0.005
+> 0.000
+> F1 Score Difference
+> Strategy
+> Retrain
+> ECBMs
+
+(a) Results on the 1-10 most influential concepts 1 2 3 4 5 6 7 8 9 10 
+
+Number of Deletions  
+
+> 0.035
+> 0.030
+> 0.025
+> 0.020
+> 0.015
+> 0.010
+> 0.005
+> 0.000
+> F1 Score Difference
+> Strategy
+> Retrain
+> ECBMs
+
+(b) Results on the 1-10 least influential concepts 
+
+Figure 3: F1 score difference after removing most and least influential concepts given by ECBM. 0.01 0.02 0.03 0.04 0.05 0.06 0.07 
+
+RMIA 
+
+> 0
+> 20
+> 40
+> 60
+> 80
+> 100
+> Frequency
+
+Before Editing 
+
+> Normal Distribution of Non-Members' RMIA
+> Normal Distribution of Members' RMIA
+> non-members
+> members
+
+(a) RMIA Score Before Editing 0.01 0.02 0.03 0.04 0.05 0.06 0.07 
+
+RMIA 
+
+> 0
+> 20
+> 40
+> 60
+> 80
+> 100
+
+After Editing  
+
+> Normal Distribution of Non-Members' RMIA
+> Normal Distribution of Removed-members' RMIA
+> non-members
+> removed-members
+
+(b) RMIA Score After Editing 
+
+Figure 4: RMIA scores of data before and after removal. reducing their membership vulnerability. See Appendix H for its definition. We conducted experiments by randomly selecting 200 sam-ples from the training set (members) and 200 samples from the test set (non-members) of the CUB dataset. We calcu-lated the RMIA scores for these samples and plotted their frequency distributions, as shown in Figure 4(a). The mean RMIA score for non-members was 0.049465, while mem-bers had a mean score of 0.063505. Subsequently, we ap-plied ECBMs to remove the 200 training samples from the model, updated the model parameters, and then recalculated the RMIA scores. After editing, the mean RMIA score for the removed members decreased to 0.052105, significantly closer to the non-members’ mean score. This shift in RMIA values demonstrates the effectiveness of ECBMs in editing the model, as the removed members now exhibit behavior closer to that of non-members. The post-editing RMIA score distributions are shown in Figure 4(b). These results provide evidence of the effectiveness of ECBMs in editing the model’s knowledge about specific samples. 
+
+## 6. Conclusion 
+
+In this paper, we propose Editable Concept Bottleneck Models (ECBMs). ECBMs can address issues of remov-ing/inserting some training data or new concepts from 8Editable Concept Bottleneck Models 
+
+trained CBMs for different reasons, such as privacy con-cerns, data mislabelling, spurious concepts, and concept annotation errors retraining from scratch. Furthermore, to improve computational efficiency, we present streamlined versions integrating EK-FAC. Experimental results show our ECBMs are efficient and effective. 
+
+## Impact Statement 
+
+This research propose editable concept bottleneck models. While we acknowledge the importance of evaluating societal impacts, our analysis suggests that there are no immediate ethical risks requiring specific mitigation measures beyond standard practices in machine learning. 
+
+## Acknowledgements 
+
+Lijie Hu, Chenyang Ren, Cheng-Long Wang, and Di Wang are supported in part by the funding BAS/1/1689-01-01, URF/1/4663-01-01, REI/1/5232-01-01, REI/1/5332-01-01, and URF/1/5508-01-01 from KAUST, and funding from KAUST - Center of Excellence for Generative AI, un-der award number 5940. Zhengyu Hu, Hongbin Lin, and Hui Xiong are supported by the National Key R&D Pro-gram of China (Grant No. 2023YFF0725001), the Na-tional Natural Science Foundation of China (Grant No. 92370204), the Guangdong Basic and Applied Basic Re-search Foundation (Grant No. 2023B1515120057), the Guangzhou-HKUST(GZ) Joint Funding Program (Grant No. 2023A03J0008), and the Education Bureau of Guangzhou Municipality. 
+
+## References 
+
+Agarwal, N., Bullins, B., and Hazan, E. Second-order stochastic optimization for machine learning in linear time. Journal of Machine Learning Research , 18(116): 1–40, 2017. Ahmad, M. A., Eckert, C., and Teredesai, A. Interpretable machine learning in healthcare. In Proceedings of the 2018 ACM international conference on bioinformatics, computational biology, and health informatics , pp. 559– 560, 2018. Ali, M. A., Li, Z., Yang, S., Cheng, K., Cao, Y., Huang, T., Hu, L., Yu, L., and Wang, D. Prompt-saw: Leveraging relation-aware graphs for textual prompt compression. 
+
+arXiv preprint arXiv:2404.00489 , 2024. Bartlett, M. Approximate confidence intervals. Biometrika ,40(1/2):12–19, 1953. Basu, S., Pope, P., and Feizi, S. Influence functions in deep learning are fragile. In International Conference on Learning Representations (ICLR) , 2021. Bourtoule, L., Chandrasekaran, V., Choquette-Choo, C. A., Jia, H., Travers, A., Zhang, B., Lie, D., and Papernot, N. Machine unlearning. In 2021 IEEE Symposium on Security and Privacy (SP) , pp. 141–159. IEEE, 2021. Brophy, J. and Lowd, D. Machine unlearning for random forests. In International Conference on Machine Learn-ing , pp. 1092–1104. PMLR, 2021. Brunet, M.-E., Alkalay-Houlihan, C., Anderson, A., and Zemel, R. Understanding the origins of bias in word embeddings. In International conference on machine learning , pp. 803–811. PMLR, 2019. Cao, L. Ai in finance: challenges, techniques, and oppor-tunities. ACM Computing Surveys (CSUR) , 55(3):1–38, 2022. Cao, Y. and Yang, J. Towards making systems forget with machine unlearning. In 2015 IEEE symposium on security and privacy , pp. 463–480. IEEE, 2015. Chauhan, K., Tiwari, R., Freyberg, J., Shenoy, P., and Dvi-jotham, K. Interactive concept bottleneck models. In 
+
+Proceedings of the AAAI Conference on Artificial Intelli-gence , volume 37(5), pp. 5948–5955, 2023. Chen, C., Sun, F., Zhang, M., and Ding, B. Recommenda-tion unlearning. In Proceedings of the ACM Web Confer-ence 2022 , pp. 2768–2777, 2022a. Chen, H., Si, S., Li, Y., Chelba, C., Kumar, S., Boning, D., and Hsieh, C.-J. Multi-stage influence function. Advances in Neural Information Processing Systems , 33:12732– 12742, 2020. Chen, M., Zhang, Z., Wang, T., Backes, M., Humbert, M., and Zhang, Y. Graph unlearning. In Proceedings of the 2022 ACM SIGSAC conference on computer and commu-nications security , pp. 499–513, 2022b. Cheng, K., Lin, G., Fei, H., Yu, L., Ali, M. A., Hu, L., Wang, D., et al. Multi-hop question answering under temporal knowledge editing. arXiv preprint arXiv:2404.00492 ,2024. Chowdhury, S. B. R., Choromanski, K., Sehanobish, A., Dubey, A., and Chaturvedi, S. Towards scalable exact machine unlearning using parameter-efficient fine-tuning. 
+
+arXiv preprint arXiv:2406.16257 , 2024. Cook, R. D. Detection of influential observation in linear regression. Technometrics , 42(1):65–68, 2000. Cook, R. D. and Weisberg, S. Characterizations of an em-pirical influence function for detecting influential cases in regression. Technometrics , 22(4):495–508, 1980. 9Editable Concept Bottleneck Models 
+
+Das, A. and Rad, P. Opportunities and challenges in explain-able artificial intelligence (xai): A survey. arXiv preprint arXiv:2006.11371 , 2020. Espinosa Zarlenga, M., Barbiero, P., Ciravegna, G., Marra, G., Giannini, F., Diligenti, M., Shams, Z., Precioso, F., Melacci, S., Weller, A., Li ´o, P., and Jamnik, M. Concept embedding models: Beyond the accuracy-explainability trade-off. In Advances in Neural Information Processing Systems , volume 35, 2022. George, T., Laurent, C., Bouthillier, X., Ballas, N., and Vincent, P. Fast approximate natural gradient descent in a kronecker factored eigenbasis. Advances in Neural Information Processing Systems , 31, 2018. Golatkar, A., Achille, A., and Soatto, S. Eternal sunshine of the spotless net: Selective forgetting in deep networks. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pp. 9304–9312, 2020a. Golatkar, A., Achille, A., and Soatto, S. Forgetting out-side the box: Scrubbing deep networks of information accessible from input-output observations. In Computer Vision–ECCV 2020: 16th European Conference, Glas-gow, UK, August 23–28, 2020, Proceedings, Part XXIX 16 , pp. 383–398. Springer, 2020b. Golatkar, A., Achille, A., Ravichandran, A., Polito, M., and Soatto, S. Mixed-privacy forgetting in deep networks. In 
+
+Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pp. 792–801, 2021. Guo, C., Goldstein, T., Hannun, A., and Van Der Maaten, L. Certified data removal from machine learning models. 
+
+arXiv preprint arXiv:1911.03030 , 2019. Guo, H., Rajani, N., Hase, P., Bansal, M., and Xiong, C. Fastif: Scalable influence functions for efficient model interpretation and debugging. In Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing , pp. 10333–10350, 2021. Han, X., Wallace, B. C., and Tsvetkov, Y. Explaining black box predictions and unveiling data artifacts through influ-ence functions. arXiv preprint arXiv:2005.06676 , 2020. Havasi, M., Parbhoo, S., and Doshi-Velez, F. Addressing leakage in concept bottleneck models. Advances in Neu-ral Information Processing Systems , 35:23386–23397, 2022. Hu, L., Liu, Y., Liu, N., Huai, M., Sun, L., and Wang, D. Improving faithfulness for vision transformers. arXiv preprint arXiv:2311.17983 , 2023a. Hu, L., Liu, Y., Liu, N., Huai, M., Sun, L., and Wang, D. Seat: stable and explainable attention. In Proceedings of the AAAI Conference on Artificial Intelligence , volume 37(11), pp. 12907–12915, 2023b. Izzo, Z., Smart, M. A., Chaudhuri, K., and Zou, J. Approx-imate data deletion from machine learning models. In 
+
+International Conference on Artificial Intelligence and Statistics , pp. 2008–2016. PMLR, 2021. Keser, M., Schwalbe, G., Nowzad, A., and Knoll, A. Inter-pretable model-agnostic plausibility verification for 2d object detectors using domain-invariant concept bottle-neck models. In Proceedings of the IEEE/CVF Confer-ence on Computer Vision and Pattern Recognition , pp. 3890–3899, 2023. Kim, E., Jung, D., Park, S., Kim, S., and Yoon, S. Prob-abilistic concept bottleneck models. arXiv preprint arXiv:2306.01574 , 2023. Koh, P. W. and Liang, P. Understanding black-box predic-tions via influence functions. In International conference on machine learning , pp. 1885–1894. PMLR, 2017. Koh, P. W., Nguyen, T., Tang, Y. S., Mussmann, S., Pierson, E., Kim, B., and Liang, P. Concept bottleneck models. In 
+
+International conference on machine learning , pp. 5338– 5348. PMLR, 2020. Kwon, Y., Wu, E., Wu, K., and Zou, J. Datainf: Efficiently estimating data influence in lora-tuned llms and diffu-sion models. In The Twelfth International Conference on Learning Representations , 2023. Lai, S., Hu, L., Wang, J., Berti-Equille, L., and Wang, D. Faithful vision-language interpretation via concept bot-tleneck models. In The Twelfth International Conference on Learning Representations , 2023. Liu, J., Lou, J., Qin, Z., and Ren, K. Certified minimax unlearning with generalization rates and deletion capacity. 
+
+Advances in Neural Information Processing Systems , 36, 2024. Liu, Z., Luo, P., Wang, X., and Tang, X. Deep learning face attributes in the wild. In Proceedings of the IEEE international conference on computer vision , pp. 3730– 3738, 2015. Mehta, R., Pal, S., Singh, V., and Ravi, S. N. Deep unlearn-ing via randomized conditionally independent hessians. In Proceedings of the IEEE/CVF Conference on Com-puter Vision and Pattern Recognition , pp. 10422–10431, 2022. Nevitt, M., Felson, D., and Lester, G. The osteoarthritis initiative. Protocol for the cohort study , 1:2, 2006. 10 Editable Concept Bottleneck Models 
+
+Oikarinen, T., Das, S., Nguyen, L., and Weng, L. Label-free concept bottleneck models. In International Conference on Learning Representations , 2023. Rozenfeld, Y., Beam, J., Maier, H., Haggerson, W., Boudreau, K., Carlson, J., and Medows, R. A model of disparities: risk factors associated with covid-19 infec-tion. International journal for equity in health , 19(1):126, 2020. Sattar, N., McInnes, I. B., and McMurray, J. J. Obesity is a risk factor for severe covid-19 infection: multiple potential mechanisms. Circulation , 142(1):4–6, 2020. Sawada, Y. and Nakamura, K. Concept bottleneck model with additional unsupervised concepts. IEEE Access , 10: 41758–41765, 2022. Sekhari, A., Acharya, J., Kamath, G., and Suresh, A. T. Re-member what you want to forget: Algorithms for machine unlearning. Advances in Neural Information Processing Systems , 34:18075–18086, 2021. Sheth, I. and Ebrahimi Kahou, S. Auxiliary losses for learn-ing generalizable concept-based models. In Oh, A., Nau-mann, T., Globerson, A., Saenko, K., Hardt, M., and Levine, S. (eds.), Advances in Neural Information Pro-cessing Systems , volume 36, pp. 26966–26990, 2023. Sheth, I. and Kahou, S. E. Auxiliary losses for learning generalizable concept-based models. In Thirty-seventh Conference on Neural Information Processing Systems ,2023. Shokri, R., Stronati, M., Song, C., and Shmatikov, V. Mem-bership inference attacks against machine learning mod-els. In 2017 IEEE symposium on security and privacy (SP) , pp. 3–18. IEEE, 2017. Thudi, A., Deza, G., Chandrasekaran, V., and Papernot, N. Unrolling sgd: Understanding factors influencing ma-chine unlearning. In 2022 IEEE 7th European Symposium on Security and Privacy (EuroS&P) , pp. 303–319. IEEE, 2022. Wah, C., Branson, S., Welinder, P., Perona, P., and Belongie, S. The caltech-ucsd birds-200-2011 dataset. California Institute of Technology , 2011. Wang, H., Ustun, B., and Calmon, F. Repairing without retraining: Avoiding disparate impact with counterfactual distributions. In International Conference on Machine Learning , pp. 6618–6627. PMLR, 2019. Warnecke, A., Pirch, L., Wressnegger, C., and Rieck, K. Machine unlearning of features and labels. Network and Distributed System Security (NDSS) Symposium , 2023. Wu, Y., Dobriban, E., and Davidson, S. Deltagrad: Rapid re-training of machine learning models. In International Conference on Machine Learning , pp. 10355–10366. PMLR, 2020. Xu, X., Kong, K., Liu, N., Cui, L., Wang, D., Zhang, J., and Kankanhalli, M. An llm can fool itself: A prompt-based adversarial attack. arXiv preprint arXiv:2310.13345 ,2023. Yang, S., Ali, M. A., Wang, C.-L., Hu, L., and Wang, D. Moral: Moe augmented lora for llms’ lifelong learning. 
+
+arXiv preprint arXiv:2402.11260 , 2024a. Yang, S., Hu, L., Yu, L., Ali, M. A., and Wang, D. Human-ai interactions in the communication era: Autophagy makes large models achieving local optima. arXiv preprint arXiv:2402.11271 , 2024b. Yang, S., Su, J., Jiang, H., Li, M., Cheng, K., Ali, M. A., Hu, L., and Wang, D. Dialectical alignment: Resolving the tension of 3h and security threats of llms. arXiv preprint arXiv:2404.00486 , 2024c. Yin, S., Fu, C., Zhao, S., Li, K., Sun, X., Xu, T., and Chen, E. A survey on multimodal large language models. arXiv preprint arXiv:2306.13549 , 2023. Yu, K.-H., Beam, A. L., and Kohane, I. S. Artificial intel-ligence in healthcare. Nature biomedical engineering , 2 (10):719–731, 2018. Yuksekgonul, M., Wang, M., and Zou, J. Post-hoc con-cept bottleneck models. In The Eleventh International Conference on Learning Representations , 2023. Zarifzadeh, S., Liu, P., and Shokri, R. Low-cost high-power membership inference attacks. In Forty-first International Conference on Machine Learning , 2024. Zhao, W. X., Zhou, K., Li, J., Tang, T., Wang, X., Hou, Y., Min, Y., Zhang, B., Zhang, J., Dong, Z., et al. A survey of large language models. arXiv preprint arXiv:2303.18223 ,2023. 11 Editable Concept Bottleneck Models 
+
+## A. Notation Table 
+
+Table 2: Notation Table. Symbol Description 
+
+c = {p1, . . . , p k} Set of concepts provided by experts or LLMs. 
+
+D = {zi}ni=1 Training dataset, where zi = ( xi, y i, c i).
+
+xi ∈ Rdi Feature vector for the i-th sample. 
+
+yi ∈ Rdo Label for the i-th sample, with dz being the number of classes. 
+
+ci = ( c1 
+
+> i
+
+, . . . , c ki ) ∈ Rk Concept vector for the i-th sample. 
+
+˜crw Corrected concept label for the w-th sample and r-th concept. 
+
+cji Weight of the concept pj in the concept vector ci.
+
+g : Rdi → Rk Concept predictor mapping input space to concept space. 
+
+f : Rk → Rdo Label predictor mapping concept space to prediction space. 
+
+LjC (g(x), c ) Loss function for the j-th concept predictor. 
+
+LY (f (ˆ g(x)) , y ) Loss function from concept space to output space. 
+
+GjC (xi, c i; g) Gradient of the loss LjC (g(xi), c i).
+
+GY (xi, c i; g) Gradient of the loss LY (f (g(xi)) , c i).
+
+Hˆθ Hessian matrix of the loss function with respect to ˆθ.
+
+Gˆθ Fisher information matrix of model ˆθ.
+
+δ Damping term for ensuring positive definiteness of the Hessian. 
+
+ˆg Estimated concept predictor. 
+
+ˆf Estimated label predictor. 
+
+ˆge Retrained concept predictor after correcting erroneous data. 
+
+ˆfe Retrained label predictor after correcting erroneous data. 
+
+ˆg−pM Retrained concept predictor after removing concepts indexed by M .
+
+ˆg∗−pM Mapped concept predictor with the same dimensionality as ˆg.
+
+¯g−pM Approximation of the retrained concept predictor ˆg−pM .
+
+ˆfpM =0 Label predictor after setting the r-th concept to zero for r ∈ M .
+
+¯fpM =0 Approximation of the label predictor ˆfpM =0 .
+
+Hˆg Hessian matrix of the loss function with respect to ˆg.
+
+H ˆf Hessian matrix of the loss function with respect to ˆf .
+
+M ⊂ [k] Set of erroneous concept indices to be removed. 
+
+G ⊂ [n] Set of indices of samples to be removed from the dataset. 
+
+zr = ( xr , y r , c r ) Data sample to be removed, where r ∈ G.
+
+ˆg−zG Retrained concept predictor after removing samples indexed by G.
+
+¯g−zG Approximation of the retrained concept predictor ˆg−zG .
+
+˜f−zG Intermediate label predictor. 
+
+¯f−zG Final edited label predictor after removing samples indexed by G.
+
+## B. Influence Function 
+
+Consider a neural network ˆθ = arg min θ
+
+Pni=1 ℓ(zi, θ ) with loss function L and dataset D = {zi}ni=1 . That is ˆθ minimize the empirical risk 
+
+R(θ) = 
+
+> n
+
+X
+
+> i=1
+
+L(zi, θ )
+
+Assume R is strongly convex in θ. Then θ is uniquely defined. If we remove a point zm from the training dataset, the parameters become ˆθ−zm = arg min θ
+
+P  
+
+> i̸=m
+
+L(zi, θ ). Up-weighting zm by ϵ small enough, then the revised risk 
+
+R(θ)′
+
+= 1
+
+> n
+
+Pni=1 L(zi; θ) + ϵL (zm; θ) is still strongly convex. Then the response function ˆθϵ, −zm = R(θ)′
+
+is also uniquely defined. The parameter change is denoted as ∆ϵ = ˆθϵ, −zm − ˆθ. Since ˆθϵ, −zm is the minimizer of R(θ)′
+
+, we have the 12 Editable Concept Bottleneck Models 
+
+first-order optimization condition as 
+
+∇ˆθϵ, −zm 
+
+R(θ) + ϵ · ∇ ˆθϵ, −zm 
+
+L(zm, ˆθϵ, −zm ) = 0 
+
+Since ˆθϵ, −zm → ˆθasϵ → 0, we perform a Taylor expansion of the right-hand side: 
+
+h
+
+∇R(ˆθ) + ϵ∇L(zm, ˆθ)
+
+i
+
++
+
+h
+
+∇2R(ˆθ) + ϵ∇2L(zm, ˆθ)
+
+i
+
+∆ϵ ≈ 0
+
+Noting ϵ∇2L(zm, ˆθ)∆ ϵ is o(∥∆ϵ∥) term, which is smaller than other parts, we drop it in the following analysis. Then the Taylor expansion equation becomes 
+
+h
+
+∇R(ˆθ) + ϵ∇L(zm, ˆθ)
+
+i
+
++ ∇2R(ˆθ) · ∆ϵ ≈ 0
+
+Solving for ∆ϵ, we obtain: 
+
+∆ϵ = −
+
+h
+
+∇2R(ˆθ) + ϵ∇2L(z, ˆθ)
+
+i−1 h
+
+∇R(ˆθ) + ϵ∇L(z, ˆθ)
+
+i
+
+.
+
+Remember θ minimizes R, then ∇R(ˆθ) = 0 . Dropping o(ϵ) term, we have 
+
+∆ϵ = −ϵ∇2R(ˆθ)−1∇L(z, ˆθ).dˆθϵ, −zm
+
+dϵ ϵ=0 
+
+= d∆ϵ
+
+dϵ ϵ=0 
+
+= −H−1ˆθ ∇L(z, ˆθ) ≡ I up,params (z).
+
+Besides, we can obtain the approximation of ˆθ−zm directly by ˆθ−zm ≈ ˆθ + Iup,params (z).
+
+## C. Acceleration for Influence Function 
+
+EK-FAC. EK-FAC method relies on two approximations to the Fisher information matrix, equivalent to Gˆθ in our setting, which makes it feasible to compute the inverse of the matrix. Firstly, assume that the derivatives of the weights in different layers are uncorrelated, which implies that Gˆθ has a block-diagonal structure. Suppose ˆgθ can be denoted by ˆgθ (x) = gθL ◦ · · · ◦ gθl ◦ · · · ◦ gθ1 (x) where l ∈ [L]. We fold the bias into the weights and vectorize the parameters in the l-th layer into a vector θl ∈ Rdl , dl ∈ N is the number of l-th layer parameters. Then Gˆθ can be reaplcaed by 
+
+
+
+G1(ˆθ), · · · , G L(ˆθ)
+
+
+
+, where Gl(ˆθ) ≜ n−1 Pni=1 ∇ˆθl ℓi∇θl ℓT 
+
+> i
+
+. Denote hl, ol as the output and pre-activated output of l-th layer. Then Gl(θ) can be approximated by 
+
+Gl(θ) ≈ ˆGl(θ) ≜ 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+hl−1 (xi) hl−1 (xi)T ⊗ 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+∇ol ℓi∇ol ℓTi ≜ Ωl−1 ⊗ Γl.
+
+Furthermore, in order to accelerate transpose operation and introduce the damping term, perform eigenvalue decomposition of matrix Ωl−1 and Γl and obtain the corresponding decomposition results as QΩΛΩQ⊤ 
+
+> Ω
+
+and QΓΛΓQ⊤ 
+
+> Γ
+
+. Then the inverse of 
+
+ˆHl(θ) can be obtained by 
+
+ˆHl(θ)−1 ≈
+
+ ˆGl (ˆ g) + λlIdl
+
+−1
+
+=  QΩl−1 ⊗ QΓl
+
+   ΛΩl−1 ⊗ ΛΓl + λlIdl
+
+−1  QΩl−1 ⊗ QΓl
+
+T .
+
+Besides, George et al. (2018) proposed a new method that corrects the error in equation 13 which sets the i-th diagonal element of ΛΩl−1 ⊗ ΛΓl as Λ∗ 
+
+> ii
+
+= n−1 Pnj=1 
+
+   QΩl−1 ⊗ QΓl
+
+ ∇θl ℓj
+
+2 
+
+> i
+
+.
+
+C.1. EK-FAC for CBMs 
+
+In our CBM model, the label predictor is a single linear layer, and Hessian computing costs are affordable. However, the concept predictor is based on Resnet-18, which has many parameters. Therefore, we perform EK-FAC for ˆg.
+
+ˆg = arg min 
+
+> gk
+
+X
+
+> j=1
+
+LCj = arg min 
+
+> gk
+
+X
+
+> j=1
+> n
+
+X
+
+> i=1
+
+LC (gj (xi), c ji ),
+
+13 Editable Concept Bottleneck Models 
+
+we define Hˆg = ∇2ˆg
+
+P 
+
+> i,j
+
+LCj (g(xi), c i) as the Hessian matrix of the loss function with respect to the parameters. To this end, consider the l-th layer of ˆg which takes as input a layer of activations {aj,t } where j ∈ { 1, 2, . . . , J } indexes the input map and t ∈ T indexes the spatial location which is typically a 2-D grid. This layer is parameterized by a set of weights W = ( wi,j,δ ) and biases b = ( bi), where i ∈ { 1, . . . , I } indexes the output map, and δ ∈ ∆ indexes the spatial offset (from the center of the filter). The convolution layer computes a set of pre-activations as 
+
+[Sl]i,t = si,t = X
+
+> δ∈∆
+
+wi,j,δ aj,t +δ + bi.
+
+Denote the loss derivative with respect to si,t as 
+
+Dsi,t = ∂ P LCj
+
+∂s i,t 
+
+,
+
+which can be computed during backpropagation. The activations are actually stored as Al−1 of dimension |T | × J. Similarly, the weights are stored as an I × | ∆|J array 
+
+Wl. The straightforward implementation of convolution, though highly parallel in theory, suffers from poor memory access patterns. Instead, efficient implementations typically leverage what is known as the expansion operator J·K. For instance, 
+
+JAl−1K is a |T | × J|∆| matrix, defined as 
+
+JAl−1Kt,j |∆|+δ = [ Al−1](t+δ),j = aj,t +δ ,
+
+In order to fold the bias into the weights, we need to add a homogeneous coordinate (i.e. a column of all 1’s) to the expanded activations JAl−1K and denote this as JAl−1KH. Concatenating the bias vector to the weights matrix, then we have 
+
+θl = ( bl, W l).Then, the approximation for Hˆg is given as: 
+
+G(l)(ˆ g) = E [Dwi,j,δ Dwi′,j ′,δ ′ ] = E
+
+" X
+
+> t∈T
+
+aj,t +δ Dsi,t 
+
+! X
+
+> t′∈T
+
+aj′,t ′+δ′ Dsi′,t ′
+
+!# 
+
+≈E JAl−1K⊤ 
+
+> H
+
+JAl−1KH
+
+ ⊗ 1
+
+|T | E DS⊤ 
+
+> l
+
+DSl
+
+ ≜ Ωl−1 ⊗ Γl.
+
+Estimate the expectation using the mean of the training set, 
+
+G(l)(ˆ g) ≈ 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+ JAil−1K⊤ 
+
+> H
+
+JAil−1KH
+
+ ⊗ 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+ 1
+
+|T | DSil
+
+> ⊤
+
+DSil
+
+
+
+≜ ˆΩl−1 ⊗ ˆΓl.
+
+Furthermore, if the factors ˆΩl−1 and ˆΓl have eigen decomposition QΩΛΩQ⊤ 
+
+> Ω
+
+and QΓΛΓQ⊤ 
+
+> Γ
+
+, respectively, then the eigen decomposition of ˆΩl−1 ⊗ ˆΓl can be written as: 
+
+ˆΩl−1 ⊗ ˆΓl = QΩΛΩQ⊤ 
+
+> Ω
+
+⊗ QΓΛΓQ⊤
+
+> Γ
+
+= ( QΩ ⊗ QΓ) (Λ Ω ⊗ ΛΓ) ( QΩ ⊗ QΓ)⊤ .
+
+Since subsequent inverse operations are required and the current approximation for G(l)(ˆ g) is PSD, we actually use a damped version as 
+
+ˆGl(ˆ g)−1
+
+= ( Gl (ˆ g) + λlIdl )−1 =  QΩl−1 ⊗ QΓl
+
+   ΛΩl−1 ⊗ ΛΓl + λlIdl
+
+−1  QΩl−1 ⊗ QΓl
+
+T . (13) Besides, (George et al., 2018) proposed a new method that corrects the error in equation 13 which sets the i-th diagonal element of ΛΩl−1 ⊗ ΛΓl as 
+
+Λ∗ 
+
+> ii
+
+= n−1
+
+> n
+
+X
+
+> j=1
+
+   QΩl−1 ⊗ QΓl
+
+ ∇θl ℓj
+
+2 
+
+> i
+
+.
+
+14 Editable Concept Bottleneck Models 
+
+## D. Concept-label-level Influence 
+
+D.1. Proof of Concept-label-level Influence Function 
+
+We have a set of erroneous data De and its associated index set Se ⊆ [n] × [k] such that for each (w, r ) ∈ Se, we have 
+
+(xw, y w, c w) ∈ De with crw is mislabeled and ˜crw is its corrected concept label. Thus, our goal is to approximate the new CBM without retraining. 
+
+Proof Sketch. Our goal is to edit ˆg and ˆf to ˆge and ˆfe. (i) First, we introduce new parameters ˆgϵ,e that minimize a modified loss function with a small perturbation ϵ. (ii) Then, we perform a Newton step around ˆg and obtain an estimate for ˆge. (iii) Then, we consider changing the concept predictor at one data point (xic , y ic , c ic ) and retraining the model to obtain a new label predictor ˆfic , obtain an approximation for ˆfic . (iv) Next, we iterate ic over 1, 2, · · · , n , sum all the equations together, and perform a Newton step around ˆf to obtain an approximation for ˆfe. (v) Finally, we bring the estimate of ˆg into the equation for ˆfe to obtain the final approximation. 
+
+Theorem D.1. Define the gradient of the j-th concept predictor of the i-th data xi as 
+
+GjC (xi, ci; g) ≜ ∇g LjC (g(xi), ci) , (14) 
+
+then the retrained concept predictor ˆge defined by 
+
+ˆge = arg min 
+
+ X 
+
+> (i,j )/∈Se
+
+LjC (g(xi), c i) + X
+
+> (i,j )∈Se
+
+LjC (g(xi), ˜ci)
+
+ , (15) 
+
+can be approximated by ¯ge, defined by: 
+
+ˆg − H−1ˆg · X
+
+> (w,r )∈Se
+
+(GrC (xw, ˜cw; ˆ g) − GrC (xw, cw; ˆ g)) (16) 
+
+where Hˆg = ∇2ˆg
+
+P 
+
+> i,j
+
+LjC (ˆ g(xi), c i) is the Hessian matrix of the loss function with respect to ˆg.Proof. For the index (w, r ) ∈ Se, indicating the r-th concept of the w-th data is wrong, we correct this concept crw to ˜crw.Rewrite ˆge as 
+
+ˆge = arg min 
+
+X
+
+> i,j
+
+LjC (g(xi), c i) + X
+
+> (w,r )∈Se
+
+LrC (g(xw), ˜cw) − X
+
+> (w,r )∈Se
+
+LrC (g(xw), c w)
+
+ . (17) To approximate this effect, define new parameters ˆgϵ,e as 
+
+ˆgϵ,e ≜ arg min 
+
+X
+
+> i,j
+
+LjC (g(xi), c i) + X
+
+> (w,r )∈Se
+
+ϵ · LrC (g(xw), ˜cw) − X
+
+> (w,r )∈Se
+
+ϵ · LrC (g(xw), c w)
+
+ . (18) Then, because ˆgϵ,e minimizes equation 18, we have 
+
+∇ˆg
+
+X
+
+> i,j
+
+LjC (ˆ gϵ,e (xi), c i) + X
+
+> (w,r )∈Se
+
+ϵ · ∇ ˆg LrC (ˆ gϵ,e (xw), ˜cw) − X
+
+> (w,r )∈Se
+
+ϵ · ∇ ˆg LrC (ˆ gϵ,e (xw), c w) = 0 .
+
+Perform a Taylor expansion of the above equation at ˆg,
+
+∇ˆg
+
+X
+
+> i,j
+
+LjC (ˆ g(xi), c i) + X
+
+> (w,r )∈Se
+
+ϵ · ∇ ˆg LrC (ˆ g(xw), ˜cw) − X
+
+> (w,r )∈Se
+
+ϵ · ∇ ˆg LrC (ˆ g(xw), c w)+ ∇2ˆg
+
+X
+
+> i,j
+
+LjC (ˆ g(xi), c i) · (ˆ gϵ,e − ˆg) ≈ 0. (19) 15 Editable Concept Bottleneck Models 
+
+Because of equation 15, the first term of equation 19 equals 0. Then we have 
+
+ˆgϵ,e − ˆg = − X
+
+> (w,r )∈Se
+
+ϵ · H−1ˆg · (∇ˆg LrC (ˆ g(xw), ˜cw) − ∇ ˆg LrC (ˆ g(xw), c w)) ,
+
+where 
+
+Hˆg = ∇2ˆg
+
+X
+
+> i,j
+
+LjC (ˆ g(xi), c i) .
+
+Then, we do a Newton step around ˆg and obtain 
+
+ˆge ≈ ¯ge ≜ ˆg − H−1ˆg · X
+
+> (w,r )∈Se
+
+(∇ˆg LrC (ˆ g(xw), ˜cw) − ∇ ˆg LrC (ˆ g(xw), c w)) . (20) Define the gradient of the j-th concept predictor of the i-th data xi as 
+
+GjC (xi, ci; g) ≜ ∇g LjC (g(xi), ci) , (21) then the retrained concept predictor ˆge defined by 
+
+ˆge = arg min 
+
+ X 
+
+> (i,j )/∈Se
+
+LjC (g(xi), c i) + X
+
+> (i,j )∈Se
+
+LjC (g(xi), ˜ci)
+
+ , (22) can be approximated by ¯ge, defined by: 
+
+ˆg − H−1ˆg · X
+
+> (w,r )∈Se
+
+(GrC (xw, ˜cw; ˆ g) − GrC (xw, cw; ˆ g)) (23) 
+
+Theorem D.2. Define the gradient of the label predictor of the i-th data xi as 
+
+GY (xi; g, f ) ≜ ∇f LY (f (g(xi)) , y i) , (24) 
+
+then the retrained label predictor ˆfe defined by 
+
+ˆfe = arg min 
+
+" nX
+
+> i=1
+
+LY (f (ˆ ge (xi)) , y i)
+
+#
+
+can be approximated by: 
+
+ˆf + H−1ˆf ·
+
+> n
+
+X
+
+> i=1
+
+
+
+GY (xi; ˆ g, ˆf ) − GY (xi; ¯ ge, ˆf )
+
+
+
+,
+
+where H ˆf = ∇ ˆf
+
+Pni=1 GY (xi; ˆ g, ˆf ) is the Hessian matrix, and ¯ge is given in Theorem D.1. Proof. Now we come to deduce the edited label predictor towards ˆfe.First, we consider only changing the concept predictor at one data point (xic , y ic , c ic ) and retrain the model to obtain a new label predictor ˆfic .
+
+ˆfic = arg min 
+
+
+
+> n
+
+X
+
+> i=1 ,i ̸=ic
+
+LY (f (ˆ g (xi)) , y i) + LY (f (ˆ ge (xic )) , y ic )
+
+ .
+
+We rewrite the above equation as follows: 
+
+ˆfic = arg min 
+
+" nX
+
+> i=1
+
+LY (f (ˆ g (xi)) , y i) + LY (f (ˆ ge (xic )) , y ic ) − LY (f (ˆ g (xic )) , y ic )
+
+#
+
+.
+
+16 Editable Concept Bottleneck Models 
+
+We define ˆfϵ,i c as: 
+
+ˆfϵ,i c = arg min 
+
+" nX
+
+> i=1
+
+LY (f (ˆ g (xi)) , y i) + ϵ · LY (f (ˆ ge (xic )) , y ic ) − ϵ · LY (f (ˆ g (xic )) , y ic )
+
+#
+
+.
+
+Derive with respect to f at both sides of the above equation. we have 
+
+∇ ˆfnX
+
+> i=1
+
+LY
+
+ ˆfϵ,i c (ˆ g (xi)) , y i
+
+
+
++ ϵ · ∇ ˆf LY
+
+ ˆfϵ,i c (ˆ ge (xic )) , y ic
+
+
+
+− ϵ · ∇ ˆf LY
+
+ ˆfϵ,i c (ˆ g (xic )) , y ic
+
+
+
+= 0 
+
+Perform a Taylor expansion of the above equation at ˆf ,
+
+∇ ˆfnX
+
+> i=1
+
+LY
+
+ ˆf (ˆ g (xi)) , y i
+
+
+
++ ϵ · ∇ ˆf LY
+
+ ˆf (ˆ ge (xic )) , y ic
+
+
+
+− ϵ · ∇ ˆf LY
+
+ ˆf (ˆ g (xic )) , y ic
+
+
+
++ ∇2ˆfnX
+
+> i=1
+
+LY
+
+ ˆf (ˆ g (xi)) , y i
+
+
+
+·
+
+ ˆfϵ,i c − ˆf
+
+
+
+= 0 
+
+Then we have 
+
+ˆfϵ,i c − ˆf ≈ − ϵ · H−1ˆf · ∇ f
+
+
+
+LY
+
+ ˆf (ˆ ge (xic )) , y ic
+
+
+
+− LY
+
+ ˆf (ˆ g (xic )) , y ic
+
+ 
+
+,
+
+where H−1ˆf = ∇2ˆf
+
+Pni=1 LY
+
+ ˆf (ˆ g (xi)) , y i
+
+
+
+.Iterate ic over 1, 2, · · · , n , and sum all the equations together, we can obtain: 
+
+ˆfϵ,e − ˆf ≈ − ϵ · H−1ˆf ·
+
+> n
+
+X
+
+> i=1
+
+∇f
+
+
+
+LY
+
+ ˆf (ˆ ge (xi)) , y i
+
+
+
+− LY
+
+ ˆf (ˆ g (xi)) , y i
+
+ 
+
+.
+
+Perform a Newton step around ˆf and we have 
+
+ˆfe ≈ ˆf − H−1ˆf ·
+
+> n
+
+X
+
+> i=1
+
+∇f
+
+
+
+LY
+
+ ˆf (ˆ ge (xi)) , y i
+
+
+
+− LY
+
+ ˆf (ˆ g (xi)) , y i
+
+ 
+
+. (25) Bringing the edited (20) of g into equation (25), we have 
+
+ˆfe ≈ ˆf − H−1ˆf ·
+
+> n
+
+X
+
+> i=1
+
+∇f
+
+
+
+LY
+
+ ˆf (¯ ge (xi)) , y i
+
+
+
+− LY
+
+ ˆf (ˆ g (xi)) , y i
+
+ 
+
+≜ ¯fe.
+
+Define the gradient of the label predictor of the i-th data xi as 
+
+GY (xi; g, f ) ≜ ∇f LY (f (g(xi)) , y i) , (26) then the retrained label predictor ˆfe defined by (4) can be approximated by ¯fe, defined by: 
+
+ˆf + H−1ˆf ·
+
+> n
+
+X
+
+> i=1
+
+
+
+GY (xi; ˆ g, ˆf ) − GY (xi; ¯ ge, ˆf )
+
+
+
+,
+
+where H ˆf = ∇ ˆf
+
+Pni=1 GY (xi; ˆ g, ˆf ) is the Hessian matrix, and ¯ge is given in Theorem D.1. 17 Editable Concept Bottleneck Models 
+
+D.2. Theoretical Bound for the Influence Function 
+
+Consider the dataset D = {(xi, c i, y i}i = 1 n, the loss function of the concept predictor g is defined as: 
+
+LTotal (D; g) = 
+
+> n
+
+X
+
+> i=1
+
+LC (g(xi), c i) + δ
+
+2 · ∥ g∥2 =
+
+> n
+
+X
+
+> i=1
+> k
+
+X
+
+> j=1
+
+LjC (g(xi), c i) + δ
+
+2 · ∥ g∥2 =
+
+> n
+
+X
+
+> i=1
+> k
+
+X
+
+> j=1
+
+gj (xi)⊤ log( cij ) + δ
+
+2 · ∥ g∥2.
+
+Mathematically, we have a set of erroneous data De and its associated index set Se ⊆ [n]×[k] such that for each (w, r ) ∈ Se,we have (xw, y w, c w) ∈ De with crw is mislabeled and ˜crw is corrected concept label. Thus, our goal is to estimate the retrained CBM. The retrained concept predictor and label predictor will be represented in the following manner. 
+
+ˆge = arg min 
+
+ X 
+
+> (i,j )/∈Se
+
+LjC (g(xi), c i) + X
+
+> (i,j )∈Se
+
+LjC (g(xi), ˜ci) + δ
+
+2 · ∥ g∥2
+
+ , (27) Define the corrected dataset as D∗. Then the loss function with the influence of erroneous data De removed becomes 
+
+L−(D∗; g) = X 
+
+> (i,j )/∈Se
+
+LjC (g(xi), c i) + X
+
+> (i,j )∈Se
+
+LjC (g(xi), ˜ci) + δ
+
+2 · ∥ g∥2. (28) Assume ˆg = arg min LTotal (D; g) is the original model parameter, and ˆge(D∗) is the minimizer of L−(D∗; g), which is obtained from retraining. Denote ¯ge(D∗) as the updated model with the influence of erroneous data De removed and is obtained by the influence function method in theorem D.1, which is an estimation for ˆge(D∗).To simplify the problem, we concentrate on the removal of erroneous data De and neglect the process of adding the corrected data back. Once we obtain the bound for ˆge(D∗) − ¯ge(D∗) under this circumstance, the bound for the case where the corrected data is added back can naturally be derived using a similar approach. For brevity, we use the same notations. Then, the loss function L−(D∗; g) becomes 
+
+L−(D∗; g) = X 
+
+> (i,j )/∈Se
+
+LjC (g(xi), c i) + δ
+
+2 · ∥ g∥2 = LTotal (D; g) − X
+
+> (i,j )∈Se
+
+LjC (g(xi), c i) (29) And the definition of ¯ge(D∗) becomes 
+
+ˆg + H−1ˆg · X
+
+> (w,r )∈Se
+
+GrC (xw, c w; ˆ g) (30) where Hˆg = ∇2ˆg
+
+P 
+
+> i,j
+
+LjC (ˆ g(xi), c i) + δ · I is the Hessian matrix of the loss function with respect to ˆg. Here δ · I is a small damping term for ensuring positive definiteness of the Hessian. Introducing the damping term into the Hessian is essentially equivalent to adding a regularization term to the initial loss function. Consequently, δ can also be interpreted as the regularization strength. In this part, we will study the error between the estimated influence given by the theorem D.1 method and retraining. We use the parameter changes as the evaluation metric: 
+
+|(¯ ge − ˆg) − (ˆ ge − ˆg)| = |¯ge − ˆge| (31) 
+
+Assumption D.3. The loss LC (x, c ; g)
+
+LC (x, c ; g; j) = LjC (g(x), c )
+
+is convex and twice-differentiable in g, with positive regularization δ > 0. There exists CH ∈ R such that 
+
+∥∇ 2 
+
+> g
+
+LC (x, c ; g1) − ∇ 2 
+
+> g
+
+LC (x, c ; g2)∥2 ≤ CH ∥g1 − g2∥2
+
+for all (x, c ) ∈ D = {(xi, c i)}ni=1 , j ∈ [k] and g1, g 2 ∈ Γ.18 Editable Concept Bottleneck Models 
+
+Then the function L′(D, S e; g):
+
+L′(D, S e; g) = X
+
+> (i,j )∈Se
+
+LjC (g(xi), c i) = X
+
+> (i,j )∈Se
+
+LC (xi, c i; g; j)
+
+is convex and twice-differentiable in g, with some positive regularization. Then we have 
+
+∥∇ 2 
+
+> g
+
+L′(D, S e; g1) − ∇ 2 
+
+> g
+
+L′(D, S e; g2)∥2 ≤ | Se| · CH ∥g1 − g2∥2
+
+for g1, g 2 ∈ Γ.
+
+Corollary D.4. 
+
+∥∇ 2 
+
+> g
+
+L−(D∗; g1) − ∇ 2 
+
+> g
+
+L−(D∗; g2)∥2 ≤ (( nk + |Se|) · CH ) ∥g1 − g2∥
+
+Define C− 
+
+> H
+
+≜ (nk + |Se|) · CH
+
+Definition D.5. Define |D| as the number of pairs 
+
+C′ 
+
+> L
+
+= ∥∇ g L′(D, S e; ˆ g)∥2 ,σ′ 
+
+> min
+
+= smallest singular value of ∇2 
+
+> g
+
+L−(D∗; ˆ g),σmin = smallest singular value of ∇2 
+
+> g
+
+LTotal (D; ˆ g),
+
+Based on above corollaries and assumptions, we derive the following theorem. 
+
+Theorem D.6. We obtain the error between the actual influence and our predicted influence as follows: 
+
+∥ˆge(D∗) − ¯ge(D∗)∥≤ C− 
+
+> H
+
+C′
+
+> L
+> 2
+
+2( σ′ 
+
+> min
+
++ δ)3 + 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · C′
+
+> L
+
+.
+
+Proof. We will use the one-step Newton approximation as an intermediate step. Define ∆gN t (D∗) as 
+
+∆gN t (D∗) ≜ H−1 
+
+> δ
+
+· ∇ g L′(D, S e; ˆ g),
+
+where Hδ = δ · I + ∇2 
+
+> g
+
+L−(D∗; ˆ g) is the regularized empirical Hessian at ˆg but reweighed after removing the influence of wrong data. Then the one-step Newton approximation for ˆg(D∗) is defined as gN t (D∗) ≜ ∆gN t (D∗) + ˆ g.In the following, we will separate the error between ¯ge(D∗) and ˆge(D∗) into the following two parts: 
+
+ˆge(D∗) − ¯ge(D∗) = ˆ ge(D∗) − gN t (D∗)
+
+| {z }
+
+> Err Nt, act (D∗)
+
++ ( gN t (D∗) − ˆg) − (¯ ge(D∗) − ˆg)
+
+| {z }
+
+> Err Nt, if (D∗)
+
+Firstly, in Step 1, we will derive the bound for Newton-actual error Err Nt, act (D∗). Since L−(g) is strongly convex with parameter σ′ 
+
+> min
+
++ δ and minimized by ˆge(D∗), we can bound the distance ∥ˆge(D∗) − gN t (D∗)∥2 in terms of the norm of the gradient at gN t :
+
+∥ˆge(D∗) − gN t (D∗)∥2 ≤ 2
+
+σ′ 
+
+> min
+
++ δ ∇g L− (gN t (D∗)) 2 (32) Therefore, the problem reduces to bounding ∥∇ g L− (gN t (D∗)) ∥2. Noting that ∇g L′(ˆ g) = −∇ g L−. This is because ˆg
+
+minimizes L− + L′, that is, 
+
+∇g L−(ˆ g) + ∇g L′(ˆ g) = 0 .
+
+19 Editable Concept Bottleneck Models 
+
+Recall that ∆gN t = H−1 
+
+> δ
+
+· ∇ g L′(D, S e; ˆ g) = −H−1 
+
+> δ
+
+· ∇ g L−(D∗; ˆ g). Given the above conditions, we can have this bound for Err Nt, act (−D ∗).
+
+∇g L− (gN t (D∗)) 2
+
+= ∇g L− (ˆ g + ∆ gN t (D∗)) 2
+
+= ∇g L− (ˆ g + ∆ gNt (D∗)) − ∇ g L− (ˆ g) − ∇ 2 
+
+> g
+
+L− (ˆ g) · ∆gNt (D∗) 2
+
+=
+
+Z 10
+
+ ∇2 
+
+> g
+
+L− (ˆ g + t · ∆gN t (D∗)) − ∇ 2 
+
+> g
+
+L− (ˆ g) ∆gN t (D∗) dt 2
+
+≤ C−
+
+> H
+
+2 ∥∆gN t (D∗)∥22 = C−
+
+> H
+
+2
+
+∇2 
+
+> g
+
+L−(ˆ g)−1 ∇g L−(ˆ g) 22
+
+≤ C−
+
+> H
+
+2( σ′ 
+
+> min
+
++ δ)2 ∇g L−(ˆ g) 22 = C−
+
+> H
+
+2( σ′ 
+
+> min
+
++ δ)2 ∥∇ g L′(ˆ g)∥22
+
+≤ C− 
+
+> H
+
+C′
+
+> L
+> 2
+
+2( σ′ 
+
+> min
+
++ δ)2 .
+
+(33) Now we come to Step 2 to bound Err Nt, if (−D ∗), and we will bound the difference in parameter change between Newton and our ECBM method. 
+
+∥(gN t (D∗) − ˆg) − (¯ ge(D∗) − ˆg)∥
+
+=
+
+h δ · I + ∇2 
+
+> g
+
+L− (ˆ g)−1 +  δ · I + ∇2 
+
+> g
+
+LTotal (ˆ g)−1i
+
+· ∇ g L′(D, S e; ˆ g)
+
+For simplification, we use matrix A, B for the following substitutions: 
+
+A = δ · I + ∇2 
+
+> g
+
+L− (ˆ g)
+
+B = δ · I + ∇2 
+
+> g
+
+LTotal (ˆ g)
+
+And A and B are positive definite matrices with the following properties 
+
+δ + σ′ 
+
+> min
+
+≺ A ≺ δ + σ′
+
+> max
+
+δ + σmin ≺ B ≺ δ + σmax 
+
+Therefore, we have 
+
+∥(gN t (D∗) − ˆg) − (¯ ge(D∗) − ˆg)∥
+
+=  A−1 + B−1 · ∇ g L−(D∗; ˆ g)
+
+≤ A−1 + B−1 · ∇g L−(D∗; ˆ g)
+
+≤ 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · ∇g L−(D∗; ˆ g)
+
+≤ 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · C′
+
+> L
+
+(34) By combining the conclusions from Step I and Step II in Equations 32, 33 and 34, we obtain the error between the actual influence and our predicted influence as follows: 
+
+∥ˆge(D∗) − ¯ge(D∗)∥≤ C− 
+
+> H
+
+C′
+
+> L
+> 2
+
+2( σ′ 
+
+> min
+
++ δ)3 + 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · C′
+
+> L
+
+.
+
+20 Editable Concept Bottleneck Models 
+
+Remark D.7 . Theorem D.6 reveals one key finding about influence function estimation: The estimation error scales inversely with the regularization parameter δ (O(1 /δ )), indicating that increased regularization improves approximation accuracy. 
+
+Remark D.8 . In CBM, retraining is the most accurate way to handle the removal of a training data point. For the concept predictor, we derive a theoretical error bound for an influence function-based approximation. However, the label predictor differs. As a single-layer linear model, the label predictor is computationally inexpensive to retrain. However, its input depends on the concept predictor, making theoretical analysis challenging due to: (1) Input dependency: Changes in the concept predictor affect the label predictor’s input, coupling their updates. (2) Error propagation: Errors from the concept predictor propagate to the label predictor, introducing complex interactions. Given the label predictor’s low retraining cost, direct retraining is more practical and accurate. Thus, we focus our theoretical analysis on the concept predictor. 
+
+## E. Concept-level Influence 
+
+E.1. Proof of Concept-level Influence Function 
+
+We address situations that delete pr for r ∈ M concept removed dataset. Our goal is to estimate ˆg−pM , ˆf−pM , which is the concept and label predictor trained on the pr for r ∈ M concept removed dataset. 
+
+Proof Sketch. The main ideas are as follows: (i) First, we define a new predictor ˆg∗ 
+
+> pM
+
+, which has the same dimension as ˆg and the same output as ˆg−pM . Then deduce an approximation for ˆg∗ 
+
+> pM
+
+. (ii) Then, we consider setting pr = 0 instead of removing it, we get ˆfpM =0 , which is equivalent to ˆf−pM according to lemma E.1. We estimate this new predictor as a substitute. (iii) Next, we assume we only use the updated concept predictor ˆg∗ 
+
+> pM
+
+for one data (xir , y ir , c ir ) and obtain a new label predictor ˆfir , and obtain a one-step Newtonian iterative approximation of ˆfir with respect to ˆf . (iv) Finally, we repeat the above process for all data points and combine the estimate of ˆg in Theorem E. 2, we obtain a closed-form solution of the influence function for ˆf .First, we introduce our following lemma: 
+
+Lemma E.1. For the concept bottleneck model, if the label predictor utilizes linear transformations of the form ˆf · c with input c, then, for each r ∈ M , we remove the r-th concept from c and denote the new input as c′. Set the r-th concept to 0 and denote the new input as c0. Then we have ˆf−pM · c′ = ˆfpM =0 · c0 for any c. Proof. Assume the parameter space of ˆf−pM and ˆfpM =0 are Γ and Γ0, respectively, then there exists a surjection P : Γ → Γ0.For any θ ∈ Γ, P (θ) is the operation that removes the r-th row of θ for r ∈ M . Then we have: 
+
+P (θ) · c′ = X
+
+> t / ∈M
+
+θ[j] · c′[j] = X
+
+> t
+
+θ[t]I{t / ∈ M }c[t] = θ · c0.
+
+Thus, the loss function LY (θ, c 0) = LY (P (θ), c ′) of both models is the same for every sample in the second stage. Besides, by formula derivation, we have, for θ′ ∈ Γ0, for any θ in P −1(θ′),
+
+∂L Y (θ, c 0)
+
+∂θ = ∂L Y (P (θ), c ′)
+
+∂θ ′
+
+Thus, if the same initialization is performed, ˆf−pM · c′ = ˆfpM =0 · c0 for any c in the dataset. 
+
+Theorem E.2. For the retrained concept predictor ˆg−pM defined by 
+
+ˆg−pM = arg min 
+
+> g′
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (g′(xi), c i),
+
+we map it to ˆg∗−pM as 
+
+ˆg∗−pM = arg min 
+
+> g′∈T0
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (g′(xi), c i).
+
+And we can edit the initial ˆg to ˆg∗−pM , defined as: 
+
+¯g−pM ≜ ˆg − H−1ˆg · X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+DjC (xi, c i; ˆ g), (35) 21 Editable Concept Bottleneck Models 
+
+where Hˆg = ∇g
+
+P
+
+> j / ∈M
+
+Pni=1 DjC (xi, c i; ˆ g). Then, by removing all zero rows inserted during the mapping phase, we can naturally approximate ˆg−pM ≈ P−1(ˆ g∗−pM ).Proof. At this level, we consider the scenario that removes a set of mislabeled concepts or introduces new ones. Because after removing concepts from all the data, the new concept predictor has a different dimension from the original. We denote 
+
+gj (xi) as the j-th concept predictor with xi, and cji as the j-th concept in data zi. For simplicity, we treat g as a collection of k concept predictors and separate different columns as a vector gj (xi). Actually, the neural network gets g as a whole. For the comparative purpose, we introduce a new notation ˆg∗−pM . Specifically, we define weights of ˆg and ˆg∗−pM for the last layer of the neural network as follows. 
+
+ˆg−pM (x) = 
+
+
+
+w11 w12 · · · w1di
+
+w21 w22 · · · w2di
+
+... ... ...
+
+w(k−1)1 w(k−1)2 · · · w(k−1) di
+
+| {z }
+
+> (k−1) ×di
+
+·
+
+
+
+x1
+
+x2
+
+...
+
+xdi
+
+| {z }
+
+> di×1
+
+=
+
+
+
+c1
+
+...
+
+cr−1
+
+cr+1 
+
+...
+
+ck
+
+| {z }
+
+> (k−1) ×1
+
+ˆg∗−pM (x) = 
+
+
+
+w11 w12 · · · w1di
+
+... ... ...
+
+w(r−1)1 w(r−1)2 · · · w(r−1) di
+
+0 0 · · · 0
+
+w(r+1)1 w(r+1)2 · · · w(r+1) di
+
+... ... ...
+
+wk1 wk2 · · · wkd i
+
+| {z }
+
+> k×di
+
+·
+
+
+
+x1
+
+...
+
+xr−1
+
+xr
+
+xr+1 
+
+...
+
+xdi
+
+| {z }
+
+> di×1
+
+=
+
+
+
+c1
+
+...
+
+cr−1
+
+0
+
+cr+1 
+
+...
+
+ck
+
+| {z }
+
+> k×1
+
+,
+
+where r is an index from the index set M .Firstly, we want to edit to ˆg∗−pM ∈ T0 = {wfinal = 0 } ⊆ T based on ˆg, where wfinal is the parameter of the final layer of neural network. Let us take a look at the definition of ˆg∗−pM :
+
+ˆg∗−pM = arg min 
+
+> g′∈T0
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (g′(xi), c i).
+
+Then, we separate the r-th concept-related item from the rest and rewrite ˆg as the following form: 
+
+ˆg = arg min 
+
+> g∈T
+
+ X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (g(xi), c i) + X
+
+> r∈Mn
+
+X
+
+> i=1
+
+LrC (g(xi), c i)
+
+ .
+
+Then, if the r-th concept part is up-weighted by some small ϵ, this gives us the new parameters ˆgϵ,p M , which we will abbreviate as ˆgϵ below. 
+
+ˆgϵ,p M ≜ arg min 
+
+> g∈T
+
+ X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (g(xi), c i) + ϵ · X
+
+> r∈Mn
+
+X
+
+> i=1
+
+LrC (g(xi), c i)
+
+ .
+
+Obviously, when ϵ → 0, ˆgϵ → ˆg∗−pM . We can obtain the minimization conditions from the definitions above. 
+
+∇ˆg∗−pM
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (ˆ g∗−pM (xi), c i) = 0 . (36) 22 Editable Concept Bottleneck Models 
+
+∇ˆgϵ
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (ˆ gϵ(xi), c i) + ϵ · ∇ ˆgϵ
+
+X
+
+> r∈Mn
+
+X
+
+> i=1
+
+LrC (ˆ gϵ(xi), c i) = 0 .
+
+Perform a first-order Taylor expansion of equation 36 with respect to ˆgϵ, then we get 
+
+∇g
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (ˆ gϵ(xi), c i) + ∇2
+
+> g
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (ˆ gϵ(xi), c i) · (ˆ g∗−pM − ˆgϵ) ≈ 0.
+
+Then we have 
+
+ˆg∗−pM − ˆgϵ = −H−1ˆgϵ · ∇ g
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (ˆ gϵ(xi), c i).
+
+Where Hˆgϵ = ∇2
+
+> g
+
+P
+
+> j / ∈M
+
+Pni=1 LjC (ˆ gϵ(xi), c i).We can see that: When ϵ = 0 ,
+
+ˆgϵ = ˆ g∗−pM ,
+
+When ϵ = 1 , ˆgϵ = ˆ g,
+
+ˆg∗−pM − ˆg ≈ − H−1ˆg · ∇ g
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (ˆ g(xi), c i),
+
+where Hˆg = ∇2
+
+> g
+
+P
+
+> j / ∈M
+
+Pni=1 LjC (ˆ g(xi), c i).Then, an approximation of ˆg∗−pM is obtained. 
+
+ˆg∗−pM ≈ ˆg − H−1ˆg · ∇ g
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (ˆ g(xi), c i). (37) Recalling the definition of the gradient: 
+
+GjC (xi, c i; ˆ g) = LjC (ˆ g(xi), c i)) = ˆ gj (xi)⊤ · log( cji ).
+
+Then the approximation of ˆg∗−pM becomes 
+
+¯g−pM ≜ ˆg − H−1ˆg · X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+GjC (xi, c i; ˆ g),
+
+Theorem E.3. For the retrained label predictor ˆf−pM defined as 
+
+ˆf−pM = arg min  
+
+> f′
+> n
+
+X
+
+> i=1
+
+LY = arg min  
+
+> f′
+> n
+
+X
+
+> i=1
+
+LY (f ′(ˆ g−pM (xi)) , y i),
+
+We can consider its equivalent version ˆfpM =0 as: 
+
+ˆfpM =0 = arg min 
+
+> fn
+
+X
+
+> i=1
+
+LY
+
+ f  ˆg∗−pM (xi) , y i
+
+ ,
+
+which can be edited by 
+
+ˆfpM =0 ≈ ¯fpM =0 ≜ ˆf − H−1ˆf ·
+
+> n
+
+X
+
+> l=1
+
+GY (xl; ¯ g∗−pM , ˆf ),
+
+where H ˆf = ∇ ˆf
+
+Pni=1 GY (xl; ¯ g∗−pM , ˆf ) is the Hessian matrix. Deleting the r-th dimension of ¯fpM =0 for r ∈ M , then we can map it to ¯f−pM , which is the approximation of the final edited label predictor ˆf−pM under concept level. 
+
+23 Editable Concept Bottleneck Models 
+
+Proof. Now, we come to the approximation of ˆf−pM . Noticing that the input dimension of f decreases to k − | M |. We consider setting pr = 0 for all data points in the training phase of the label predictor and get another optimal model ˆfpM =0 .From lemma E.1, we know that for the same input x, ˆfpM =0 (x) = ˆf−pM . And the values of the corresponding parameters in ˆfpM =0 and ˆf−pM are equal. Now, let us consider how to edit the initial ˆf to ˆfpM =0 . Firstly, assume we only use the updated concept predictor ˆg∗−pM for one data (xir , y ir , c ir ) and obtain the following ˆfir , which is denoted as 
+
+ˆfir = arg min 
+
+> f
+
+" nX
+
+> i=1
+
+LY (f (ˆ g(xi)) , y i) + LY (f (ˆ g∗−pM (xir )) , y ir ) − LY (f (ˆ g(xir )) , y ir )
+
+#
+
+.
+
+Then up-weight the ir -th data by some small ϵ and have the following new parameters: 
+
+ˆfϵ,ir = arg min 
+
+> f
+
+" nX
+
+> i=1
+
+LY (f (ˆ g(xi)) , y i) + ϵ · LY (f (ˆ g∗−pM (xir )) , y ir ) − ϵ · LY (f (ˆ g(xir )) , y ir )
+
+#
+
+.
+
+Deduce the minimized condition subsequently, 
+
+∇fnX
+
+> i=1
+
+LY ( ˆfir (ˆ g(xi)) , y i) + ϵ · ∇ f LY ( ˆfir (ˆ g∗−pM (xir )) , y ir ) − ϵ · ∇ f LY ( ˆfir (ˆ g(xir )) , y ir ) = 0 .
+
+If we expand first term of ˆf , which ˆfir,ϵ → ˆf (ϵ → 0) , then 
+
+∇fnX
+
+> i=1
+
+LY
+
+ ˆf (ˆ g(xi)) , y i
+
+
+
++ ϵ · ∇ f LY ( ˆf (ˆ g∗−pM (xir )) , y ir ) − ϵ · ∇ f LY ( ˆf (ˆ g(xir )) , y ir )+ ∇2
+
+> fn
+
+X
+
+> i=1
+
+LY
+
+ ˆf (ˆ g(xi)) , y i
+
+!
+
+· ( ˆfir,ϵ − ˆf ) = 0 .
+
+Note that ∇f
+
+Pni=1 LY ( ˆf (ˆ g(xi)) , y i) = 0 . Thus we have 
+
+ˆfir,ϵ − ˆf = H−1ˆf · ϵ
+
+
+
+∇f LY ( ˆf (ˆ g∗−pM (xir )) , y ir ) − ∇ f LY ( ˆf (ˆ g(xir )) , y ir )
+
+
+
+.
+
+We conclude that 
+
+d ˆfϵ,ir 
+
+dϵ ϵ=0 
+
+= H−1ˆf ·
+
+
+
+∇ ˆf LY ( ˆf (ˆ g∗−pM (xir )) , y ir ) − ∇ ˆf LY ( ˆf (ˆ g(xir )) , y ir )
+
+
+
+.
+
+Perform a one-step Newtonian iteration at ˆf and we get the approximation of ˆfir .
+
+ˆfir ≈ ˆf + H−1ˆf ·
+
+
+
+∇ ˆf LY ( ˆf (ˆ g(xir )) , y ir ) − ∇ ˆf LY ( ˆf (ˆ g∗−pM (xir )) , y ir )
+
+
+
+.
+
+Reconsider the definition of ˆfir , we use the updated concept predictor ˆg∗−pM for one data (xir , y ir , c ir ). Now we carry out this operation for all the other data and estimate ˆfpM =0 . Combining the minimization condition from the definition of ˆf , we have 
+
+ˆfpM =0 ≈ ˆf + H−1ˆf · ∇ ˆfnX
+
+> i=1
+
+LY ( ˆf (ˆ g(xi)) , y i) − ∇ ˆfnX
+
+> i=1
+
+LY ( ˆf (ˆ g∗−pM (xi)) , y i)
+
+!
+
+= ˆf + H−1ˆf · −∇ ˆfnX
+
+> i=1
+
+LY ( ˆf (ˆ g∗−pM (xi)) , y i)
+
+!
+
+= ˆf − H−1ˆfnX
+
+> l=1
+
+∇ ˆf LY ( ˆf (ˆ g∗−pM (xl)) , y l). (38) 24 Editable Concept Bottleneck Models 
+
+Theorem E.2 gives us the edited version of ˆg∗−pM . Substitute it into equation 38, and we get the final closed-form edited label predictor under concept level: 
+
+ˆfpM =0 ≈ ¯fpM =0 ≜ ˆf − H−1ˆf · ∇ ˆfnX
+
+> l=1
+
+LYl
+
+ ˆf , ¯g∗−pM
+
+
+
+,
+
+where H ˆf = ∇2ˆf
+
+Pni=1 LYi ( ˆf , ˆg) is the Hessian matrix of the loss function respect to is the Hessian matrix of the loss function respect to ˆf . Recalling the definition of the gradient: 
+
+GY (xl; ¯ g∗−pM , ˆf ) = ∇ ˆf LY
+
+ ˆf  ¯g∗−pM (xl) , y l
+
+
+
+,
+
+then the approximation becomes 
+
+ˆfpM =0 ≈ ¯fpM =0 ≜ ˆf − H−1ˆf ·
+
+> n
+
+X
+
+> l=1
+
+GY (xl; ¯ g∗−pM , ˆf ).
+
+E.2. Theoretical Bound for the Influence Function 
+
+Consider the dataset D = {(xi, c i, y i}ni=1 , the loss function of the concept predictor g is defined as: 
+
+LTotal (D; g) = 
+
+> n
+
+X
+
+> i=1
+
+LC (g(xi), c i) + δ
+
+2 · ∥ g∥2 =
+
+> n
+
+X
+
+> i=1
+> k
+
+X
+
+> j=1
+
+LjC (g(xi), c i) + δ
+
+2 · ∥ g∥2 =
+
+> n
+
+X
+
+> i=1
+> k
+
+X
+
+> j=1
+
+gj (xi)⊤ log( cij ) + δ
+
+2 · ∥ g∥2.
+
+Mathematically, we have a set of erroneous concepts need to be removed, which are denoted as pr for r ∈ M . Then the retrained concept predictor becomes 
+
+ˆg−pM = arg min 
+
+> g′
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (g′(xi), c i) + δ
+
+2 · ∥ g∥2.
+
+We map it to ˆg∗−pM as ˆg−pM to ˆg∗−pM ≜ P(ˆ g−pM ), which has the same amount of parameters as ˆg and has the same predicted concepts ˆg∗−pM (j) as ˆg−pM (j) for all j ∈ [di] − M . We achieve this effect by inserting a zero row vector into the r-th row of the matrix in the final layer of ˆg−pM for r ∈ M . Thus, we can see that the mapping P is one-to-one. Moreover, assume the parameter space of ˆg is T and that of ˆg∗−pM , T0 is the subset of T . Noting that ˆg∗−pM is the optimal model of the following objective function: 
+
+ˆg∗−pM = arg min 
+
+> g′∈T0
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (g′(xi), c i) + δ
+
+2 · ∥ g∥2.
+
+Then the loss function with the influence of erroneous concepts removed becomes 
+
+L−(D; g) = X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LjC (g′(xi), c i) + δ
+
+2 · ∥ g∥2 = LTotal (D; g) − X
+
+> j∈Mn
+
+X
+
+> i=1
+
+LjC (g(xi), c i) . (39) Assume ˆg = arg min LTotal (D; g) is the original model parameter. ˆg−pM (D) and ˆg∗−pM (D) is the minimizer of L−(D; g),which is obtained from retraining in different parameter space. ˆg∗−pM (D) shares the same dimensionality as the original model. Because ˆg−pM (D) and ˆg∗−pM (D) produces identical outputs given identical inputs, to simplify the proof, we use 
+
+ˆg∗−pM (D) as the retrained model. Denote ¯g−pM as the updated model with the influence of erroneous concepts removed and is obtained by the influence function method in theorem E.2, which is an estimation for ˆg∗−pM (D).
+
+¯g−pM (D) ≜ ˆg − H−1ˆg · X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+GjC (xi, c i; ˆ g),
+
+25 Editable Concept Bottleneck Models 
+
+In this part, we will study the error between the estimated influence given by the theorem E.2 method and ˆg∗−pM (D). We use the parameter changes as the evaluation metric: 
+
+(¯ g−pM − ˆg) −  ˆg∗−pM − ˆg = ¯g−pM − ˆg∗−pM (40) 
+
+Assumption E.4. The loss LC (x, c ; g; j)
+
+LC (D; g; j) = 
+
+> n
+
+X
+
+> i=1
+
+LjC (g(xi), c i).
+
+is convex and twice-differentiable in g, with positive regularization δ > 0. There exists CH ∈ R such that 
+
+∥∇ 2 
+
+> g
+
+LC (D; g1; j) − ∇ 2 
+
+> g
+
+LC (D; g2; j)∥2 ≤ CH ∥g1 − g2∥2
+
+for all j ∈ [k] and g1, g 2 ∈ Γ.
+
+Definition E.5. 
+
+C′ 
+
+> L
+
+= max  
+
+> j
+
+∥∇ g LC (D; ˆ g; j)∥2 ,σ′ 
+
+> min
+
+= smallest singular value of ∇2 
+
+> g
+
+L−(D; ˆ g),σmin = smallest singular value of ∇2 
+
+> g
+
+LTotal (D; ˆ g),L′(D, M ; g) = X
+
+> j∈M
+
+LC (D; g; j) (41) 
+
+Corollary E.6. 
+
+L−(D; g) = LTotal (D; g) − L′(D, M ; g) (42) 
+
+∥∇ 2 
+
+> g
+
+L−(D; g1) − ∇ 2 
+
+> g
+
+L−(D; g2)∥2 ≤ (( k + |M |) · CH ) ∥g1 − g2∥
+
+Define C− 
+
+> H
+
+≜ (k + |M |) · CH
+
+Based on above corollaries and assumptions, we derive the following theorem. 
+
+Theorem E.7. We obtain the error between the actual influence and our predicted influence as follows: 
+
+ˆg∗−pM (D) − ¯g−pM (D)
+
+≤ C− 
+
+> H
+
+C′
+
+> L
+
+|M |2
+
+2( σ′ 
+
+> min
+
++ δ)3 + 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · C′
+
+> L
+
+|M |.
+
+Proof. We will use the one-step Newton approximation as an intermediate step. Define ∆gN t (D) as 
+
+∆gN t (D) ≜ H−1 
+
+> δ
+
+· ∇ g L′(D, M ; ˆ g),
+
+where Hδ = δ · I + ∇2 
+
+> g
+
+L−(D; ˆ g) is the regularized empirical Hessian at ˆg but reweighed after removing the influence of wrong data. Then the one-step Newton approximation for ˆg∗−pM (D) is defined as gN t (D) ≜ ∆gN t (D) + ˆ g.In the following, we will separate the error between ¯g−pM (D) and ˆg∗−pM (D) into the following two parts: 
+
+ˆg∗−pM (D) − ¯g−pM (D) = ˆ g∗−pM (D) − gN t (D)
+
+| {z }
+
+> Err Nt, act (D)
+
++ ( gN t (D) − ˆg) − (¯ g−pM (D) − ˆg)
+
+| {z }
+
+> Err Nt, if (D)
+
+Firstly, in Step 1, we will derive the bound for Newton-actual error Err Nt, act (D). Since L−(g) is strongly convex with parameter σ′ 
+
+> min
+
++ δ and minimized by ˆg∗−pM (D), we can bound the distance ˆg∗−pM (D) − gN t (D) 2 in terms of the norm of the gradient at gN t :
+
+ˆg∗−pM (D) − gN t (D) 2 ≤ 2
+
+σ′ 
+
+> min
+
++ δ ∇g L− (gN t (D)) 2 (43) 26 Editable Concept Bottleneck Models 
+
+Therefore, the problem reduces to bounding ∥∇ g L− (gN t (D)) ∥2. Noting that ∇g L′(ˆ g) = −∇ g L−. This is because ˆg
+
+minimizes L− + L′, that is, 
+
+∇g L−(ˆ g) + ∇g L′(ˆ g) = 0 .
+
+Recall that ∆gN t = H−1 
+
+> δ
+
+· ∇ g L′(D, S e; ˆ g) = −H−1 
+
+> δ
+
+· ∇ g L−(D; ˆ g). Given the above conditions, we can have this bound for Err Nt, act (−D ).
+
+∇g L− (gN t (D)) 2
+
+= ∇g L− (ˆ g + ∆ gN t (D)) 2
+
+= ∇g L− (ˆ g + ∆ gNt (D)) − ∇ g L− (ˆ g) − ∇ 2 
+
+> g
+
+L− (ˆ g) · ∆gNt (D) 2
+
+=
+
+Z 10
+
+ ∇2 
+
+> g
+
+L− (ˆ g + t · ∆gN t (D)) − ∇ 2 
+
+> g
+
+L− (ˆ g) ∆gN t (D) dt 
+
+> 2
+
+≤ C−
+
+> H
+
+2 ∥∆gN t (D∗)∥22 = C−
+
+> H
+
+2
+
+∇2 
+
+> g
+
+L−(ˆ g)−1 ∇g L−(ˆ g) 22
+
+≤ C−
+
+> H
+
+2( σ′ 
+
+> min
+
++ δ)2 ∇g L−(ˆ g) 22 = C−
+
+> H
+
+2( σ′ 
+
+> min
+
++ δ)2 ∥∇ g L′(ˆ g)∥22
+
+≤ C− 
+
+> H
+
+C′
+
+> L
+
+|M |2
+
+2( σ′ 
+
+> min
+
++ δ)2 .
+
+(44) Now we come to Step 2 to bound Err Nt, if (−D ), and we will bound the difference in parameter change between Newton and our ECBM method. 
+
+∥(gN t (D) − ˆg) − (¯ g−pM (D) − ˆg)∥
+
+=
+
+h δ · I + ∇2 
+
+> g
+
+L− (ˆ g)−1 +  δ · I + ∇2 
+
+> g
+
+LTotal (ˆ g)−1i
+
+· ∇ g L′(D, S e; ˆ g)
+
+For simplification, we use matrix A, B for the following substitutions: 
+
+A = δ · I + ∇2 
+
+> g
+
+L− (ˆ g)
+
+B = δ · I + ∇2 
+
+> g
+
+LTotal (ˆ g)
+
+And A and B are positive definite matrices with the following properties 
+
+δ + σ′ 
+
+> min
+
+≺ A ≺ δ + σ′
+
+> max
+
+δ + σmin ≺ B ≺ δ + σmax 
+
+Therefore, we have 
+
+∥(gN t (D) − ˆg) − (¯ g−pM (D) − ˆg)∥
+
+=  A−1 + B−1 · ∇ g L−(D; ˆ g)
+
+≤ A−1 + B−1 · ∇g L−(D; ˆ g)
+
+≤ 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · ∇g L−(D; ˆ g)
+
+≤ 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · C′
+
+> L
+
+|M |
+
+(45) By combining the conclusions from Step I and Step II in Equations 43, 44 and 45, we obtain the error between the actual influence and our predicted influence as follows: 
+
+ˆg∗−pM (D) − ¯g−pM (D)
+
+≤ C− 
+
+> H
+
+C′
+
+> L
+
+|M |2
+
+2( σ′ 
+
+> min
+
++ δ)3 + 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · C′
+
+> L
+
+|M |.
+
+27 Editable Concept Bottleneck Models 
+
+Remark E.8 . Theorem E.7 reveals one key finding about influence function estimation: The estimation error scales inversely with the regularization parameter δ (O(1 /δ )), indicating that increased regularization improves approximation accuracy. Besides, the error bound is linearly increasing with the number of removed concepts |M |. This implies that the estimation error increases with the number of erroneous concepts removed. 
+
+## F. Data-level Influence 
+
+F.1. Proof of Data-level Influence Function 
+
+We address situations that for dataset D = {(xi, y i, c i)}ni=1 , given a set of data zr = ( xr , y r , c r ), r ∈ G to be removed. Our goal is to estimate ˆg−zG , ˆf−zG , which is the concept and label predictor trained on the zr for r ∈ G removed dataset. 
+
+Proof Sketch. (i) First, we estimate the retrained concept predictor ˆg−zG . (ii) Then, we define a new label predictor 
+
+˜f−zG and estimate ˜f−zG − ˆf . (iii) Next, in order to reduce computational complexity, use the lemma method to obtain the approximation of the Hessian matrix of ˜f−zG . (iv) Next, we compute the difference ˆf−zG − ˜f−zG as 
+
+−H−1˜f−zG
+
+·
+
+
+
+∇ ˆf LY
+
+ ˜f−zG (ˆ g−zG (xir )) , y ir
+
+
+
+− ∇ ˆf LY
+
+ ˜f−zG (ˆ g(xir )) , y ir
+
+ 
+
+.
+
+(v) Finally, we divide ˆf−zG − ˆf , which we actually concerned with, into 
+
+ ˆf−zG − ˜f−zG
+
+
+
++
+
+ ˜f−zG − ˆf
+
+
+
+.
+
+Theorem F.1. For dataset D = {(xi, y i, c i)}ni=1 , given a set of data zr = ( xr , y r , c r ), r ∈ G to be removed. Suppose the updated concept predictor ˆg−zG is defined by 
+
+ˆg−zG = arg min 
+
+> g
+
+X
+
+> j∈[k]
+
+X
+
+> i∈[n]−G
+
+LCj (ˆ g(xi), c i)
+
+where LC (ˆ g(xi), c i) ≜ Pkj=1 LjC (ˆ g(xi), c i). Then we have the following approximation for ˆg−zG
+
+ˆg−zG ≈ ¯g−zG ≜ ˆg + H−1ˆg · X
+
+> r∈GM
+
+X
+
+> j=1
+
+GjC (xr , c r ; ˆ g), (46) 
+
+where Hˆg = ∇g
+
+P 
+
+> i,j
+
+GjC (xi, c i; ˆ g) is the Hessian matrix of the loss function with respect to ˆg.Proof. Firstly, we rewrite ˆg−zG as 
+
+ˆg−zG = arg min 
+
+> g
+
+" nX
+
+> i=1
+
+LC (ˆ g(xi), c i) − X
+
+> r∈G
+
+LC (g(xr ), c r )
+
+#
+
+,
+
+Then we up-weighted the r-th data by some ϵ and have a new predictor ˆg−zG,ϵ , which is abbreviated as ˆgϵ:
+
+ˆgϵ ≜ arg min 
+
+> g
+
+" nX
+
+> i=1
+
+LC (g(xi), c i) − ϵ · X
+
+> r∈G
+
+LC (g(xr ), c r )
+
+#
+
+. (47) Because ˆgϵ minimizes the right side of equation 47, we have 
+
+∇ˆgϵ
+
+> n
+
+X
+
+> i=1
+
+LY (ˆ gϵ(xi), c i) − ϵ · ∇ ˆgϵ
+
+X
+
+> r∈G
+
+LY (ˆ gϵ(xr ), c r ) = 0 .
+
+When ϵ → 0, ˆgϵ → ˆg. So we can perform a first-order Taylor expansion with respect to ˆg, and we have 
+
+∇gnX
+
+> i=1
+
+LC (ˆ g(xi), c i) − ϵ · ∇ g
+
+X
+
+> r∈G
+
+LC (ˆ g(xr ), c r ) + ∇2
+
+> gn
+
+X
+
+> i=1
+
+LC (ˆ g(xi), c i) · (ˆ gϵ − ˆg) ≈ 0. (48) 28 Editable Concept Bottleneck Models 
+
+Recap the definition of ˆg:
+
+ˆg = arg min 
+
+> gn
+
+X
+
+> i=1
+
+LY (g(xi), c i),
+
+Then, the first term of equation 48 equals 0. Let ϵ → 0, then we have 
+
+dˆ gϵ
+
+dϵ ϵ=0 
+
+= H−1ˆg · X
+
+> r∈G
+
+∇g LC (ˆ g(xr ), c r ),
+
+where Hˆg = ∇2
+
+> g
+
+Pni=1 ℓ(ˆ g(xi), c i).Remember when ϵ → 0, ˆgϵ → ˆg−zG . Perform a Newton step at ˆg, then we obtain the method to edit the original concept predictor under concept level: 
+
+ˆg−zG ≈ ¯g−zG ≜ ˆg + H−1ˆg · X
+
+> r∈G
+
+∇g LC (ˆ g(xr ), c r ).
+
+Recall the definition of GjC (xi, c i; ˆ g), then we can edit the initial ˆg to ˆg∗−pG , defined as: 
+
+ˆg−zG ≈ ¯g−zG ≜ ˆg + H−1ˆg · X
+
+> r∈GM
+
+X
+
+> j=1
+
+GjC (xr , c r ; ˆ g), (49) where Hˆg = ∇g
+
+P 
+
+> i,j
+
+GjC (xi, c i; ˆ g) is the Hessian matrix of the loss function with respect to ˆg.
+
+Theorem F.2. For dataset D = {(xi, y i, c i)}ni=1 , given a set of data zr = ( xr , y r , c r ), r ∈ G to be removed. The label predictor ˆf−zG trained on the revised dataset becomes 
+
+ˆf−zG = arg min 
+
+> f
+
+X
+
+> i∈[n]−G
+
+LYi (f, ˆg−zG ). (50) 
+
+The intermediate label predictor ˜f−zG is defined by 
+
+˜f−zG = arg min X
+
+> i∈[n]−G
+
+LYi (f, ˆg),
+
+Then ˜f−zG − ˆf can be approximated by 
+
+˜f−zG = arg min X
+
+> i∈[n]−G
+
+LY (f (ˆ g(xi), y i). (51) 
+
+We denote the edited version of ˜f−zG as ¯f ∗−zG ≜ ˆf + AG. Define BG as 
+
+−H−1¯f ∗−zG
+
+X
+
+> i∈[n]−G
+
+GY (xi; ¯ g−zG , ¯f ∗−zG ) − GY (xi; ˆ g, ¯f ∗−zG ),
+
+where H ¯f ∗−zG
+
+= ∇ ¯f
+
+P 
+
+> i∈[n]−G
+
+GY (xi; ˆ g, ¯f ∗−zG ) is the Hessian matrix concerning ¯f ∗−zG . Then ˆf−zG can be estimated by 
+
+˜f−zG + BG. Combining the above two-stage approximation, then, the final edited label predictor ¯f−zG can be obtained by 
+
+¯f−zG = ¯f ∗−zG + BG = ˆf + AG + BG. (52) 
+
+Proof. We can see that there is a huge gap between ˆf−zG and ˆf . Thus, firstly, we define ˜f−zG as 
+
+˜f−zG = arg min 
+
+> fn
+
+X
+
+> i=1
+
+LY (f (ˆ g(xi)) , y i) − X
+
+> r∈G
+
+LY (f (ˆ g(xr )) , y r ) .
+
+29 Editable Concept Bottleneck Models 
+
+Then, we define ˜fϵ, −zG as follows to estimate ˜f−zG .
+
+˜fϵ, −zG = arg min 
+
+> fn
+
+X
+
+> i=1
+
+LY (f (ˆ g(xi)) , y i) − ϵ · X
+
+> r∈G
+
+LY (f (ˆ g(xr )) , y r ) .
+
+From the minimization condition, we have 
+
+∇ ˜fnX
+
+> i=1
+
+LY
+
+ ˜fϵ, −zG (ˆ g(xi)) , y i
+
+
+
+− ϵ · X
+
+> r∈G
+
+∇ ˜f LY
+
+ ˜fϵ, −zG (ˆ g(xr )) , y r
+
+
+
+= 0 .
+
+Perform a first-order Taylor expansion at ˆf ,
+
+∇ ˆfnX
+
+> i=1
+
+LY
+
+ ˆf (ˆ g(xi)) , y i
+
+
+
+− ϵ · ∇ ˆf
+
+X
+
+> r∈G
+
+LY
+
+ ˆf (ˆ g(xr )) , y r
+
+
+
++ ∇2ˆfnX
+
+> i=1
+
+LY
+
+ ˆf (ˆ g(xi)) , y i
+
+
+
+·
+
+ ˜fϵ, −zG − ˆf
+
+
+
+= 0 .
+
+Then ˜f−zG can be approximated by 
+
+˜f−zG ≈ ˆf + H−1ˆf · X
+
+> r∈G
+
+∇ ˆf LY
+
+ ˆf (ˆ g(xr )) , y r
+
+
+
+≜ AG. (53) Then the edit version of ˜f−zG is defined as 
+
+¯f ∗−zG = ˆf + AG (54) Then we estimate the difference between ˆf−zG and ˜f−zG . Rewrite ˜f−zG as 
+
+˜f−zG = arg min 
+
+> fn
+
+X
+
+> i∈S
+
+LY (f (ˆ g(xi)) , y i) , (55) where S ≜ [n] − G.Compare equation 50 with 55, we still need to define an intermediary predictor ˆf−zG,ir as 
+
+ˆf−zG,ir = arg min 
+
+> f
+
+X
+
+> i∈Si̸=ir
+
+LYi (f, ˆg(xi)) + LYir (f, ˆg−zG )
+
+
+
+= arg min 
+
+> f
+
+"X
+
+> i∈S
+
+LYi (f, ˆg) + LYir (f, ˆg−zG ) − LYir (f, ˆg)
+
+#
+
+.
+
+Up-weight the ir data by some ϵ, we define ˆfϵ, −zG,i r as 
+
+ˆfϵ, −zG,ir = arg min 
+
+> f
+
+"X
+
+> i∈S
+
+LYi (f, ˆg) + ϵ · LYir (f, ˆg−zG ) − ϵ · LYir (f, ˆg)
+
+#
+
+.
+
+We denote ˆfϵ, −zG,ir as ˆf ∗ 
+
+> ϵ
+
+in the following proof. Then, from the minimization condition, we have 
+
+∇ ˆf
+
+X
+
+> i∈S
+
+LYi
+
+ ˆf ∗ 
+
+> ϵ
+
+, ˆg
+
+
+
++ ϵ · ∇ ˆf LYir 
+
+ ˆf ∗ 
+
+> ϵ
+
+, ˆg−zG
+
+
+
+− ϵ · ∇ ˆf LYir 
+
+ ˆf ∗ 
+
+> ϵ
+
+, ˆg(xir
+
+
+
+. (56) 30 Editable Concept Bottleneck Models 
+
+When ϵ → 0, ˆf ∗ 
+
+> ϵ
+
+→ ˜f−zG . Then we perform a Taylor expansion at ˜f−zG of equation 56 and have 
+
+∇ ˆf
+
+X
+
+> i∈S
+
+LYi
+
+ ˜f−zG , ˆg
+
+
+
++ ϵ · ∇ ˆf LYir 
+
+ ˜f−zG , ˆg−zG
+
+
+
+− ϵ · ∇ ˆf LYir 
+
+ ˜f−zG , ˆg
+
+
+
++ ∇2ˆf
+
+X
+
+> i∈S
+
+LYi
+
+ ˜f−zG , ˆg
+
+
+
+· ( ˆf ∗ 
+
+> ϵ
+
+− ˜f−zG ) ≈ 0.
+
+Organizing the above equation gives 
+
+ˆf ∗ 
+
+> ϵ
+
+− ˜f−zG ≈ − ϵ · H−1˜f−zG
+
+·
+
+
+
+∇ ˆf LYir 
+
+ ˜f−zG , ˆg−zG
+
+
+
+− ∇ ˆf LYir 
+
+ ˜f−zG , ˆg
+
+ 
+
+,
+
+where H ˜f−zG
+
+= ∇2ˆf
+
+P 
+
+> i∈S
+
+LYi
+
+ ˜f−zG , ˆg
+
+
+
+.When ϵ = 1 , ˆf ∗ 
+
+> ϵ
+
+= ˆf−zG,ir . Then we perform a Newton iteration with step size 1 at ˜f−zG ,
+
+ˆf−zG,ir − ˜f−zG ≈ − H−1˜f−zG
+
+·
+
+
+
+∇ ˆf LYir 
+
+ ˜f−zG , ˆg−zG
+
+
+
+− ∇ ˆf LYir 
+
+ ˜f−zG , ˆg
+
+ 
+
+Iterate ir through set S, and we have 
+
+ˆf−zG − ˜f−zG ≈ − H−1˜f−zG
+
+· ∇ ˆf
+
+X
+
+> i∈S
+
+LYi
+
+ ˜f−zG , ˆg−zG
+
+
+
+− ∇ ˆf
+
+X
+
+> i∈S
+
+LYi
+
+ ˜f−zG , ˆg
+
+!
+
+(57) The edited version of ˆg−zG has been deduced as ¯g−zG in theorem F.1, substituting this approximation into (57) , then we have 
+
+ˆf−zG − ˜f−zG ≈ − H−1˜f−zG
+
+· ∇ ˆf
+
+X
+
+> i∈S
+
+LYi
+
+ ˜f−zG , ¯g−zG
+
+
+
+− ∇ ˆf
+
+X
+
+> i∈S
+
+LYi
+
+ ˜f−zG , ˆg
+
+!
+
+. (58) Noting that we cannot obtain ˆf−zG and H ˜f−zG
+
+directly because we do not retrain the label predictor but edit it to ¯f ∗−zG as a substitute. Therefore, we approximate ˆf−zG with ¯f ∗−zG and H ˜f−zG
+
+with H ¯f ∗−zG
+
+which is defined by: 
+
+H ¯f ∗−zG
+
+= ∇2ˆf
+
+X
+
+> i∈S
+
+LYi
+
+  ¯f ∗−zG , ˆg
+
+Then we define BG as 
+
+BG ≜ −H−1¯f ∗−zG
+
+· ∇ ˆf
+
+X
+
+> i∈S
+
+LYi
+
+  ¯f ∗−zG , ¯g−zG
+
+ − ∇ ˆf
+
+X
+
+> i∈S
+
+LYi
+
+  ¯f ∗−zG , ˆg!
+
+(59) Combining (54) and (59), then we deduce the final closed-form edited label predictor as 
+
+¯f−zG = ¯f ∗−zG + BG = ˆf + AG + BG.
+
+Replace the definition of gradient of LC and LC , then we obtain the final version of approximation. 
+
+F.2. Theoretical Bound for the Influence Function 
+
+Consider the dataset D = {(xi, c i, y i}ni=1 , the loss function of the concept predictor g is defined as: 
+
+LTotal (D; g) = 
+
+> n
+
+X
+
+> i=1
+
+LC (g(xi), c i) + δ
+
+2 · ∥ g∥2 =
+
+> n
+
+X
+
+> i=1
+> k
+
+X
+
+> j=1
+
+LjC (g(xi), c i) + δ
+
+2 · ∥ g∥2 =
+
+> n
+
+X
+
+> i=1
+> k
+
+X
+
+> j=1
+
+gj (xi)⊤ log( cij ) + δ
+
+2 · ∥ g∥2.
+
+Mathematically, we have a set of erroneous data zr = ( xr , y r , c r ), r ∈ G need to be removed. Then the retrained concept predictor becomes 31 Editable Concept Bottleneck Models 
+
+ˆg−zG = arg min 
+
+> gk
+
+X
+
+> j=1
+
+X
+
+> i∈[n]−G
+
+LjC (g(xi), c i) + δ
+
+2 · ∥ g∥2.
+
+Define the new dataset as D∗ = {(xi, c i, y i)}i∈[n]−G, then the loss function with the influence of erroneous data removed becomes 
+
+L−(D∗; g) = 
+
+> k
+
+X
+
+> j=1
+
+X
+
+> i∈[n]−G
+
+LjC (g(xi), c i) + δ
+
+2 · ∥ g∥2 = LTotal (D; g) −
+
+> k
+
+X
+
+> j=1
+
+X
+
+> i∈G
+
+LjC (g(xi), c i) . (60) Assume ˆg = arg min LTotal (D; g) is the original model parameter. ˆg−zG is the minimizer of L−(D∗; g). Denote ¯g−zG as the updated model with the influence of erroneous data removed and is obtained by the influence function method in theorem F.1, which is an estimation for ˆg−zG .
+
+ˆg−zG ≈ ¯g−zG ≜ ˆg + H−1ˆg · X
+
+> r∈GM
+
+X
+
+> j=1
+
+GjC (xr , c r ; ˆ g), (61) In this part, we will study the error between the estimated influence given by the theorem F.1 method and ˆg−zG . We use the parameter changes as the evaluation metric: 
+
+|(¯ g−zG − ˆg) − (ˆ g−zG − ˆg)| = |¯g−zG − ˆg−zG | (62) 
+
+Assumption F.3. The loss LC (x, c ; g; j)
+
+LC (x, c ; g) = 
+
+> k
+
+X
+
+> j=1
+
+LjC (g(x), c ).
+
+is convex and twice-differentiable in g, with positive regularization δ > 0. There exists CH ∈ R such that 
+
+∥∇ 2 
+
+> g
+
+LC (x, c ; g1) − ∇ 2 
+
+> g
+
+LC (x, c ; g2)∥2 ≤ CH ∥g1 − g2∥2
+
+for all (x, c ) ∈ D and g1, g 2 ∈ Γ.
+
+Definition F.4. 
+
+C′ 
+
+> L
+
+= ∥∇ g LC (D; ˆ g)∥2 ,σ′ 
+
+> min
+
+= smallest singular value of ∇2 
+
+> g
+
+L−(D; ˆ g),σmin = smallest singular value of ∇2 
+
+> g
+
+LTotal (D; ˆ g),L′(D, G ; g) = X
+
+> i∈G
+
+LC (xi, c i; g) (63) 
+
+Corollary F.5. 
+
+L−(D; g) = LTotal (D; g) − L′(D, G ; g) (64) 
+
+∥∇ 2 
+
+> g
+
+L−(D; g1) − ∇ 2 
+
+> g
+
+L−(D; g2)∥2 ≤ (( n + |G|) · CH ) ∥g1 − g2∥
+
+Define C− 
+
+> H
+
+≜ (n + |G|) · CH
+
+Based on above corollaries and assumptions, we derive the following theorem. 
+
+Theorem F.6. We obtain the error between the actual influence and our predicted influence as follows: 
+
+∥ˆg−zG (D) − ¯g−zG (D)∥≤ C− 
+
+> H
+
+C′
+
+> L
+
+|G|2
+
+2( σ′ 
+
+> min
+
++ δ)3 + 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · C′
+
+> L
+
+|G|.
+
+32 Editable Concept Bottleneck Models 
+
+Proof. We will use the one-step Newton approximation as an intermediate step. Define ∆gN t (D) as 
+
+∆gN t (D) ≜ H−1 
+
+> δ
+
+· ∇ g L′(D, G ; ˆ g),
+
+where Hδ = δ · I + ∇2 
+
+> g
+
+L−(D; ˆ g) is the regularized empirical Hessian at ˆg but reweighed after removing the influence of wrong data. Then the one-step Newton approximation for ˆg−zG (D) is defined as gN t (D) ≜ ∆gN t (D) + ˆ g.In the following, we will separate the error between ¯g−zG (D) and ˆg−zG (D) into the following two parts: 
+
+ˆg−zG (D) − ¯g−zG (D) = ˆ g−zG (D) − gN t (D)
+
+| {z }
+
+> Err Nt, act (D)
+
++ ( gN t (D) − ˆg) − (¯ g−zG (D) − ˆg)
+
+| {z }
+
+> Err Nt, if (D)
+
+Firstly, in Step 1, we will derive the bound for Newton-actual error Err Nt, act (D). Since L−(g) is strongly convex with parameter σ′ 
+
+> min
+
++ δ and minimized by ˆg−zG (D), we can bound the distance ∥ˆg−zG (D) − gN t (D)∥2 in terms of the norm of the gradient at gN t :
+
+∥ˆg−zG (D) − gN t (D)∥2 ≤ 2
+
+σ′ 
+
+> min
+
++ δ ∇g L− (gN t (D)) 2 (65) Therefore, the problem reduces to bounding ∥∇ g L− (gN t (D)) ∥2. Noting that ∇g L′(D, G ; ˆ g) = −∇ g L−. This is because 
+
+ˆg minimizes L− + L′, that is, 
+
+∇g L−(ˆ g) + ∇g L′(D, G ; ˆ g) = 0 .
+
+Recall that ∆gN t = H−1 
+
+> δ
+
+· ∇ g L′(D, G ; ˆ g) = −H−1 
+
+> δ
+
+· ∇ g L−(D; ˆ g). Given the above conditions, we can have this bound for Err Nt, act (−D ).
+
+∇g L− (gN t (D)) 2
+
+= ∇g L− (ˆ g + ∆ gN t (D)) 2
+
+= ∇g L− (ˆ g + ∆ gNt (D)) − ∇ g L− (ˆ g) − ∇ 2 
+
+> g
+
+L− (ˆ g) · ∆gNt (D) 2
+
+=
+
+Z 10
+
+ ∇2 
+
+> g
+
+L− (ˆ g + t · ∆gN t (D)) − ∇ 2 
+
+> g
+
+L− (ˆ g) ∆gN t (D) dt 
+
+> 2
+
+≤ C−
+
+> H
+
+2 ∥∆gN t (D∗)∥22 = C−
+
+> H
+
+2
+
+∇2 
+
+> g
+
+L−(ˆ g)−1 ∇g L−(ˆ g) 22
+
+≤ C−
+
+> H
+
+2( σ′ 
+
+> min
+
++ δ)2 ∇g L−(ˆ g) 22 = C−
+
+> H
+
+2( σ′ 
+
+> min
+
++ δ)2 ∥∇ g L′(D, G ; ˆ g)∥22
+
+≤ C− 
+
+> H
+
+C′
+
+> L
+
+|G|2
+
+2( σ′ 
+
+> min
+
++ δ)2 .
+
+(66) Now we come to Step 2 to bound Err Nt, if (−D ), and we will bound the difference in parameter change between Newton and our ECBM method. 
+
+∥(gN t (D) − ˆg) − (¯ g−zG (D) − ˆg)∥
+
+=
+
+h δ · I + ∇2 
+
+> g
+
+L− (ˆ g)−1 +  δ · I + ∇2 
+
+> g
+
+LTotal (ˆ g)−1i
+
+· ∇ g L′(D, G ; ˆ g)
+
+For simplification, we use matrix A, B for the following substitutions: 
+
+A = δ · I + ∇2 
+
+> g
+
+L− (ˆ g)
+
+B = δ · I + ∇2 
+
+> g
+
+LTotal (ˆ g)
+
+And A and B are positive definite matrices with the following properties 
+
+δ + σ′ 
+
+> min
+
+≺ A ≺ δ + σ′
+
+> max
+
+δ + σmin ≺ B ≺ δ + σmax 
+
+33 Editable Concept Bottleneck Models 
+
+Therefore, we have 
+
+∥(gN t (D) − ˆg) − (¯ g−zG (D) − ˆg)∥
+
+=  A−1 + B−1 · ∇ g L−(D; ˆ g)
+
+≤ A−1 + B−1 · ∇g L−(D; ˆ g)
+
+≤ 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · ∇g L−(D; ˆ g)
+
+≤ 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · C′
+
+> L
+
+|G|
+
+(67) By combining the conclusions from Step I and Step II in Equations 65, 66 and 67, we obtain the error between the actual influence and our predicted influence as follows: 
+
+∥ˆg−zG (D) − ¯g−zG (D)∥≤ C− 
+
+> H
+
+C′
+
+> L
+
+|G|2
+
+2( σ′ 
+
+> min
+
++ δ)3 + 2δ + σmin + σ′
+
+> min
+
+(δ + σ′
+
+> min
+
+) · (δ + σmin ) · C′
+
+> L
+
+|G|.
+
+Remark F.7 . The error bound is linearly increasing with the number of removed data |G|. This implies that the estimation error increases with the number of erroneous data removed. 
+
+## G. Algorithm 
+
+Algorithm 1 Concept-label-level ECBM 
+
+1: Input: Dataset D = {(xi, y i, c i)}ni=1 , original concept predictor ˆf , and label predictor ˆg, a set of erroneous data De
+
+and its associated index set Se.
+
+2: For the index (w, r ) in Se, correct crw to the right label crw′ for the w-th data (xw, y w, c w).
+
+3: Compute the Hessian matrix of the loss function respect to ˆg:
+
+Hˆg = ∇2ˆg
+
+X
+
+> i,j
+
+LCj (ˆ gj (xi), c ji ).
+
+4: Update concept predictor ˜g:
+
+˜g = ˆ g − H−1ˆg · X
+
+> (w,r )∈Se
+
+ ∇ˆg LCr
+
+ ˆgr (xw), c rw
+
+> ′
+
+ − ∇ ˆg LCr (ˆ gr (xw), c rw) .
+
+5: Compute the Hessian matrix of the loss function respect to ˆf :
+
+H ˆf = ∇2ˆfnX
+
+> i=1
+
+LYi ( ˆf , ˆg).
+
+6: Update label predictor ˜f :
+
+˜f = ˆf + H−1ˆf · ∇ fnX
+
+> i=1
+
+LY
+
+ ˆf (ˆ g(xi)) , y i
+
+
+
+− H−1ˆf · ∇ fnX
+
+> l=1
+
+
+
+LY
+
+ ˆf (˜ g(xl)) , y l
+
+ 
+
+.
+
+7: Return: ˜f , ˜g.
+
+Algorithm 2 Concept-level ECBM 
+
+1: Input: Dataset D = {(xi, y i, c i)}ni=1 , original concept predictor ˆf , label predictor ˆg and the to be removed concept index set M .34 Editable Concept Bottleneck Models 
+
+2: For r ∈ M , set pr = 0 for all the data z ∈ D .
+
+3: Compute the Hessian matrix of the loss function respect to ˆg:
+
+Hˆg = ∇2ˆg
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LCj (ˆ gj (xi), c ji ).
+
+4: Update concept predictor ˜g∗:
+
+˜g∗ = ˆ g − H−1ˆg · ∇ ˆg
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LCj (ˆ gj (xi), c ji ).
+
+5: Compute the Hessian matrix of the loss function respect to ˆf :
+
+H ˆf = ∇2ˆfnX
+
+> i=1
+
+LY ( ˆf (ˆ g(xi), y i).
+
+6: Update label predictor ˜f :
+
+˜f = ˆf − H−1ˆf · ∇ ˆfnX
+
+> l=1
+
+LY
+
+ ˆf (˜ g∗(xl)) , y l
+
+
+
+.
+
+7: Map ˜g∗ to ˜g by removing the r-th row of the matrix in the final layer of ˜g∗ for r ∈ M .
+
+8: Return: ˜f , ˜g.
+
+Algorithm 3 Data-level ECBM 
+
+1: Input: Dataset D = {(xi, y i, c i)}Ni=1 , original concept predictor ˆf , label predictor ˆg, and the to be removed data index set G.
+
+2: For r ∈ G, remove the r-th data (xr , y r , c r ) from D and define the new dataset as S.
+
+3: Compute the Hessian matrix of the loss function with respect to ˆg:
+
+Hˆg = ∇2ˆg
+
+X
+
+> i,j
+
+LCj (ˆ gj (xi), c ji ).
+
+4: Update concept predictor ˜g:
+
+˜g = ˆ g + H−1ˆg · X
+
+> r∈G
+
+∇g LC (ˆ g(xr ), c r )
+
+5: Update label predictor ˜f . Compute the Hessian matrix of the loss function with respect to ˆf :
+
+H ˆf = ∇2ˆfnX
+
+> i=1
+
+LY ( ˆf (ˆ g(xi), y i).
+
+6: Compute A as: 
+
+A = H−1ˆf · X
+
+> i∈[n]−G
+
+∇ ˆf LY
+
+ ˆf (ˆ g(xi)) , y i
+
+
+
+7: Obtain ¯f as ¯f = ˆf + A
+
+8: Compute the Hessian matrix of the loss function concerning ¯f :
+
+H ¯f = ∇2¯f
+
+X
+
+> i∈[n]−G
+
+LY ( ¯f (ˆ g(xi)) , y i).
+
+9: Compute B as 
+
+B = −H−1¯f · X
+
+> i∈[n]−G
+
+∇ ˆf
+
+ LY ( ¯f (˜ g(xi)) , y i) − LY ( ¯f (ˆ g(xi)) , y i)
+
+35 Editable Concept Bottleneck Models 
+
+10: Update the label predictor ˜f as: ˜f = ˆf + A + B. 
+
+11: Return: ˜f , ˜g.
+
+Algorithm 4 EK-FAC for Concept Predictor g
+
+1: Input: Dataset D = {(xi, y i, c i)}Ni=1 , original concept predictor ˆg.
+
+2: for the l-th convolution layer of ˆg: do 
+
+3: Define the input activations {aj,t }, weights W = ( wi,j,δ ), and biases b = ( bi) of this layer; 
+
+4: Obtain the expanded activations JAl−1K as: 
+
+JAl−1Kt,j |∆|+δ = [ Al−1](t+δ),j = aj,t +δ ,
+
+5: Compute the pre-activations: 
+
+[Sl]i,t = si,t = X
+
+> δ∈∆
+
+wi,j,δ aj,t +δ + bi.
+
+6: During the backpropagation process, obtain the Dsi,t as: 
+
+Dsi,t = ∂ Pkj=1 
+
+Pni=1 LCj
+
+∂s i,t 
+
+7: Compute ˆΩl−1 and ˆΓl:
+
+ˆΩl−1 = 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+ JAil−1K⊤ 
+
+> H
+
+JAil−1KH
+
+
+
+ˆΓl = 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+ 1
+
+|T | DSil
+
+> ⊤
+
+DSil
+
+
+
+8: Perform eigenvalue decomposition of ˆΩl−1 and ˆΓl, obtain QΩ, ΛΩ, Q Γ, ΛΓ, which satisfies 
+
+ˆΩl−1 = QΩΛΩQ⊤
+
+> Ω
+
+ˆΓl = QΓΛΓQ⊤
+
+> Γ
+
+9: Define a diagonal matrix Λ and compute the diagonal element as 
+
+Λ∗ 
+
+> ii
+
+= n−1
+
+> n
+
+X
+
+> j=1
+
+   QΩl−1 ⊗ QΓl
+
+ ∇θl LCj
+
+2 
+
+> i
+
+.
+
+10: Compute ˆH−1 
+
+> l
+
+as 
+
+ˆH−1 
+
+> l
+
+=  QΩl−1 ⊗ QΓl
+
+ (Λ + λlIdl )−1  QΩl−1 ⊗ QΓl
+
+T
+
+11: end for 
+
+12: Splice Hl sequentially into large diagonal matrices 
+
+ˆH−1ˆg =
+
+
+
+ˆH−11 0
+
+. . .
+
+0 ˆH−1
+
+> d
+
+
+
+where d is the number of the convolution layer of the concept predictor. 
+
+13: Return: the inverse Hessian matrix ˆH−1ˆg .
+
+Algorithm 5 EK-FAC for Label Predictor f
+
+1: Input: Dataset D = {(xi, y i, c i)}Ni=1 , original label predictor ˆf .36 Editable Concept Bottleneck Models 
+
+2: Denote the pre-activated output of ˆf as f ′, Compute A as 
+
+A = 1
+
+n ·
+
+> n
+
+X
+
+> i=1
+
+ˆg(xi) · ˆg(xi)T
+
+3: Comput B as: 
+
+B = 1
+
+n ·
+
+> n
+
+X
+
+> i=1
+
+∇f ′ LY ( ˆf (ˆ g(xi)) , y i) · ∇ f ′ LY ( ˆf (ˆ g(xi)) , y i)T
+
+4: Perform eigenvalue decomposition of AA and BB, obtain QA, ΛA, Q B , ΛB , which satisfies 
+
+A = QAΛAQ⊤
+
+> A
+
+B = QB ΛB Q⊤
+
+> B
+
+5: Define a diagonal matrix Λ and compute the diagonal element as 
+
+Λ∗ 
+
+> ii
+
+= n−1
+
+> n
+
+X
+
+> j=1
+
+
+
+(QA ⊗ QB ) ∇ ˆf LYj
+
+2
+
+> i
+
+.
+
+6: Compute ˆH−1ˆf as 
+
+ˆH−1ˆf = ( QA ⊗ QB ) (Λ + λI d)−1 (QA ⊗ QB )T
+
+7: Return: the inverse Hessian matrix ˆH−1ˆf .
+
+Algorithm 6 EK-FAC Concept-label-level ECBM 
+
+1: Input: Dataset D = {(xi, y i, c i)}Ni=1 , original concept predictor ˆf , label predictor ˆg, and the to be removed data index set G, and damping parameter λ.
+
+2: For r ∈ G, remove the r-th data (xr , y r , c r ) from D and define the new dataset as S.
+
+3: Use EK-FAC method in algorithm 4 to accelerate iHVP problem for ˆg and obtain the inverse Hessian matrix ˆH−1ˆg
+
+4: Update concept predictor ˜g:
+
+˜g = ˆ g − H−1ˆg · X
+
+> (w,r )∈Se
+
+ ∇ˆg LCr
+
+ ˆgr (xw), c rw
+
+> ′
+
+ − ∇ ˆg LCr (ˆ gr (xw), c rw) .
+
+5: Use EK-FAC method in algorithm 5 to accelerate iHVP problem for ˆf and obtain ˆH−1ˆf
+
+6: Update label predictor ˜f :
+
+˜f = ˆf + H−1ˆf · ∇ fnX
+
+> i=1
+
+LY
+
+ ˆf (ˆ g(xi)) , y i
+
+
+
+− H−1ˆf · ∇ fnX
+
+> l=1
+
+
+
+LY
+
+ ˆf (˜ g(xl)) , y l
+
+ 
+
+.
+
+7: Return: ˜f , ˜g.
+
+Algorithm 7 EK-FAC Concept-level ECBM 
+
+1: Input: Dataset D = {(xi, y i, c i)}ni=1 , original concept predictor ˆf , label predictor ˆg and the to be removed concept index set M , and damping parameter λ.
+
+2: For r ∈ M , set pr = 0 for all the data z ∈ D .
+
+3: Use EK-FAC method in algorithm 4 to accelerate iHVP problem for ˆg and obtain the inverse Hessian matrix ˆH−1ˆg
+
+4: Update concept predictor ˜g:
+
+˜g∗ = ˆ g − H−1ˆg · ∇ ˆg
+
+X
+
+> j / ∈Mn
+
+X
+
+> i=1
+
+LCj (ˆ gj (xi), c ji ).
+
+5: Use EK-FAC method in algorithm 5 to accelerate iHVP problem for ˆf and obtain ˆH−1ˆf
+
+37 Editable Concept Bottleneck Models 
+
+6: Update label predictor ˜f :
+
+˜f = ˆf − H−1ˆf · ∇ ˆfnX
+
+> l=1
+
+LY
+
+ ˆf (˜ g∗(xl)) , y l
+
+
+
+.
+
+7: Map ˜g∗ to ˜g by removing the r-th row of the matrix in the final layer of ˜g∗ for r ∈ M .
+
+8: Return: ˜f , ˜g.Algorithm 8 EK-FAC Data-level ECBM 
+
+1: Input: Dataset D = {(xi, y i, c i)}ni=1 , original concept predictor ˆf , and label predictor ˆg, a set of erroneous data De
+
+and its associated index set Se, and damping parameter λ.
+
+2: For the index (w, r ) in Se, correct crw to the right label crw′ for the w-th data (xw, y w, c w).
+
+3: Use EK-FAC method in algorithm 4 to accelerate iHVP problem for ˆg and obtain the inverse Hessian matrix ˆH−1ˆg
+
+4: Update concept predictor ˜g:
+
+˜g = ˆ g − H−1ˆg · X
+
+> (w,r )∈Se
+
+ ∇ˆg LCr
+
+ ˆgr (xw), c rw
+
+> ′
+
+ − ∇ ˆg LCr (ˆ gr (xw), c rw) .
+
+5: Use EK-FAC method in algorithm 5 to accelerate iHVP problem for ˆf and obtain H−1ˆf Compute A as: 
+
+A = H−1ˆf · X
+
+> i∈[n]−G
+
+∇ ˆf LY
+
+ ˆf (ˆ g(xi)) , y i
+
+
+
+Obtain ¯f as 
+
+¯f = ˆf + A
+
+6: Use EK-FAC method in algorithm 5 to accelerate iHVP problem for ¯f and obtain H−1¯f Compute B′ as 
+
+B′ = −H−1¯f · X
+
+> i∈[n]−G
+
+∇ ˆf
+
+ LY ( ¯f (˜ g(xi)) , y i) − LY ( ¯f (ˆ g(xi)) , y i)
+
+Update the label predictor ˜f as: ˜f = ˆf + A + B′.
+
+7: Return: ˜f , ˜g.
+
+## H. Additional Experiments 
+
+H.1. Experimental Setting Methodology for Processing CUB Dataset For CUB dataset, we follow the setting in (Koh et al., 2020). We aggregate instance-level concept annotations into class-level concepts via majority voting: e.g., if more than 50% of crows have black wings in the data, then we set all crows to have black wings. 
+
+RMIA score. The RMIA score is computed as: 
+
+LR θ (x, z ) ≈ Pr (fθ (x)|N (μx, ¯z (x), σ 2 
+
+> x, ¯z
+
+(x))) 
+
+Pr (fθ (x)|N (μ¯x,z (x), σ 2¯x,z (x))) × Pr (fθ (z)|N (μx, ¯z (z), σ 2 
+
+> x, ¯z
+
+(z))) 
+
+Pr (fθ (z)|N (μ¯x,z (z), σ 2¯x,z (z))) 
+
+where fθ (x) represents the model’s output (logits) for the data point x, N (μ, σ 2) denotes a Gaussian distribution with mean 
+
+μ and variance σ2, μx, ¯z (x) is the mean of the model’s outputs for x under the assumption that x belongs to the training set, and σ2 
+
+> x, ¯z
+
+(x) is the variance of the model’s outputs for x. The likelihoods Pr (fθ (x)|N ) represent the probability that the model’s output fθ (x) follows the Gaussian distribution parameterized by μ and σ2, under the two different hypotheses: x
+
+being a member of the training set versus not being a member. 38 Editable Concept Bottleneck Models 
+
+H.2. Improvement via Harmful Data Removal 
+
+We conducted additional experiments on CUB datasets with synthetically introduced noisy concepts or labels. Firstly, we introduce noises under three levels. At the concept level, we choose 10% of the concepts and flip these concept labels for a portion of the data. At the data level, we choose 10% of the data and flip their labels. At the concept-label level, we choose 10% of the total concepts and flip them. Then, we conduct the following experiments. We introduce noises into the three levels and train the model. After that, we remove the noise and obtain the retrained model, which is the ground truth(gt) of this harmful data removal task. In contrast, we use ECBM to remove the harmful data. 
+
+Figure 5: Model performance after the removal of harmful data. From Figure 5, it can be observed that the model performance improves across all three settings after noise removal and subsequent retraining or ECBM editing. This confirms that the performance of ECBM is nearly equivalent to retraining in various experimental scenarios, further providing evidence of the robustness of our method. 
+
+H.3. Periodic Editing Performance 
+
+ECBM can perform periodic editing. To evaluate the multiple editing performance of ECBM, we conduct the following experiments. Firstly, we introduce noises under three levels. At the concept level, we choose 10% of the concepts and flip these concept labels for a portion of the data. At the data level, we choose 10% of the data and flip their labels. At the concept-label level, we choose 10% of the total concepts and flip them. Then, we conduct the following experiments. At the concept level, we first remove 1% of the concepts, then retrain or use ECBM to edit and repeat. In the data level, we first remove 1% of the data, then retrain or use ECBM to edit. At the concept label level, we first remove one concept label from 1% of the data, then retrain or use ECBM to edit. Note that when removing the next 1% of the concepts, ECBM edits the model based on the last editing result. The results at each level are shown in Figure 6, 7 and 8. From the above three levels, we can find that with the mislabeled information removed, the retrained model achieves better performance in both accuracy and F1 score than the initial model. Furthermore, the performance of the ECBM-edited model is similar to that of the retrained model, even after 10 rounds of editing, which demonstrates the ability of our ECBM method to handle multiple edits. 
+
+H.4. More Visualization Results and Explanation Visualization. Since CBM is an explainable model, we aim to evaluate the interpretability of our ECBM (compared to the retraining). We will present some visualization results for the concept-level edit. Figure 9 presents the top 10 most influential concepts and their corresponding predicted concept labels obtained by our ECBM and the retrain method after randomly deleting concepts for the CUB dataset. (Detailed explanation can be found in Appendix H.4.1.) Our ECBM can provide explanations for which concepts are crucial and how they assist the prediction. Specifically, among the top 10 most important concepts in the ground truth (retraining), ECBM can accurately recognize 9 within them. For instance, we correctly identify ”has upperparts color::orange”, ”has upper tail color::red”, and ”has breast color::black” as some of the most important concepts when predicting categories. Additional visualization results under data level and concept-label 39 Editable Concept Bottleneck Models 10% 9% 8% 7% 6% 5% 4% 3% 2% 1% 0% 
+
+Mislabeled Concept 
+
+> 0.790
+> 0.792
+> 0.794
+> 0.796
+> 0.798
+> Accuracy
+
+Accuracy Comparison (Concept Level) 
+
+> Accuracy Strategy
+> Retrain Acc
+> ECBM Acc
+
+(a) The accuracy of the edited model compared with retrained. 10% 9% 8% 7% 6% 5% 4% 3% 2% 1% 0% 
+
+Mislabeled Concept 
+
+> 0.776
+> 0.778
+> 0.780
+> 0.782
+> 0.784
+> 0.786
+> 0.788
+> 0.790
+> F1 Score
+
+F1 Score Comparison (Concept Level)  
+
+> F1 Score Strategy
+> Retrain F1
+> ECBM F1
+
+(b) The F1 score of the edited model compared with retrained. 
+
+Figure 6: Accuracy and F1 score difference of the edited model compared with retrained at concept level. 10% 9% 8% 7% 6% 5% 4% 3% 2% 1% 0% 
+
+Data (%) 
+
+> 0.770
+> 0.775
+> 0.780
+> 0.785
+> 0.790
+> 0.795
+> Accuracy
+
+Accuracy Comparison (Data Level) 
+
+> Accuracy Strategy
+> Retrain Acc
+> ECBM Acc
+
+(a) The accuracy of the edited model compared with retrained. 10% 9% 8% 7% 6% 5% 4% 3% 2% 1% 0% 
+
+Data (%) 
+
+> 0.770
+> 0.775
+> 0.780
+> 0.785
+> 0.790
+> F1 Score
+
+F1 Score Comparison (Data Level)  
+
+> F1 Score Strategy
+> Retrain F1
+> ECBM F1
+
+(b) he F1 score of the edited model compared with retrained. 
+
+Figure 7: Accuracy and F1 score difference of the edited model compared with retrained at data level. level on OAI and CUB datasets are included in Appendix H.4.2. H.4.1. E XPLANATION FOR VISUALIZATION RESULTS 
+
+At the concept level, we remove each concept one at a time, retrain the CBM, and subsequently evaluate the model performance. We rank the concepts in descending order based on the model performance loss. Concepts that, when removed, cause significant changes in model performance are considered influential concepts. The top 10 concepts are shown in the retrain column as illustrated in Figure 9. In contrast, we use our ECBM method instead of the retrain method, as outlined in Algorithm 7, and the top 10 concepts are shown in the ECBM column of Figure 9. To help readers connect the top 10 influential concepts with the input image, we provide visualizations of the data and list the concept labels corresponding to the top 10 influential concepts, which are shown in Figure 9,10, 11. For the other two levels and for additional datasets, we also conduct a similar procedure, and the corresponding visualization results are presented in Figure 12, 13, 14, 15, and 16. H.4.2. V ISUALIZATION RESULTS 
+
+We provide our additional visualization results in Figure 10, 11, 12, 13, 14, 15, and 16. 40 Editable Concept Bottleneck Models 10% 9% 8% 7% 6% 5% 4% 3% 2% 1% 0% 
+
+> Concept Label (%)
+> 0.788
+> 0.790
+> 0.792
+> 0.794
+> 0.796
+> 0.798
+> Accuracy
+> Accuracy Comparison (Concept-label Level)
+> Accuracy Strategy
+> Retrain Acc
+> ECBM Acc
+
+(a) The accuracy of the edited model compared with retrained. 10% 9% 8% 7% 6% 5% 4% 3% 2% 1% 0%  
+
+> Concept Label (%)
+> 0.780
+> 0.782
+> 0.784
+> 0.786
+> 0.788
+> 0.790
+> F1 Score
+> F1 Score Comparison (Concept-label Level)
+> F1 Score Strategy
+> Retrain F1
+> ECBM F1
+
+(b) The F1 score of the edited model compared with retrained. 
+
+Figure 8: Accuracy and F1 score difference of the edited model compared with retrained at concept-label level. 
+
+Figure 9: Visualization of the Top 10 Most Influential Concepts for CBM(Identified by ECBM or Retrain) Highlighted on an Extracted Image. 
+
+## I. More Related Work 
+
+Influence Function. The influence function, initially a staple in robust statistics (Cook, 2000; Cook & Weisberg, 1980), has seen extensive adoption within machine learning since (Koh & Liang, 2017) introduced it to the field. Its versatility spans various applications, including detecting mislabeled data, interpreting models, addressing model bias, and facilitating machine unlearning tasks. Notable works in machine unlearning encompass unlearning features and labels (Warnecke et al., 2023), minimax unlearning (Liu et al., 2024), forgetting a subset of image data for training deep neural networks (Golatkar et al., 2020a; 2021), graph unlearning involving nodes, edges, and features. Recent advancements, such as the LiSSA method (Agarwal et al., 2017; Kwon et al., 2023) and kNN-based techniques (Guo et al., 2021), have been proposed to enhance computational efficiency. Besides, various studies have applied influence functions to interpret models across different domains, including natural language processing (Han et al., 2020) and image classification (Basu et al., 2021), while also addressing biases in classification models (Wang et al., 2019), word embeddings (Brunet et al., 2019), and finetuned models (Chen et al., 2020). Despite numerous studies on influence functions, we are the first to utilize them to construct the editable CBM. Moreover, compared to traditional neural networks, CBMs are more complicated in their influence function. Because we only need to change the predicted output in the traditional influence function. While in CBMs, we should first remove the true concept, then we need to approximate the predicted concept in order to approximate the output. Bridging the gap between the true and predicted concepts poses a significant theoretical challenge in our proof. 
+
+Model Unlearning. Model unlearning has gained significant attention in recent years, with various methods (Bourtoule et al., 2021; Brophy & Lowd, 2021; Cao & Yang, 2015; Chen et al., 2022a;b) proposed to efficiently remove the influence of certain data from trained machine learning models. Existing approaches can be broadly categorized into exact and approximate unlearning methods. Exact unlearning methods aim to replicate the results of retraining by selectively updating only a portion of the dataset, thereby avoiding the computational expense of retraining on the entire dataset (Sekhari et al., 2021; Chowdhury et al., 2024). Approximate unlearning methods, on the other hand, seek to adjust model parameters to approximately satisfy the optimality condition of the objective function on the remaining data (Golatkar et al., 2020a; Guo et al., 2019; Izzo et al., 2021). These methods are further divided into three subcategories: (1) Newton step-based updates that leverage Hessian-related terms [22, 26, 31, 34, 40, 43, 49], often incorporating Gaussian noise to mitigate 41 Editable Concept Bottleneck Models 
+
+residual data influence. To reduce computational costs, some works approximate the Hessian using the Fisher information matrix (Golatkar et al., 2020a) or small Hessian blocks (Mehta et al., 2022). (2) Neural tangent kernel (NTK)-based unlearning approximates training as a linear process, either by treating it as a single linear change (Golatkar et al., 2020b). (3) SGD path tracking methods, such as DeltaGrad (Wu et al., 2020) and unrollSGD (Thudi et al., 2022), reverse the optimization trajectory of stochastic gradient descent during training. Despite their advancements, these methods fail to handle the special architecture of CBMs. Moreover, given the high cost of obtaining data, we sometimes prefer to correct the data rather than remove it, which model unlearning is unable to achieve. 
+
+## J. Limitations and Broader Impacts 
+
+It is important to acknowledge that the ECBM approach is essentially an approximation of the model that would be obtained by retraining with the edited data. However, results indicate that this approximation is effective in real-world applications. Concept Bottleneck Models (CBMs) have garnered much attention for their ability to elucidate the prediction process through a human-understandable concept layer. However, most previous studies focused on cases where the data, including concepts, are clean. In many scenarios, we always need to remove/insert some training data or new concepts from trained CBMs due to different reasons, such as data mislabeling, spurious concepts, and concept annotation errors. Thus, the challenge of deriving efficient editable CBMs without retraining from scratch persists, particularly in large-scale applications. To address these challenges, we propose Editable Concept Bottleneck Models (ECBMs). Specifically, ECBMs support three different levels of data removal: concept-label-level, concept-level, and data-level. ECBMs enjoy mathematically rigorous closed-form approximations derived from influence functions that obviate the need for re-training. Experimental results demonstrate the efficiency and effectiveness of our ECBMs, affirming their adaptability within the realm of CBMs. Our ECBM can be an interactive model with doctors in the real world, which is an editable explanation tool. 42 Editable Concept Bottleneck Models 
+
+Figure 10: Visualization of the top-10 most influential concepts for different classes in CUB. 43 Editable Concept Bottleneck Models 
+
+Figure 11: Visualization of the top-10 most influential concepts for different classes in CUB. 44 Editable Concept Bottleneck Models 
+
+Figure 12: Visualization of the most influential concept label related to different data in CUB. 45 Editable Concept Bottleneck Models 
+
+Figure 13: Visualization of the most influential concept label related to different data in CUB. 46 Editable Concept Bottleneck Models 
+
+Figure 14: Visualization of the most influential concept label related to different data in CUB. 47 Editable Concept Bottleneck Models 
+
+Figure 15: Visualization of the most influential concept label related to different data in CUB. 48 Editable Concept Bottleneck Models 
+
+Figure 16: Visualization of the most influential concept label related to different data in OAI. 49

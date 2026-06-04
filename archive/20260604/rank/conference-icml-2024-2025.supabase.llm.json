@@ -1,0 +1,2050 @@
+{
+  "top_k": 200,
+  "generated_at": "2026-06-04T03:17:42.241883+00:00",
+  "papers": [
+    {
+      "id": "openreview-icml-2025-vvbazjh2nq",
+      "source": "ICML-2025-Accepted",
+      "title": "EraseAnything: Enabling Concept Erasure in Rectified Flow Transformers",
+      "abstract": "Removing unwanted concepts from large-scale text-to-image (T2I) diffusion models while maintaining their overall generative quality remains an open challenge. This difficulty is especially pronounced in emerging paradigms, such as Stable Diffusion (SD) v3 and Flux, which incorporate flow matching and transformer-based architectures. These advancements limit the transferability of existing concept-erasure techniques that were originally designed for the previous T2I paradigm (e.g., SD v1.4). In this work, we introduce EraseAnything, the first method specifically developed to address concept erasure within the latest flow-based T2I framework. We formulate concept erasure as a bi-level optimization problem, employing LoRA-based parameter tuning and an attention map regularizer to selectively suppress undesirable activations. Furthermore, we propose a self-contrastive learning strategy to ensure that removing unwanted concepts does not inadvertently harm performance on unrelated ones. Experimental results demonstrate that EraseAnything successfully fills the research gap left by earlier methods in this new T2I paradigm, achieving state-of-the-art performance across a wide range of concept erasure tasks.",
+      "authors": [
+        "Daiheng Gao",
+        "Shilin Lu",
+        "Wenbo Zhou",
+        "Jiaming Chu",
+        "Jie Zhang",
+        "Mengxi Jia",
+        "Bang Zhang",
+        "Zhaoxin Fan",
+        "Weiming Zhang"
+      ],
+      "primary_category": "Concept Erasing",
+      "categories": [
+        "Concept Erasing",
+        "Text2Image",
+        "Safety",
+        "Unlearning"
+      ],
+      "published": "2025-05-01T13:11:24.019+00:00",
+      "link": "https://openreview.net/forum?id=vvBAZJh2nQ",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-obcw6pz0fx",
+      "source": "ICML-2025-Accepted",
+      "title": "Minimalist Concept Erasure in Generative Models",
+      "abstract": "Recent advances in generative models have demonstrated remarkable capabilities in producing high-quality images, but their reliance on large-scale unlabeled data has raised significant safety and copyright concerns. Efforts to address these issues by erasing unwanted concepts have shown promise. However, many existing erasure methods involve excessive modifications that compromise the overall utility of the model.\nIn this work, we address these issues by formulating a novel minimalist concept erasure objective based *only* on the distributional distance of final generation outputs. \nBuilding on our formulation, we derive a tractable loss for differentiable optimization that leverages backpropagation through all generation steps in an end-to-end manner. \nWe also conduct extensive analysis to show theoretical connections with other models and methods. \nTo improve the robustness of the erasure, we incorporate neuron masking as an alternative to model fine-tuning. \nEmpirical evaluations on state-of-the-art flow-matching models demonstrate that our method robustly erases concepts without degrading overall model performance, paving the way for safer and more responsible generative models.",
+      "authors": [
+        "Yang Zhang",
+        "Er Jin",
+        "Yanfei Dong",
+        "Yixuan Wu",
+        "Philip Torr",
+        "Ashkan Khakzar",
+        "Johannes Stegmaier",
+        "Kenji Kawaguchi"
+      ],
+      "primary_category": "Concept removal",
+      "categories": [
+        "Concept removal",
+        "unlearning",
+        "flow-matching models"
+      ],
+      "published": "2025-05-01T13:12:31.016+00:00",
+      "link": "https://openreview.net/forum?id=oBCw6PZ0fX",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-oac01wte44",
+      "source": "ICML-2025-Accepted",
+      "title": "One Image is Worth a Thousand Words: A Usability Preservable Text-Image Collaborative Erasing Framework",
+      "abstract": "Concept erasing has recently emerged as an effective paradigm to prevent text-to-image diffusion models from generating visually undesirable or even harmful content. However, current removal methods heavily rely on manually crafted text prompts, making it challenging to achieve a high erasure (**efficacy**) while minimizing the impact on other benign concepts (**usability**), as illustrated in Fig.1. In this paper, we attribute the limitations to the inherent gap between the text and image modalities, which makes it hard to transfer the intricately entangled concept knowledge from text prompts to the image generation process. To address this, we propose a novel solution by directly integrating visual supervision into the erasure process, introducing the first text-image Collaborative Concept Erasing (**Co-Erasing**) framework. Specifically, Co-Erasing describes the concept jointly by text prompts and the corresponding undesirable images induced by the prompts, and then reduces the generating probability of the target concept through negative guidance. This approach effectively bypasses the knowledge gap between text and image, significantly enhancing erasure efficacy. Additionally, we design a text-guided image concept refinement strategy that directs the model to focus on visual features most relevant to the specified text concept, minimizing disruption to other benign concepts. Finally, comprehensive experiments suggest that Co-Erasing outperforms state-of-the-art erasure approaches significantly with a better trade-off between efficacy and usability.",
+      "authors": [
+        "Feiran Li",
+        "Qianqian Xu",
+        "Shilong Bao",
+        "Zhiyong Yang",
+        "Xiaochun Cao",
+        "Qingming Huang"
+      ],
+      "primary_category": "Diffusion Model",
+      "categories": [
+        "Diffusion Model",
+        "Concept Erasing",
+        "Image Generation"
+      ],
+      "published": "2025-05-01T13:17:18.962+00:00",
+      "link": "https://openreview.net/forum?id=OaC01wTE44",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-swkgsw3izr",
+      "source": "ICML-2025-Accepted",
+      "title": "Hierarchical Masked Autoregressive Models with Low-Resolution Token Pivots",
+      "abstract": "Autoregressive models have emerged as a powerful generative paradigm for visual generation. The current de-facto standard of next token prediction commonly operates over a single-scale sequence of dense image tokens, and is incapable of utilizing global context especially for early tokens prediction. In this paper, we introduce a new autoregressive design to model a hierarchy from a few low-resolution image tokens to the typical dense image tokens, and delve into a thorough hierarchical dependency across multi-scale image tokens. Technically, we present a Hierarchical Masked Autoregressive models (Hi-MAR) that pivot on low-resolution image tokens to trigger hierarchical autoregressive modeling in a multi-phase manner. Hi-MAR learns to predict a few image tokens in low resolution, functioning as intermediary pivots to reflect global structure, in the first phase. Such pivots act as the additional guidance to strengthen the next autoregressive modeling phase by shaping global structural awareness of typical dense image tokens. A new Diffusion Transformer head is further devised to amplify the global context among all tokens for mask token prediction. Extensive evaluations on both class-conditional and text-to-image generation tasks demonstrate that Hi-MAR outperforms typical AR baselines, while requiring fewer computational costs.",
+      "authors": [
+        "Guangting Zheng",
+        "Yehao Li",
+        "Yingwei Pan",
+        "Jiajun Deng",
+        "Ting Yao",
+        "Yanyong Zhang",
+        "Tao Mei"
+      ],
+      "primary_category": "Masked Autoregressive Models",
+      "categories": [
+        "Masked Autoregressive Models",
+        "Image Generation"
+      ],
+      "published": "2025-05-01T13:18:19.536+00:00",
+      "link": "https://openreview.net/forum?id=swkgSw3IzR",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2024-gkcwle8xc9",
+      "source": "ICML-2024-Public",
+      "title": "In-Context Unlearning: Language Models as Few-Shot Unlearners",
+      "abstract": "Machine unlearning, the study of efficiently removing the impact of specific training instances on a model, has garnered increased attention in recent years due to regulatory guidelines such as the Right to be Forgotten. Achieving precise unlearning typically involves fully retraining the model and is computationally infeasible in case of very large models such as Large Language Models (LLMs). To this end, recent work has proposed several algorithms which approximate the removal of training data without retraining the model. These algorithms crucially rely on access to the model parameters in order to update them, an assumption that may not hold in practice due to computational constraints or having only query access to the LLMs. In this work, we propose a new class of unlearning methods for LLMs called ``In-Context Unlearning.'' This method unlearns instances from the model by simply providing specific kinds of inputs in context, without the need to update model parameters. To unlearn specific training instances, we present these instances to the LLMs at inference time along with labels that differ from their ground truth. Our experimental results demonstrate that in-context unlearning performs on par with, or in some cases outperforms other state-of-the-art methods that require access to model parameters, effectively removing the influence of specific instances on the model while preserving test accuracy.",
+      "authors": [
+        "Martin Pawelczyk",
+        "Seth Neel",
+        "Himabindu Lakkaraju"
+      ],
+      "primary_category": "ICML.cc/2024/Conference",
+      "categories": [],
+      "published": "2024-05-02T00:38:50.534+00:00",
+      "link": "https://openreview.net/forum?id=GKcwle8XC9",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-6ofb0cgxb5",
+      "source": "ICML-2025-Accepted",
+      "title": "Targeted Unlearning with Single Layer Unlearning Gradient",
+      "abstract": "Machine unlearning methods aim to remove sensitive or unwanted content from trained models, but typically demand extensive model updates at significant computational cost while potentially degrading model performance on both related and unrelated tasks. We propose Single Layer Unlearning Gradient (SLUG) as an efficient method to unlearn targeted information by updating a single critical layer using a one-time gradient computation. SLUG uses layer importance and gradient alignment metrics to identify the optimal layer for targeted information removal while preserving the model utility. We demonstrate the effectiveness of SLUG for CLIP, Stable Diffusion, and vision-language models (VLMs) in removing concrete (e.g., identities and objects) and abstract concepts (e.g., artistic styles). On the UnlearnCanvas benchmark, SLUG achieves comparable unlearning performance to existing methods while requiring significantly less computational resources. Our proposed approach offers a practical solution for targeted unlearning that is computationally efficient and precise. Our code is available at https://github.com/CSIPlab/SLUG",
+      "authors": [
+        "Zikui Cai",
+        "Yaoteng Tan",
+        "M. Salman Asif"
+      ],
+      "primary_category": "Machine unlearning",
+      "categories": [
+        "Machine unlearning",
+        "foundation models",
+        "CLIP",
+        "vision-language model (VLM)",
+        "Stable Diffusion",
+        "privacy protection",
+        "copyright protection",
+        "trustworthy and safe machine learning"
+      ],
+      "published": "2025-05-01T13:16:21.968+00:00",
+      "link": "https://openreview.net/forum?id=6Ofb0cGXb5",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-6n0gxakdx9",
+      "source": "ICML-2025-Accepted",
+      "title": "SAeUron: Interpretable Concept Unlearning in Diffusion Models with Sparse Autoencoders",
+      "abstract": "Diffusion models, while powerful, can inadvertently generate harmful or undesirable content, raising significant ethical and safety concerns. Recent machine unlearning approaches offer potential solutions but often lack transparency, making it difficult to understand the changes they introduce to the base model. In this work, we introduce SAeUron, a novel method leveraging features learned by sparse autoencoders (SAEs) to remove unwanted concepts in text-to-image diffusion models. First, we demonstrate that SAEs, trained in an unsupervised manner on activations from multiple denoising timesteps of the diffusion model, capture sparse and interpretable features corresponding to specific concepts. Building on this, we propose a feature selection method that enables precise interventions on model activations to block targeted content while preserving overall performance. Our evaluation shows that SAeUron outperforms existing approaches on the UnlearnCanvas benchmark for concepts and style unlearning, and effectively eliminates nudity when evaluated with I2P. Moreover, we show that with a single SAE, we can remove multiple concepts simultaneously and that in contrast to other methods, SAeUron mitigates the possibility of generating unwanted content under adversarial attack. Code and checkpoints are available at [GitHub]( https://github.com/cywinski/SAeUron).",
+      "authors": [
+        "Bartosz Cywiński",
+        "Kamil Deja"
+      ],
+      "primary_category": "sparse autoencoder",
+      "categories": [
+        "sparse autoencoder",
+        "diffusion model",
+        "unlearning",
+        "interpretability"
+      ],
+      "published": "2025-05-01T13:13:42.803+00:00",
+      "link": "https://openreview.net/forum?id=6N0GxaKdX9",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-jflgvne1tj",
+      "source": "ICML-2025-Accepted",
+      "title": "FlowAR: Scale-wise Autoregressive Image Generation Meets Flow Matching",
+      "abstract": "Autoregressive (AR) modeling has achieved remarkable success in natural language processing by enabling models to generate text with coherence and contextual understanding through next token prediction. Recently, in image generation, VAR proposes scale-wise autoregressive modeling, which extends the next token prediction to the next scale prediction, preserving the 2D structure of images. However, VAR encounters two primary challenges: (1) its complex and rigid scale design limits generalization in next scale prediction, and (2) the generator’s dependence on a discrete tokenizer with the same complex scale structure restricts modularity and flexibility in updating the tokenizer. To address these limitations, we introduce FlowAR, a general next scale prediction method featuring a streamlined scale design, where each subsequent scale is simply double the previous one. This eliminates the need for VAR’s intricate multi-scale residual tokenizer and enables the use of any off-the-shelf Variational AutoEncoder (VAE). Our simplified design enhances generalization in next scale prediction and facilitates the integration of Flow Matching for high-quality image synthesis. We validate the effectiveness of FlowAR on the challenging ImageNet-256 benchmark, demonstrating superior generation performance compared to previous methods. Codes is available at \\href{https://github.com/OliverRensu/FlowAR}{https://github.com/OliverRensu/FlowAR}.",
+      "authors": [
+        "Sucheng Ren",
+        "Qihang Yu",
+        "Ju He",
+        "Xiaohui Shen",
+        "Alan Yuille",
+        "Liang-Chieh Chen"
+      ],
+      "primary_category": "Image synthesis and generation",
+      "categories": [
+        "Image synthesis and generation"
+      ],
+      "published": "2025-05-01T13:19:56.39+00:00",
+      "link": "https://openreview.net/forum?id=JfLgvNe1tj",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-s09b5wna6j",
+      "source": "ICML-2025-Accepted",
+      "title": "ZipAR: Parallel Autoregressive Image Generation through Spatial Locality",
+      "abstract": "In this paper, we propose ZipAR, a training-free, plug-and-play parallel decoding framework for accelerating autoregressive (AR) visual generation. The motivation stems from the observation that images exhibit local structures, and spatially distant regions tend to have minimal interdependence. Given a partially decoded set of visual tokens, in addition to the original next-token prediction scheme in the row dimension, the tokens corresponding to spatially adjacent regions in the column dimension can be decoded in parallel. To ensure alignment with the contextual requirements of each token, we employ an adaptive local window assignment scheme with rejection sampling analogous to speculative decoding. By decoding multiple tokens in a single forward pass, the number of forward passes required to generate an image is significantly reduced, resulting in a substantial improvement in generation efficiency. Experiments demonstrate that ZipAR can reduce the number of model forward passes by up to 91% on the Emu3-Gen model without requiring any additional retraining.",
+      "authors": [
+        "Yefei He",
+        "Feng Chen",
+        "Yuanyu He",
+        "Shaoxuan He",
+        "Hong Zhou",
+        "Kaipeng Zhang",
+        "Bohan Zhuang"
+      ],
+      "primary_category": "Auto-regressive (AR) visual generation",
+      "categories": [
+        "Auto-regressive (AR) visual generation",
+        "Parallel decoding",
+        "Efficient AI"
+      ],
+      "published": "2025-05-01T13:13:12.553+00:00",
+      "link": "https://openreview.net/forum?id=S09B5wNa6J",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-dpya4zys7n",
+      "source": "ICML-2025-Accepted",
+      "title": "Orthus: Autoregressive Interleaved Image-Text Generation with Modality-Specific Heads",
+      "abstract": "We introduce Orthus, a unified multimodal model that excels in generating interleaved images and text from mixed-modality inputs by simultaneously handling discrete text tokens and continuous image features under the \\textbf{AR} modeling principle. The continuous treatment of visual signals minimizes the information loss while the fully AR formulation renders the characterization of the correlation between modalities straightforward. Orthus leverages these advantages through its modality-specific heads---one regular language modeling (LM) head predicts discrete text tokens and one diffusion head generates continuous image features. We devise an efficient strategy for building Orthus---by substituting the Vector Quantization (VQ) operation in the existing unified AR model with a soft alternative, introducing a diffusion head, and tuning the added modules to reconstruct images, we can create an Orthus-base model effortlessly (e.g., within 72 A100 GPU hours). Orthus-base can further embrace post-training to craft lengthy interleaved image-text, reflecting the potential for handling intricate real-world tasks. For visual understanding and generation, Orthus achieves a GenEval score of 0.58 and an MME-P score of 1265.8 using 7B parameters, outperforming competing baselines including Show-o and Chameleon.",
+      "authors": [
+        "Siqi Kou",
+        "Jiachun Jin",
+        "Zhihong Liu",
+        "Chang Liu",
+        "Ye Ma",
+        "Jian Jia",
+        "Quan Chen",
+        "Peng Jiang",
+        "Zhijie Deng"
+      ],
+      "primary_category": "multimodal foundation model",
+      "categories": [
+        "multimodal foundation model",
+        "interleaved image-text generation",
+        "diffusion"
+      ],
+      "published": "2025-05-01T13:18:46.405+00:00",
+      "link": "https://openreview.net/forum?id=dPyA4ZYs7n",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2024-dw29jzj0g5",
+      "source": "ICML-2024-Public",
+      "title": "Denoising Autoregressive Representation Learning",
+      "abstract": "In this paper, we explore a new generative approach for learning visual representations. Our method, DARL, employs a decoder-only Transformer to predict image patches autoregressively. We find that training with Mean Squared Error (MSE) alone leads to strong representations. To enhance the image generation ability, we replace the MSE loss with the diffusion objective by using a denoising patch decoder. We show that the learned representation can be improved by using tailored noise schedules and longer training in larger models. Notably, the optimal schedule differs significantly from the typical ones used in standard image diffusion models. Overall, despite its simple architecture, DARL delivers performance remarkably close to state-of-the-art masked prediction models under the fine-tuning protocol. This marks an important step towards a unified model capable of both visual perception and generation, effectively combining the strengths of autoregressive and denoising diffusion models.",
+      "authors": [
+        "Yazhe Li",
+        "Jorg Bornschein",
+        "Ting Chen"
+      ],
+      "primary_category": "ICML.cc/2024/Conference",
+      "categories": [],
+      "published": "2024-05-02T00:40:11.351+00:00",
+      "link": "https://openreview.net/forum?id=dW29JZj0G5",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-magosim8ut",
+      "source": "ICML-2025-Accepted",
+      "title": "Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities",
+      "abstract": "We investigate the fundamental limits of transformer-based foundation models, extending our analysis to include Visual Autoregressive (VAR) transformers. VAR represents a big step toward generating images using a novel, scalable, coarse-to-fine ``next-scale prediction'' framework. These models set a new quality bar, outperforming all previous methods, including Diffusion Transformers, while having state-of-the-art performance for image synthesis tasks. Our primary contributions establish that, for single-head VAR transformers with a single self-attention layer and single interpolation layer, the VAR Transformer is universal. From the statistical perspective, we prove that such simple VAR transformers are universal approximators for any word-to-image Lipschitz functions. Furthermore, we demonstrate that flow-based autoregressive transformers inherit similar approximation capabilities. Our results provide important design principles for effective and computationally efficient VAR Transformer strategies that can be used to extend their utility to more sophisticated VAR models in image generation and other related areas.",
+      "authors": [
+        "Yifang Chen",
+        "Xiaoyu Li",
+        "Yingyu Liang",
+        "Zhenmei Shi",
+        "Zhao Song"
+      ],
+      "primary_category": "Universal Approximation",
+      "categories": [
+        "Universal Approximation",
+        "Visual AutoRegressive Transformers",
+        "Fundamental Limits"
+      ],
+      "published": "2025-05-01T13:14:22.536+00:00",
+      "link": "https://openreview.net/forum?id=magOSIm8UT",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-jptpugjdgy",
+      "source": "ICML-2025-Accepted",
+      "title": "Visual Autoregressive Modeling for Image Super-Resolution",
+      "abstract": "Image Super-Resolution (ISR) has seen significant progress with the introduction of remarkable generative models.\nHowever, challenges such as the trade-off issues between fidelity and realism, as well as computational complexity, have also posed limitations on their application.\nBuilding upon the tremendous success of autoregressive models in the language domain, we propose \\textbf{VARSR}, a novel visual autoregressive modeling for ISR framework with the form of next-scale prediction.\nTo effectively integrate and preserve semantic information in low-resolution images, we propose using prefix tokens to incorporate the condition.\nScale-aligned Rotary Positional Encodings are introduced to capture spatial structures and the diffusion refiner is utilized for modeling quantization residual loss to achieve pixel-level fidelity.\nImage-based Classifier-free Guidance is proposed to guide the generation of more realistic images.\nFurthermore, we collect large-scale data and design a training process to obtain robust generative priors.\nQuantitative and qualitative results show that VARSR is capable of generating high-fidelity and high-realism images with more efficiency than diffusion-based methods.\nOur codes are released at \\url{https://github.com/quyp2000/VARSR}.",
+      "authors": [
+        "Yunpeng Qu",
+        "Kun Yuan",
+        "Jinhua Hao",
+        "Kai Zhao",
+        "Qizhi Xie",
+        "Ming Sun",
+        "Chao Zhou"
+      ],
+      "primary_category": "visual autoregressive modeling; image super-resolution",
+      "categories": [
+        "visual autoregressive modeling; image super-resolution"
+      ],
+      "published": "2025-05-01T13:11:19.581+00:00",
+      "link": "https://openreview.net/forum?id=JPTpUGJDGY",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-2uheufcfsm",
+      "source": "ICML-2025-Accepted",
+      "title": "Normalizing Flows are Capable Generative Models",
+      "abstract": "Normalizing Flows (NFs) are likelihood-based models for continuous inputs. They have demonstrated promising results on both density estimation and generative modeling tasks, but have received relatively little attention in recent years. In this work, we demonstrate that NFs are more powerful than previously believed. We present TarFlow: a simple and scalable architecture that enables highly performant NF models. TarFlow can be thought of as a Transformer-based variant of Masked Autoregressive Flows (MAFs): it consists of a stack of autoregressive Transformer blocks on image patches, alternating the autoregression direction between layers. TarFlow is straightforward to train end-to-end, and capable of directly modeling and generating pixels. We also propose three key techniques to improve sample quality: Gaussian noise augmentation during training, a post training denoising procedure, and an effective guidance method for both class-conditional and unconditional settings. Putting these together, TarFlow sets new state-of-the-art results on likelihood estimation for images, beating the previous best methods by a large margin, and generates samples with quality and diversity comparable to diffusion models, for the first time with a stand-alone NF model. We make our code available at https://github.com/apple/ml-tarflow.",
+      "authors": [
+        "Shuangfei Zhai",
+        "Ruixiang ZHANG",
+        "Preetum Nakkiran",
+        "David Berthelot",
+        "Jiatao Gu",
+        "Huangjie Zheng",
+        "Tianrong Chen",
+        "Miguel Ángel Bautista",
+        "Navdeep Jaitly",
+        "Joshua M. Susskind"
+      ],
+      "primary_category": "Normalizing flows",
+      "categories": [
+        "Normalizing flows",
+        "autoregressive models",
+        "likelihood estimation"
+      ],
+      "published": "2025-05-01T13:11:58.709+00:00",
+      "link": "https://openreview.net/forum?id=2uheUFcFsM",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-eifch9ogjr",
+      "source": "ICML-2025-Accepted",
+      "title": "Elucidating the design space of language models for image generation",
+      "abstract": "The success of large language models (LLMs) in text generation has inspired their application to image generation. However, existing methods either rely on specialized designs with inductive biases or adopt LLMs without fully exploring their potential in vision tasks. In this work, we systematically investigate the design space of LLMs for image generation and demonstrate that LLMs can achieve near state-of-the-art performance without domain-specific designs, simply by making proper choices in tokenization methods, modeling approaches, scan patterns, vocabulary design, and sampling strategies. We further analyze autoregressive models' learning and scaling behavior, revealing how larger models effectively capture more useful information than the smaller ones. Additionally, we explore the inherent differences between text and image modalities, highlighting the potential of LLMs across domains. The exploration provides valuable insights to inspire more effective designs when applying LLMs to other domains. With extensive experiments, our proposed model, **ELM** achieves an FID of 1.54 on 256$\\times$256 ImageNet and an FID of 3.29 on 512$\\times$512 ImageNet, demonstrating the powerful generative potential of LLMs in vision tasks.",
+      "authors": [
+        "Xuantong LIU",
+        "Shaozhe Hao",
+        "Xianbiao Qi",
+        "Tianyang Hu",
+        "Jun Wang",
+        "Rong Xiao",
+        "Yuan Yao"
+      ],
+      "primary_category": "Image generation",
+      "categories": [
+        "Image generation",
+        "Large language model",
+        "Generative model"
+      ],
+      "published": "2025-05-01T13:21:55.635+00:00",
+      "link": "https://openreview.net/forum?id=EIfCH9OgjR",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-dgdokuubzf",
+      "source": "ICML-2025-Accepted",
+      "title": "FlexTok: Resampling Images into 1D Token Sequences of Flexible Length",
+      "abstract": "We introduce FlexTok, a tokenizer that projects 2D images into variable-length, ordered 1D token sequences. For example, a 256x256 image can be resampled into anywhere from 1 to 256 discrete tokens, hierarchically and semantically compressing its information. By training a rectified flow model as the decoder and using nested dropout, FlexTok produces plausible reconstructions regardless of the chosen token sequence length. We evaluate our approach in an autoregressive generation setting using a simple GPT-style Transformer. On ImageNet, this approach achieves an FID<2 across 8 to 128 tokens, outperforming TiTok and matching state-of-the-art methods with far fewer tokens. We further extend the model to support to text-conditioned image generation and examine how FlexTok relates to traditional 2D tokenization. A key finding is that FlexTok enables next-token prediction to describe images in a coarse-to-fine \"visual vocabulary\", and that the number of tokens to generate depends on the complexity of the generation task.",
+      "authors": [
+        "Roman Bachmann",
+        "Jesse Allardice",
+        "David Mizrahi",
+        "Enrico Fini",
+        "Oğuzhan Fatih Kar",
+        "Elmira Amirloo",
+        "Alaaeldin El-Nouby",
+        "Amir Zamir",
+        "Afshin Dehghan"
+      ],
+      "primary_category": "tokenization",
+      "categories": [
+        "tokenization",
+        "variable rate compression",
+        "image generation",
+        "computer vision"
+      ],
+      "published": "2025-05-01T13:13:33.757+00:00",
+      "link": "https://openreview.net/forum?id=DgdOkUUBzf",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2024-l4erlhrjrt",
+      "source": "ICML-2024-Public",
+      "title": "Removing Spurious Concepts from Neural Network Representations via Joint Subspace Estimation",
+      "abstract": "An important challenge in the field of interpretable machine learning is to ensure that deep neural networks (DNNs) use the correct or desirable input features in performing their tasks. Concept-removal methods aim to do this by eliminating concepts that are spuriously correlated with the main task from the neural network representation of the data. However, existing methods tend to be overzealous by inadvertently removing part of the correct or desirable features as well, leading to wrong interpretations and hurting model performance. We propose an iterative algorithm that separates spurious from main-task concepts by jointly estimating two low-dimensional orthogonal subspaces of the neural network representation. By evaluating the algorithm on benchmark datasets from computer vision (Waterbirds, CelebA) and natural language processing (MultiNLI), we show it outperforms existing concept-removal methods in terms of identifying the main-task and spurious concepts, and removing only the latter.",
+      "authors": [
+        "Floris Holstege",
+        "Bram Wouters",
+        "Noud Van Giersbergen",
+        "Cees Diks"
+      ],
+      "primary_category": "ICML.cc/2024/Conference",
+      "categories": [],
+      "published": "2024-05-02T00:40:05.107+00:00",
+      "link": "https://openreview.net/forum?id=L4ERlHrJRT",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-r0r3mrd8vh",
+      "source": "ICML-2025-Accepted",
+      "title": "Editable Concept Bottleneck Models",
+      "abstract": "Concept Bottleneck Models (CBMs) have garnered much attention for their ability to elucidate the prediction process through a human-understandable concept layer. However, most previous studies focused on cases where the data, including concepts, are clean. In many scenarios, we always need to remove/insert some training data or new concepts from trained CBMs due to different reasons, such as privacy concerns, data mislabelling, spurious concepts, and concept annotation errors. Thus, the challenge of deriving efficient editable CBMs without retraining from scratch persists, particularly in large-scale applications. To address these challenges, we propose Editable Concept Bottleneck Models (ECBMs). Specifically, ECBMs support three different levels of data removal: concept-label-level, concept-level, and data-level. ECBMs enjoy mathematically rigorous closed-form approximations derived from influence functions that obviate the need for re-training. Experimental results demonstrate the efficiency and effectiveness of our ECBMs, affirming their adaptability within the realm of CBMs.",
+      "authors": [
+        "Lijie Hu",
+        "Chenyang Ren",
+        "Zhengyu Hu",
+        "Hongbin Lin",
+        "Cheng-Long Wang",
+        "Zhen Tan",
+        "Weimin Lyu",
+        "Jingfeng Zhang",
+        "Hui Xiong",
+        "Di Wang"
+      ],
+      "primary_category": "Concept-based Models",
+      "categories": [
+        "Concept-based Models",
+        "Interpretability",
+        "Editing"
+      ],
+      "published": "2025-05-01T13:15:48.386+00:00",
+      "link": "https://openreview.net/forum?id=R0R3MRD8vh",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-xytlswiuli",
+      "source": "ICML-2025-Accepted",
+      "title": "Vector Grimoire: Codebook-based Shape Generation under Raster Image Supervision",
+      "abstract": "Scalable Vector Graphics (SVG) is a popular format on the web and in the design industry. However, despite the great strides made in generative modeling, SVG has remained underexplored due to the discrete and complex nature of such data. We introduce GRIMOIRE, a text-guided SVG generative model that is comprised of two modules: A Visual Shape Quantizer (VSQ) learns to map raster images onto a discrete codebook by reconstructing them as vector shapes, and an Auto-Regressive Transformer (ART) models the joint probability distribution over shape tokens, positions and textual descriptions, allowing us to generate vector graphics from natural language. Unlike existing models that require direct supervision from SVG data, GRIMOIRE learns shape image patches using only raster image supervision which opens up vector generative modeling to significantly more data. We demonstrate the effectiveness of our method by fitting GRIMOIRE for closed filled shapes on the MNIST and Emoji, and for outline strokes on icon and font data, surpassing previous image-supervised methods in generative quality and vector-supervised approach in flexibility.",
+      "authors": [
+        "Marco Cipriano",
+        "Moritz Feuerpfeil",
+        "Gerard de Melo"
+      ],
+      "primary_category": "Image Generation",
+      "categories": [
+        "Image Generation",
+        "Scalable Vector Graphics",
+        "VQ-VAE",
+        "Differentiable Rasterizer"
+      ],
+      "published": "2025-05-01T13:21:57.448+00:00",
+      "link": "https://openreview.net/forum?id=xYtLsWiUli",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2025-avgze46gl6",
+      "source": "ICML-2025-Accepted",
+      "title": "Continuous Visual Autoregressive Generation via Score Maximization",
+      "abstract": "Conventional wisdom suggests that autoregressive models are used to process discrete data. When applied to continuous modalities such as visual data, Visual AutoRegressive modeling (VAR) typically resorts to quantization-based approaches to cast the data into a discrete space, which can introduce significant information loss. To tackle this issue, we introduce a Continuous VAR framework that enables direct visual autoregressive generation without vector quantization. The underlying theoretical foundation is strictly proper scoring rules, which provide powerful statistical tools capable of evaluating how well a generative model approximates the true distribution. Within this framework, all we need is to select a strictly proper score and set it as the training objective to optimize. We primarily explore a class of training objectives based on the energy score, which is likelihood-free and thus overcomes the difficulty of making probabilistic predictions in the continuous space. Previous efforts on continuous autoregressive generation, such as GIVT and diffusion loss, can also be derived from our framework using other strictly proper scores. Source code: \\url{https://github.com/shaochenze/EAR}.",
+      "authors": [
+        "Chenze Shao",
+        "Fandong Meng",
+        "Jie Zhou"
+      ],
+      "primary_category": "visual autoregressive generation",
+      "categories": [
+        "visual autoregressive generation",
+        "strictly proper scoring rules",
+        "continuous"
+      ],
+      "published": "2025-05-01T13:14:10.676+00:00",
+      "link": "https://openreview.net/forum?id=avGZE46gL6",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2024-fsvbsxjrer",
+      "source": "ICML-2024-Public",
+      "title": "On Mechanistic Knowledge Localization in Text-to-Image Generative Models",
+      "abstract": "Identifying layers within text-to-image models which control visual attributes can facilitate efficient model editing through closed-form updates. Recent work, leveraging causal tracing show that early Stable-Diffusion variants confine knowledge primarily to the first layer of the CLIP text-encoder, while it diffuses throughout the UNet. Extending this framework, we observe that for recent models (e.g., SD-XL, DeepFloyd), causal tracing fails in pinpointing localized knowledge, highlighting challenges in model editing. To address this issue, we introduce the concept of mechanistic localization in text-to-image models, where knowledge about various visual attributes (e.g., \"style\", \"objects\", \"facts\") can be mechanistically localized to a small fraction of layers in the UNet, thus facilitating efficient model editing. We localize knowledge using our method LocoGen which measures the direct effect of intermediate layers to output generation by performing interventions in the cross-attention layers of the UNet. We then employ LocoEdit, a fast closed-form editing method across popular open-source text-to-image models (including the latest SD-XL) and explore the possibilities of neuron-level model editing. Using mechanistic localization, our work offers a better view of successes and failures in localization-based text-to-image model editing.",
+      "authors": [
+        "Samyadeep Basu",
+        "Keivan Rezaei",
+        "Priyatham Kattakinda",
+        "Vlad I Morariu",
+        "Nanxuan Zhao",
+        "Ryan A. Rossi",
+        "Varun Manjunatha",
+        "Soheil Feizi"
+      ],
+      "primary_category": "ICML.cc/2024/Conference",
+      "categories": [],
+      "published": "2024-05-02T00:40:32.174+00:00",
+      "link": "https://openreview.net/forum?id=fsVBsxjRER",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2024-c92kdfeztg",
+      "source": "ICML-2024-Public",
+      "title": "Scalable Pre-training of Large Autoregressive Image Models",
+      "abstract": "This paper introduces AIM, a collection of vision models pre-trained with an autoregressive objective. These models are inspired by their textual counterparts, i.e., Large Language Models (LLMs), and exhibit similar scaling properties. Specifically, we highlight two key findings: (1) the performance of the visual features scale with both the model capacity and the quantity of data, (2) the value of the objective function correlates with the performance of the model on downstream tasks. We illustrate the practical implication of these findings by pre-training a 7 billion parameter AIM on 2 billion images, that achieves 84.0% on ImageNet-1k with a frozen trunk. Interestingly, even at this scale, we observe no sign of saturation in performance, suggesting that AIM potentially represents a new frontier for training large-scale vision models. The pre-training of AIM is similar to the pre-training of LLMs, and does not require any image-specific strategy to stabilize the training at scale.",
+      "authors": [
+        "Alaaeldin El-Nouby",
+        "Michal Klein",
+        "Shuangfei Zhai",
+        "Miguel Ángel Bautista",
+        "Vaishaal Shankar",
+        "Alexander T Toshev",
+        "Joshua M. Susskind",
+        "Armand Joulin"
+      ],
+      "primary_category": "ICML.cc/2024/Conference",
+      "categories": [],
+      "published": "2024-05-02T00:37:42.379+00:00",
+      "link": "https://openreview.net/forum?id=c92KDfEZTg",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2024-mzgtunvpjh",
+      "source": "ICML-2024-Public",
+      "title": "Rejuvenating image-GPT as Strong Visual Representation Learners",
+      "abstract": "This paper enhances image-GPT (iGPT), one of the pioneering works that introduce autoregressive pretraining to predict the next pixels for visual representation learning. Two simple yet essential changes are made. First, we shift the prediction target from raw pixels to semantic tokens, enabling a higher-level understanding of visual content. Second, we supplement the autoregressive modeling by instructing the model to predict not only the next tokens but also the visible tokens. This pipeline is particularly effective when semantic tokens are encoded by discriminatively trained models, such as CLIP. We introduce this novel approach as D-iGPT. Extensive experiments showcase that D-iGPT excels as a strong learner of visual representations: A notable achievement is its compelling performance on the ImageNet-1K dataset --- by training on publicly available datasets, D-iGPT unprecedentedly achieves **90.0%** top-1 accuracy with a vanilla ViT-H. Additionally, D-iGPT shows strong generalization on the downstream task. Code is available at https://github.com/OliverRensu/D-iGPT.",
+      "authors": [
+        "Sucheng Ren",
+        "Zeyu Wang",
+        "Hongru Zhu",
+        "Junfei Xiao",
+        "Alan Yuille",
+        "Cihang Xie"
+      ],
+      "primary_category": "ICML.cc/2024/Conference",
+      "categories": [],
+      "published": "2024-05-02T00:38:10.443+00:00",
+      "link": "https://openreview.net/forum?id=mzGtunvpJH",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce"
+      ]
+    },
+    {
+      "id": "openreview-icml-2024-kmcos6wkgg",
+      "source": "ICML-2024-Public",
+      "title": "Data-efficient Large Vision Models through Sequential Autoregression",
+      "abstract": "Training general-purpose vision models on purely sequential visual data, eschewing linguistic inputs, has heralded a new frontier in visual understanding. These models are intended to not only comprehend but also seamlessly transit to out-of-domain tasks. However, current endeavors are hamstrung by an over-reliance on colossal models, exemplified by models with upwards of 3B parameters, and the necessity for an extensive corpus of visual data, often comprising a staggering 400B tokens. In this paper, we delve into the development of an efficient, autoregression-based vision model, innovatively architected to operate on a limited dataset. We meticulously demonstrate how this model achieves proficiency in a spectrum of visual tasks spanning both high-level and low-level semantic understanding during the testing phase. Our empirical evaluations underscore the model's agility in adapting to various tasks, heralding a significant reduction in the parameter footprint, and a marked decrease in training data requirements, thereby paving the way for more sustainable and accessible advancements in the field of generalist vision models. The code is available at https://github.com/ggjy/DeLVM.",
+      "authors": [
+        "Zhiwei Hao",
+        "Jianyuan Guo",
+        "Chengcheng Wang",
+        "Yehui Tang",
+        "Han Wu",
+        "Han Hu",
+        "Kai Han",
+        "Chang Xu"
+      ],
+      "primary_category": "ICML.cc/2024/Conference",
+      "categories": [],
+      "published": "2024-05-02T00:38:12.576+00:00",
+      "link": "https://openreview.net/forum?id=KmCoS6WkgG",
+      "pdf_url": null,
+      "tags": [
+        "query:ce"
+      ]
+    }
+  ],
+  "queries": [
+    {
+      "type": "intent_query",
+      "tag": "ce",
+      "paper_tag": "query:ce",
+      "query_text": "Concept erasure methods for autoregressive image generation",
+      "sim_scores": {
+        "openreview-icml-2025-vvbazjh2nq": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-icml-2024-dw29jzj0g5": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-icml-2025-magosim8ut": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-icml-2025-swkgsw3izr": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-icml-2025-s09b5wna6j": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-icml-2025-obcw6pz0fx": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-icml-2025-jptpugjdgy": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-icml-2025-dgdokuubzf": {
+          "score": 0.014492753623188406,
+          "rank": 9
+        },
+        "openreview-icml-2025-avgze46gl6": {
+          "score": 0.0125,
+          "rank": 20
+        },
+        "openreview-icml-2025-jflgvne1tj": {
+          "score": 0.011494252873563218,
+          "rank": 27
+        },
+        "openreview-icml-2025-dpya4zys7n": {
+          "score": 0.011363636363636364,
+          "rank": 28
+        },
+        "openreview-icml-2025-oac01wte44": {
+          "score": 0.010638297872340425,
+          "rank": 34
+        },
+        "openreview-icml-2024-fsvbsxjrer": {
+          "score": 0.010309278350515464,
+          "rank": 37
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "openreview-icml-2025-vvbazjh2nq",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-obcw6pz0fx",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-oac01wte44",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-s09b5wna6j",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-dpya4zys7n",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-jflgvne1tj",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2024-dw29jzj0g5",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-avgze46gl6",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-6n0gxakdx9",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-jptpugjdgy",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-swkgsw3izr",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-dgdokuubzf",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-l4erlhrjrt",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-eifch9ogjr",
+          "score": 0.702712746191007,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-magosim8ut",
+          "score": 0.702712746191007,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-2uheufcfsm",
+          "score": 0.6703296703296702,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-mzgtunvpjh",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-r0r3mrd8vh",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-c92kdfeztg",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-6ofb0cgxb5",
+          "score": 0.5495495495495496,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-kmcos6wkgg",
+          "score": 0.49392712550607265,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-icml-2025-xytlswiuli",
+          "score": 0.46719946719946726,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-icml-2024-fsvbsxjrer",
+          "score": 0.1737891737891738,
+          "star_rating": 3
+        }
+      ]
+    },
+    {
+      "type": "intent_query",
+      "tag": "ce",
+      "paper_tag": "query:ce",
+      "query_text": "How to erase concepts in text to image autoregressive models",
+      "sim_scores": {
+        "openreview-icml-2025-vvbazjh2nq": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-icml-2024-l4erlhrjrt": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-icml-2025-6n0gxakdx9": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-icml-2025-avgze46gl6": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-icml-2025-obcw6pz0fx": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-icml-2025-swkgsw3izr": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-icml-2025-dpya4zys7n": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-icml-2025-oac01wte44": {
+          "score": 0.014492753623188406,
+          "rank": 9
+        },
+        "openreview-icml-2024-dw29jzj0g5": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "openreview-icml-2025-jptpugjdgy": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "openreview-icml-2025-jflgvne1tj": {
+          "score": 0.0136986301369863,
+          "rank": 13
+        },
+        "openreview-icml-2025-magosim8ut": {
+          "score": 0.0125,
+          "rank": 20
+        },
+        "openreview-icml-2024-c92kdfeztg": {
+          "score": 0.011904761904761904,
+          "rank": 24
+        },
+        "openreview-icml-2024-kmcos6wkgg": {
+          "score": 0.01098901098901099,
+          "rank": 31
+        },
+        "openreview-icml-2025-6ofb0cgxb5": {
+          "score": 0.009900990099009901,
+          "rank": 41
+        },
+        "openreview-icml-2025-eifch9ogjr": {
+          "score": 0.009523809523809525,
+          "rank": 45
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "openreview-icml-2025-oac01wte44",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-vvbazjh2nq",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-6n0gxakdx9",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-obcw6pz0fx",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-jptpugjdgy",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2024-l4erlhrjrt",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-dpya4zys7n",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-jflgvne1tj",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-r0r3mrd8vh",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-6ofb0cgxb5",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-avgze46gl6",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-fsvbsxjrer",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-c92kdfeztg",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-mzgtunvpjh",
+          "score": 0.6703296703296702,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-swkgsw3izr",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-gkcwle8xc9",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-eifch9ogjr",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-xytlswiuli",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-dw29jzj0g5",
+          "score": 0.5495495495495496,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-magosim8ut",
+          "score": 0.49392712550607265,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-icml-2025-s09b5wna6j",
+          "score": 0.46719946719946726,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-icml-2024-kmcos6wkgg",
+          "score": 0.41577409931840303,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-icml-2025-2uheufcfsm",
+          "score": 0.3668882557771445,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-icml-2025-dgdokuubzf",
+          "score": 0.3668882557771445,
+          "star_rating": 3
+        }
+      ]
+    },
+    {
+      "type": "intent_query",
+      "tag": "ce",
+      "paper_tag": "query:ce",
+      "query_text": "Remove concepts from autoregressive text to image models",
+      "sim_scores": {
+        "openreview-icml-2024-l4erlhrjrt": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-icml-2025-vvbazjh2nq": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-icml-2025-6n0gxakdx9": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-icml-2025-avgze46gl6": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-icml-2024-dw29jzj0g5": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-icml-2025-dpya4zys7n": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-icml-2025-swkgsw3izr": {
+          "score": 0.014492753623188406,
+          "rank": 9
+        },
+        "openreview-icml-2025-obcw6pz0fx": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "openreview-icml-2025-jflgvne1tj": {
+          "score": 0.013888888888888888,
+          "rank": 12
+        },
+        "openreview-icml-2025-jptpugjdgy": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "openreview-icml-2025-oac01wte44": {
+          "score": 0.0125,
+          "rank": 20
+        },
+        "openreview-icml-2024-c92kdfeztg": {
+          "score": 0.012048192771084338,
+          "rank": 23
+        },
+        "openreview-icml-2024-kmcos6wkgg": {
+          "score": 0.011111111111111112,
+          "rank": 30
+        },
+        "openreview-icml-2025-eifch9ogjr": {
+          "score": 0.010638297872340425,
+          "rank": 34
+        },
+        "openreview-icml-2025-6ofb0cgxb5": {
+          "score": 0.010416666666666666,
+          "rank": 36
+        },
+        "openreview-icml-2025-magosim8ut": {
+          "score": 0.00980392156862745,
+          "rank": 42
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "openreview-icml-2025-vvbazjh2nq",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-6n0gxakdx9",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-obcw6pz0fx",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-oac01wte44",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2024-l4erlhrjrt",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2025-dpya4zys7n",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-icml-2024-c92kdfeztg",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-dw29jzj0g5",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-jptpugjdgy",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-s09b5wna6j",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-mzgtunvpjh",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-avgze46gl6",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-eifch9ogjr",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-jflgvne1tj",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-dgdokuubzf",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-r0r3mrd8vh",
+          "score": 0.702712746191007,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-swkgsw3izr",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-kmcos6wkgg",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-magosim8ut",
+          "score": 0.5495495495495496,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2025-6ofb0cgxb5",
+          "score": 0.5213675213675214,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-icml-2024-fsvbsxjrer",
+          "score": 0.49392712550607265,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-icml-2025-xytlswiuli",
+          "score": 0.4411571334648256,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-icml-2025-2uheufcfsm",
+          "score": 0.41577409931840303,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-icml-2024-gkcwle8xc9",
+          "score": 0.3668882557771445,
+          "star_rating": 3
+        }
+      ]
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "autoregressive image generation",
+      "sim_scores": {
+        "openreview-icml-2025-jflgvne1tj": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-icml-2025-s09b5wna6j": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-icml-2025-dpya4zys7n": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-icml-2024-dw29jzj0g5": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-icml-2025-magosim8ut": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-icml-2025-jptpugjdgy": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-icml-2025-swkgsw3izr": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "openreview-icml-2025-2uheufcfsm": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "openreview-icml-2025-eifch9ogjr": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "openreview-icml-2025-dgdokuubzf": {
+          "score": 0.012987012987012988,
+          "rank": 17
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "autoregressive image generation models",
+      "sim_scores": {
+        "openreview-icml-2025-magosim8ut": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-icml-2025-swkgsw3izr": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-icml-2024-dw29jzj0g5": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-icml-2025-jptpugjdgy": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-icml-2025-avgze46gl6": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-icml-2025-s09b5wna6j": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-icml-2025-jflgvne1tj": {
+          "score": 0.014492753623188406,
+          "rank": 9
+        },
+        "openreview-icml-2025-dgdokuubzf": {
+          "score": 0.0136986301369863,
+          "rank": 13
+        },
+        "openreview-icml-2025-dpya4zys7n": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "openreview-icml-2025-xytlswiuli": {
+          "score": 0.013333333333333334,
+          "rank": 15
+        },
+        "openreview-icml-2025-2uheufcfsm": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "openreview-icml-2024-c92kdfeztg": {
+          "score": 0.011627906976744186,
+          "rank": 26
+        },
+        "openreview-icml-2025-eifch9ogjr": {
+          "score": 0.011111111111111112,
+          "rank": 30
+        },
+        "openreview-icml-2024-mzgtunvpjh": {
+          "score": 0.009259259259259259,
+          "rank": 48
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "autoregressive model for text to image generation",
+      "sim_scores": {
+        "openreview-icml-2025-swkgsw3izr": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-icml-2025-jflgvne1tj": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-icml-2025-dpya4zys7n": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-icml-2025-magosim8ut": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-icml-2025-eifch9ogjr": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-icml-2025-jptpugjdgy": {
+          "score": 0.014492753623188406,
+          "rank": 9
+        },
+        "openreview-icml-2025-dgdokuubzf": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "openreview-icml-2025-xytlswiuli": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "openreview-icml-2024-dw29jzj0g5": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "openreview-icml-2025-s09b5wna6j": {
+          "score": 0.01282051282051282,
+          "rank": 18
+        },
+        "openreview-icml-2025-avgze46gl6": {
+          "score": 0.012195121951219513,
+          "rank": 22
+        },
+        "openreview-icml-2024-fsvbsxjrer": {
+          "score": 0.010526315789473684,
+          "rank": 35
+        },
+        "openreview-icml-2024-c92kdfeztg": {
+          "score": 0.010416666666666666,
+          "rank": 36
+        },
+        "openreview-icml-2024-mzgtunvpjh": {
+          "score": 0.009615384615384616,
+          "rank": 44
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "concept erasure",
+      "sim_scores": {
+        "openreview-icml-2025-vvbazjh2nq": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-icml-2025-obcw6pz0fx": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-icml-2025-oac01wte44": {
+          "score": 0.015625,
+          "rank": 4
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "concept erasure in machine learning models",
+      "sim_scores": {
+        "openreview-icml-2024-l4erlhrjrt": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-icml-2025-vvbazjh2nq": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-icml-2025-obcw6pz0fx": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-icml-2025-6n0gxakdx9": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "openreview-icml-2025-r0r3mrd8vh": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "openreview-icml-2025-6ofb0cgxb5": {
+          "score": 0.012345679012345678,
+          "rank": 21
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "machine unlearning",
+      "sim_scores": {
+        "openreview-icml-2024-gkcwle8xc9": {
+          "score": 0.014492753623188406,
+          "rank": 9
+        },
+        "openreview-icml-2025-6ofb0cgxb5": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "openreview-icml-2025-6n0gxakdx9": {
+          "score": 0.01282051282051282,
+          "rank": 18
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "machine unlearning for image generation",
+      "sim_scores": {
+        "openreview-icml-2025-dgdokuubzf": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-icml-2025-6ofb0cgxb5": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-icml-2025-xytlswiuli": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "openreview-icml-2025-obcw6pz0fx": {
+          "score": 0.0136986301369863,
+          "rank": 13
+        },
+        "openreview-icml-2024-dw29jzj0g5": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "openreview-icml-2024-fsvbsxjrer": {
+          "score": 0.012987012987012988,
+          "rank": 17
+        },
+        "openreview-icml-2025-s09b5wna6j": {
+          "score": 0.01282051282051282,
+          "rank": 18
+        },
+        "openreview-icml-2025-vvbazjh2nq": {
+          "score": 0.012048192771084338,
+          "rank": 23
+        },
+        "openreview-icml-2025-eifch9ogjr": {
+          "score": 0.011494252873563218,
+          "rank": 27
+        },
+        "openreview-icml-2025-6n0gxakdx9": {
+          "score": 0.010869565217391304,
+          "rank": 32
+        },
+        "openreview-icml-2025-swkgsw3izr": {
+          "score": 0.00909090909090909,
+          "rank": 50
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "text-to-image autoregressive model",
+      "sim_scores": {
+        "openreview-icml-2025-swkgsw3izr": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        }
+      }
+    }
+  ],
+  "global_candidate_ids": [
+    "openreview-icml-2025-f8upzumndq",
+    "openreview-icml-2025-vvbazjh2nq",
+    "openreview-icml-2024-l4erlhrjrt",
+    "openreview-icml-2025-jflgvne1tj",
+    "openreview-icml-2025-7sxxczjcwp",
+    "openreview-icml-2025-magosim8ut",
+    "openreview-icml-2025-swkgsw3izr",
+    "openreview-icml-2025-obcw6pz0fx",
+    "openreview-icml-2024-okchmnjf6s",
+    "openreview-icml-2025-ba3ssfenj1",
+    "openreview-icml-2025-bkriqprekn",
+    "openreview-icml-2024-cjvwen8ajl",
+    "openreview-icml-2024-dw29jzj0g5",
+    "openreview-icml-2025-jptpugjdgy",
+    "openreview-icml-2025-dpya4zys7n",
+    "openreview-icml-2025-wbfbt2bh6f",
+    "openreview-icml-2024-dmohghnyaf",
+    "openreview-icml-2025-s09b5wna6j",
+    "openreview-icml-2025-dgdokuubzf",
+    "openreview-icml-2025-eifch9ogjr",
+    "openreview-icml-2025-avgze46gl6",
+    "openreview-icml-2025-u6xekvhs6k",
+    "openreview-icml-2025-6n0gxakdx9",
+    "openreview-icml-2025-uwhw5yylo6",
+    "openreview-icml-2024-rmv86caoh6",
+    "openreview-icml-2025-6ofb0cgxb5",
+    "openreview-icml-2025-oac01wte44",
+    "openreview-icml-2025-mumoaos9hy",
+    "openreview-icml-2025-dpbvg1mfbq",
+    "openreview-icml-2024-c92kdfeztg",
+    "openreview-icml-2025-z7lapws4nv",
+    "openreview-icml-2024-oxzkw7vfio",
+    "openreview-icml-2025-tbaa3exkwq",
+    "openreview-icml-2024-fpnuhsqj5b",
+    "openreview-icml-2024-hz0fwhgvch",
+    "openreview-icml-2025-xytlswiuli",
+    "openreview-icml-2025-zbwxovstjd",
+    "openreview-icml-2025-7ez7lqhsp5",
+    "openreview-icml-2024-habvzgsdm7",
+    "openreview-icml-2024-ttq3qmkj8w",
+    "openreview-icml-2025-ueuieirrpv",
+    "openreview-icml-2025-rcjgzbyvhf",
+    "openreview-icml-2025-dnuufjcsdo",
+    "openreview-icml-2025-3rwqlv3s1i",
+    "openreview-icml-2025-ictybknnqb",
+    "openreview-icml-2025-xf0tih1e4u",
+    "openreview-icml-2025-fa0afz9lzi",
+    "openreview-icml-2025-pwnsuo7yub",
+    "openreview-icml-2025-osnubj4vlx",
+    "openreview-icml-2024-vserupyftb",
+    "openreview-icml-2024-fsvbsxjrer",
+    "openreview-icml-2025-hgaaxdv8q8",
+    "openreview-icml-2025-kjtvcskssy",
+    "openreview-icml-2024-u8tz9gm4im",
+    "openreview-icml-2025-ok4ot2waju",
+    "openreview-icml-2025-jcuswrwkkw",
+    "openreview-icml-2024-ofxrbptol3",
+    "openreview-icml-2025-fime06sv71",
+    "openreview-icml-2024-lzkhkzvhhs",
+    "openreview-icml-2025-uuvcohgivw",
+    "openreview-icml-2025-tql8gjsus5",
+    "openreview-icml-2025-2uheufcfsm",
+    "openreview-icml-2024-ed4kghokne",
+    "openreview-icml-2025-m25t5ray43",
+    "openreview-icml-2024-jymxv7mkrq",
+    "openreview-icml-2025-rc7y9hfc34",
+    "openreview-icml-2024-f3x6uyilgl",
+    "openreview-icml-2024-khymcy2xxf",
+    "openreview-icml-2025-omfdotvfwi",
+    "openreview-icml-2025-4r0pugryn5",
+    "openreview-icml-2025-migcz3zmmx",
+    "openreview-icml-2025-y9jv6vanyp",
+    "openreview-icml-2024-jnps5ywnlu",
+    "openreview-icml-2025-hemldrnffy",
+    "openreview-icml-2025-b3zlihdner",
+    "openreview-icml-2025-x2lm33kdrz",
+    "openreview-icml-2025-voterb9au1",
+    "openreview-icml-2025-vdoaa8xkxl",
+    "openreview-icml-2024-kmcos6wkgg",
+    "openreview-icml-2024-gvmvbnxb73",
+    "openreview-icml-2024-dwwef5w2cr",
+    "openreview-icml-2025-s4hpn5bo6k",
+    "openreview-icml-2025-dzehp9p5jt",
+    "openreview-icml-2024-dhrnfajah6",
+    "openreview-icml-2025-7exlwkfcgl",
+    "openreview-icml-2024-5nxirq8gna",
+    "openreview-icml-2025-oyfafpqaca",
+    "openreview-icml-2025-27hokxzy9e",
+    "openreview-icml-2025-li4rieeclo",
+    "openreview-icml-2024-mzgtunvpjh",
+    "openreview-icml-2025-uoaxrn88or",
+    "openreview-icml-2024-a9mijdetnz",
+    "openreview-icml-2024-tmuorldown",
+    "openreview-icml-2025-ey6pxidi3g",
+    "openreview-icml-2025-jnhky0yciw",
+    "openreview-icml-2025-zwsjncudis",
+    "openreview-icml-2025-ps3ao9mhjv",
+    "openreview-icml-2024-gkcwle8xc9",
+    "openreview-icml-2024-igrjccaz2a",
+    "openreview-icml-2025-6udkbhc0mr",
+    "openreview-icml-2024-bznwexopwm",
+    "openreview-icml-2024-1mf1isuys3",
+    "openreview-icml-2025-vrgc8krbdp",
+    "openreview-icml-2025-6vk6xg24zc",
+    "openreview-icml-2025-ngjw3uxrf2",
+    "openreview-icml-2025-mgougczlaq",
+    "openreview-icml-2025-xivuqzz59o",
+    "openreview-icml-2024-bjbsbjskos",
+    "openreview-icml-2025-f08lzobgad",
+    "openreview-icml-2025-1egfjdjodu",
+    "openreview-icml-2025-r0r3mrd8vh",
+    "openreview-icml-2025-tck4pv3vn4",
+    "openreview-icml-2024-lrkjwpidue",
+    "openreview-icml-2025-rgd7pomtdp",
+    "openreview-icml-2024-psup68mbvt",
+    "openreview-icml-2024-rymmgedvjr",
+    "openreview-icml-2025-jyxwwqju4j",
+    "openreview-icml-2025-0a4y9qrnu9",
+    "openreview-icml-2025-d4y71nbgrg",
+    "openreview-icml-2025-77zipgdqct"
+  ],
+  "global_pool_lane_top_k": 30,
+  "global_pool_limit": 120,
+  "global_pool_guaranteed_per_lane": 2,
+  "global_pool_effective_size": 120,
+  "reranked_at": "2026-06-04T03:18:34.161662+00:00",
+  "llm_ranked": [
+    {
+      "paper_id": "openreview-icml-2025-magosim8ut",
+      "score": 10.0,
+      "evidence_en": "autoregressive image generation models",
+      "evidence_cn": "自回归图像生成模型",
+      "canonical_evidence": "自回归图像生成模型",
+      "tldr_en": "Proves universal approximation properties of Visual Autoregressive (VAR) transformers for image synthesis.",
+      "tldr_cn": "论文研究了视觉自回归变换器（VAR）的理论能力，证明简单的VAR变换器具有通用逼近性，为自回归图像生成模型提供了理论基础。",
+      "title_zh": "视觉自回归变换器的基本极限：通用逼近能力",
+      "motivation_cn": "自回归图像生成模型的理论基础尚不清晰。",
+      "method_cn": "通过数学分析证明单层VAR变换器的通用逼近性。",
+      "result_cn": "证明了VAR变换器是通用逼近器，理论性能优越。",
+      "conclusion_cn": "该工作为VAR模型提供了理论支撑，推动自回归图像生成发展。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-6ofb0cgxb5",
+      "score": 9.0,
+      "evidence_en": "proposes single-layer unlearning gradient for CLIP, Stable Diffusion, and VLMs, directly addressing machine unlearning for image generation",
+      "evidence_cn": "提出单层遗忘梯度方法用于CLIP、Stable Diffusion和视觉-语言模型，直接解决图像生成中的机器遗忘",
+      "canonical_evidence": "提出单层遗忘梯度方法用于CLIP、Stable Diffusion和视觉-语言模型，直接解决图像生成中的机器遗忘",
+      "tldr_en": "Proposes SLUG, a single-layer gradient update method for efficient targeted unlearning in vision-language models, removing concrete/abstract concepts with minimal cost.",
+      "tldr_cn": "针对机器遗忘方法计算成本高且可能损害模型性能的问题，提出单层遗忘梯度（SLUG）方法，通过一次梯度计算更新单个关键层，利用层重要性和梯度对齐指标选择最优层，在CLIP、Stable Diffusion和视觉-语言模型上成功移除具体和抽象概念，同时保留模型效用，为图像生成模型的高效概念擦除提供了实用方案。",
+      "title_zh": "基于单层遗忘梯度的目标遗忘",
+      "motivation_cn": "现有机器遗忘方法需要大量模型更新，计算成本高且可能损害模型性能。",
+      "method_cn": "提出SLUG方法，通过计算单层梯度一次更新关键层，实现高效目标遗忘。",
+      "result_cn": "在多个视觉-语言模型上成功移除具体和抽象概念，性能损失小。",
+      "conclusion_cn": "SLUG为图像生成模型的机器遗忘和概念擦除提供了一种高效实用的方法。",
+      "matched_requirement_id": "req-3",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation"
+    },
+    {
+      "paper_id": "openreview-icml-2025-avgze46gl6",
+      "score": 9.0,
+      "evidence_en": "continuous visual autoregressive generation without quantization",
+      "evidence_cn": "无需量化的连续视觉自回归生成",
+      "canonical_evidence": "无需量化的连续视觉自回归生成",
+      "tldr_en": "Proposes Continuous VAR for direct visual autoregressive generation without discrete tokenization, using strictly proper scoring rules as training objective.",
+      "tldr_cn": "传统自回归模型处理连续视觉数据时需量化，导致信息损失。本文提出连续视觉自回归生成框架（Continuous VAR），无需向量量化，直接生成连续图像。核心理论是严格适当评分规则，将其作为训练目标。实验表明，该方法在图像生成质量上优于基于量化的VAR，且保持自回归模型的简洁性。这为自回归图像生成提供了新范式，尤其适用于需要连续输出的场景。",
+      "title_zh": "通过评分最大化实现连续视觉自回归生成",
+      "motivation_cn": "传统视觉自回归模型需量化离散化，造成信息损失，亟需直接处理连续数据的方法。",
+      "method_cn": "基于严格适当评分规则，提出Continuous VAR框架，直接以连续值进行自回归生成，无需向量量化。",
+      "result_cn": "该方法在图像生成任务上超越量化VAR，取得更高质量的生成结果。",
+      "conclusion_cn": "Continuous VAR为视觉自回归生成提供了无信息损失的有效方案。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-obcw6pz0fx",
+      "score": 9.0,
+      "evidence_en": "minimalist concept erasure objective for generative models",
+      "evidence_cn": "生成模型的最小化概念擦除方法",
+      "canonical_evidence": "生成模型的最小化概念擦除方法",
+      "tldr_en": "Proposes a minimalist concept erasure method based on distributional distance, applicable to generative models.",
+      "tldr_cn": "针对现有概念擦除方法过度修改模型、损害实用性的问题，提出仅基于生成输出分布距离的最小化擦除目标，通过端到端反向传播优化，在保持模型效用下有效擦除概念，为生成模型的安全实用概念擦除提供了轻量级方案。",
+      "title_zh": "生成模型中的最小化概念擦除",
+      "motivation_cn": "现有概念擦除方法过度修改模型，损害生成实用性。",
+      "method_cn": "提出仅基于生成输出分布距离的最小化擦除目标，通过端到端反向传播优化。",
+      "result_cn": "在保持模型效用下有效擦除概念。",
+      "conclusion_cn": "为生成模型的安全实用概念擦除提供了轻量级方案。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-vvbazjh2nq",
+      "score": 9.0,
+      "evidence_en": "first concept erasure method for rectified flow transformers",
+      "evidence_cn": "首个针对整流流变换器的概念擦除方法",
+      "canonical_evidence": "首个针对整流流变换器的概念擦除方法",
+      "tldr_en": "Proposes EraseAnything for concept erasure in flow-based T2I models using bi-level optimization with LoRA.",
+      "tldr_cn": "针对现有概念擦除技术无法迁移到最新流匹配架构的问题，提出EraseAnything，将概念擦除建模为双层优化，采用LoRA参数调整和注意力引导，在Stable Diffusion v3和Flux上有效擦除概念并保持生成质量，为最新文本到图像范式提供了首个概念擦除方法。",
+      "title_zh": "EraseAnything: 在整流流变换器中实现概念擦除",
+      "motivation_cn": "现有概念擦除技术无法直接迁移到最新流匹配架构。",
+      "method_cn": "将概念擦除建模为双层优化，采用LoRA参数调整和注意力引导。",
+      "result_cn": "在Stable Diffusion v3和Flux上有效擦除概念并保持生成质量。",
+      "conclusion_cn": "为最新文本到图像范式提供了首个概念擦除方法。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-6n0gxakdx9",
+      "score": 8.0,
+      "evidence_en": "machine unlearning for image generation",
+      "evidence_cn": "面向图像生成的机器遗忘",
+      "canonical_evidence": "面向图像生成的机器遗忘",
+      "tldr_en": "Proposes SAeUron, using sparse autoencoders to remove concepts in text-to-image diffusion models interpretably.",
+      "tldr_cn": "论文针对扩散模型生成有害内容的问题，提出SAeUron方法，利用稀疏自编码器学习可解释特征，并通过特征选择移除特定概念。实验表明该方法能有效去除目标概念而保持生成质量，为可解释机器遗忘提供了新途径。",
+      "title_zh": "SAeUron: 基于稀疏自编码器的扩散模型可解释概念遗忘",
+      "motivation_cn": "扩散模型可能生成有害内容，现有遗忘方法缺乏透明度。",
+      "method_cn": "训练稀疏自编码器捕捉多时间步特征，选择对应概念的特征进行移除。",
+      "result_cn": "成功移除指定概念，保持生成质量，且可解释。",
+      "conclusion_cn": "SAeUron提供了可解释且有效的概念遗忘方法。",
+      "matched_requirement_id": "req-3",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation"
+    },
+    {
+      "paper_id": "openreview-icml-2024-gkcwle8xc9",
+      "score": 8.0,
+      "evidence_en": "proposes in-context unlearning for large language models, directly relevant to concept erasure in ML",
+      "evidence_cn": "提出上下文遗忘方法用于大语言模型，直接关联机器学习中的概念擦除",
+      "canonical_evidence": "提出上下文遗忘方法用于大语言模型，直接关联机器学习中的概念擦除",
+      "tldr_en": "Proposes in-context unlearning for LLMs without parameter updates, enabling few-shot removal of training data influence, relevant to concept erasure.",
+      "tldr_cn": "针对大语言模型机器遗忘计算开销大的问题，提出上下文遗忘方法，无需更新模型参数即可在少样本设置下移除特定训练数据的影响，为概念擦除提供了高效且无需参数访问的新范式，实验验证了其有效性。",
+      "title_zh": "上下文遗忘：作为少样本遗忘者的大语言模型",
+      "motivation_cn": "大语言模型遗忘特定训练数据通常需要全面重训练或参数更新，计算成本高且需参数访问。",
+      "method_cn": "提出上下文遗忘方法，通过构造上下文示例实现少样本遗忘，无需更新模型参数。",
+      "result_cn": "在多个基准上验证了该方法能有效移除训练数据影响，同时保持模型性能。",
+      "conclusion_cn": "上下文遗忘为语言模型的概念擦除提供了一种高效、实用的新途径。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-oac01wte44",
+      "score": 8.0,
+      "evidence_en": "introduces a text-image collaborative erasing framework for concept erasure in text-to-image diffusion models",
+      "evidence_cn": "提出文本-图像协作擦除框架用于文本到图像扩散模型中的概念擦除",
+      "canonical_evidence": "提出文本-图像协作擦除框架用于文本到图像扩散模型中的概念擦除",
+      "tldr_en": "Proposes a usability-preserving text-image collaborative framework for concept erasing in text-to-image diffusion models, integrating visual supervision to improve erasure efficacy.",
+      "tldr_cn": "针对现有概念擦除方法依赖文本提示导致效果与可用性难以兼得的问题，提出文本-图像协作擦除框架，直接引入视觉监督以弥合模态差距，在保持模型对其他概念生成能力的同时实现高效概念擦除，实验证明该框架在多种有害概念移除上显著优于现有方法。",
+      "title_zh": "一图胜千言：可用性保持的文本-图像协作擦除框架",
+      "motivation_cn": "现有概念擦除方法依赖文本提示，难以在擦除效果和模型可用性之间取得平衡。",
+      "method_cn": "提出文本-图像协作擦除框架，引入视觉监督直接指导擦除过程。",
+      "result_cn": "在多个概念擦除任务上实现了高擦除率，同时保持了对其他概念的生成质量。",
+      "conclusion_cn": "该工作为文本到图像模型的概念擦除提供了更有效且可用性更好的方案。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-dpya4zys7n",
+      "score": 8.0,
+      "evidence_en": "autoregressive interleaved image-text generation with modality-specific heads",
+      "evidence_cn": "基于模态特定头的自回归交错图文生成",
+      "canonical_evidence": "基于模态特定头的自回归交错图文生成",
+      "tldr_en": "Introduces Orthus, a unified autoregressive model for generating interleaved images and text from mixed-modal inputs.",
+      "tldr_cn": "针对现有模型难以在自回归框架下同时处理离散文本和连续图像特征的问题，提出Orthus，采用模态特定头：语言模型头预测文本，扩散头生成连续图像特征，替代向量量化，在高分辨率条件生成上展示了高效且高质量的结果，为统一自回归图文生成提供了新范式。",
+      "title_zh": "Orthus: 基于模态特定头的自回归交错图文生成",
+      "motivation_cn": "现有生成模型难以在自回归框架下同时处理离散文本和连续图像特征。",
+      "method_cn": "采用模态特定头：语言模型头预测文本，扩散头生成连续图像特征，替代向量量化。",
+      "result_cn": "在高分辨率条件生成上展示了高效且高质量的结果。",
+      "conclusion_cn": "为统一自回归图文生成提供了新范式。",
+      "matched_requirement_id": "req-2",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation"
+    },
+    {
+      "paper_id": "openreview-icml-2024-fsvbsxjrer",
+      "score": 7.0,
+      "evidence_en": "studies mechanistic knowledge localization in text-to-image models, enabling model editing and concept erasure",
+      "evidence_cn": "研究文本到图像模型中的机理知识定位，支持模型编辑和概念擦除",
+      "canonical_evidence": "研究文本到图像模型中的机理知识定位，支持模型编辑和概念擦除",
+      "tldr_en": "Introduces mechanistic localization in text-to-image models to identify layers controlling visual attributes, enabling efficient closed-form editing for concept removal.",
+      "tldr_cn": "针对文本到图像模型中知识定位困难的问题，引入机理定位概念，通过因果追踪识别控制视觉属性的层，发现早期扩散模型知识集中于CLIP文本编码器第一层，而近期模型定位更分散，为模型编辑和概念擦除提供了理论指导和实践基础。",
+      "title_zh": "文本到图像生成模型中的机理知识定位",
+      "motivation_cn": "现有因果追踪难以精确定位知识层，阻碍了高效的模型编辑。",
+      "method_cn": "引入机理定位概念，通过因果追踪分析视觉属性对应的知识层。",
+      "result_cn": "发现早期模型知识集中，近期模型知识分散，解释了编辑困难的原因。",
+      "conclusion_cn": "该工作为文本到图像模型的概念擦除和编辑提供了定位方法。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-icml-2024-c92kdfeztg",
+      "score": 7.0,
+      "evidence_en": "autoregressive image generation models",
+      "evidence_cn": "自回归图像生成模型",
+      "canonical_evidence": "自回归图像生成模型",
+      "tldr_en": "Scalable pre-training of large autoregressive image models (AIM) showing scaling properties and achieving 84.0% on ImageNet-1k with a frozen trunk.",
+      "tldr_cn": "现有自回归图像模型大多受限于小规模训练。本文提出AIM模型族，采用自回归目标预训练大规模视觉模型，并系统研究了模型容量与数据量对性能的影响。实验表明，70亿参数的AIM在冻结主干的情况下在ImageNet-1k上达到84.0%的准确率，且未出现性能饱和迹象，证明自回归图像模型具有良好的可扩展性，为后续概念擦除等工作提供了基础模型。",
+      "title_zh": "大规模自回归图像模型的可扩展预训练",
+      "motivation_cn": "探索自回归目标预训练视觉模型的可扩展性，验证模型容量和数据量对性能的影响。",
+      "method_cn": "提出AIM模型，采用纯自回归目标在大规模图像数据集上预训练视觉Transformer。",
+      "result_cn": "70亿参数模型在ImageNet-1k上冻结主干达到84.0%准确率，性能尚未饱和。",
+      "conclusion_cn": "自回归图像模型具有与语言模型类似的扩展规律，可作为通用视觉基础模型。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-jflgvne1tj",
+      "score": 7.0,
+      "evidence_en": "scale-wise autoregressive image generation",
+      "evidence_cn": "尺度级自回归图像生成",
+      "canonical_evidence": "尺度级自回归图像生成",
+      "tldr_en": "FlowAR introduces scale-wise autoregressive image generation with flow matching, overcoming rigidity and modularity issues of prior VAR methods.",
+      "tldr_cn": "现有尺度级自回归图像生成方法（如VAR）存在尺度设计僵化、生成器依赖离散分词器导致灵活性差的问题。本文提出FlowAR，将尺度级自回归与流匹配结合，实现更通用的下一尺度预测。该方法不仅提升了生成质量，还允许模块化更新分词器，为自回归图像生成提供了更灵活高效的框架。",
+      "title_zh": "FlowAR：尺度级自回归图像生成与流匹配的结合",
+      "motivation_cn": "克服VAR方法中尺度设计僵化和生成器对离散分词器的依赖问题。",
+      "method_cn": "提出FlowAR，将尺度级自回归预测与流匹配损失相结合，实现灵活的下一个尺度预测。",
+      "result_cn": "FlowAR在图像生成任务上优于VAR，并支持分词器模块化更新。",
+      "conclusion_cn": "尺度级自回归与流匹配的结合能提升图像生成的泛化性和灵活性。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-eifch9ogjr",
+      "score": 7.0,
+      "evidence_en": "LLMs for image generation, autoregressive design space",
+      "evidence_cn": "语言模型用于图像生成，自回归设计空间",
+      "canonical_evidence": "语言模型用于图像生成，自回归设计空间",
+      "tldr_en": "Systematic study of LLM design space for image generation shows near SOTA performance without domain-specific designs.",
+      "tldr_cn": "本文系统研究了将大语言模型（LLM）应用于图像生成的设计空间，包括分词方法、扫描模式、词汇表等。发现无需领域特定设计，仅通过合理选择上述因素，LLM即可在图像生成上达到接近最先进的性能，并分析了自回归模型的学习和缩放行为，为构建高性能自回归图像生成器提供了指导。",
+      "title_zh": "阐明用于图像生成的语言模型设计空间",
+      "motivation_cn": "系统探索LLM在图像生成中的设计选择，避免领域特定偏见。",
+      "method_cn": "研究分词、建模、扫描、词汇和采样策略对LLM图像生成性能的影响。",
+      "result_cn": "LLM在图像生成上取得接近SOTA的结果，无需特殊设计。",
+      "conclusion_cn": "合理的设计选择使LLM能够作为通用的图像生成架构。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-dgdokuubzf",
+      "score": 7.0,
+      "evidence_en": "resampling images into variable-length 1D tokens for autoregressive generation",
+      "evidence_cn": "将图像重采样为可变长度1D令牌用于自回归生成",
+      "canonical_evidence": "将图像重采样为可变长度1D令牌用于自回归生成",
+      "tldr_en": "Introduces FlexTok, a tokenizer that converts images to variable-length 1D token sequences for autoregressive generation.",
+      "tldr_cn": "针对现有图像令牌化方法固定长度缺乏灵活性的问题，提出FlexTok，使用整流流解码器和嵌套dropout训练，支持从1到256个令牌的任意长度，在ImageNet上以少令牌达到FID<2，匹配SOTA，为自回归图像生成提供了高效灵活的令牌化方案。",
+      "title_zh": "FlexTok: 将图像重采样为灵活长度的1D令牌序列",
+      "motivation_cn": "现有图像令牌化方法固定长度，缺乏灵活性。",
+      "method_cn": "使用整流流解码器和嵌套dropout训练，支持从1到256个令牌的任意长度。",
+      "result_cn": "在ImageNet上以少令牌达到FID<2，匹配SOTA。",
+      "conclusion_cn": "为自回归图像生成提供了高效灵活的令牌化方案。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-swkgsw3izr",
+      "score": 7.0,
+      "evidence_en": "hierarchical masked autoregressive models for visual generation",
+      "evidence_cn": "用于视觉生成的分层掩码自回归模型",
+      "canonical_evidence": "用于视觉生成的分层掩码自回归模型",
+      "tldr_en": "Proposes Hi-MAR, a hierarchical masked autoregressive model that uses low-resolution tokens as pivots.",
+      "tldr_cn": "针对现有自回归模型仅单尺度预测缺乏全局上下文利用的问题，提出Hi-MAR，引入多阶段分层建模，以低分辨率令牌为枢轴触发层次依赖，在视觉生成任务上取得了改进的性能，为自回归视觉生成提供了有效的层次化设计方案。",
+      "title_zh": "基于低分辨率令牌枢轴的分层掩码自回归模型",
+      "motivation_cn": "现有自回归模型仅单尺度预测，缺乏全局上下文利用。",
+      "method_cn": "引入多阶段分层建模，以低分辨率令牌为枢轴触发层次依赖。",
+      "result_cn": "在视觉生成任务上取得了改进的性能。",
+      "conclusion_cn": "为自回归视觉生成提供了有效的层次化设计方案。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-r0r3mrd8vh",
+      "score": 6.0,
+      "evidence_en": "concept erasure in machine learning models",
+      "evidence_cn": "机器学习模型中的概念擦除",
+      "canonical_evidence": "机器学习模型中的概念擦除",
+      "tldr_en": "Proposes Editable Concept Bottleneck Models allowing efficient concept removal without retraining.",
+      "tldr_cn": "论文针对概念瓶颈模型的概念编辑需求，提出可编辑概念瓶颈模型（ECBM），支持概念级别的数据移除，无需从头训练。该方法在多个数据集上验证了有效性和效率，为概念擦除提供了可扩展方案。",
+      "title_zh": "可编辑概念瓶颈模型",
+      "motivation_cn": "现有概念瓶颈模型无法高效编辑已学概念。",
+      "method_cn": "设计三种级别的数据移除机制，包括概念-标签级、概念级等。",
+      "result_cn": "实现高效概念移除，保持模型性能。",
+      "conclusion_cn": "ECBM使概念瓶颈模型可编辑，适用于隐私修正等场景。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-icml-2024-l4erlhrjrt",
+      "score": 6.0,
+      "evidence_en": "concept removal from neural representations",
+      "evidence_cn": "从神经网络表示中移除概念",
+      "canonical_evidence": "从神经网络表示中移除概念",
+      "tldr_en": "Proposes joint subspace estimation to remove spurious concepts from DNN representations without over-removing.",
+      "tldr_cn": "论文针对神经网络表示中虚假概念移除过度的问题，提出联合子空间估计算法，将虚假概念与主要任务概念分离。实验表明该方法有效去除假相关概念且不损害模型性能，促进了可解释机器学习。",
+      "title_zh": "通过联合子空间估计移除神经网络表示中的虚假概念",
+      "motivation_cn": "现有概念移除方法会误删正确特征。",
+      "method_cn": "迭代估计两个正交低维子空间分别表示虚假和主任务概念。",
+      "result_cn": "准确移除虚假概念，提升模型解释和性能。",
+      "conclusion_cn": "该算法为有选择的概念移除提供了有效工具。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-icml-2024-mzgtunvpjh",
+      "score": 6.0,
+      "evidence_en": "enhances image-GPT autoregressive pretraining for visual representation, related to autoregressive image generation",
+      "evidence_cn": "增强iGPT自回归预训练用于视觉表示，与自回归图像生成相关",
+      "canonical_evidence": "增强iGPT自回归预训练用于视觉表示，与自回归图像生成相关",
+      "tldr_en": "Proposes D-iGPT, improving autoregressive image pretraining by predicting semantic tokens and visible tokens, achieving strong visual representations.",
+      "tldr_cn": "针对自回归图像预训练iGPT预测原始像素导致语义层次不足的问题，提出D-iGPT，将预测目标改为语义token并补充可见token预测，利用CLIP编码语义，显著提升了视觉表示学习能力，在多项任务上达到领先性能，展示了自回归模型在图像理解中的潜力。",
+      "title_zh": "复兴image-GPT作为强大的视觉表示学习器",
+      "motivation_cn": "原始iGPT预测原始像素，语义层次低，表示能力有限。",
+      "method_cn": "提出D-iGPT，将预测目标改为语义token，并同时预测可见token。",
+      "result_cn": "在多个视觉表示学习基准上取得了领先性能。",
+      "conclusion_cn": "该工作复兴了自回归图像预训练，展示了其强大的表示学习能力。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2024-kmcos6wkgg",
+      "score": 6.0,
+      "evidence_en": "autoregression-based vision model for image understanding",
+      "evidence_cn": "基于自回归的视觉模型",
+      "canonical_evidence": "基于自回归的视觉模型",
+      "tldr_en": "Data-efficient autoregression-based vision model operating on limited dataset achieving proficiency in various visual tasks.",
+      "tldr_cn": "针对当前自回归视觉模型依赖海量数据和参数的问题，本文提出一种高效的自回归视觉模型，仅需有限数据集即可训练。该模型通过顺序自回归方式处理视觉数据，在高层和低层视觉任务上均展现出良好性能，降低了自回归模型在视觉领域的应用门槛。",
+      "title_zh": "通过顺序自回归实现数据高效的大规模视觉模型",
+      "motivation_cn": "解决自回归视觉模型过度依赖大规模数据和模型参数的问题。",
+      "method_cn": "设计一种基于顺序自回归的高效视觉模型架构，在有限数据集上训练。",
+      "result_cn": "该模型在多种视觉任务上取得有竞争力的性能，数据效率显著提升。",
+      "conclusion_cn": "自回归视觉模型可以在数据受限的情况下有效学习，拓展了其应用场景。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2024-dw29jzj0g5",
+      "score": 6.0,
+      "evidence_en": "autoregressive representation learning for images",
+      "evidence_cn": "图像的自回归表示学习",
+      "canonical_evidence": "图像的自回归表示学习",
+      "tldr_en": "Denoising autoregressive representation learning (DARL) using decoder-only Transformer with denoising patch decoder for visual representations.",
+      "tldr_cn": "本文探索自回归生成式视觉表示学习方法。DARL采用仅解码器Transformer自回归预测图像块，并用去噪补丁解码器替换MSE损失以增强生成能力。通过定制噪声调度和更长的训练，学习到的表示接近最先进的掩码预测模型，表明自回归目标也可作为有效的视觉表示学习范式。",
+      "title_zh": "去噪自回归表示学习",
+      "motivation_cn": "探索自回归生成目标在视觉表示学习中的潜力。",
+      "method_cn": "使用解码器Transformer自回归预测图像块，并通过去噪补丁解码器优化。",
+      "result_cn": "DARL学到的表示在多个下游任务上接近掩码预测方法。",
+      "conclusion_cn": "自回归成对损失结合去噪目标能有效学习视觉表示。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-s09b5wna6j",
+      "score": 6.0,
+      "evidence_en": "parallel autoregressive image generation",
+      "evidence_cn": "并行自回归图像生成",
+      "canonical_evidence": "并行自回归图像生成",
+      "tldr_en": "ZipAR is a training-free parallel decoding framework for autoregressive visual generation using spatial locality.",
+      "tldr_cn": "自回归图像生成解码速度慢是实际应用的瓶颈。本文提出ZipAR，一种无需训练、即插即用的并行解码框架，利用图像的空间局部性，在单次前向传播中并行解码多个视觉token。通过自适应局部窗口分配和拒绝采样保证生成质量，显著加速自回归图像生成过程。",
+      "title_zh": "ZipAR：通过空间局部性实现并行自回归图像生成",
+      "motivation_cn": "加速自回归图像生成，利用图像的空间局部性进行并行解码。",
+      "method_cn": "提出ZipAR框架，基于自适应局部窗口和拒绝采样并行解码多个token。",
+      "result_cn": "在保持生成质量的同时显著减少解码步数。",
+      "conclusion_cn": "空间局部性可有效用于自回归图像生成的加速。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-xytlswiuli",
+      "score": 6.0,
+      "evidence_en": "autoregressive transformer for text-guided SVG generation",
+      "evidence_cn": "用于文本引导SVG生成的自回归变换器",
+      "canonical_evidence": "用于文本引导SVG生成的自回归变换器",
+      "tldr_en": "Introduces GRIMOIRE, a text-guided SVG generative model using a codebook and autoregressive transformer.",
+      "tldr_cn": "针对SVG生成欠探索的问题，提出GRIMOIRE模型，包含Visual Shape Quantizer和Auto-Regressive Transformer，在无直接SVG监督下从自然语言生成矢量图形，填补了该领域空白。",
+      "title_zh": "Vector Grimoire: 基于码本的光栅图像监督形状生成",
+      "motivation_cn": "SVG生成领域欠探索，现有方法依赖直接SVG监督。",
+      "method_cn": "提出Visual Shape Quantizer学习光栅到码本的映射，Auto-Regressive Transformer建模形状、位置和文本的联合分布。",
+      "result_cn": "在无直接SVG监督下成功生成矢量图形。",
+      "conclusion_cn": "为文本引导矢量图形生成提供了新范式。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-2uheufcfsm",
+      "score": 6.0,
+      "evidence_en": "autoregressive transformer-based normalizing flows for image generation",
+      "evidence_cn": "基于自回归变换器的归一化流用于图像生成",
+      "canonical_evidence": "基于自回归变换器的归一化流用于图像生成",
+      "tldr_en": "Presents TarFlow, a transformer-based masked autoregressive flow model for image generation.",
+      "tldr_cn": "针对归一化流近年关注不足的问题，提出TarFlow，一种基于Transformer的掩码自回归流，在图像块上交替自回归方向，能够端到端训练并直接生成像素，在图像生成任务上展现了优异性能，证明了简单可扩展的归一化流架构可以达到先进生成性能。",
+      "title_zh": "归一化流是强大的生成模型",
+      "motivation_cn": "归一化流近年受关注较少，潜力未被充分挖掘。",
+      "method_cn": "提出TarFlow，基于Transformer的掩码自回归流，在图像块上交替自回归方向。",
+      "result_cn": "在图像生成任务上表现优异，展示了归一化流的强大能力。",
+      "conclusion_cn": "证明了简单可扩展的归一化流架构可以达到先进生成性能。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-icml-2025-jptpugjdgy",
+      "score": 5.0,
+      "evidence_en": "introduces visual autoregressive modeling for image super-resolution, related to autoregressive image generation",
+      "evidence_cn": "提出用于图像超分辨率的视觉自回归建模，与自回归图像生成相关",
+      "canonical_evidence": "提出用于图像超分辨率的视觉自回归建模，与自回归图像生成相关",
+      "tldr_en": "Proposes VARSR, a visual autoregressive model for image super-resolution using next-scale prediction, demonstrating autoregressive modeling's applicability to image tasks.",
+      "tldr_cn": "针对图像超分辨率中保真度与真实感权衡及计算复杂性问题，提出基于自回归建模的VARSR框架，采用下一尺度预测形式，并引入前缀token和尺度对齐旋转位置编码，利用扩散精炼器提升质量，实验表明在超分辨率任务上取得优异性能，展示了自回归建模在图像任务中的潜力。",
+      "title_zh": "面向图像超分辨率的视觉自回归建模",
+      "motivation_cn": "现有生成模型在图像超分辨率中存在保真度与真实感权衡及计算复杂性问题。",
+      "method_cn": "提出VARSR框架，采用下一尺度预测的自回归建模，引入前缀token和尺度对齐旋转位置编码。",
+      "result_cn": "在多个超分辨率基准上取得了优越的定量和定性结果。",
+      "conclusion_cn": "该工作展示了自回归建模在图像超分辨率任务中的有效性，扩展了自回归图像模型的应用。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    }
+  ],
+  "llm_ranked_at": "2026-06-04T03:19:57.826145+00:00",
+  "display_min_score": 4.0,
+  "pruned_at": "2026-06-04T03:19:57.868420+00:00"
+}

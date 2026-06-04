@@ -1,0 +1,1622 @@
+Title: Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities
+
+URL Source: https://openreview.net/pdf?id=magOSIm8UT
+
+Number of Pages: 27
+
+Markdown Content:
+# Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+Yifang Chen 1 Xiaoyu Li 2 Yingyu Liang 3 4 Zhenmei Shi 4 Zhao Song 5
+
+## Abstract 
+
+We investigate the fundamental limits of transformer-based foundation models, extending our analysis to include Visual Autoregressive (VAR) transformers. VAR represents a big step toward generating images using a novel, scalable, coarse-to-fine “next-scale prediction” framework. These models set a new quality bar, outperform-ing all previous methods, including Diffusion Transformers, while having state-of-the-art per-formance for image synthesis tasks. Our primary contributions establish that, for single-head VAR transformers with a single self-attention layer and single interpolation layer, the VAR Transformer is universal. From the statistical perspective, we prove that such simple VAR transformers are uni-versal approximators for any word-to-image Lip-schitz functions. Furthermore, we demonstrate that flow-based autoregressive transformers in-herit similar approximation capabilities. Our re-sults provide important design principles for ef-fective and computationally efficient VAR Trans-former strategies that can be used to extend their utility to more sophisticated VAR models in im-age generation and other related areas. 
+
+## 1. Introduction 
+
+Transformer architectures have gained many attentions re-cently, and it has reshaped the landscape of modern ma-chine learning. Transformer-based models have shown the state-of-the-art performance in many tasks, such as natural language processing (e.g., GPT-o1 (OpenAI, 2024), Llama 3.3 (Llama Team, 2024; AI, 2024), and Claude 3.5 (An-thropic, 2024)), computer vision, and generative modeling.       
+
+> 1The University of Chicago 2University of New South Wales
+> 3The University of Hong Kong 4University of Wisconsin–Madison
+> 5University of California, Berkeley. Correspondence to: Zhao Song <magic.linuxkde@gmail.com >.
+> Proceedings of the 42 nd International Conference on Machine Learning , Vancouver, Canada. PMLR 267, 2025. Copyright 2025 by the author(s).
+
+The core component in the transformer architecture is the self-attention mechanism, which captures long-range de-pendencies in data (Vaswani et al., 2017). A transformer-variants model, called the Visual Auto-regressive Trans-former ( VAR ) (Tian et al., 2024), utilizes the transformer architecture to structure image synthesis. VAR Transformer uses “next-scale prediction” method to produce high quality images much more efficiently and outperform many stan-dard diffusion models (Song et al., 2021). The iterative generation process of VAR demonstrates powerful perfor-mance in large-scale visual tasks, but the previous work is solely empirical, where the theoretical understandings of why VAR Transformers architecture excel in the image synthesis tasks is missing. In addition to the VAR transfromer, flow-based generative methods (e.g., real-valued non-volume preserving (Real-NVP) and Glow) have also garnered attention for their abil-ity to generate high-fidelity samples in an invertible and tractable manner. Recent efforts have integrated autoregres-sive decompositions with flow-based designs, giving rise to Flow AutoRegressive (FlowAR) (Ren et al., 2024) architec-tures. These models aim to blend the interpretability and stability of normalizing flows with the powerful represen-tation learning of autoregressive transformers, potentially yielding more robust and scalable training dynamics. Simi-lar to the studies on VAR transformers, the previous work on FlowAR focus on the empirical results but missing the theoretical understanding of why FlowAR excels other ar-chitetures. To provide the theoretical analysis of the transformer-based architecture, the universal approximation theory is popular in recent studies. Standard transformers are proved to be univeral sequence-to-sequence approximators, which means that transformer is capable of representing any continuous mapping between input and output sequences given suffi-cient width and depth (Yun et al., 2020; Kajitsuka & Sato, 2024). Therefore, given the lack of theoretical analysis of 
+
+VAR transformer, it is natural to ask the question: 
+
+Are VAR Transformers the universal approximators? 
+
+In this work, we extend the unviersal approximation result from (Yun et al., 2020; Kim et al., 2022; Kajitsuka & Sato, 1Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+2024; Hu et al., 2024b; Liu et al., 2025; Hu et al., 2025a) to prove that the VAR Transformer and some other variants are universal approximators. Our contribution can be sum-marized as follows: The key contributions of this paper are as follows: • We formally establish that single-layer, single-head 
+
+VAR Transformers are universal function approxima-tors for Lipschitz image-to-image mappings , extend-ing universality results to the VAR framework. • Our results elucidate the theoretical expressiveness of 
+
+VAR Transformers, showing how their fundamental components, including self-attention and up-sampling, enable them to approximate arbitrary continuous trans-formations. • We provide insights into the broader implications of our findings for generative modeling, particularly in computer vision, where efficient and expressive archi-tectures are essential for high-quality image synthesis. Building on the universal approximation property es-tablished for VAR Transformers, we show that the guar-antee naturally extends to other autoregressive models as well. Our theoretical contributions address two central gaps in the-oretical understandings of generative transformer architec-tures, and it provides more insights to design more flexible and efficient generative models. Furthermore, our results provide a deeper understanding of why VAR and some other variants perform effectively in practice, such as even with the most minimal set up (single layer and single head), VAR 
+
+transformer is capable of approximating complex functions. 
+
+## 2. Related Work 
+
+Universal Approximation of Transformer Transformer architectures are universal approximators, which means they have the capabilities to approximate arbitrary sequence-to-sequence functions under mild conditions. (Yun et al., 2020) shows that deep transformers with stacked self-attention and feedforward layers can approximate any continuous mapping. (Jiang & Li, 2023) uses Kolmogorov-Arnold rep-resentations to derive the same results. (Alberti et al., 2023) extend the universality results to non-standard attention mechanisms, and (Kajitsuka & Sato, 2024; Hu et al., 2024b) explores the universality results in single-layer and single head transformers. Overall, these results build a strong foundations for the theoretical understandings on the expres-siveness of transformer-based architectures. 
+
+Auto-regressive Image Generation Models In image generation, auto-regressive models play a pivotal role by decomposing high-dimension distributions into a product of conditions. PixelCNN (Van den Oord et al., 2016) and PixelSNAIL (Chen et al., 2018) generate one pixel at a time, which can capture local dependencies with convolutional architectures. Recent work use discrete latent tokenization, which facilitate generation at high resolutions. For exam-ple (Esser et al., 2021) introduces VQ-GAN that utilizes vector quantization with a GPT decoder, and VQVAE-2 from (Razavi et al., 2019) and RQ-Transformer from (Lee et al., 2022) propose multi-scale hierachies to capture coarse and fine-level structure. Based on these previous work, (Tian et al., 2024) designs the Visual AutoRegressive (VAR) Transformer which implement coase-to-fine “next-scale pre-diction” mechanism and combine transformer decoding with pyramid-shaped token representations. VAR Transformer achieves state-of-the-art performance in autoregressive im-age sythesis. 
+
+Diffusion Models. Diffusion models (Ho et al., 2020; Rombach et al., 2022) excel in generating high-resolution images by iteratively refining noise into coherent visuals. Prominent examples, such as DiT (Peebles & Xie, 2023) and U-ViT (Bao et al., 2023), leverage probabilistic frameworks to learn data distributions effectively. Recent progress in diffusion-based image generation has focused on enhancing sampling techniques and training efficiency (Song & Ermon, 2019; Song et al., 2021; Lu et al., 2022; Hu et al., 2024c; Chen et al., 2025a; Shen et al., 2025a), advancing latent-space learning (Rombach et al., 2022; Wang et al., 2024d;b; Liu et al., 2024a), refining model architectures (Ho et al., 2022; Peebles & Xie, 2023; Gu et al., 2025; Wang et al., 2024a; Xue et al., 2024; Chen et al., 2025b), and exploring applications in 3D generation (Poole et al., 2022; Wang et al., 2024c; Xu et al., 2024b; Cao et al., 2025a). 
+
+## 3. Preliminary 
+
+In this section, we introduce the fundamental definitions of our work. In Section 3.1, we introduce all related math notations used in this paper. In Section 3.2, we introduce the key transformer blocks. In Section 3.3, we introduce the components in phase one of the VAR Model. In Section 3.4, we mathematically detail the VAR Transformer blocks. 
+
+3.1. Notations 
+
+We denote the ℓp norm of a vector x by ∥x∥p, i.e., 
+
+∥x∥1 := Pni=1 |xi|, ∥x∥2 := ( Pni=1 x2 
+
+> i
+
+)1/2 and ∥x∥∞ := max i∈[n] |xi|. For a vector x ∈ Rn, exp( x) ∈ Rn denotes a vector where exp( x)i is exp( xi) for all i ∈ [n]. For n > k ,for any matrix A ∈ Rn×k, we denote the spectral norm of A by ∥A∥, i.e., ∥A∥ := sup x∈Rk ∥Ax ∥2/∥x∥2. We de-fine the function norm as ∥f ∥α := ( R ∥f (X)∥ααdX)1/α 
+
+where f is a function. For a matrix X ∈ Rn1n2×d, we use X ∈ Rn1×n2×d to denote its tensorization, and we only 2Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+assume this for letters X and Y .
+
+3.2. Transformer Blocks 
+
+In this section, we define the components in the VAR Trans-former. We first introduce the Softmax unit. 
+
+Definition 3.1 (Softmax) . Let z ∈ Rn. We define Softmax :
+
+Rn → Rn satisfying 
+
+Softmax (z) := exp( z)
+
+⟨exp( z), 1n⟩ .
+
+Here, we define the attention matrix in the VAR Transformer as follows. 
+
+Definition 3.2 (Attention Matrix) . Let WQ, W K ∈ Rd×d
+
+denote the model weights. Let X ∈ Rn×d denote the repre-sentation of the length-n input. Then, we define the attention matrix A ∈ Rn×n by, For i, j ∈ [n],
+
+Ai,j := exp( Xi, ∗
+
+|{z} 
+
+> 1×d
+
+WQ
+
+|{z} 
+
+> d×d
+
+W ⊤
+
+> K
+
+|{z} 
+
+> d×d
+
+X⊤
+
+> j, ∗
+
+|{z} 
+
+> d×1
+
+).
+
+With the attention matrix, we now provide the definition for a single layer of Attention. 
+
+Definition 3.3 (Single Attention Layer) . Let X ∈ Rn×d
+
+denote the representation of the length-n sentence. Let 
+
+WV ∈ Rd×d denote the model weights. As in the usual attention mechanism, the final goal is to output an n × d size matrix where D := diag( A1n) ∈ Rn×n. Then, we define attention layer Attn as 
+
+Attn (X) := D−1AXW V .
+
+Here we present the definition of the VAR Attention. 
+
+Definition 3.4 (VAR Attention Layer) . Let r ≥ 1 be a pos-itive integer. Let hr , w r be two positive integers. Let X ∈
+
+Rhr ×wr ×d denote the representation of the input token map. Let WV ∈ Rd×d denote the model weights. As in the usual attention mechanism, the final goal is to output an n × d
+
+size matrix where D := diag( A1n) ∈ Rhr wr ×hr wr . Then, we define attention layer Attn r : Rhr wr ×d → Rhr wr ×d as 
+
+Attn r (X) := D−1AXW V .
+
+We introduce the feed-forward layer in the VAR Transformer as follows. 
+
+Definition 3.5 (Single Feed-Forward Layer) . If the follow-ing conditions hold: • X ∈ Rd×L
+
+• k ∈ [n]
+
+• c is the number of neurons • W (1) ∈ Rc×d, W (2) ∈ Rd×c are weight matrices • b(1) ∈ Rc, b(2) ∈ Rd are bias vectors. • FFN : Rd×L → Rd×L
+
+Then we define the FFN as follows: 
+
+FFN (X)∗,k = X∗,k 
+
+|{z} 
+
+> d×1
+
++ W (2) 
+
+| {z } 
+
+> d×c
+
+ReLU (W (1) X∗,k 
+
+| {z }
+
+> c×1
+
++ b(1) 
+
+|{z} 
+
+> c×1
+
+) + b(2) 
+
+|{z} 
+
+> d×1
+
+.
+
+3.3. VAR Phase One 
+
+We first present Phase One of VAR model based on (Ke et al., 2025a). The VAR model uses the VAR Transformer to convert the initialized token map Xinit into a series of pyramid-shaped token maps. The VAR Transformer alternates between up sample blocks and attention layers to get the output. 
+
+Up Sample Blocks. The k-th up sample block takes as input the initial token map Xinit and the previous pyramid-shaped token maps X1, . . . , X k, sets Y1 = Xinit and up samples each Xi into a new token map Yi+1 , and outputs the new pyramid-shaped token maps Y1, . . . , Y k+1 .The upsampling on each token map Xr (r ∈ [k]) uses inter-polation with a bicubic spline kernel. 
+
+Definition 3.6 (Bicubic Spline Kernel, Definition 3.1 from (Ke et al., 2025a) on Page 5 ) . A bicubic spline kernel is a piecewise cubic function W : R → R that satisfies 
+
+W (x) ∈ [0 , 1] for all x ∈ R.We define the up-interpolation layer for one-step geometric series as follows. 
+
+Definition 3.7 (Up-interpolation Layer for One-Step Ge-ometric Series, Definition 3.2 from (Ke et al., 2025a) on Page 5) . We let r ≥ 2 be an integer denoting the inter-polation level, and we let hr−1, w r−1, h r , w r ∈ N satisfy 
+
+hr−1 < h r and wr−1 < w r . We take d ∈ N to denote the number of feature channels, and we define the input feature map X ∈ Rhr−1×wr−1×d and the output feature map 
+
+Y ∈ Rhr ×wr ×d.Let W : R → R denote a bicubic spline kernel (see Defi-nition 3.6). The up-interpolation operation is defined by a function 
+
+ϕup ,r : Rhr−1×wr−1×d → Rhr ×wr ×d
+
+such that Y = ϕup ,r (X). For each spatial index i ∈ [hr ],
+
+j ∈ [wr ], and channel index l ∈ [d], the output is given by: 
+
+Yi,j,l := 
+
+> 2
+
+X
+
+> s=−12
+
+X
+
+> t=−1
+
+W (s) · X i·hr−1    
+
+> hr +s, j·wr−1
+> wr +t, l
+
+· W (t).
+
+3Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+After defining the Up-Interpolation Layer for a one-step geometric sequence, we can construct a Pyramid Up-Interpolation Layer, which applies multiple up-interpolation layers to generate token maps at different resolutions. Specifically, we can describe this Pyramid Up-Interpolation Layer through the following definition: 
+
+Definition 3.8 (Pyramid Up-Interpolation Layer Φ, r = 1 
+
+Case, Definition 3.3 from (Ke et al., 2025a) on Page 5) .
+
+We let d ∈ N be a positive integer denoting the channel dimension, and we take Xinit ∈ R1×1×d to denote the initial token map. The pyramid up-interpolation operator at level r = 1 is defined as follows: 
+
+Φup ,1 : R1×1×d → R1×1×d, Φup ,1(Xinit ) := Xinit .
+
+Definition 3.9 (Pyramid Up-Interpolation Layer Φ, r ≥ 2
+
+Case) . Let d ∈ N be the channel dimension, and let r ≥ 2
+
+be the number of interpolation levels. Let Xinit ∈ R1×1×d
+
+denote the initial token map. Let 
+
+ϕup ,i : Rhi−1×wi−1×d → Rhi×wi×d
+
+denote the up-interpolation operator at level i, as defined in Definition 3.7. We define the pyramid up-interpolation operator 
+
+Φup ,r : Rh[r−1] ×w[r−1] ×d → Rh[r]×w[r]×d
+
+recursively as follows: 
+
+Y1 = Xinit ,
+
+Yi = ϕup ,i −1(Yi−1), for all i ∈ { 2, . . . , r }.𝑿 𝒊𝒏𝒊𝒕     
+
+> 𝑿 𝟏 𝑿 𝟐 𝑿 𝒊𝒏𝒊𝒕 𝝓 𝒖𝒑 (𝑿 𝟏 )𝝓 𝒖𝒑 (𝑿 𝟐 )
+> 𝑪𝒐𝒑𝒚
+
+Figure 1. One Pyramid Up-Interpolation Layer Instance Φup ,2.The Pyramid Up-Interpolation layer starts from a 1 × 1 × d token 
+
+Xinit and uses two bicubic up-sampling steps to produce higher-resolution token maps X1 and X2. The concatenated tokens are flattened, and their query–key dot products form the attention ma-trix A that supplies context to the next transformer block. 
+
+Remark 3.10 . We have a pyramid-shaped token maps of size 
+
+h[r+1] × w[r+1] × d. To input this into the VAR Transformer, we merge the first two dimensions, transforming it into an input of size (Pr+1  
+
+> i=1
+
+hiwi) × d.Now, we are ready to introduce the VAR transformer. 
+
+Definition 3.11 (VAR Transformer, Definition 3.1 from (Ke et al., 2025a) on Page 5) . If the following conditions hold: • Assume the VAR transformer has m transformer layers. • At the i-th transformer layer, let gi denote components excluding the attention layer, such as the LN layer or MLP layer. • Let Φup ,r denote the pyramid up-interpolation layer defined in Definition 3.9. • Let Attn i stand for the self-attention layer, which is defined in Definition 3.3. • Let Xinit ∈ R1×1×d be an input token map and Xinit ∈
+
+R1×d be its matrix version. • Let n = Pmi=1 hiwi.Then we define a VAR transformer as the following 
+
+TF (Xinit ) := gm ◦ Attn m ◦ Φup ,m ◦ · · · ◦ g2 ◦ Attn 2 ◦ Φup ,2
+
+◦ g1 ◦ Attn 1 ◦ Φup ,1(Xinit ) ∈ Rn×d,
+
+In this expression, ◦ stands for functional composition. 
+
+3.4. VAR Transformer Blocks 
+
+Recall we have defined ϕup : Rh×w×c → Rh′×w′×c in Definition 3.7. Since there is no non-linear operation in ϕup ,
+
+ϕup is equivalent to a matrix multiplication operation, where the dimension of the matrix is Rh′w′×hw . For simplicity, we view ϕup as a Rh′w′×hw dimension matrix in the following proofs. 
+
+Remark 3.12 (Applying ϕup on X ∈ Rn×d, Remark 4.8 from (Ke et al., 2025a) on Page 8) . The actual input of 
+
+VAR Transformer Layer are r input token maps, X1 ∈
+
+Rh1×w1×d, . . . , X r ∈ Rhr ×wr ×d. We denote them as X ∈
+
+Rn×d, where n := Pri=1 hiwi. We denote ϕup (X) ∈
+
+Rn′×d as applying ϕup to each Xi ∈ Rhi×wi×d for i ∈ [r],where n′ = Pri=1 h′
+
+> i
+
+w′
+
+> i
+
+.Then, we can combine multiple attention layers with other components (up-interpolation layers, multilayer perceptron layers, layer-wise normalization layers) to create a complete 
+
+VAR Transformer architecture. 
+
+Definition 3.13 (Single VAR Transformer Layer, Definition 4.9 from (Ke et al., 2025a) on Page 9) . If the following conditions hold: • Assume the VAR transformer has m Transformer lay-ers. 4Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+• Let FFN denotes a single Feed-forward Layer (see Definition 3.5). • Let Attn stands for a single self-attention layer (see Definition 3.3). Then we define a VAR transformer block as the following. 
+
+TF VAR (X) = FFN ◦ Attn ◦ ϕup ∈ Rn×d,
+
+In this expression, ◦ stands for functional composition. Now, we present the VAR Transformer Network Function Class. 
+
+Definition 3.14 (VAR Transformer Network Function Class) . If the following conditions hold: • Assume the VAR transformer network has m layers. • for i ∈ [m], FFN i denotes the Feed-forward at i-th layer (see Definition 3.5), Attn i denotes the Attention at i-th layer (see Definition 3.3), and ϕup  
+
+> i
+
+denotes the Up interpolation at i-th layer (see Definition 3.7). • Let T a,s,c denote the VAR transformer network func-tion class • each function τ ∈ T a,s,c consists of VAR transformer blocks TF m 
+
+> VAR
+
+with a heads of size s and c MLP hidden neurons Then we define VAR Transformer Network Function Class as follows: 
+
+T a,s,c := {τ : Rn×d → Rn×d
+
+|τ = TF m 
+
+> VAR
+
+◦ TF m−1 
+
+> VAR
+
+◦ . . . ◦ TF 1
+
+> VAR
+
+(X)}
+
+## 4. Main Results 
+
+In this section, we introduce our main results. We show that VAR Transformer and FlowAR models are universal approximators. We first present the result of the universal approximation property of VAR Transformer. 
+
+Theorem 4.1 (Universality of VAR Transformer, Informal Version of Theorem 6.6) . For any word-to-image function 
+
+fword2img under some mild assumptions, there exists a VAR 
+
+Transformer τVAR which can approximate it. 
+
+Next, we extend the result of VAR Transformer to FlowAR models. 
+
+Corollary 4.2 (Universality of FlowAR, Informal Version of Corollary 7.2) . For any word-to-image function fword2img 
+
+under some mild assumptions, there exists a FlowAR model 
+
+τVAR which can approximate it. 
+
+Theorem 4.1 and Corollary 4.2 jointly reveal that minimal in-stantiations of both VAR Transformers and FlowAR models already possess universal approximation power. This finding is striking for two reasons. First, it shows that the coarse-to-fine “next-scale prediction” schedule of VAR , when coupled with a single-head self-attention mechanism, suffices to match the expressiveness guarantees previously reserved for much deeper or wider transformer stacks. Second, the same argument extends seamlessly to FlowAR, indicating that invertible flow steps do not diminish expressivity and can even complement autoregressive attention by offering stable training dynamics. Practically, these results suggest that future work can focus on efficiency optimisations—such as weight sharing or low-rank adaptation—without risking a loss of representational capacity. 
+
+## 5. Any-Rank Single-Layer Attention is a Contextual Mapping Function 
+
+In this section, we show that Attention is a contextual map-ping function. In Section 5.1, we give the definition of contextual mapping. In Section 5.2, we introduce any-rank single-layer attention as a contextual mapping function. 
+
+5.1. Contextual Mapping Contextual Mapping. Let X, Y ∈ Rn×d be the input embeddings and output label sequences, respectively. Let 
+
+Xi ∈ Rd be the i-th token of each X embedding sequence. 
+
+Definition 5.1 (Vocabulary, Definition 2.4 from (Hu et al., 2024b) on Page 8) . We define the vocabulary. • We define the i-th vocabulary set for i ∈ [N ] by V(i) =
+
+∪k∈[n]X(i) 
+
+> k
+
+⊂ Rd.• We define the whole vocabulary set V as V =
+
+∪i∈[N ]V(i) ⊂ Rd.Note that while “vocabulary” typically refers to the tokens’ codomain, here, it refers to the set of all tokens within a single sequence. To facilitate our analysis, we introduce the idea of input token separation following (Kajitsuka & Sato, 2024; Kim et al., 2022; Yun et al., 2020). 
+
+Definition 5.2 (Tokenwise Separateness, Definition 2.5 from (Hu et al., 2024b) on Page 8) . We define the tokenwise separateness as follows. • Let X(1) , . . . , X (N ) ∈ Rn×d be embeddings. • Let N be the number of sequences in the datasets. • Let n be the length of a sequence. i.e. X(i) ∈ Rn×d
+
+First, we state three conditions for X(1) , . . . , X (N )
+
+5Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+(i) For any i ∈ [N ] and k ∈ [n], ∥X(i) 
+
+> k
+
+∥2 > γ min holds. (ii) For any i ∈ [N ] and k ∈ [n], ∥X(i) 
+
+> k
+
+∥2 < γ max holds. (iii) For any i, j ∈ [N ] and k, l ∈ [n] if X(i)
+
+> k
+
+̸ = X(j) 
+
+> l
+
+, then 
+
+∥X(i) 
+
+> k
+
+− X(j) 
+
+> l
+
+∥2 > δ holds. Second, we define three types of separateness as follows, • Part 1. If all conditions hold, then we call it tokenwise 
+
+(γmin , γ max , δ )-separated • Part 2. If conditions (ii) and (iii) hold, then we denote this as (γ, δ )-separateness. • Part 3. If only condition (iii) holds, then we denote it as (δ)-separateness. To clarify condition (iii), we consider cases where there are repeated tokens between different input sequences. Next, we define contextual mapping. Contextual mapping describes a function’s ability to capture the context of each input sequence as a whole and assign a unique ID to each input sequence. 
+
+Definition 5.3 ((γ, δ )-Contextual Mapping, Definition 2.6 from (Hu et al., 2024b) on Page 8) . A function q : Rn×d →
+
+Rn×d is said to be a (γ, δ )-contextual mapping for a set of embeddings X(1) , . . . , X (N ) ∈ Rn×d, if the following conditions hold: • Contextual Sensitivity γ. For any i ∈ [N ] and k ∈
+
+[n], ∥q(X(i))k∥2 < γ holds. • Approximation Error δ. For any i, j ∈ [N ] and 
+
+k, l ∈ [n] such that V(i)̸ = V(j) or X(i)
+
+> k
+
+̸ = X(j) 
+
+> l
+
+,
+
+∥q(X(i))k − q(X(j))l∥2 > δ holds. In addition, Note that q(X(i)) for i ∈ [N ] is called a context ID of X(i).
+
+5.2. Any-Rank Single-Layer Attention is a Contextual Mapping Function 
+
+Now we present the result showing that a softmax-based 1-head, 1-layer attention block with any-rank weight matrices is a contextual mapping. 
+
+Lemma 5.4 (Any-Rank Attention as a (γ, δ )-Contextual Mapping, Lemma 2.2 from (Hu et al., 2024b) on Page 9) . If the following conditions hold: 
+
+• Let X(1) , . . . , X (N ) ∈ Rn×d be embeddings that are 
+
+(γmin , γ max , ϵ )-tokenwise separated, with the vocabu-lary set V = ∪i∈[N ]V(i) ⊂ Rd.
+
+• X(i)
+
+> k
+
+̸ = X(i) 
+
+> l
+
+for any i ∈ [N ] and k, l ∈ [L].
+
+• Let γ = γmax + ϵ
+
+> 4
+
+• Let δ = exp( −5ϵ−1|V| 4dκγ max log L)
+
+• Let κ := γmax /γ min .
+
+• Let W (O) ∈ Rd×s and WV , W K , W Q ∈ Rs×d.Then, we can show 
+
+• 1-layer, single-head attention mechanism serves as a (γ, δ )-contextual mapping for the embeddings 
+
+X(1) , . . . , X (N ) with weight matrices W (O) and 
+
+WV , W K , W Q.
+
+Lemma 5.4 indicates that any-rank self-attention function distinguishes input tokens X(i) 
+
+> k
+
+= X(j) 
+
+> l
+
+such that V(i)̸ =
+
+V(j). In other words, it distinguishes two identical tokens within a different context. 
+
+5.3. Discussion 
+
+Hu et al. (2024c) rigorously studied the statistical and com-putational frontiers of prompt-tuning Transformers. They prove that even the minimal architecture—a single-layer, single-head Transformer kept entirely frozen—becomes a universal approximator once a learnable soft-prompt is prepended, and they quantify the accompanying memoriza-tion cost by showing an exponential lower bound on the prompt length required for arbitrary sequence-to-sequence datasets. Our study builds on this insight by exploring how the unversal approximation abilities of VAR Transformers. 
+
+## 6. Universality of VAR Transformer 
+
+In this section, we present our proof for the universality of the VAR Transformer. In Section 6.1, we used a universality result from a previous work. In Section 6.2, we analyze how the error behaves when two consecutive layers in our composition are each replaced by their respective approxi-mations. In Section 6.3, we present the scenario when one of the composited layers got replaced by a different func-tion. In Section 6.4, we present the scenario when all of the composited layers got replaced. In Section 6.5, we present our proof for the universality of the VAR Transformer. 
+
+6.1. Universality of T 1,1,4 
+
+> A
+
+with O((1 /ϵ )dn ) FFN Layers 
+
+We follow the line of the universal approximation tech-niques (Yun et al., 2020; Kim et al., 2022; Kajitsuka & Sato, 2024; Hu et al., 2024b; Liu et al., 2025; Hu et al., 2025a) and extend to the following result. 
+
+Lemma 6.1 (τ ∈ T 1,1,4 
+
+> A
+
+Transformer is Universal Img2Img Approximator, a Variation of Theorem 2.3 in Hu et al. (2024b) on Page 11) . If the following conditions hold: 
+
+6Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+• Let 1 ≤ p < ∞ and ϵ > 0.
+
+• Let a transformer with one self-attention layer defined as τ ∈ T 1,1,4
+
+> A
+
+Then, there exists a transformer τ with single self-attention layer, such that for any fimg2img ∈ FC there exists 
+
+∥τ (·), f img2img ∥α ≤ ϵ.Proof. We provide a sketch of the proof here, which mainly follows from Hu et al. (2024b) • We start by quantizing the input and output do-main of fimg2img ∈ F C,r into a quantized function 
+
+f img2img : Gδ,h r wr → Gδ,h r wr where Gδ,h r wr =
+
+{0, δ, 2δ, . . . , 1 − δ}hr wr ×d. Here, f img2img , FC,r de-note the quantized function and function class. This is basically performing a piece-wise constant approxima-tion with bounded error δ.• Next, we construct a surrogate quantized image-to-image function 
+
+himg2img : Gδ, (hr wr ) → G δ, (hr wr ),
+
+where Gδ, (hr wr ) = {0, δ, 2δ, . . . , 1 − δ}(hr wr )×d.
+
+Here himg2img takes embeddings X as inputs. Cru-cially, its output approximates any f img2img ∈ F C,r .• Finally, we show that there exist a transformer τ ∈T 1,1,4 
+
+> A
+
+approximating himg2img to any precision. The formal construction is in Lemma C.1. By simple re-duction from himg2img , f img2img and fimg2img , we achieve the universality of prompt tuning on T 1,1,4
+
+> A
+
+with O((1 /ϵ )d(hr wr )) FFN layers, where ϵ is the ap-proximation error. Thus we complete the proof 
+
+6.2. Two Layers Perturbation 
+
+In this section, we analyze how the error behaves when two consecutive layers in our composition are each replaced by their respective approximations. Specifically, we consider the composition fi ◦ gi and replace gi with an up interpo-lation function Φup ,i and fi with a one-layer transformer 
+
+τi. We show that under appropriate Lipschitz and approxi-mation assumptions, the overall error of the approximated two-layer composition can be controlled in terms of the individual approximation errors. 
+
+Assumption 6.2 (Target Function Class) . We assume the following things: • Let f1, . . . , f r be r K-Lipschitz functions from 
+
+Rhr ×wr ×d to Rhr ×wr ×d.• For each i ∈ [r], let gi be a K-Lipschitz function from 
+
+Rhi−1×wi−1×d to Rhi×wi×d.• We assume that for each i ∈ [r], gi can be approxi-mated by some up interpolation function ϕup ,i .• We assume that the target function fword2img :
+
+R1×1×d → Rhr ×wr ×d satisfies 
+
+fword2img := fr ◦ gr · · · ◦ f1 ◦ g1.
+
+With the Assumption 6.2, we present the two layers of perturbation as follows. 
+
+Lemma 6.3 (Two Layers Perturbation) . Let ϕup ,i be the up interpolation function defined in Definition 3.7. Let fr
+
+be r K -Lipschitz functions from Assumption 6.2. Let gi
+
+be r K -Lipschitz functions from Assumption 6.2. Let τi
+
+be the one-layer transformer defined in Eq. 2.4 from (Hu et al., 2024b). If ∥gi − Φup ,i ∥ ≤ ϵ1,i from Assumption 6.2, 
+
+∥fi − τi∥ ≤ ϵ2,i from Theorem 6.1, and each fi is K1,i -Lipschitz, then we have 
+
+∥fi ◦ gi − τi ◦ Φup ,i ∥ ≤ K1,i ϵ1,i + ϵ2,i .
+
+Proof. We can show that 
+
+∥fi ◦ gi − τi ◦ Φup ,i ∥
+
+= ∥fi ◦ gi − fi ◦ Φup ,i + fi ◦ Φup ,i − τi ◦ Φup ,i ∥≤ ∥ fi ◦ gi − fi ◦ Φup ,i ∥ + ∥fi ◦ Φup ,i − τi ◦ Φup ,i ∥
+
+= ∥fi ◦ (gi − Φup ,i )∥ + ∥(fi − τi) ◦ Φup ,i ∥≤ ∥ fi ◦ (gi − Φup ,i )∥ + ∥fi − τi∥≤ K1,i ϵ1,i + ϵ2,i 
+
+where the first step follows from basic algebra, the second step follows from triangle inequality, the third and fourth steps follow from basic algebra, and the fifth step follows from our conditions. 
+
+6.3. Perturbation of Recursively Composting Functions that One Layer is Different 
+
+In this section, we consider a scenario where we have a composition of many layers, but only one of the layers is replaced by a different function. This setting helps us see how a single local perturbation can propagate through subsequent layers in a multi-layer composition. The lemma below quantifies this propagation by leveraging Lipschitz continuity. 
+
+Lemma 6.4 (Perturbation of Recursively Composting Func-tions, One Layer is Different) . if the following conditions hold 
+
+• Assume ∥uj (w) − vj (w)∥ ≤ ϵ for any w.
+
+• vi(x) ≤ K2 · ∥ x∥
+
+7Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+Fix j, we have 
+
+∥ ◦ n+1  
+
+> i=j+1
+
+vi ◦ji=1 ui − ◦ ni=j vi ◦j−1 
+
+> i=0
+
+ui∥ ≤ Kn−j 
+
+> 2
+
+· ϵ
+
+Proof. We define w as 
+
+w = ◦j−1 
+
+> i=0
+
+ui(x)
+
+We can show that for any x
+
+∥ ◦ n+1  
+
+> i=j+1
+
+vi ◦ji=1 ui(x) − ◦ ni=j vi ◦j−1 
+
+> i=0
+
+ui(x)∥
+
+= ∥ ◦ n+1  
+
+> i=j+1
+
+viuj (w) − ◦ ni=j+1 vi(vj (w)) ∥
+
+= ∥ ◦ n+1  
+
+> i=j+1
+
+vi(uj (w) − vj (w)) ∥≤ Kn−j 
+
+> 2
+
+· ϵ
+
+where the first step follows from basic algebra, the second step follows from linearity, and the third step follows from lemma assumptions. 
+
+6.4. Perturbation of Recursively Composting Functions that All Layer are Different 
+
+In this section, we extend the analysis to the most general scenario in which all layers in the composition are replaced by different functions. This captures the situation where each layer ui is approximated by some other function vi.We derive a cumulative bound that sums the individual per-turbations introduced at each layer. 
+
+Lemma 6.5 (Perturbation of Recursively Compositing Func-tions, All Layers are Different) . If the following conditions hold: 
+
+• Let ◦ni=1 ui = un ◦ · · · ◦ u1.
+
+• Let ◦ni=1 vi = vn ◦ · · · ◦ v1.
+
+• Let u0(x) = x which is identity mapping. 
+
+• Let vn+1 (x) = x which is identity mapping. Then 
+
+∥ ◦ ni=1 ui − ◦ ni=1 vi∥≤
+
+> n
+
+X
+
+> j=1
+
+∥ ◦ n+1  
+
+> i=j+1
+
+vi ◦ji=1 ui − ◦ ni=j vi ◦j−1 
+
+> i=0
+
+ui∥
+
+Proof. We can show 
+
+∥ ◦ ni=1 ui − ◦ ni=1 vi∥
+
+= ∥
+
+> n
+
+X
+
+> j=1
+
+(◦n+1 
+
+> i=j+1
+
+vi ◦ji=1 ui − ◦ ni=j vi ◦j−1 
+
+> i=0
+
+ui)∥≤
+
+> n
+
+X
+
+> j=1
+
+∥ ◦ n+1  
+
+> i=j+1
+
+vi ◦ji=1 ui − ◦ ni=j vi ◦j−1 
+
+> i=0
+
+ui∥
+
+where the first step follows from adding intermediate terms, and the last step follows from the triangle inequality. Thus, we complete the proof. 
+
+6.5. The Universality of VAR Transformer 
+
+In this section, with the established error bounds for re-placing individual or multiple layers with alternative func-tions, we now prove the main universality result for the 
+
+VAR Transformer. In essence, we show that a properly constructed VAR Transformer can approximate the target function fword2img (from Assumption 6.2) with arbitrarily small errors under suitable Lipschitz and approximation assumptions on each layer. 
+
+Theorem 6.6 (Universality of VAR Transformer, Formal Version of Theorem 4.1) . For fword2img satisfies Assump-tion 6.2, there exists a VAR Transformer τVAR such that 
+
+∥τVAR − fword2img ∥ ≤ O(ϵ)
+
+Proof. Assume K2 > 2. We can show that 
+
+∥τVAR − fword2img ∥ = ∥ ◦ ri=1 (fi ◦ gi) − ◦ ri=1 (τi ◦ Φup ,i )∥
+
+=
+
+> n
+
+X
+
+> j=1
+
+Kn−j 
+
+> 2
+
+(K1,i ϵ1,i + ϵ2,i )= Kn 
+
+> 2
+
+− 1
+
+K2 − 1 (K1,i ϵ1,i + ϵ2,i )
+
+≤ Kn 
+
+> 2
+
+(K1,i ϵ1,i + ϵ2,i )= O(ϵ).
+
+where the first step follows from Definition 3.14, the second step follows from Lemma 6.4, the third step follows from basic algebra, and the fourth step follows from the basic inequality, and the last step follows that ϵ1,i , ϵ 2,i = O(ϵ) for all i ∈ [n]
+
+## 7. Universality of FlowAR and HOFAR 
+
+In this section, we show that the universality results estab-lished for the VAR Transformer can be extended to FlowAR model. Furthermore, we show that these results also hold for Higher-order FlowAR models (HOFAR) introduced by Liang et al. (2025b). In Section 7.1, we present the universality result of FlowAR. In Section 7.2, we extend the universality result to HOFAR. 
+
+7.1. Universality of FlowAR 
+
+The key observation is that the same local perturbation bounds and Lipschitz assumptions used in the VAR Trans-former setting also apply to FlowAR, with only minor changes. Specifically, each FlowAR layer Φdown ,i can be 8Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+analyzed in an analogous way to Φup ,i , allowing us to de-rive a bound on the overall error of the composed FlowAR model. 
+
+Corollary 7.1. Let ϕdown ,i be the down interpolation func-tion of FlowAR (see Definition D.2). Let fr be r K -Lipschitz functions from Assumption 6.2. Let gi be r K -Lipschitz func-tions from Assumption 6.2. Let τi ∈ T 1,1,4 
+
+> A
+
+be the one-layer transformer. If ∥gi − Φdown ,i ∥ ≤ ϵ1,i , ∥fi − τi∥ ≤ ϵ2,i , and each fi is K1,i -Lipschitz, then we have 
+
+∥fi ◦ gi − τi ◦ Φdown ,i ∥ ≤ K1,i ϵ1,i + ϵ2,i .
+
+Proof. We can show that 
+
+∥fi ◦ gi − τi ◦ Φdown ,i ∥
+
+= ∥fi ◦ gi − fi ◦ Φdown ,i + fi ◦ Φdown ,i − τi ◦ Φdown ,i ∥≤ ∥ fi ◦ gi − fi ◦ Φdown ,i ∥ + ∥fi ◦ Φdown ,i − τi ◦ Φdown ,i ∥
+
+= ∥fi ◦ (gi − Φdown ,i )∥ + ∥(fi − τi) ◦ Φdown ,i ∥≤ ∥ fi ◦ (gi − Φdown ,i )∥ + ∥fi − τi∥≤ K1,i ϵ1,i + ϵ2,i 
+
+where the first step follows from basic algebra, the second step follows from triangle inequality, the third and fourth steps follow from basic algebra, and the fifth step follows from our conditions. The proof of this corollary mirrors the two-layer pertur-bation argument from the VAR Transformer, except each “up” interpolation function Φup ,i is replaced by the corre-sponding “down” interpolation function Φdown ,i . The same Lipschitz and approximation assumptions allow us to bound the difference between fi ◦ gi and τi ◦ Φdown ,i .Next, we can derive the universality of FlowAR models. 
+
+Corollary 7.2 (Universality of FlowAR, Informal Version of Corollary 4.2) . For fword2img satisfies Assumption 6.2, there exists a FlowAR model τFlowAR such that 
+
+∥τFlowAR − fword2img ∥ ≤ O(ϵ).
+
+Proof. Assume K2 > 2. We can show that 
+
+∥τFlowAR − fword2img ∥ = ∥ ◦ ri=1 (fi ◦ gi) − ◦ ri=1 (τi ◦ Φup ,i )∥
+
+=
+
+> n
+
+X
+
+> j=1
+
+Kn−j 
+
+> 2
+
+(K1,i ϵ1,i + ϵ2,i )= Kn 
+
+> 2
+
+− 1
+
+K2 − 1 (K1,i ϵ1,i + ϵ2,i )
+
+≤ Kn 
+
+> 2
+
+(K1,i ϵ1,i + ϵ2,i )= O(ϵ).
+
+where the first step follows from Definition 3.14, the second step follows from Lemma 6.4, the third step follows from basic algebra, and the fourth step follows from the basic inequality, and the last step follows that ϵ1,i , ϵ 2,i = O(ϵ) for all i ∈ [n]
+
+The proof of Corollary 7.2 follows the same high-level struc-ture as our universality results for the VAR Transformer (Theorem 6.6. By applying the local perturbation bound layer by layer and then summing the resulting errors, we ob-tain a global approximation guarantee that is O(ϵ). Hence, FlowAR, just like the VAR Transformer, can universally approximate the target function fword2img under the given Lipschitz and approximation assumptions. 
+
+7.2. Universality of HOFAR 
+
+Furthermore, we can extend the result to HOFAR (Liang et al., 2025b). In the original VAR analysis, the attention module learns zeroth-order information (spatial positions). FlowAR upgrades this to first-order information by regress-ing the velocity field. HOFAR further extends the idea: one attention block predicts the velocity v(1) , a second pre-dicts its time derivative v(2) , and the two predictions are added—not concatenated—to form the total velocity used for the flow update. Because each block is K-Lipschitz, their individual errors add linearly. Hence, if each block is ϵ-accurate, the combined model is 2ϵ-accurate, preserving the universal approximation guarantee enjoyed by single-order FlowAR. Formally, we can obtain the following result. 
+
+Corollary 7.3 (Universality of HOFAR) . For fword2img sat-isfies Assumption 6.2, there exists a HOFAR model τHOFAR 
+
+such that 
+
+∥τHOFAR − fword2img ∥ ≤ O(ϵ).
+
+## 8. Conclusion 
+
+In this paper, we established that both VAR Transformers and FlowAR architectures serve as universal approximators for Lipschitz sequence-to-sequence functions—even in their most minimal configurations. By dissecting the roles of self-attention, multi-scale up-sampling, and invertible flow transformations, we showed how these components collec-tively endow the models with sufficient expressive power to capture arbitrary continuous mappings. Our results unify previous theoretical findings on transformer universality with the practical enhancements brought by VAR and flow-based designs, providing a deeper theoretical underpinning for their empirical successes in high-quality image gener-ation and structured prediction tasks. We hope that these findings inspire new explorations into more advanced archi-tectural variants and guide future work on balancing model efficiency, interpretability, and expressive power. 9Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+## Acknowledgements 
+
+The author would like to thank the anonymous reviewer of ICML 2025 for their highly insightful suggestions. 
+
+## Impact Statement 
+
+This paper presents work whose goal is to advance the field of Machine Learning. There are many potential societal consequences of our work, none which we feel must be specifically highlighted here. 
+
+## References 
+
+Aggarwal, A. and Alman, J. Optimal-degree polynomial approximations for exponentials and gaussian kernel den-sity estimation. In Proceedings of the 37th Computational Complexity Conference , pp. 1–23, 2022. AI, M. Introducing meta llama 3: The most capable openly available llm to date, 2024. https://ai. meta.com/blog/meta-llama-3/ .Alberti, S., Dern, N., Thesing, L., and Kutyniok, G. Sum-former: Universal approximation for efficient transform-ers. In Topological, Algebraic and Geometric Learning Workshops 2023 , pp. 72–86. PMLR, 2023. Alman, J. and Song, Z. Fast attention requires bounded en-tries. Advances in Neural Information Processing Systems (NeurIPS) , 36, 2023. Alman, J. and Song, Z. How to capture higher-order correla-tions? generalizing matrix softmax attention to kronecker computation. In The Twelfth International Conference on Learning Representations (ICLR) , 2024a. Alman, J. and Song, Z. The fine-grained complexity of gradient computation for training large language mod-els. In The Thirty-eighth Annual Conference on Neural Information Processing Systems (NeurIPS) , 2024b. Alman, J. and Song, Z. Fast rope attention: Combining the polynomial method and fast fourier transform. arxiv preprint arXiv:2505.11892 , 2025a. Alman, J. and Song, Z. Only large weights (and not skip connections) can prevent the perils of rank collapse. In 
+
+arxiv preprint arXiv:2505.16284 , 2025b. Anthropic. The claude 3 model family: Opus, sonnet, haiku, 2024. https://www-cdn.anthropic.com/ de8ba9b01c9ab7cbabf5c33b80b7bbc618857627/ Model_Card_Claude_3.pdf .Bao, F., Nie, S., Xue, K., Cao, Y., Li, C., Su, H., and Zhu, J. All are worth words: A vit backbone for diffusion models. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pp. 22669–22679, 2023. Bian, S., Song, Z., and Yin, J. Federated empirical risk minimization via second-order method. arXiv preprint arXiv:2305.17482 , 2023. Cao, Y. Sorsa: Singular values and orthonormal regular-ized singular vectors adaptation of large language models. 
+
+arXiv preprint arXiv:2409.00055 , 2024. Cao, Y., Li, X., and Song, Z. Grams: Gradient de-scent with adaptive momentum scaling. arXiv preprint arXiv:2412.17107 , 2024. Cao, Y., Gong, C., Li, X., Liang, Y., Sha, Z., Shi, Z., and Song, Z. Richspace: Enriching text-to-video prompt space via text embedding interpolation. In ICLR 2025 Workshop on Navigating and Addressing Data Problems for Foundation Models , 2025a. Cao, Y., Li, X., Liang, Y., Sha, Z., Shi, Z., Song, Z., and Zhang, J. Dissecting submission limit in desk-rejections: A mathematical analysis of fairness in ai conference poli-cies. In Forty-second International Conference on Ma-chine Learning (ICML) . PMLR, 2025b. Chen, B., Li, X., Liang, Y., Long, J., Shi, Z., and Song, Z. Circuit complexity bounds for rope-based transformer architecture. arXiv preprint arXiv:2411.07602 , 2024a. Chen, B., Gong, C., Li, X., Liang, Y., Sha, Z., Shi, Z., Song, Z., and Wan, M. High-order matching for one-step short-cut diffusion models. arXiv preprint arXiv:2502.00688 ,2025a. Chen, B., Gong, C., Li, X., Liang, Y., Sha, Z., Shi, Z., Song, Z., Wan, M., and Ye, X. Nrflow: Towards noise-robust generative modeling via high-order mechanism. In Conference on Uncertainty in Artificial Intelligence (UAI) , 2025b. Chen, B., Li, X., Liang, Y., Shi, Z., and Song, Z. Bypassing the exponential dependency: Looped transformers effi-ciently learn in-context by multi-step gradient descent. In 
+
+The 28th International Conference on Artificial Intelli-gence and Statistics (AISTATS) , 2025c. Chen, B., Liang, Y., Sha, Z., Shi, Z., and Song, Z. Hsr-enhanced sparse attention acceleration. In The Second Conference on Parsimony and Learning (CPAL) (Pro-ceedings Track) , 2025d. Chen, X., Mishra, N., Rohaninejad, M., and Abbeel, P. Pixelsnail: An improved autoregressive generative model. In International conference on machine learning (ICML) ,pp. 864–872. PMLR, 2018. Chen, X., Song, Z., Sun, B., Yin, J., and Zhuo, D. Query complexity of active learning for function fam-ily with nearly orthogonal basis. arXiv preprint arXiv:2306.03356 , 2023. 10 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+Chen, Y., Huo, J., Li, X., Liang, Y., Shi, Z., and Song, Z. Fast gradient computation for rope attention in almost linear time. arXiv preprint arXiv:2412.17316 , 2024b. Chen, Y., Li, X., Liang, Y., Shi, Z., and Song, Z. The com-putational limits of state-space models and mamba via the lens of circuit complexity. In The Second Conference on Parsimony and Learning (CPAL) (Proceedings Track) ,2025e. Deng, Y., Song, Z., Wang, Y., and Yang, Y. A nearly optimal size coreset algorithm with nearly linear time. arXiv preprint arXiv:2210.08361 , 2022. Deng, Y., Mahadevan, S., and Song, Z. Randomized and deterministic attention sparsification algorithms for over-parameterized feature dimension. arXiv preprint arXiv:2304.04397 , 2023a. Deng, Y., Song, Z., and Yin, J. Faster robust ten-sor power method for arbitrary order. arXiv preprint arXiv:2306.00406 , 2023b. Deng, Y., Li, Z., Mahadevan, S., and Song, Z. Zero-th order algorithm for softmax attention optimization. In 2024 IEEE International Conference on Big Data (BigData) ,pp. 24–33. IEEE, 2024. Esser, P., Rombach, R., and Ommer, B. Taming transformers for high-resolution image synthesis. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pp. 12873–12883, 2021. Gao, Y., Mahadevan, S., and Song, Z. An over-parameterized exponential regression. arXiv preprint arXiv:2303.16504 , 2023a. Gao, Y., Song, Z., and Xie, S. In-context learning for atten-tion scheme: from single softmax regression to multiple softmax regression via a tensor trick. arXiv preprint arXiv:2307.02419 , 2023b. Gao, Y., Song, Z., and Yin, J. Gradientcoin: A peer-to-peer decentralized large language models. arXiv preprint arXiv:2308.10502 , 2023c. Gao, Y., Song, Z., Wang, W., and Yin, J. A fast optimization view: Reformulating single layer attention in llm based on tensor and svm trick, and solving it in matrix multi-plication time. In The 41st Conference on Uncertainty in Artificial Intelligence (UAI) , 2025a. Gao, Y., Song, Z., and Yin, J. An iterative algorithm for rescaled hyperbolic functions regression. In AISTATS .arXiv preprint arXiv:2305.00660, 2025b. Gu, J., Liang, Y., Sha, Z., Shi, Z., and Song, Z. Differential privacy mechanisms in neural tangent kernel regression. In 2025 IEEE/CVF Winter Conference on Applications of Computer Vision (WACV) , pp. 2342–2356. IEEE, 2025. Gu, Y., Song, Z., Yin, J., and Zhang, L. Low rank matrix completion via robust alternating minimization in nearly linear time. In The Twelfth International Conference on Learning Representations (ICLR) , 2024. Ho, J., Jain, A., and Abbeel, P. Denoising diffusion proba-bilistic models. Advances in neural information process-ing systems (NeurIPS) , 33:6840–6851, 2020. Ho, J., Saharia, C., Chan, W., Fleet, D. J., Norouzi, M., and Salimans, T. Cascaded diffusion models for high fidelity image generation. Journal of Machine Learning Research (JMLR) , 23(47):1–33, 2022. Hu, H., Song, Z., Tao, R., Xu, Z., Yin, J., and Zhuo, D. Sublinear time algorithm for online weighted bipartite matching. arXiv preprint arXiv:2208.03367 , 2022. Hu, J. Y.-C., Lin, T., Song, Z., and Liu, H. On computational limits of modern hopfield models: A fine-grained com-plexity analysis. In Forty-first International Conference on Machine Learning (ICML) , 2024a. Hu, J. Y.-C., Wang, W.-P., Gilani, A., Li, C., Song, Z., and Liu, H. Fundamental limits of prompt tuning transform-ers: Universality, capacity and efficiency. arXiv preprint arXiv:2411.16525 , 2024b. Hu, J. Y.-C., Wu, W., Lee, Y.-C., Huang, Y.-C., Chen, M., and Liu, H. On statistical rates of conditional diffusion transformers: Approximation, estimation and minimax optimality. arXiv preprint arXiv:2411.17522 , 2024c. Hu, J. Y.-C., Wu, W., Song, Z., and Liu, H. On statistical rates and provably efficient criteria of latent diffusion transformers (dits). arXiv preprint arXiv:2407.01079 ,2024d. Hu, J. Y.-C., Yang, D., Wu, D., Xu, C., Chen, B.-Y., and Liu, H. On sparse modern hopfield model. Advances in Neural Information Processing Systems (NeurIPS) , 36, 2024e. Hu, J. Y.-C., Liu, H., Chen, H.-Y., Wu, W., and Liu, H. Universal approximation with softmax attention. arXiv preprint arXiv:2504.15956 , 2025a. Hu, J. Y.-C., Su, M., Kuo, E.-J., Song, Z., and Liu, H. Computational limits of low-rank adaptation (LoRA) for transformer-based models. In The Thirteenth Interna-tional Conference on Learning Representations (ICLR) ,2025b. Huang, B., Song, Z., Tao, R., Yin, J., Zhang, R., and Zhuo, D. Instahide’s sample complexity when mixing two pri-vate images. arXiv preprint arXiv:2011.11877 , 2020. 11 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+Huang, B., Song, Z., Weinstein, O., Yin, J., Zhang, H., and Zhang, R. A dynamic fast Gaussian transform. arXiv preprint arXiv:2202.12329 , 2022. Jiang, H. and Li, Q. Approximation theory of trans-former networks for sequence modeling. arXiv preprint arXiv:2305.18475 , 2023. Kajitsuka, T. and Sato, I. Are transformers with one layer self-attention using low-rank weight matrices universal approximators? In The Twelfth International Conference on Learning Representations (ICLR) , 2024. Ke, Y., Li, X., Song, Z., and Zhou, T. Faster sampling algorithms for polytopes with small treewidth. In 2024 IEEE International Conference on Big Data (BigData) ,pp. 44–53. IEEE, 2024. Ke, Y., Li, X., Liang, Y., Sha, Z., Shi, Z., and Song, Z. On computational limits and provably efficient criteria of visual autoregressive models: A fine grained complexity analysis. arXiv preprint arXiv:2501.04377 , 2025a. Ke, Y., Li, X., Liang, Y., Shi, Z., and Song, Z. Circuit complexity bounds for visual autoregressive model. arXiv preprint arXiv:2501.04299 , 2025b. Kim, J., Kim, M., and Mozafari, B. Provable memorization capacity of transformers. In The Eleventh International Conference on Learning Representations , 2022. Lee, D., Kim, C., Kim, S., Cho, M., and Han, W.-S. Au-toregressive image generation using residual quantiza-tion. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pp. 11523–11532, 2022. Li, C., Song, Z., Xu, Z., and Yin, J. Inverting the leverage score gradient: An efficient approximate newton method. 
+
+arXiv preprint arXiv:2408.11267 , 2024a. Li, C., Liang, Y., Shi, Z., Song, Z., and Zhou, T. Fourier circuits in neural networks and transformers: A case study of modular arithmetic with multiple inputs. In 
+
+International Conference on Artificial Intelligence and Statistics (AISTATS) , 2025a. Li, X., Liang, Y., Shi, Z., and Song, Z. A tighter complexity analysis of SparseGPT. arXiv preprint arXiv:2408.12151 ,2024b. Li, X., Liang, Y., Shi, Z., Song, Z., and Wan, M. Theoretical constraints on the expressive power of rope-based tensor attention transformers. arXiv preprint arXiv:2412.18040 ,2024c. Li, X., Long, J., Song, Z., and Zhou, T. Fast second-order method for neural networks under small treewidth set-ting. In 2024 IEEE International Conference on Big Data (BigData) , pp. 1029–1038. IEEE, 2024d. Li, X., Liang, Y., Shi, Z., Song, Z., Wang, W., and Zhang, J. On the computational capability of graph neural networks: A circuit complexity bound perspective. arXiv preprint arXiv:2501.06444 , 2025b. Li, Y. and Yang, L. On the model-misspecification in rein-forcement learning. In International Conference on Arti-ficial Intelligence and Statistics , pp. 2764–2772. PMLR, 2024. Li, Y., Wang, Y., Cheng, Y., and Yang, L. Low-switching policy gradient with exploration via online sensitivity sampling. In International Conference on Machine Learn-ing (ICML) , pp. 19995–20034. PMLR, 2023a. Li, Z., Song, Z., Wang, Z., and Yin, J. Local convergence of approximate newton method for two layer nonlinear regression. arXiv preprint arXiv:2311.15390 , 2023b. Li, Z., Song, Z., and Zhou, T. Solving regularized exp, cosh and sinh regression problems. arXiv preprint arXiv:2303.15725 , 2023c. Li, Z., Song, Z., Wang, W., Yin, J., and Yu, Z. How to inverting the leverage score distribution? arXiv preprint arXiv:2404.13785 , 2024e. Liang, J., Sarkhel, S., Song, Z., Yin, C., Yin, J., and Zhuo, D. A faster k-means++ algorithm. arXiv preprint arXiv:2211.15118 , 2022a. Liang, J., Song, Z., Xu, Z., Yin, J., and Zhuo, D. Dynamic maintenance of kernel density estimation data structure: From practice to theory. arXiv preprint arXiv:2208.03915 ,2022b. Liang, Y., Shi, Z., Song, Z., and Zhou, Y. Differential privacy of cross-attention with provable guarantee. In 
+
+Neurips Safe Generative AI Workshop 2024 .Liang, Y., Liu, H., Shi, Z., Song, Z., and Yin, J. Conv-basis: A new paradigm for efficient attention inference and gradient computation in transformers. arXiv preprint arXiv:2405.05219 , 2024a. Liang, Y., Sha, Z., Shi, Z., Song, Z., and Zhou, Y. Multi-layer transformers gradient can be approximated in al-most linear time. arXiv preprint arXiv:2408.13233 ,2024b. Liang, Y., Shi, Z., Song, Z., and Zhou, Y. Tensor atten-tion training: Provably efficient learning of higher-order transformers. arXiv preprint arXiv:2405.16411 , 2024c. Liang, Y., Long, J., Shi, Z., Song, Z., and Zhou, Y. Be-yond linear approximations: A novel pruning approach for attention matrix. In The Thirteenth International Con-ference on Learning Representations (ICLR) , 2025a. 12 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+Liang, Y., Sha, Z., Shi, Z., Song, Z., and Wan, M. Hofar: High-order augmentation of flow autoregressive trans-formers. arXiv preprint arXiv:2503.08032 , 2025b. Liang, Y., Sha, Z., Shi, Z., Song, Z., and Zhou, Y. Looped relu mlps may be all you need as programmable comput-ers. In The 28th International Conference on Artificial Intelligence and Statistics (AISTATS) , 2025c. Liu, C., Zhang, J., Wang, S., Fan, W., and Li, Q. Score-based generative diffusion models for social recommendations. 
+
+arXiv preprint arXiv:2412.15579 , 2024a. Liu, H., Hu, J. Y.-C., Song, Z., and Liu, H. Attention mech-anism, max-affine partition, and universal approximation. 
+
+arXiv preprint arXiv:2504.19901 , 2025. Liu, J., Li, Y., Wang, R., and Yang, L. Uniform last-iterate guarantee for bandits and reinforcement learning. In The Thirty-eighth Annual Conference on Neural Information Processing Systems , 2024b. Liu, J., Li, Y., and Yang, L. Achieving near-optimal regret for bandit algorithms with uniform last-iterate guarantee. 
+
+arXiv preprint arXiv:2402.12711 , 2024c. Llama Team, A. . M. The llama 3 herd of models. arXiv preprint arXiv:2407.21783 , 2024. Lu, C., Zhou, Y., Bao, F., Chen, J., Li, C., and Zhu, J. Dpm-solver: A fast ode solver for diffusion probabilistic model sampling in around 10 steps. Advances in Neural In-formation Processing Systems (NeurIPS) , 35:5775–5787, 2022. OpenAI. Introducing openai o1-preview. 
+
+https://openai.com/index/ introducing-openai-o1-preview/ , 2024. Accessed: September 12. Peebles, W. and Xie, S. Scalable diffusion models with transformers. In Proceedings of the IEEE/CVF Interna-tional Conference on Computer Vision , pp. 4195–4205, 2023. Poole, B., Jain, A., Barron, J. T., and Mildenhall, B. Dream-fusion: Text-to-3d using 2d diffusion. arXiv preprint arXiv:2209.14988 , 2022. Razavi, A., Van den Oord, A., and Vinyals, O. Generating diverse high-fidelity images with vq-vae-2. Advances in neural information processing systems , 32, 2019. Ren, S., Yu, Q., He, J., Shen, X., Yuille, A., and Chen, L.-C. Flowar: Scale-wise autoregressive image generation meets flow matching. arXiv preprint arXiv:2412.15205 ,2024. Rombach, R., Blattmann, A., Lorenz, D., Esser, P., and Ommer, B. High-resolution image synthesis with latent diffusion models. In Proceedings of the IEEE/CVF con-ference on computer vision and pattern recognition , pp. 10684–10695, 2022. Shen, X., Song, Z., Zhou, Y., Chen, B., Li, Y., Gong, Y., Zhang, K., Tan, H., Kuen, J., Ding, H., Shu, Z., Niu, W., Zhao, P., Wang, Y., and Gu, J. Lazydit: Lazy learning for the acceleration of diffusion transformers. In Proceedings of the AAAI Conference on Artificial Intelligence , 2025a. Shen, X., Song, Z., Zhou, Y., Chen, B., Liu, J., Zhang, R., Rossi, R. A., Tan, H., Yu, T., Chen, X., Zhou, Y., Sun, T., Zhao, P., Wang, Y., and Gu, J. Numerical pruning for efficient autoregressive models. In Proceedings of the AAAI Conference on Artificial Intelligence , 2025b. Sinha, R., Song, Z., and Zhou, T. A mathematical ab-straction for balancing the trade-off between creativity and reality in large language models. arXiv preprint arXiv:2306.02295 , 2023. Song, J., Meng, C., and Ermon, S. Denoising diffusion implicit models. In International Conference on Learning Representations (ICLR) , 2021. Song, Y. and Ermon, S. Generative modeling by estimating gradients of the data distribution. Advances in neural information processing systems (NeurIPS) , 32, 2019. Song, Z. and Yang, C. An automatic learning rate schedule algorithm for achieving faster convergence and steeper descent. arXiv preprint arXiv:2310.11291 , 2023. Song, Z., Wang, W., and Yin, J. A unified scheme of resnet and softmax. arXiv preprint arXiv:2309.13482 , 2023a. Song, Z., Xu, G., and Yin, J. The expressibility of polynomial based attention scheme. arXiv preprint arXiv:2310.20051 , 2023b. Song, Z., Ye, M., Yin, J., and Zhang, L. A nearly-optimal bound for fast regression with ℓ∞ guarantee. In Inter-national Conference on Machine Learning (ICML) , pp. 32463–32482. PMLR, 2023c. Song, Z., Yin, J., and Zhang, R. Revisiting quantum algorithms for linear regressions: Quadratic speedups without data-dependent parameters. arXiv preprint arXiv:2311.14823 , 2023d. Song, Z., Yin, J., and Zhang, L. Solving attention kernel regression problem via pre-conditioner. In International Conference on Artificial Intelligence and Statistics (AIS-TATS) , pp. 208–216. PMLR, 2024a. 13 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+Song, Z., Yin, J., Zhang, L., and Zhang, R. Fast dynamic sampling for determinantal point processes. In Interna-tional Conference on Artificial Intelligence and Statistics ,pp. 244–252. PMLR, 2024b. Song, Z., Wang, W., Yin, C., and Yin, J. Fast and effi-cient matching algorithm with deadline instances. In The Second Conference on Parsimony and Learning (CPAL) (Proceedings Track) , 2025a. Song, Z., Ye, M., Yin, J., and Zhang, L. Efficient alternating minimization with applications to weighted low rank ap-proximation. In The Thirteenth International Conference on Learning Representations (ICLR) , 2025b. Tian, K., Jiang, Y., Yuan, Z., Peng, B., and Wang, L. Visual autoregressive modeling: Scalable image generation via next-scale prediction. Advances in neural information processing systems (NeurIPS) , 2024. Van den Oord, A., Kalchbrenner, N., Espeholt, L., Vinyals, O., Graves, A., et al. Conditional image generation with pixelcnn decoders. Advances in neural information pro-cessing systems , 29, 2016. Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Loss ., and Polosukhin, I. At-tention is all you need. Advances in neural information processing systems (NeurIPS) , 30, 2017. Wang, Y., Chen, Z., Zhong, L., Ding, Z., and Tu, Z. Dolfin: Diffusion layout transformers without autoencoder. In 
+
+European Conference on Computer Vision (ECCV) , pp. 326–343. Springer, 2024a. Wang, Y., Xu, H., Zhang, X., Chen, Z., Sha, Z., Wang, Z., and Tu, Z. Omnicontrolnet: Dual-stage integration for conditional image generation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pp. 7436–7448, 2024b. Wang, Z., Lu, C., Wang, Y., Bao, F., Li, C., Su, H., and Zhu, J. Prolificdreamer: High-fidelity and diverse text-to-3d generation with variational score distillation. Advances in Neural Information Processing Systems (NeurIPS) , 36, 2024c. Wang, Z., Sha, Z., Ding, Z., Wang, Y., and Tu, Z. To-kencompose: Text-to-image diffusion with token-level supervision. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pp. 8553–8564, 2024d. Wu, D., Hu, J. Y.-C., Li, W., Chen, B.-Y., and Liu, H. STanhop: Sparse tandem hopfield model for memory-enhanced time series prediction. In The Twelfth Interna-tional Conference on Learning Representations (ICLR) ,2024. Xu, C., Huang, Y.-C., Hu, J. Y.-C., Li, W., Gilani, A., Goan, H.-S., and Liu, H. Bishop: Bi-directional cellular learning for tabular data with generalized sparse modern hopfield model. In Forty-first International Conference on Ma-chine Learning (ICML) , 2024a. Xu, H., Lei, Y., Chen, Z., Zhang, X., Zhao, Y., Wang, Y., and Tu, Z. Bayesian diffusion models for 3d shape recon-struction. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pp. 10628–10638, 2024b. Xue, Z., Song, G., Guo, Q., Liu, B., Zong, Z., Liu, Y., and Luo, P. Raphael: Text-to-image generation via large mix-ture of diffusion paths. Advances in Neural Information Processing Systems (NeurIPS) , 36, 2024. Yun, C., Bhojanapalli, S., Rawat, A. S., Reddi, S., and Kumar, S. Are transformers universal approximators of sequence-to-sequence functions? In International Conference on Learning Representations (ICLR) , 2020. Zhang, H., Peng, Z., Tang, J., Dong, M., Wang, K., and Li, W. A multi-layer extreme learning machine refined by sparrow search algorithm and weighted mean filter for short-term multi-step wind speed forecasting. Sustainable Energy Technologies and Assessments , 50:101698, 2022. Zhang, H., Chen, X., and Yang, L. F. Adaptive liquidity provision in uniswap v3 with deep reinforcement learning. 
+
+arXiv preprint arXiv:2309.10129 , 2023a. Zhang, H., Lin, X., Peng, S., Tang, J., Monti, A., et al. Surrogate-model-based sequential algorithm for weather-dependent probabilistic power flow with high calculation efficiency. Authorea Preprints , 2023b. Zhang, Z., Chow, C., Zhang, Y., Sun, Y., Zhang, H., Jiang, E. H., Liu, H., Huang, F., Cui, Y., and Padilla, O. H. M. Statistical guarantees for lifelong reinforcement learning using pac-bayesian theory. In International Conference on Artificial Intelligence and Statistics (AISTATS) , 2025. 14 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+# Appendix 
+
+Roadmap In Section A, we provide basic algebras that support our proofs. In Section B, we provide other phases of the VAR Model. In Section C, we provide the transformer construction. In Section D, we give the definitions for training the FlowAR Model. In Section E, we give the definitions for the inference of the FlowAR Model. In Section F, we give the definitions for HOFAR. In Section G, we introduce more related work. 
+
+## A. Preliminary 
+
+In this section, we introduce notations and basic facts that are used in our work. We first list some basic facts of matrix norm properties. 
+
+A.1. Notations 
+
+We denote the ℓp norm of a vector x by ∥x∥p, i.e., ∥x∥1 := Pni=1 |xi|, ∥x∥2 := ( Pni=1 x2 
+
+> i
+
+)1/2 and ∥x∥∞ := max i∈[n] |xi|.For a vector x ∈ Rn, exp( x) ∈ Rn denotes a vector where exp( x)i is exp( xi) for all i ∈ [n]. For n > k , for any matrix 
+
+A ∈ Rn×k, we denote the spectral norm of A by ∥A∥, i.e., ∥A∥ := sup x∈Rk ∥Ax ∥2/∥x∥2. We define the function norm as 
+
+∥f ∥α := ( R ∥f (X)∥ααdX)1/α where f is a function. We use σmin (A) to denote the minimum singular value of A. Given two vectors x, y ∈ Rn, we use ⟨x, y ⟩ to denote Pni=1 xiyi. Given two vectors x, y ∈ Rn, we use x ◦ y to denote a vector that its i-th entry is xiyi for all i ∈ [n]. We use ei ∈ Rn to denote a vector where i-th entry is 1, and all other entries are 0. Let x ∈ Rn be a vector. We define diag( x) ∈ Rn×n as the diagonal matrix whose diagonal entries are given by 
+
+diag( x)i,i = xi for i = 1 , . . . , n , and all off-diagonal entries are zero. For a symmetric matrix A ∈ Rn×n, we say A ≻ 0
+
+(positive definite (PD)), if for all x ∈ Rn \ { 0n}, we have x⊤Ax > 0. For a symmetric matrix A ∈ Rn×n, we say A ⪰ 0
+
+(positive semidefinite (PSD)), if for all x ∈ Rn, we have x⊤Ax ≥ 0. The Taylor Series for exp( x) is exp( x) = P∞  
+
+> i=0 xi
+> i!
+
+.For a matrix X ∈ Rn1n2×d, we use X ∈ Rn1×n2×d to denote its tensorization, and we only assume this for letters X and Y .
+
+A.2. Basic Algebra 
+
+In this section, we introduce the basic algebras used in our work. 
+
+Fact A.1 . Let A denote the matrix. For each i, we use Ai, ∗ to denote the i-th row of A. For j, we use A∗,j to denote the 
+
+j-th column of A. We can show that • ∥A∥ ≤ ∥ A∥F
+
+• ∥A∥ ≥ ∥ Ai, ∗∥2
+
+• ∥A∥ ≥ ∥ A∗,j ∥2
+
+Then, we introduce some useful inner product properties. 
+
+Fact A.2 . For vectors u, v, w ∈ Rn. We have • ⟨u, v ⟩ = ⟨u ◦ v, 1n⟩
+
+• ⟨u ◦ v, w ⟩ = ⟨u ◦ v ◦ w, 1n⟩
+
+• ⟨u, v ⟩ = ⟨v, u ⟩
+
+• ⟨u, v ⟩ = u⊤v = v⊤u
+
+Now, we show more vector properties related to the hadamard products, inner products, and diagnoal matrices. 
+
+Fact A.3 . For any vectors u, v, w ∈ Rn, we have • u ◦ v = v ◦ u = diag( u) · v = diag( v) · u
+
+• u⊤(v ◦ w) = u⊤ diag( v)w
+
+15 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+• u⊤(v ◦ w) = v⊤(u ◦ w) = w⊤(u ◦ v)
+
+• u⊤ diag( v)w = v⊤ diag( u)w = u⊤ diag( w)v
+
+• diag( u) · diag( v) · 1n = diag( u)v
+
+• diag( u ◦ v) = diag( u) diag( v)
+
+• diag( u) + diag( v) = diag( u + v)
+
+## B. VAR Transformer Blocks 
+
+B.1. Phase 2: Feature Map Reconstruction 
+
+In this section, we introduce the Phase Two of the VAR model. 
+
+Definition B.1 (Convolution Layer, Definition 3.9 from (Ke et al., 2025a) on Page 9) . The Convolution Layer is defined as follows: • Let h ∈ N denote the height of the input and output feature map. • Let w ∈ N denote the width of the input and output feature map. • Let cin ∈ N denote the number of channels of the input feature map. • Let cout ∈ N denote the number of channels of the output feature map. • Let X ∈ Rh×w×cin denote the input feature map. • For l ∈ [cout ], we use Kl ∈ R3×3×cin to denote the l-th convolution kernel. • Let p = 1 denote the padding of the convolution layer. • Let s = 1 denote the stride of the convolution kernel. • Let Y ∈ Rh×w×cout denote the output feature map. We use ϕconv : Rh×w×cin → Rh×w×cout to denote the convolution operation then we have Y = ϕconv (X). Specifically, for 
+
+i ∈ [h], j ∈ [w], l ∈ [cout ], we have 
+
+Yi,j,l := 
+
+> 3
+
+X
+
+> m=1 3
+
+X
+
+> n=1
+> cin
+
+X
+
+> c=1
+
+Xi+m−1,j +n−1,c · Klm,n,c + b
+
+Remark B.2 . Assumptions of kernel size, padding of the convolution layer, and stride of the convolution kernel are based on the specific implementation of (Tian et al., 2024). 
+
+B.2. Phase 3: VQ-VAE Decoder process 
+
+In this section, we introduce Phase Three of the VAR model. VAR will use the VQ-VAE Decoder Module to reconstruct the feature map generated in Section B.1 into a new image. The Decoder of VQ-VAE has the following main modules (Ke et al., 2025a): (1) Resnet Blocks; (2) Attention Blocks; (3) Up Sample Blocks. We recommend readers to (Ke et al., 2025a) for more details. 
+
+## C. Construction of Transformers 
+
+In this Section, we show that how to construct τ ∈ T 1,1,4 
+
+> A
+
+such that it can approximate any img-to-img function to any precision. 
+
+Lemma C.1 (Transformer Construction, a Variation of Lemma F.2 from (Hu et al., 2024b) on Page 45) . If the following conditions hold: 
+
+16 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+• for any given quantized sequence-to-sequence function 
+
+himg2img : Gδ, (hr wr ) → G δ, (hr wr )
+
+• with Gδ, (hr wr ) = {0, δ, 2δ, . . . , 1 − δ}(hr wr )×d,
+
+• Let a transformer be τ ∈ T 1,1,c B ,
+
+• Let positional embedding be E ∈ R(hr wr )×d
+
+Then, there exists 
+
+• a transformer τ with positional embedding E
+
+• such that dα(τ, h (·)) ≤ ϵ/ 2.
+
+Proof. First, we apply the positional encoding E ∈ R(hr wr )×d on the input sequence X ∈ R(hr wr +n)×d, so that each token of has a different domain. The positional encoding E is given as 
+
+E =
+
+
+
+0 1 2 . . . hr wr − 10 1 2 . . . hr wr − 1
+
+... ... ... . . . ...
+
+0 1 2 . . . hr wr − 1
+
+ .
+
+We next use the first feed-forward layer FFN 1 to implement a quantization map to quantize the input X + E into its discrete version M ∈ G δ . Here, we define the grid 
+
+Gδ = [ δ : δ : 1] d × [1 + δ : δ : 2] d × · · · × [hr wr − 1 + δ : δ : hr wr ]d,
+
+where [a : ϵ : b] := {a, a + ϵ, a + 2 ϵ, . . . , b − ϵ, b }. Note that the first column of X + E is in [0 , 1] d, the second is in [1 , 2] d,and so on. Here, we write the quantization mapping as 
+
+[0 , 1] d × · · · × [hr wr − 1, h r wr ]d → [δ : δ : 1 − δ]d × · · · × [hr wr − 1 : δ : hr wr ]d,
+
+where [a : ϵ : b] := {a, a + ϵ, a + 2 ϵ, . . . , b − ϵ, b }. Following (Kajitsuka & Sato, 2024), this quantization task is done by constructing the feed-forward layer as a θ-approximated step function. Consider a real value piece-wise constant function 
+
+f (Step) : R → R, for any small θ > 0, x ∈ R, we have the θ-approximation as 
+
+f (Step) (x) = lim   
+
+> δ→0(hrwr)(1 /δ −1)
+
+X
+
+> t=0
+
+(ReLU (x/θ − tδ/θ ) − ReLU (x/θ − 1 − tδ/θ )) δ
+
+= lim 
+
+> δ→0
+
+
+
+0, if x < 0; 
+
+δ, if 0 ≤ x < δ ;
+
+... ...
+
+hr wr , if hr wr − δ ≤ x;
+
+(1) which is a series of small step functions, each beginning their rise at tδ and ending at θ + tδ . Here, we show the first two terms t = 0 , 1 for clarity. When t = 0 , we have 
+
+(ReLU (x/θ ) − ReLU (x/θ − 1)) δ =
+
+
+
+0, if x < 0; 
+
+xδ/θ, if 0 ≤ x < θ ;
+
+δ, if θ ≤ x. 
+
+17 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+When t = 1 , we have 
+
+(ReLU (x/θ − δ/θ ) − ReLU (x/θ − 1 − δ/θ )) δ =
+
+
+
+0, if x < δ ;
+
+xδ/θ, if δ ≤ x < θ + δ;
+
+δ, if θ + δ ≤ x. 
+
+With Eq. (1), it is straightforward that we extend it to Rhr wr ×d. As a result, we have the first feed-forward layer FFN 1 as 
+
+FFN 1(X)i,j =
+
+> (Lp+n)(1 /δ −1)
+
+X
+
+> t=0
+
+(ReLU (Xi,j /θ − tδ/θ ) − ReLU (Xi,j /θ − 1 − tδ/θ )) δ
+
+where i ∈ [d], j ∈ [Lp + n], 0 < δ < 1 and θ > 0.Taking the limit as δ → 0, we have 
+
+lim 
+
+> δ→0(Lp+n)(1 /δ −1)
+
+X
+
+> t=0
+
+(ReLU (Xi,j /θ − tδ/θ ) − ReLU (Xi,j /θ − 1 − tδ/θ )) δ = f (Step) (Xi,j ). (2) With Eq. (2), we are able to quantize each sequence X + E to a quantized version M ∈ G δ .Next, in order to utilize Lemma 5.4, we observe that the quantized input M from the previous step has no duplicate tokens, since each column has a unique domain. Also, we see that M is token-wise (√d, √d(L0 − δ), √dδ )-separated where 
+
+L0 = hr wr . This is easily observed as we have, for any k, l ∈ [hr wr ],
+
+∥Mk∥2 > √d, 
+
+∥Mk∥2 < √d(hr wr − δ),
+
+∥Mk − Ll∥2 > √dδ. 
+
+As a result, with Lemma 5.4, the single self-attention layer implements a contextual mapping q : R(hr wr )×d → R(hr wr )×d,we arrive at a (Γ , ∆) -contextual mapping where 
+
+Γ = √d(L0 − δ) + 
+
+√dδ 
+
+4 = √d(L0 − 0.75 δ),
+
+∆ = exp( −5|V| 4d ln( n)L20/δ ).
+
+Now we have successfully mapped each input sequence [P, X ] + E to a unique context ID q(M ) ∈ R(hr wr )×d. We next associate each unique embeddings to a corresponding expected output of himg2img (·).We associate each unique contextual embeddings to the corresponding output of h(·) using the second feed-forward layer FFN 2. As in Section A.5 of (Kajitsuka & Sato, 2024), this is achieved by constructing a bump function fbump :
+
+R(hr wr )×d → R(hr wr )×d for each possible output from the last step q(M (i)), i ∈ [(1 /δ )d(hr wr )]. Each bump function 
+
+fbump is realized by 3d(hr wr ) MLP neurons. Therefore, we need 3d(hr wr )(1 /δ )d(hr wr ) MLP neurons to construct the feed-forward layer FFN 2, so that each contextual embedding is mapped to the expected output of himg2img (·). A bump function fbump for a quantized sequence A ∈ G δ is written as: 
+
+fbump (Q) = h(A)
+
+d(hr wr )
+
+> d
+
+X 
+
+> i=1
+> hrwr
+
+X
+
+> j=1
+
+ ReLU (K(Qi,j − Ai,j ) − 1) − ReLU (K(Qi,j − Ai,j )) + ReLU (K(Qi,j − Ai,j ) + 1) ,
+
+where Q ∈ Rd×(hr wr ) is some context ID scalar K > 0. Furthermore, we have the relation of quantization granularity 
+
+δ and function approximation error ϵ as Cδ (dh r wr ) 1 
+
+> α
+
+≤ ϵ/ 2. We express the number of neurons in terms of ϵ as 
+
+O(d(hr wr )( C(dh r wr ) 1 
+
+> α
+
+/ϵ )d(hr wr )) = O(ϵ−d(hr wr )), where C is the Lipschitz constant and α is from the ℓα-norm we use for measuring the approximation error. As a result, by choosing the appropriate step function approximation θ, we arrive at 
+
+dp(himg2img (·), τ ) ≤ ϵ/ 2.
+
+This completes the proof. 18 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+## D. Training of FlowAR 
+
+In this section, we introduce the training of FlowAR along with its definitions based on (Ren et al., 2024). In Section D.1, we introduce notation. Section D.2 covers sampling operations, Section D.3 expands them to linear ones. SectionD.4 details the VAE tokenizer, while Section D.5 specifies the transformer backbone. Section D.6 covers flow construction. 
+
+D.1. Notations 
+
+We first introduce some notations used in FlowAR. For a matrix X ∈ Rn1n2×d, we use X ∈ Rn1×n2×d to denote its tensorization, and we only assume this for letters 
+
+X, Y, Z, F, V .
+
+D.2. Sample Function 
+
+In this section, we introduce the sample functions used in FlowAR. We first introduce the up sample function. 
+
+Definition D.1 (Up Sample Function) . If the following conditions hold: • Let h, w ∈ N denote the height and weight of latent X ∈ Rh×w×c.• Let r > 0 denote a positive integer. Then we define Up( X, r ) ∈ Rrh ×rw ×c as the upsampling of latent X by a factor r.Then, we introduce the down sample function. 
+
+Definition D.2 (Down Sample Function) . If the following conditions hold: • Let h, w ∈ N denote the height and weight of latent X ∈ Rh×w×c.• Let r > 0 denote a positive integer. Then we define Down( X, r ) ∈ R hr × wr ×c as the downsampling of latent X by a factor r.
+
+D.3. Linear Sample Function 
+
+In this section, we present the linear sample function in FlowAR. We first present the linear up sample function. 
+
+Definition D.3 (Linear Up Sample Function) . If the following conditions hold: • Let h, w ∈ N denote the height and weight of latent X ∈ Rh×w×c.• Let r > 0 denote a positive integer. • Let Φup ∈ Rhw ×(rh ·rw ) be a matrix. Then we define the linear up sample function ϕup (·, ·) as it computes Y := ϕup (X, r ) ∈ Rrh ×rw ×c such that the matrix version of X and Y satisfies 
+
+Y = Φ up X ∈ R(rh ·rw )×c.
+
+Then, we define linear down sample function as follows. 
+
+Definition D.4 (Linear Down Sample Function) . If the following conditions hold: 19 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+• Let h, w ∈ N denote the height and weight of latent X ∈ Rh×w×c.• Let r > 0 denote a positive integer. • Let Φdown ∈ R(( h/r )·(w/r )) ×hw be a matrix. Then we define the linear down sample function ϕdown (X, r ) as it computes Y := ϕdown (X, r ) ∈ R(h/r )×(w/r )×c such that the matrix version of X and Y satisfies 
+
+Y = Φ down X ∈ R(( h/r )·(w/r )) ×c.
+
+D.4. VAE Tokenizer 
+
+In this section, we show the VAE Tokenizer. 
+
+Definition D.5 (VAE Tokenizer) . If the following conditions hold: • Let X ∈ Rh×w×c denote a continuous latent representation generated by VAE. • Let K denote the total number of scales in FlowAR. • Let a be a positive integer. • For i ∈ [K], let ri := aK−i.• For each i ∈ [K], let ϕdown ,i (·, r i) : Rh×w×c → R(h/r i)×(w/r i)×c denote the linear down sample function defined in Definition D.4. For i ∈ [K], we define the i-th token map generated by VAE Tokenizer be 
+
+Yi := ϕdown ,i (X, r i) ∈ R(h/r i)×(w/r i)×c,
+
+We define the output of VAE Tokenizer as follows: 
+
+Tokenizer (X) := {Y1, Y2, . . . , YK }.
+
+Remark D.6 . In (Ren et al., 2024), they choose a = 2 and hence for i ∈ [n], ri := 2 K−i.
+
+D.5. Autoregressive Transformer 
+
+Firstly, we give the definition of a single attention layer. 
+
+Definition D.7 (Single Attention Layer) . If the following conditions hold: • Let h, w ∈ N denote the height and weight of latent X ∈ Rh×w×c.• Let WQ, W K , W V ∈ Rc×c denote the weight matrix for query, key, and value, respectively. Then we define the attention layer Attn (·) as it computes Y = Attn (X) ∈ Rh×w×c. For the matrix version, we first need to compute the attention matrix A ∈ Rhw ×hw :
+
+Ai,j := exp( Xi, ∗WQW ⊤ 
+
+> K
+
+X⊤
+
+> j, ∗
+
+), for i, j ∈ [hw ].
+
+Then, we compute the output: 
+
+Y := D−1AXW V ∈ Rhw ×c.
+
+where D := diag( A1n) ∈ Rhw ×hw .To move on, we present the definition of multilayer perceptron. 20 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+Definition D.8 (MLP layer) . If the following conditions hold: • Let h, w ∈ N denote the height and weight of latent X ∈ Rh×w×c.• Let c denote the input dimension of latent X ∈ Rh×w×c.• Let d denote the dimension of the target output. • Let W ∈ Rc×d denote a weight matrix. • Let b ∈ R1×d denote a bias vector. Then we define mlp layer as it computes Y := MLP (X, c, d ) ∈ Rh×w×d such that the matrix version of X and Y astisfies, for each j ∈ [hw ],
+
+Yj, : = Xj, :
+
+|{z} 
+
+> 1×c
+
+· W|{z} 
+
+> c×d
+
++ b|{z} 
+
+> 1×d
+
+We present the definition of layer-wise norm layer. 
+
+Definition D.9 (Layer-wise norm layer) . Given a latent X ∈ Rh×w×c. We define the layer-wise as it computes Y := 
+
+LN (X) ∈ Rh×w×c such that the matrix version of X and Y satisfies, for each j ∈ [hw ],
+
+Yj, : = Xj, : − μj
+
+q
+
+σ2
+
+> j
+
+where μj := Pck=1 Xj,k /c and σ2 
+
+> j
+
+= Pck=1 (Xj,k − μj )2/c .
+
+Definition D.10 (Autoregressive Transformer) . If the following conditions hold: • Let X ∈ Rh×w×c denote a continuous latent representation generated by VAE. • Let K denote the total number of scales in FlowAR. • For i ∈ [K], let Yi ∈ R(h/r i)×(w/r i)×c be the i-th token map genereated by VAE Tokenizer defined in Definition D.5. • Let a be a positive integer. • For i ∈ [K], let ri := aK−i.• For i ∈ [K − 1] , let ϕup ,i (·, a ) : R(h/r i)×(w/r i)×c → R(h/r i+1 )×(w/r i+1 )×c be the linear up sample function defined in Definition D.3. • For i ∈ [K], let Attn i(·) : R(Pij=1 h/r j )( Pij=1 w/r j )×c → R(Pij=1 h/r j )( Pij=1 w/r j )×c be the i-th attention layer defined in Definition D.7. • For i ∈ [K], let FFN i(·) : R(Pij=1 h/r j )( Pij=1 w/r j )×c → R(Pij=1 h/r j )( Pij=1 w/r j )×c be the i-th feed forward network defined in Definition 3.5. • Let Zinit ∈ R(h/r 1)×(w/r 1)×c be the initial input denoting the class condition. • Let Z1 := Zinit ∈ R(h/r 1)×(w/r 1)×c.• For i ∈ [K] \ { 1}, Let Zi be the reshape of the input sequence Zinit , ϕ up ,1(Y1, a ), . . . , ϕ up ,i (Yi−1, a ) into the tensor of size (Pij=1 h/r j ) × (Pij=1 w/r j ) × c.For i ∈ [K], we define the Autoregressive transformer TF i as 
+
+TF i(Zi) = FFN i ◦ Attn i(Zi) ∈ R(Pij=1 h/r j )( Pij=1 w/r j )×c.
+
+We denote bYi as the i-th block of size (h/r i) × (w/r i) × c of the tensorization of TF i(Zi).21 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+D.6. Flow Matching 
+
+In this section, we introduce the flow matching definition. 
+
+Definition D.11 (Flow) . If the following conditions hold: • Let X ∈ Rh×w×c denote a continuous latent representation generated by VAE. • Let K denote the total number of scales in FlowAR. • For i ∈ [K], let Yi ∈ R(h/r i)×(w/r i)×c be the i-th token map genereated by VAE Tokenizer defined in Definition D.5. • For i ∈ [K], let Fi 
+
+> 0
+
+∈ R(h/r i)×(w/r i)×c be a matrix where each entry is sampled from the standard Gaussian N (0 , 1) .We defined the interpolated input as follows: 
+
+Fit := tYi + (1 − t)Fi
+
+> 0
+
+.
+
+The velocity flow is defined as 
+
+Vit := dFit
+
+dt = Yi − Fi
+
+> 0
+
+.
+
+Here, we define the architecture of the flow matching model defined in (Ren et al., 2024). 
+
+Definition D.12 (Flow Matching Architecture) . If the following conditions hold: • Let X ∈ Rh×w×c denote a continuous latent representation generated by VAE. • Let K denote the total number of scales in FlowAR. • For i ∈ [K], let Yi ∈ R(h/r i)×(w/r i)×c be the i-th token map genereated by VAE Tokenizer defined in Definition D.5. • Let i ∈ [K].• Let bYi ∈ R(h/r i)×(w/r i)×c be the i-th block of the output of Autoregressive Transformer defined in Definition D.10. • Let Fit be the interpolated input defined in Definition D.11. • Let Attn i(·) : R(h/r i)×(w/r i)×c → R(h/r i)×(w/r i)×c be the i-th attention layer defined in Definition D.7. • Let MLP i(·, c, d ) : R(h/r i)×(w/r i)×c → R(h/r i)×(w/r i)×d be the i-th attention layer defined in Definition D.8. • Let LN i(·) : R(h/r i)×(w/r i)×c → R(h/r i)×(w/r i)×c be the i-th layer-wise norm layer defined in Definition D.9. • Let ti ∈ [0 , 1] denote a time step. Then we define the i-th flow matching model as NN i(Fit, bYi, t i) : R(h/r i)×(w/r i)×c × R(h/r i)×(w/r i)×c × R →
+
+R(h/r i)×(w/r i)×c. The tensor input needs to go through the following computational steps: • Step 1: Compute intermediate variables α1, α 2, β 1, β 2, γ 1, γ 2. Specifically, we have 
+
+α1, α 2, β 1, β 2, γ 1, γ 2 := MLP i(bYi + ti · 1(h/r i)×(w/r i)×c, c, 6c)
+
+• Step 2: Compute intermediate variable bFti′
+
+. Specifically, we have 
+
+bFti′
+
+:= Attn i(γ1 ◦ LN (Fit) + β1) ◦ α1
+
+where ◦ denotes the element-wise product for tensors. 22 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+• Step 3: Compute final output Fi′′  
+
+> t
+
+. Specifically, we have 
+
+Fi′′  
+
+> t
+
+= MLP i(γ2 ◦ LN ( bFti′
+
+) + β2, c, c ) ◦ α2
+
+where ◦ denotes the element-wise product for tensors. Then, we present our training objective. 
+
+Definition D.13 (Loss of FlowAR) . If the following conditions hold: • Let X ∈ Rh×w×c denote a continuous latent representation generated by VAE. • Let K denote the total number of scales in FlowAR. • For i ∈ [K], let Yi ∈ R(h/r i)×(w/r i)×c be the i-th token map genereated by VAE Tokenizer defined in Definition D.5. • For i ∈ [K], let bYi ∈ R(h/r i)×(w/r i)×c be the i-th block of the output of Autoregressive Transformer defined in Definition D.10. • For i ∈ [K], let Fit be the interpolated input defined in Definition D.11. • For i ∈ [K], let Vit be the velocity flow defined in Definition D.11. • For i ∈ [K], let NN i(·, ·, ·) : R(h/r i)×(w/r i)×c × R(h/r i)×(w/r i)×c × R → R(h/r i)×(w/r i)×c denote the i-th flow matching network defined in Definition D.12. The loss function of FlowAR is 
+
+L(θ) = 
+
+> n
+
+X
+
+> i=1
+
+E 
+
+> t∼Unif [0 ,1]
+
+∥NN i(Fit, bYit, t i) − Vit∥2.
+
+## E. Inference of FlowAR 
+
+We define the architecture of FlowAR during the inference process as follows. 
+
+Definition E.1 (FlowAR Architecture in the Inference Pipeline) . If the following conditions hold: • Let K denote the total number of scales in FlowAR. • Let a be a positive integer. • For i ∈ [K], let ri := aK−i.• For i ∈ [K − 1] , let ϕup ,i (·, a ) : R(h/r i)×(w/r i)×c → R(h/r i+1 )×(w/r i+1 )×c be the linear up sample function defined in Definition D.3. • For i ∈ [K], let Attn i(·) : R(Pij=1 h/r j )( Pij=1 w/r j )×c → R(Pij=1 h/r j )( Pij=1 w/r j )×c be the i-th attention layer defined in Definition D.7. • For i ∈ [K], let FFN i(·) : R(Pij=1 h/r j )( Pij=1 w/r j )×c → R(Pij=1 h/r j )( Pij=1 w/r j )×c be the i-th feed forward network defined in Definition 3.5. • For i ∈ [K], let NN i(·, ·, ·) : R(h/r i)×(w/r i)×c × R(h/r i)×(w/r i)×c × R → R(h/r i)×(w/r i)×c denote the i-th flow matching network defined in Definition D.12. • For i ∈ [K], let ti ∈ [0 , 1] denote the time steps. • For i ∈ [K], let Fit be the interpolated input defined in Definition D.11. • Let Zinit ∈ R(h/r 1)×(w/r 1)×c denote the initial input denoting the class condition. 23 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+• Let Z1 := Zinit ∈ R(h/r 1)×(w/r 1)×c.Then, we define the architecture of FlowAR in the inference pipeline as follows: • Layer 1: Given the initial token Z1, we compute 
+
+s1 = FFN 1 ◦ Attn 1(Z1) ∈ R(h/r 1)×(w/r 1)×c
+
+bs1 = NN 1(F 1 
+
+> t
+
+, s 1, t 1)
+
+• Layer 2: Given the initial token Z1 and output of the first layer bs1. Let Z2 be the reshape of the input sequence 
+
+Zinit , ϕ up ,1(bs1, a ) into the tensor of size (P2 
+
+> i=1
+
+h/r i) × (P2 
+
+> i=1
+
+w/r i) × c. Then we compute 
+
+s2 = FFN 2 ◦ Attn 2(Z2)h/r 1:P2  
+
+> i=1 h/r i,w/r 1:P2
+> i=1 w/r i,0: c
+
+bs2 = NN 2(F 2 
+
+> t
+
+, s 2, t 2)
+
+• Layer i ∈ [K]\{ 1, 2}: Given the initial token Z1 and the output of the first i−1 layer bs1, . . . , bsi−1. Let Zi be the reshape of the input sequence Zinit , ϕ up ,1(bs1), . . . , ϕ up ,i −1(bsi−1) into the tensor of size (Pij=1 h/r j ) × (Pij=1 w/r j ) × c.Then we compute 
+
+si = FFN i ◦ Attn i(Zi)Pi−1        
+
+> j=1 h/r j:Pij=1 h/r j,Pi−1
+> j=1 w/r j:Pij=1 w/r j,0: c
+
+bsi = NN i(F it , s i, t i)
+
+Then the final output of FlowAR is bsK .24 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+## F. High-Order Augmentation of Flow Autoregressive Transformers 
+
+In this section, we introduce High-Order Augmentation of Flow Autoregressive Transformers (HOFAR) from Liang et al. (2025b), which is a a novel framework that embeds higher-order dynamics into flow-matching autoregressive generation, significantly strengthening the model’s capacity to learn intricate, long-range dependencies. In Section F.1, we introduce the training procedure of HOFAR. In Section F.2, we introduce the inference procedure of HOFAR. 
+
+F.1. Training Procedure of HOFAR 
+
+We present the algorithm for training HOFAR (Liang et al., 2025b) as follows. 
+
+Algorithm 1 High-Order FlowAR Training (Liang et al., 2025b) 
+
+1: procedure HOFART RAINING (θ, D )
+
+2: /* θ denotes the model parameters of TF , FM first , FM second */ 
+
+3: /* D denotes the training dataset. */ 
+
+4: while not converged do 
+
+5: /* Sample an image from dataset. */ 
+
+6: ximg ∼ D
+
+7: /* Init loss as 0. */ 
+
+8: ℓ ← 0
+
+9: /* Train the model on K pyramid layers. */ 
+
+10: for i = 1 → K do 
+
+11: /* Sample random noise. */ 
+
+12: F0 ∼ N (0 , I )
+
+13: /* Sample a random timestep. */ 
+
+14: t ∼ [0 , 1] 
+
+15: /* Calculate noisy input. */ 
+
+16: Ft 
+
+> noisy
+
+← αtximg + βtF0
+
+> i
+
+17: /* Calculate first-order ground-truth. */ 
+
+18: Ft 
+
+> first
+
+← α′
+
+> t
+
+ximg + β′
+
+> t
+
+F0
+
+> i
+
+19: /* Calculate second-order ground-truth. */ 
+
+20: Ft 
+
+> second
+
+← α′′  
+
+> t
+
+ximg + β′′  
+
+> t
+
+F0
+
+> i
+
+21: /* Generate condition with Transformer. */ 
+
+22: bY ← TF (ximg )
+
+23: /* Predict first-order with FM. */ 
+
+24: bFt 
+
+> first
+
+← FM first (Ft
+
+> noisy
+
+, bY)
+
+25: /* Predict second-order with FM. */ 
+
+26: bFt 
+
+> second
+
+← FM second (Ft
+
+> noisy
+
+, bY)
+
+27: /* Caculate loss. */ 
+
+28: ℓc ← ∥ bFt 
+
+> first
+
+− Ft
+
+> first
+
+∥22 + ∥bFt 
+
+> second
+
+− Ft
+
+> second
+
+∥22
+
+29: ℓ ← ℓ + ℓc
+
+30: /* Downsample ximg for next iteration. */ 
+
+31: ximg ← Φdown ximg 
+
+32: end for 
+
+33: /* Optimize parameter θ with ℓ. */ 
+
+34: θ ← ∇ θ ℓ
+
+35: end while 
+
+36: return θ
+
+37: end procedure 
+
+25 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+F.2. Inference Procedure of HOFAR 
+
+We present the algorithm for the inference of HOFAR (Liang et al., 2025b) as follows. 
+
+Algorithm 2 High-Order FlowAR Inference (Liang et al., 2025b) 
+
+1: procedure HOFARI NFERENCE (cinput )
+
+2: /* cinput denotes the condition embedding used for generation. */ 
+
+3: /* Init the Transformer input x with cinput . */ 
+
+4: x ← cinput 
+
+5: /* Init the ximg with random noise. */ 
+
+6: ximg ← N (0 , I )
+
+7: /* Inference through K pyramid scales. */ 
+
+8: for i = 1 → K do 
+
+9: /* Pass through the Transformers TF . */ 
+
+10: bY ← TF (x)
+
+11: /* Extract last i ∗ i tokens from Y as the condition embedding. */ 
+
+12: xcond ← Y[..., −i ∗ i :] 
+
+13: /* Generate first-order with FM first . */ 
+
+14: byfirst ← FM first (xcond , x img )
+
+15: /* Generate second-order with FM second . */ 
+
+16: bysecond ← FM second (xcond , x img )
+
+17: /* Apply first and second-order terms. */ 
+
+18: ximg ← ximg + byfirst · ∆t + 0 .5 · bysecond · (∆ t)2
+
+19: /* Upsample ximg . */ 
+
+20: ximg ← ϕup (ximg )
+
+21: /* Concatenate upsampled ximg to the Transformer input. */ 
+
+22: x ← Concat (x, x img )
+
+23: end for 
+
+24: /* Return the final image */ 
+
+25: return ximg 
+
+26: end procedure 
+
+26 Fundamental Limits of Visual Autoregressive Transformers: Universal Approximation Abilities 
+
+## G. More Related Work 
+
+In this section, we introduce more related work. 
+
+Theoretical Machine Learning. Our work also takes inspiration from the following Machine Learning Theory work. Some works analyze the expressiveness of a neural network using the theory of circuit complexity (Li et al., 2025b; Ke et al., 2025b; Li et al., 2024c; Chen et al., 2025e; 2024a). Some works optimize the algorithms that can accelerate the training of a neural network (Li et al., 2024d; Ke et al., 2024; Deng et al., 2024; 2022; Zhang et al., 2022; 2023b; Deng et al., 2023a; Cao et al., 2025b; Song et al., 2025a; Liang et al., 2022a;b; Hu et al., 2022; Huang et al., 2020; Bian et al., 2023; Deng et al., 2023b; Song et al., 2025b; Gao et al., 2023c; 2025b; Gu et al., 2024; Gao et al., 2025a; Song et al., 2024b; Li et al., 2024e;a; Hu et al., 2024a). Some works incorporate fine-tuning to optimize neural networks (Huang et al., 2022; Hu et al., 2025b; Cao, 2024). Some works propose novel optimizers to accelerate the training of neural networks (Song & Yang, 2023; Cao et al., 2024). Some works analyze neural networks via regressions (Chen et al., 2025c; Gao et al., 2023a; Li et al., 2023c; Gao et al., 2023b; Sinha et al., 2023; Chen et al., 2023; Song et al., 2023c; 2024a; 2023a;d; Li et al., 2025a). Some works use reinforcement learning to optimize the neural networks (Zhang et al., 2023a; 2025; Li et al., 2023a; Li & Yang, 2024; Liu et al., 2024c;b; Li et al., 2023b). Some works optimize the attention mechanisms (Song et al., 2023b; Liang et al., 2024a). 
+
+Accelerating Attention Mechanisms. The attention mechanism, with its quadratic computational complexity concerning context length, encounters increasing challenges as sequence lengths grow in modern large language models (OpenAI, 2024; AI, 2024; Anthropic, 2024). To address this limitation, polynomial kernel approximation methods (Aggarwal & Alman, 2022) have been introduced, leveraging low-rank approximations to efficiently approximate the attention matrix. These methods significantly enhance computation speed, allowing a single attention layer to perform both training and inference with nearly linear time complexity (Alman & Song, 2023; 2024b). Moreover, these techniques can be extended to advanced attention mechanisms, such as tensor attention, while retaining almost linear time complexity for both training and inference (Alman & Song, 2024a). (Ke et al., 2025a) provides an almost linear time algorithm to accelerate the inference of VAR Transformer. Other innovations include RoPE-based attention mechanisms (Alman & Song, 2025a; Chen et al., 2024b) and differentially private cross-attention approaches (Liang et al.). Alternative strategies, such as the conv-basis method proposed in (Liang et al., 2024a), present additional opportunities to accelerate attention computations, offering complementary solutions to this critical bottleneck. Additionally, various studies explore pruning-based methods to expedite attention mechanisms (Liang et al., 2025a; Chen et al., 2025d; Li et al., 2024b; Shen et al., 2025b;a; Hu et al., 2024e; Wu et al., 2024; Xu et al., 2024a; Shen et al., 2025b). (Alman & Song, 2025b) studies the rank collapse property of self-attention network. 
+
+Gradient Approximation. The low-rank approximation is a widely utilized approach for optimizing transformer training by reducing computational complexity (Liang et al., 2025c; 2024c; Alman & Song, 2024b; Hu et al., 2024d; Chen et al., 2025d; Liang et al., 2024b). Building on the low-rank framework introduced in (Alman & Song, 2023), which initially focused on forward attention computation, (Alman & Song, 2024b) extends this method to approximate attention gradients, effectively lowering the computational cost of gradient calculations. The study in (Liang et al., 2025c) further expands this low-rank gradient approximation to multi-layer transformers, showing that backward computations in such architectures can achieve nearly linear time complexity. Additionally, (Liang et al., 2024c) generalizes the approach of (Alman & Song, 2024b) to tensor-based attention models, utilizing forward computation results from (Alman & Song, 2024a) to enable efficient training of tensorized attention mechanisms. Lastly, (Hu et al., 2024d) applies low-rank approximation techniques during the training of Diffusion Transformers (DiTs), demonstrating the adaptability of these methods across various transformer-based architectures. 27

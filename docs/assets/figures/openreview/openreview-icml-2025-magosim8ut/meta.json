@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "extractor": "papercropper",
+  "figures": [
+    {
+      "url": "assets/figures/openreview/openreview-icml-2025-magosim8ut/fig-001.webp",
+      "caption": "",
+      "page": 0,
+      "index": 1,
+      "width": 787,
+      "height": 358,
+      "label": "Figure"
+    }
+  ]
+}
