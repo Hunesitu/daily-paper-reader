@@ -1,0 +1,2646 @@
+{
+  "top_k": 200,
+  "generated_at": "2026-06-04T02:27:28.135523+00:00",
+  "papers": [
+    {
+      "id": "openreview-neurips-2025-3ftvcezqrh",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Semantic Surgery: Zero-Shot Concept Erasure in Diffusion Models",
+      "abstract": "With the growing power of text-to-image diffusion models, their potential to generate harmful or biased content has become a pressing concern, motivating the development of concept erasure techniques. Existing approaches, whether relying on retraining or not, frequently compromise the generative capabilities of the target model in achieving concept erasure.\n\nHere, we introduce **Semantic Surgery**, a novel training-free framework for zero-shot concept erasure. Semantic Surgery directly operates on text embeddings *before* the diffusion process, aiming to neutralize undesired concepts at their semantic origin with dynamism to enhance both erasure completeness and the locality of generation. Specifically, Semantic Surgery dynamically estimates the presence of target concepts in an input prompt, based on which it performs a calibrated, scaled vector subtraction to neutralize their influence at the source. The overall framework consists of a Co-Occurrence Encoding module for robust multi-concept erasure and a visual feedback loop to address latent concept persistence, thereby reinforcing erasure throughout the subsequent denoising process.\n\nOur proposed Semantic Surgery requires no model retraining and adapts dynamically to the specific concepts and their intensity detected in each input prompt, ensuring precise and context-aware interventions. Extensive experiments are conducted on object, explicit content, artistic style, and multi-celebrity erasure tasks, demonstrating that our method significantly outperforms state-of-the-art approaches. That is, our proposed concept erasure framework achieves superior completeness and robustness while preserving locality and general image quality (e.g., achieving a 93.58 H-score in object erasure, reducing explicit content to just 1 instance with a 12.2 FID, and attaining an 8.09 H_a in style erasure with no MS-COCO FID/CLIP degradation). Crucially, this robustness enables our framework to function as a built-in threat detection system by monitoring concept presence scores, offering a highly effective and practical solution for safer text-to-image generation.\n\nOur code is publicly available at: https://github.com/Lexiang-Xiong/Semantic-Surgery",
+      "authors": [
+        "Lexiang Xiong",
+        "Liu Chengyu",
+        "Jingwen Ye",
+        "YAN LIU",
+        "Yuecong Xu"
+      ],
+      "primary_category": "Concept Erasure",
+      "categories": [
+        "Concept Erasure",
+        "Text-to-Image Diffusion Model",
+        "Safe generation",
+        "Text-to-image generation"
+      ],
+      "published": "2025-09-18T17:35:52.788+00:00",
+      "link": "https://openreview.net/forum?id=3FTVceZQrh",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-43lkrdfqzb",
+      "source": "NeurIPS-2025-Rejected-Public",
+      "title": "SPEED: Scalable, Precise, and Efficient Concept Erasure for Diffusion Models",
+      "abstract": "Erasing concepts from large-scale text-to-image (T2I) diffusion models has become increasingly crucial due to the growing concerns over copyright infringement, offensive content, and privacy violations. In scalable applications, fine-tuning-based methods are time-consuming to precisely erase multiple target concepts, while real-time editing-based methods often degrade the generation quality of non-target concepts due to conflicting optimization objectives. To address this dilemma, we introduce SPEED, an efficient concept erasure approach that directly edits model parameters. SPEED searches for a null space, a model editing space where parameter updates do not affect non-target concepts, to achieve scalable and precise erasure. To facilitate accurate null space optimization, we incorporate three complementary strategies: Influence-based Prior Filtering (IPF) to selectively retain the most affected non-target concepts, Directed Prior Augmentation (DPA) to enrich the filtered retain set with semantically consistent variations, and Invariant Equality Constraints (IEC) to preserve key invariants during the T2I generation process. Extensive evaluations across multiple concept erasure tasks demonstrate that SPEED consistently outperforms existing methods in non-target preservation while achieving efficient and high-fidelity concept erasure, successfully erasing 100 concepts within just 5 seconds.",
+      "authors": [
+        "Ouxiang Li",
+        "Yuan Wang",
+        "Xinting Hu",
+        "Houcheng Jiang",
+        "Tao Liang",
+        "Yanbin Hao",
+        "Guojun Ma",
+        "Fuli Feng"
+      ],
+      "primary_category": "Diffusion Models",
+      "categories": [
+        "Diffusion Models",
+        "Concept Erasure",
+        "Model Safety"
+      ],
+      "published": "2025-05-10T03:05:19.637+00:00",
+      "link": "https://openreview.net/forum?id=43lkrdfQzB",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-gcjpjihdzn",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Obliviator Reveals the Cost of Nonlinear Guardedness in Concept Erasure",
+      "abstract": "Concept erasure aims to remove unwanted attributes, such as social or demographic factors, from learned representations, while preserving their task-relevant utility. While the goal of concept erasure is protection against all adversaries, existing methods remain vulnerable to nonlinear ones. This vulnerability arises from their failure to fully capture the complex, nonlinear statistical dependencies between learned representations and unwanted attributes. Moreover, although the existence of a trade-off between utility and erasure is expected, its progression during the erasure process, i.e., the cost of erasure, remains unstudied. In this work, we introduce Obliviator, a post-hoc erasure method designed to fully capture nonlinear statistical dependencies. We formulate erasure from a functional perspective, leading to an optimization problem involving a composition of kernels that lacks a closed-form solution. Instead of solving this problem in a single shot, we adopt an iterative approach that gradually morphs the feature space to achieve a more utility-preserving erasure. Unlike prior methods, Obliviator guards unwanted attribute against nonlinear adversaries. Our gradual approach quantifies the cost of nonlinear guardedness and reveals the dynamics between attribute protection and utility-preservation over the course of erasure. The utility-erasure trade-off curves obtained by Obliviator outperform the baselines and demonstrate its strong generalizability: its erasure becomes more utility-preserving when applied to the better-disentangled representations learned by more capable models.",
+      "authors": [
+        "Ramin Akbari",
+        "Milad Afshari",
+        "Vishnu Boddeti"
+      ],
+      "primary_category": "Concept Erasure",
+      "categories": [
+        "Concept Erasure",
+        "kernel methods",
+        "adversarial training",
+        "model bias/unfairness mitigation",
+        "representation learning"
+      ],
+      "published": "2025-09-18T17:37:06.73+00:00",
+      "link": "https://openreview.net/forum?id=GcjpjIHDZn",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-ukt31lbrpi",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "When Are Concepts Erased From Diffusion Models?",
+      "abstract": "In concept erasure, a model is modified to selectively prevent it from generating a target concept. Despite the rapid development of new methods, it remains unclear how thoroughly these approaches remove the target concept from the model. We begin by proposing two conceptual models for the erasure mechanism in diffusion models: (i) interfering with the model’s internal guidance processes, and (ii) reducing the unconditional likelihood of generating the target concept, potentially removing it entirely. To assess whether a concept has been truly erased from the model, we introduce a comprehensive suite of independent probing techniques: supplying visual context, modifying the diffusion trajectory, applying classifier guidance, and analyzing the model's alternative generations that emerge in place of the erased concept. Our results shed light on the value of exploring concept erasure robustness outside of adversarial text inputs, and emphasize the importance of comprehensive evaluations for erasure in diffusion models.",
+      "authors": [
+        "Kevin Lu",
+        "Nicky Kriplani",
+        "Rohit Gandikota",
+        "Minh Pham",
+        "David Bau",
+        "Chinmay Hegde",
+        "Niv Cohen"
+      ],
+      "primary_category": "Concept Erasure",
+      "categories": [
+        "Concept Erasure"
+      ],
+      "published": "2025-09-18T17:40:19.286+00:00",
+      "link": "https://openreview.net/forum?id=UKt31LbRPI",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2024-dkpmfiydrf",
+      "source": "NeurIPS-2024-Accepted",
+      "title": "Defensive Unlearning with Adversarial Training for Robust Concept Erasure in Diffusion Models",
+      "abstract": "Diffusion models (DMs) have achieved remarkable success in text-to-image generation, but they also pose safety risks, such as the potential generation of harmful content and copyright violations. The techniques of machine unlearning, also known as concept erasing, have been developed to address these risks. However, these techniques remain vulnerable to adversarial prompt attacks, which can prompt DMs post-unlearning to regenerate undesired images containing concepts (such as nudity) meant to be erased. This work aims to enhance the robustness of concept erasing by integrating the principle of adversarial training (AT) into machine unlearning, resulting in the robust unlearning framework referred to as AdvUnlearn. However, achieving this effectively and efficiently is highly nontrivial. First, we find that a straightforward implementation of AT compromises DMs’ image generation quality post-unlearning. To address this, we develop a utility-retaining regularization on an additional retain set, optimizing the trade-off between concept erasure robustness and model utility in AdvUnlearn. Moreover, we identify the text encoder as a more suitable module for robustification compared to UNet, ensuring unlearning effectiveness. And the acquired text encoder can serve as a plug-and-play robust unlearner for various DM types. Empirically, we perform extensive experiments to demonstrate the robustness advantage of AdvUnlearn across various DM unlearning scenarios, including the erasure of nudity, objects, and style concepts. In addition to robustness, AdvUnlearn also achieves a balanced tradeoff with model utility. To our knowledge, this is the first work to systematically explore robust DM unlearning through AT, setting it apart from existing methods that overlook robustness in concept erasing. Codes are available at https://github.com/OPTML-Group/AdvUnlearn.\n\nWarning: This paper contains model outputs that may be offensive in nature.",
+      "authors": [
+        "Yimeng Zhang",
+        "Xin Chen",
+        "Jinghan Jia",
+        "Yihua Zhang",
+        "Chongyu Fan",
+        "Jiancheng Liu",
+        "Mingyi Hong",
+        "Ke Ding",
+        "Sijia Liu"
+      ],
+      "primary_category": "diffusion model",
+      "categories": [
+        "diffusion model",
+        "machine unlearning",
+        "adversarial training"
+      ],
+      "published": "2024-09-25T18:07:54.172+00:00",
+      "link": "https://openreview.net/forum?id=dkpmfIydrF",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-igb289kbej",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "EraseFlow: Learning Concept Erasure Policies via GFlowNet-Driven Alignment",
+      "abstract": "Erasing harmful or proprietary concepts from powerful text‑to‑image generators is an emerging safety requirement, yet current ``concept erasure'' techniques either collapse image quality, rely on brittle adversarial losses, or demand prohibitive retraining cycles. We trace these limitations to a myopic view of the denoising trajectories that govern diffusion‑based generation. We introduce EraseFlow, the first framework that casts concept unlearning as exploration in the space of denoising paths and optimizes it with a GFlowNets equipped with the trajectory‑balance objective. By sampling entire trajectories rather than single end states, EraseFlow learns a stochastic policy that steers generation away from target concepts while preserving the model’s prior. EraseFlow eliminates the need for carefully crafted reward models and by doing this, it generalizes effectively to unseen concepts and avoids hackable rewards while improving the performance. Extensive empirical results demonstrate that EraseFlow outperforms existing baselines and achieves an optimal trade-off between performance and prior preservation.",
+      "authors": [
+        "Naga Sai Abhiram kusumba",
+        "Maitreya Patel",
+        "Kyle Min",
+        "Changhoon Kim",
+        "Chitta Baral",
+        "Yezhou Yang"
+      ],
+      "primary_category": "Safe generation",
+      "categories": [
+        "Safe generation",
+        "Text-to-image generation",
+        "Flow models",
+        "GFlowNets"
+      ],
+      "published": "2025-09-18T17:33:25.819+00:00",
+      "link": "https://openreview.net/forum?id=igB289kbej",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2024-gdz8rkfikp",
+      "source": "NeurIPS-2024-Accepted",
+      "title": "Erasing Undesirable Concepts in Diffusion Models with Adversarial Preservation",
+      "abstract": "Diffusion models excel at generating visually striking content from text but can inadvertently produce undesirable or harmful content when trained on unfiltered internet data. A practical solution is to selectively removing target concepts from the model, but this may impact the remaining concepts. Prior approaches have tried to balance this by introducing a loss term to preserve neutral content or a regularization term to minimize changes in the model parameters, yet resolving this trade-off remains challenging. In this work, we propose to identify and preserving concepts most affected by parameter changes, termed as *adversarial concepts*. This approach ensures stable erasure with minimal impact on the other concepts. We demonstrate the effectiveness of our method using the Stable Diffusion model, showing that it outperforms state-of-the-art erasure methods in eliminating unwanted content while maintaining the integrity of other unrelated elements. Our code is available at \\url{https://github.com/tuananhbui89/Erasing-Adversarial-Preservation}.",
+      "authors": [
+        "Anh Tuan Bui",
+        "Long Tung Vuong",
+        "Khanh Doan",
+        "Trung Le",
+        "Paul Montague",
+        "Tamas Abraham",
+        "Dinh Phung"
+      ],
+      "primary_category": "Diffusion models",
+      "categories": [
+        "Diffusion models",
+        "Erasing Concepts; Trustworthy GenAI"
+      ],
+      "published": "2024-09-25T18:15:09.593+00:00",
+      "link": "https://openreview.net/forum?id=GDz8rkfikp",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-n5v3dlick9",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Erasing Conceptual Knowledge from Language Models",
+      "abstract": "In this work, we introduce Erasure of Language Memory (ELM), a principled approach to concept-level unlearning that operates by matching distributions defined by the model's own introspective classification capabilities. Our key insight is that effective unlearning should leverage the model's ability to evaluate its own knowledge, using the language model itself as a classifier to identify and reduce the likelihood of generating content related to undesired concepts. ELM applies this framework to create targeted low-rank updates that reduce generation probabilities for concept-specific content while preserving the model's broader capabilities. We demonstrate ELM's efficacy on biosecurity, cybersecurity, and literary domain erasure tasks. Comparative evaluation reveals that ELM-modified models achieve near-random performance on assessments targeting erased concepts, while simultaneously preserving generation coherence, maintaining benchmark performance on unrelated tasks, and exhibiting strong robustness to adversarial attacks.",
+      "authors": [
+        "Rohit Gandikota",
+        "Sheridan Feucht",
+        "Samuel Marks",
+        "David Bau"
+      ],
+      "primary_category": "Concept Unlearning",
+      "categories": [
+        "Concept Unlearning",
+        "Erasing Bio Threat",
+        "Erasing Cyber Threat",
+        "safety"
+      ],
+      "published": "2025-09-18T17:28:42.155+00:00",
+      "link": "https://openreview.net/forum?id=N5V3dlIck9",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-zprmrpilgt",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "CURE: Concept Unlearning via Orthogonal Representation Editing in Diffusion Models",
+      "abstract": "As Text-to-Image models continue to evolve, so does the risk of generating unsafe, copyrighted, or privacy-violating content. Existing safety interventions - ranging from training data curation and model fine-tuning to inference-time filtering and guidance - often suffer from incomplete concept removal, susceptibility to jail-breaking, computational inefficiency, or collateral damage to unrelated capabilities. In this paper, we introduce CURE, a training-free concept unlearning framework that operates directly in the weight space of pre-trained diffusion models, enabling fast, interpretable, and highly specific suppression of undesired concepts. At the core of our method is the Spectral Eraser, a closed-form, orthogonal projection module that identifies discriminative subspaces using Singular Value Decomposition over token embeddings associated with the concepts to forget and retain. Intuitively, the Spectral Eraser identifies  and isolates features unique to the undesired concept while preserving safe attributes. This operator is then applied in a single step update to yield an edited model in which the target concept is effectively unlearned - without retraining, supervision, or iterative optimization. To balance the trade-off between filtering toxicity and preserving unrelated concepts, we further introduce an Expansion Mechanism for spectral regularization which selectively modulates singular vectors based on their relative significance to control the strength of forgetting. All the processes above are in closed-form, guaranteeing extremely efficient erasure in only $2$ seconds. Benchmarking against prior approaches, CURE achieves a more efficient and thorough removal for targeted artistic styles, objects, identities, or explicit content, with minor damage to original generation ability and demonstrates enhanced robustness against red-teaming. Project Page at \\url{https://sites.google.com/view/cure-unlearning/home}.",
+      "authors": [
+        "Shristi Das Biswas",
+        "Arani Roy",
+        "Kaushik Roy"
+      ],
+      "primary_category": "Concept Removal",
+      "categories": [
+        "Concept Removal",
+        "Text-to-Image Models"
+      ],
+      "published": "2025-09-18T17:33:12.718+00:00",
+      "link": "https://openreview.net/forum?id=zprMrpiLgT",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-y2ewc6jrlu",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Speculative Jacobi-Denoising Decoding for Accelerating Autoregressive Text-to-image Generation",
+      "abstract": "As a new paradigm of visual content generation, autoregressive text-to-image models suffer from slow inference due to their sequential token-by-token decoding process, often requiring thousands of model forward passes to generate a single image. To address this inefficiency, we propose Speculative Jacobi-Denoising Decoding (SJD2), a framework that incorporates the denoising process into Jacobi iterations to enable parallel token generation in autoregressive models. Our method introduces a next-clean-token prediction paradigm that enables the pre-trained autoregressive models to accept noise-perturbed token embeddings and predict the next clean tokens through low-cost fine-tuning. This denoising paradigm guides the model towards more stable Jacobi trajectories. During inference, our method initializes token sequences with Gaussian noise and performs iterative next-clean-token-prediction in the embedding space. We employ a probabilistic criterion to verify and accept multiple tokens in parallel, and refine the unaccepted tokens for the next iteration with the denoising trajectory. Experiments show that our method can accelerate generation by reducing model forward passes while maintaining the visual quality of generated images.",
+      "authors": [
+        "Yao Teng",
+        "Fu-Yun Wang",
+        "Xian Liu",
+        "Zhekai Chen",
+        "Han Shi",
+        "Yu Wang",
+        "Zhenguo Li",
+        "Weiyang Liu",
+        "Difan Zou",
+        "Xihui Liu"
+      ],
+      "primary_category": "Acceleration",
+      "categories": [
+        "Acceleration",
+        "Auto-regressive Model",
+        "Text-to-image Generation"
+      ],
+      "published": "2025-09-18T17:32:14.006+00:00",
+      "link": "https://openreview.net/forum?id=y2eWc6jrlu",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-nmquvjay5x",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Hawk: Leveraging Spatial Context for Faster Autoregressive Text-to-Image Generation",
+      "abstract": "Autoregressive (AR) image generation models are capable of producing high-fidelity images but often suffer from slow inference due to their inherently sequential, token-by-token decoding process. Speculative decoding, which employs a lightweight draft model to approximate the output of a larger AR model, has shown promise in accelerating text generation without compromising quality. However, its application to image generation remains largely underexplored. The challenges stem from a significantly larger sampling space, which complicates the alignment between the draft and target model outputs, coupled with the inadequate use of the two-dimensional spatial structure inherent in images, thereby limiting the modeling of local dependencies. To overcome these challenges, we introduce Hawk, a new approach that harnesses the spatial structure of images to guide the speculative model toward more accurate and efficient predictions. Experimental results on multiple text-to-image benchmarks demonstrate a 1.71× speedup over standard AR models, while preserving both image fidelity and diversity.",
+      "authors": [
+        "Zhi-Kai Chen",
+        "Jun-Peng Jiang",
+        "Han-Jia Ye",
+        "De-Chuan Zhan"
+      ],
+      "primary_category": "Autoregressive image generation",
+      "categories": [
+        "Autoregressive image generation",
+        "Inference acceleration",
+        "Spatial speculative decoding"
+      ],
+      "published": "2025-09-18T17:41:39.443+00:00",
+      "link": "https://openreview.net/forum?id=NMQUvjAY5x",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-vsir0fzfnp",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "BitMark: Watermarking Bitwise Autoregressive Image Generative Models",
+      "abstract": "State-of-the-art text-to-image models generate photorealistic images at an unprecedented speed. This work focuses on models that operate in a bitwise autoregressive manner over a discrete set of tokens that is practically infinite in size. However, their impressive generative power comes with a growing risk: as their outputs increasingly populate the Internet, they are likely to be scraped and reused as training data—potentially by the very same models. This phenomenon has been shown to lead to model collapse, where repeated training on generated content, especially from the models’ own previous versions, causes a gradual degradation in performance. A promising mitigation strategy is watermarking, which embeds human-imperceptible yet detectable signals into generated images—enabling the identification of generated content. In this work, we introduce BitMark, a robust bitwise watermarking framework. Our method embeds a watermark directly at the bit level of the token stream during the image generation process. Our bitwise watermark subtly influences the bits to preserve visual fidelity and generation speed while remaining robust against a spectrum of removal techniques. Furthermore, it exhibits high radioactivity, i.e., when watermarked generated images are used to train another image generative model, this second model’s outputs will also carry the watermark. The radioactive traces remain detectable even when only fine-tuning diffusion or image autoregressive models on images watermarked with our BitMark. Overall, our approach provides a principled step toward preventing model collapse in image generative models by enabling reliable detection of generated outputs. The code is available at https://github.com/sprintml/BitMark.",
+      "authors": [
+        "Louis Kerner",
+        "Michel Meintz",
+        "Bihe Zhao",
+        "Franziska Boenisch",
+        "Adam Dziedzic"
+      ],
+      "primary_category": "Watermarking",
+      "categories": [
+        "Watermarking",
+        "Image Autoregressive Model",
+        "Generated Content Detection"
+      ],
+      "published": "2025-09-18T17:29:21.557+00:00",
+      "link": "https://openreview.net/forum?id=VSir0FzFnP",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-jceqp4apmb",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "InfinityStar: Uniﬁed Spacetime AutoRegressive Modeling for Visual Generation",
+      "abstract": "We introduce InfinityStar, a unified spacetime autoregressive framework for high-resolution image and dynamic video synthesis. Building on the recent success of autoregressive modeling in both vision and language, our purely discrete approach jointly captures spatial and temporal dependencies within a single architecture. This unified design naturally supports a variety of generation tasks such as text-to-image, text-to-video, image-to-video, and long-duration video synthesis via straightforward temporal autoregression. Through extensive experiments, InfinityStar scores 83.74 on VBench, outperforming all autoregressive models by large margins, even surpassing diffusion competitors like HunyuanVideo. Without extra optimizations, our model generates a 5s, 720p video approximately 10$\\times$ faster than leading diffusion-based methods. To our knowledge, InfinityStar is the first discrete autoregressive video generator capable of producing industrial-level 720p videos. We release all code and models to foster further research in efficient, high-quality video generation.",
+      "authors": [
+        "Jinlai Liu",
+        "Jian Han",
+        "Bin Yan",
+        "Wuhui",
+        "Fengda Zhu",
+        "Xing Wang",
+        "Yi Jiang",
+        "BINGYUE PENG",
+        "Zehuan Yuan"
+      ],
+      "primary_category": "Visual Synthesis",
+      "categories": [
+        "Visual Synthesis",
+        "Visual AutoRegressive Modeling",
+        "Text to Video Generation",
+        "Generative models"
+      ],
+      "published": "2025-09-18T17:29:11.084+00:00",
+      "link": "https://openreview.net/forum?id=JcEqp4aPmb",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-gxw10t7uom",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "OmniGen-AR: AutoRegressive Any-to-Image Generation",
+      "abstract": "Autoregressive (AR) models have demonstrated strong potential in visual generation, offering competitive performance with simple architectures and optimization objectives. However, existing methods are typically limited to single-modality conditions, \\eg, text or category labels, restricting their applicability in real-world scenarios that demand image synthesis from diverse forms of controls. In this work, we present \\system, the first unified autoregressive framework for Any-to-Image generation. By discretizing various visual conditions through a shared visual tokenizer and text prompts with a text tokenizer, \\system supports a broad spectrum of conditional inputs within a single model, including text (text-to-image generation), spatial signals (segmentation-to-image and depth-to-image), and visual context (image editing, frame prediction, and text-to-video generation). To mitigate the risk of information leakage from condition tokens to content tokens, we introduce Disentangled Causal Attention (DCA), which separates the full-sequence causal mask into condition causal attention and content causal attention. It serves as a training-time regularizer without affecting the standard next-token prediction during inference. With this design, \\system achieves new state-of-the-art results across a range of benchmark, \\eg, 0.63 on GenEval and 80.02 on VBench, demonstrating its effectiveness in flexible and high-fidelity visual generation.",
+      "authors": [
+        "Junke Wang",
+        "Xun Wang",
+        "Qiushan Guo",
+        "Peize Sun",
+        "Weilin Huang",
+        "Zuxuan Wu",
+        "Yu-Gang Jiang"
+      ],
+      "primary_category": "autoregressive visual generation",
+      "categories": [
+        "autoregressive visual generation"
+      ],
+      "published": "2025-09-18T17:32:48.033+00:00",
+      "link": "https://openreview.net/forum?id=Gxw10T7uOm",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-2yxtr50mho",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Conditional Panoramic Image Generation via Masked Autoregressive Modeling",
+      "abstract": "Recent progress in panoramic image generation has underscored two critical limitations in existing approaches. First, most methods are built upon diffusion models, which are inherently ill-suited for equirectangular projection (ERP) panoramas due to the violation of the identically and independently distributed (i.i.d.) Gaussian noise assumption caused by their spherical mapping. Second, these methods often treat text-conditioned generation (text-to-panorama) and image-conditioned generation (panorama outpainting) as separate tasks, relying on distinct architectures and task-specific data. In this work, we propose a unified framework, Panoramic AutoRegressive model (PAR), which leverages masked autoregressive modeling to address these challenges. PAR avoids the i.i.d. assumption constraint and integrates text and image conditioning into a cohesive architecture, enabling seamless generation across tasks. To address the inherent discontinuity in existing generative models, we introduce circular padding to enhance spatial coherence and propose a consistency alignment strategy to improve the generation quality. Extensive experiments demonstrate competitive performance in text-to-image generation and panorama outpainting tasks while showcasing promising scalability and generalization capabilities.",
+      "authors": [
+        "Chaoyang Wang",
+        "Xiangtai Li",
+        "Lu Qi",
+        "Xiaofan Lin",
+        "Jinbin Bai",
+        "Qianyu Zhou",
+        "Yunhai Tong"
+      ],
+      "primary_category": "generative model",
+      "categories": [
+        "generative model",
+        "panoramic image"
+      ],
+      "published": "2025-09-18T17:32:25.3+00:00",
+      "link": "https://openreview.net/forum?id=2YxtR50mho",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2024-ynx7ai4zts",
+      "source": "NeurIPS-2024-Accepted",
+      "title": "Single Image Unlearning: Efficient Machine Unlearning in Multimodal Large Language Models",
+      "abstract": "Machine unlearning (MU) empowers individuals with the `right to be forgotten' by removing their private or sensitive information encoded in machine learning models. However, it remains uncertain whether MU can be effectively applied to Multimodal Large Language Models (MLLMs), particularly in scenarios of forgetting the leaked visual data of concepts. To overcome the challenge, we propose an efficient method, Single Image Unlearning (SIU), to unlearn the visual recognition of a concept by fine-tuning a single associated image for few steps. SIU consists of two key aspects: (i) Constructing Multifaceted fine-tuning data. We introduce four targets, based on which we construct fine-tuning data for the concepts to be forgotten; (ii)  Joint training loss. To synchronously forget the visual recognition of concepts and preserve the utility of MLLMs, we fine-tune MLLMs through a novel Dual Masked KL-divergence Loss combined with Cross Entropy loss. Alongside our method, we establish MMUBench, a new benchmark for MU in MLLMs and introduce a collection of metrics for its evaluation. Experimental results on MMUBench show that SIU completely surpasses the performance of existing methods. Furthermore, we surprisingly find that SIU can avoid invasive membership inference attacks and jailbreak attacks. To the best of our knowledge, we are the first to explore MU in MLLMs. We will release the code and benchmark in the near future.",
+      "authors": [
+        "Jiaqi Li",
+        "Qianshan Wei",
+        "Chuanyi Zhang",
+        "Guilin Qi",
+        "Miaozeng Du",
+        "Yongrui Chen",
+        "Sheng Bi",
+        "Fan Liu"
+      ],
+      "primary_category": "multimodal",
+      "categories": [
+        "multimodal",
+        "machine unlearning"
+      ],
+      "published": "2024-09-25T18:12:06.617+00:00",
+      "link": "https://openreview.net/forum?id=YNx7ai4zTs",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2024-93ktalfvnj",
+      "source": "NeurIPS-2024-Accepted",
+      "title": "Boosting Alignment for Post-Unlearning Text-to-Image Generative Models",
+      "abstract": "Large-scale generative models have shown impressive image-generation capabilities, propelled by massive data. However, this often inadvertently leads to the generation of harmful or inappropriate content and raises copyright concerns. Driven by these concerns, machine unlearning has become crucial to effectively purge undesirable knowledge from models. While existing literature has studied various unlearning techniques, these often suffer from either poor unlearning quality or degradation in text-image alignment after unlearning, due to the competitive nature of these objectives. To address these challenges, we propose a framework that seeks an optimal model update at each unlearning iteration, ensuring monotonic improvement on both objectives. We further derive the characterization of such an update.\n  In addition, we design procedures to strategically diversify the unlearning and remaining datasets to boost performance improvement. Our evaluation demonstrates that our method effectively removes target classes from recent diffusion-based generative models and concepts from stable diffusion models while maintaining close alignment with the models' original trained states, thus outperforming state-of-the-art baselines.",
+      "authors": [
+        "Myeongseob Ko",
+        "Henry Li",
+        "Zhun Wang",
+        "Jonathan Patsenker",
+        "Jiachen T. Wang",
+        "Qinbin Li",
+        "Ming Jin",
+        "Dawn Song",
+        "Ruoxi Jia"
+      ],
+      "primary_category": "unlearning",
+      "categories": [
+        "unlearning",
+        "diffusion models",
+        "stable diffusion"
+      ],
+      "published": "2024-09-25T18:16:50.619+00:00",
+      "link": "https://openreview.net/forum?id=93ktalFvnJ",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2024-vnbif0gmkb",
+      "source": "NeurIPS-2024-Accepted",
+      "title": "Autoregressive Image Generation without Vector Quantization",
+      "abstract": "Conventional wisdom holds that autoregressive models for image generation are typically accompanied by vector-quantized tokens. We observe that while a discrete-valued space can facilitate representing a categorical distribution, it is not a necessity for autoregressive modeling. In this work, we propose to model the per-token probability distribution using a diffusion procedure, which allows us to apply autoregressive models in a continuous-valued space. Rather than using categorical cross-entropy loss, we define a Diffusion Loss function to model the per-token probability. This approach eliminates the need for discrete-valued tokenizers. We evaluate its effectiveness across a wide range of cases, including standard autoregressive models and generalized masked autoregressive (MAR) variants. By removing vector quantization, our image generator achieves strong results while enjoying the speed advantage of sequence modeling. We hope this work will motivate the use of autoregressive generation in other continuous-valued domains and applications. Code is available at [https://github.com/LTH14/mar](https://github.com/LTH14/mar).",
+      "authors": [
+        "Tianhong Li",
+        "Yonglong Tian",
+        "He Li",
+        "Mingyang Deng",
+        "Kaiming He"
+      ],
+      "primary_category": "Image Generation",
+      "categories": [
+        "Image Generation",
+        "Autoregressive Models",
+        "Diffusion Models"
+      ],
+      "published": "2024-09-25T18:07:30.456+00:00",
+      "link": "https://openreview.net/forum?id=VNBIF0gmkb",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-nhnydm6pvz",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "NFIG: Multi-Scale Autoregressive Image Generation via Frequency Ordering",
+      "abstract": "Autoregressive models have achieved significant success in image generation. However, unlike the inherent hierarchical structure of image information in the spectral domain, standard autoregressive methods typically generate pixels sequentially in a fixed spatial order. To better leverage this spectral hierarchy, we introduce Next-Frequency Image Generation (NFIG). NFIG is a novel framework that decomposes the image generation process into multiple frequency-guided stages. NFIG aligns the generation process with the natural image structure. It does this by first generating low-frequency components, which efficiently capture global structure with significantly fewer tokens, and then progressively adding higher-frequency details. This frequency-aware paradigm offers substantial advantages: it not only improves the quality of generated images but crucially reduces inference cost by efficiently establishing global structure early on. Extensive experiments on the ImageNet-256 benchmark validate NFIG's effectiveness, demonstrating superior performance (FID: 2.81) and a notable 1.25x speedup compared to the strong baseline VAR-d20.",
+      "authors": [
+        "Zhihao Huang",
+        "Xi Qiu",
+        "Yukuo Ma",
+        "Yifu Zhou",
+        "Junjie Chen",
+        "Hongyuan Zhang",
+        "Chi Zhang",
+        "Xuelong Li"
+      ],
+      "primary_category": "Image Generation",
+      "categories": [
+        "Image Generation",
+        "Auto-regressive model",
+        "Frequency analysis"
+      ],
+      "published": "2025-09-18T17:37:04.799+00:00",
+      "link": "https://openreview.net/forum?id=nHNYDM6PVz",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-liqh1mocms",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Towards Better & Faster Autoregressive Image Generation: From the Perspective of Entropy",
+      "abstract": "In this work, we first revisit the sampling issues in current autoregressive (AR) image generation models and identify that image tokens, unlike text tokens, exhibit lower information density and non-uniform spatial distribution. Accordingly, we present an entropy-informed decoding strategy that facilitates higher autoregressive generation quality with faster synthesis speed. Specifically, the proposed method introduces two main innovations: 1) dynamic temperature control guided by spatial entropy of token distributions, enhancing the balance between content diversity, alignment accuracy, and structural coherence in both mask-based and scale-wise models, without extra computational overhead, and 2) entropy-aware acceptance rules in speculative decoding, achieving near-lossless generation at about 85% of the inference cost of conventional acceleration methods. Extensive experiments across multiple benchmarks using diverse AR image generation models demonstrate the effectiveness and generalizability of our approach in enhancing both generation quality and sampling speed.",
+      "authors": [
+        "Xiaoxiao Ma",
+        "Feng Zhao",
+        "Pengyang Ling",
+        "Haibo Qiu",
+        "Zhixiang Wei",
+        "Hu Yu",
+        "Jie Huang",
+        "Zhixiong Zeng",
+        "Lin Ma"
+      ],
+      "primary_category": "auto-regressive image generation",
+      "categories": [
+        "auto-regressive image generation",
+        "training-free",
+        "image generation"
+      ],
+      "published": "2025-09-18T17:32:07.584+00:00",
+      "link": "https://openreview.net/forum?id=LiQH1MOCMs",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-1qkvzx4qnp",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "FlexVAR: Flexible Visual Autoregressive Modeling without Residual Prediction",
+      "abstract": "This work challenges the residual prediction paradigm in visual autoregressive modeling and presents FlexVAR, a new Flexible Visual AutoRegressive image generation paradigm. FlexVAR facilitates autoregressive learning with ground-truth prediction, enabling each step to independently produce plausible images. This simple, intuitive approach swiftly learns visual distributions and makes the generation process more flexible and adaptable. Trained solely on low-resolution images (< 256px), FlexVAR can: (1) Generate images of various resolutions and aspect ratios, even exceeding the resolution of the training images. (2) Support various image-to-image tasks, including image refinement, in/out-painting, and image expansion. (3) Adapt to various autoregressive steps, allowing for faster inference with fewer steps or enhancing image quality with more steps. Our 1.0B model outperforms its VAR counterpart on the ImageNet 256 × 256 benchmark. Moreover, when zero-shot transfer the image generation process with 13 steps, the performance further improves to 2.08 FID, outperforming state-of-the-art autoregressive models AiM/VAR by 0.25/0.28 FID and popular diffusion models LDM/DiT by 1.52/0.19 FID, respectively. When transferring our 1.0B model to the ImageNet 512 × 512 benchmark in a zero-shot manner, FlexVAR achieves competitive results compared to the VAR 2.3B model, which is a fully supervised model trained at 512 × 512 resolution.",
+      "authors": [
+        "Siyu Jiao",
+        "Gengwei Zhang",
+        "Yinlong Qian",
+        "Jiancheng Huang",
+        "Yao Zhao",
+        "Humphrey Shi",
+        "Lin Ma",
+        "Yunchao Wei",
+        "ZEQUN JIE"
+      ],
+      "primary_category": "Autoregressive Modeling",
+      "categories": [
+        "Autoregressive Modeling",
+        "Image generation"
+      ],
+      "published": "2025-09-18T17:33:27.167+00:00",
+      "link": "https://openreview.net/forum?id=1qKvZX4qnp",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-z4hi1a9fsb",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Understand Before You Generate: Self-Guided Training for Autoregressive Image Generation",
+      "abstract": "Recent studies have demonstrated the importance of high-quality visual representations in image generation and have highlighted the limitations of generative models in image understanding. As a generative paradigm originally designed for natural language, autoregressive models face similar challenges. In this work, we present the first systematic investigation into the mechanisms of applying the next-token prediction paradigm to the visual domain. We identify three key properties that hinder the learning of high-level visual semantics: local and conditional dependence, inter-step semantic inconsistency, and spatial invariance deficiency. We show that these issues can be effectively addressed by introducing self-supervised objectives during training, leading to a novel training framework, Self-guided Training for AutoRegressive models (ST-AR). Without relying on pre-trained representation models, ST-AR significantly enhances the image understanding ability of autoregressive models and leads to improved generation quality. Specifically, ST-AR brings approximately 42% FID improvement for LlamaGen-L and 49% FID improvement for LlamaGen-XL, while maintaining the same sampling strategy.",
+      "authors": [
+        "Xiaoyu Yue",
+        "ZiDong Wang",
+        "Yuqing Wang",
+        "Wenlong Zhang",
+        "Xihui Liu",
+        "Wanli Ouyang",
+        "LEI BAI",
+        "Luping Zhou"
+      ],
+      "primary_category": "Autoregressive Models",
+      "categories": [
+        "Autoregressive Models",
+        "Image Generation"
+      ],
+      "published": "2025-09-18T17:30:42.919+00:00",
+      "link": "https://openreview.net/forum?id=Z4hi1a9FsB",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-kcsbyjrqub",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "AR-RAG: Autoregressive Retrieval Augmentation for Image Generation",
+      "abstract": "We introduce  Autoregressive Retrieval Augmentation (AR-RAG), a novel paradigm that enhances image generation by autoregressively incorporating k-nearest neighbor retrievals at the patch level.\nUnlike prior methods that perform a single, static retrieval before generation and condition the entire generation on fixed reference images,  AR-RAG performs context-aware retrievals at each generation step, using prior-generated patches as queries to retrieve and incorporate the most relevant patch-level visual references, \nenabling the model to respond to evolving generation needs while avoiding limitations (e.g., over-copying, stylistic bias, etc.) prevalent in existing methods. To realize AR-RAG, we propose two parallel frameworks: (1) Distribution-Augmentation in Decoding (DAiD), a training-free plug-and-use decoding strategy that directly merges the distribution of model-predicted patches with the distribution of retrieved patches, and (2) Feature-Augmentation in Decoding (FAiD), a parameter-efficient fine-tuning method that progressively smooths the features of retrieved patches via multi-scale convolution operations and leverages them to augment the image generation process. We validate the effectiveness of AR-RAG on widely adopted benchmarks, including Midjourney-30K, GenEval and DPG-Bench, demonstrating significant performance gains over state-of-the-art image generation models.",
+      "authors": [
+        "Jingyuan Qi",
+        "Zhiyang Xu",
+        "Qifan Wang",
+        "Lifu Huang"
+      ],
+      "primary_category": "retrieval augmented image generation",
+      "categories": [
+        "retrieval augmented image generation",
+        "autoregressive image generation",
+        "discrete image tokens"
+      ],
+      "published": "2025-09-18T17:43:35.601+00:00",
+      "link": "https://openreview.net/forum?id=kcSbYJRQub",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2024-gojl67cfs8",
+      "source": "NeurIPS-2024-Accepted",
+      "title": "Visual Autoregressive Modeling: Scalable Image Generation via Next-Scale Prediction",
+      "abstract": "We present Visual AutoRegressive modeling (VAR), a new generation paradigm that redefines the autoregressive learning on images as coarse-to-fine \"next-scale prediction\" or \"next-resolution prediction\", diverging from the standard raster-scan \"next-token prediction\". This simple, intuitive methodology allows autoregressive (AR) transformers to learn visual distributions fast and generalize well: VAR, for the first time, makes GPT-style AR models surpass diffusion transformers in image generation. On ImageNet 256x256 benchmark, VAR significantly improve AR baseline by improving Frechet inception distance (FID) from 18.65 to 1.73, inception score (IS) from 80.4 to 350.2, with around 20x faster inference speed. It is also empirically verified that VAR outperforms the Diffusion Transformer (DiT) in multiple dimensions including image quality, inference speed, data efficiency, and scalability. Scaling up VAR models exhibits clear power-law scaling laws similar to those observed in LLMs, with linear correlation coefficients near -0.998 as solid evidence. VAR further showcases zero-shot generalization ability in downstream tasks including image in-painting, out-painting, and editing. These results suggest VAR has initially emulated the two important properties of LLMs: Scaling Laws and zero-shot task generalization. We have released all models and codes to promote the exploration of AR/VAR models for visual generation and unified learning.",
+      "authors": [
+        "Keyu Tian",
+        "Yi Jiang",
+        "Zehuan Yuan",
+        "BINGYUE PENG",
+        "Liwei Wang"
+      ],
+      "primary_category": "Language Models",
+      "categories": [
+        "Language Models",
+        "Autoregressive Modeling",
+        "Scaling Laws",
+        "Generative Model",
+        "Image Generation",
+        "Image Synthesis"
+      ],
+      "published": "2024-09-25T18:16:41.162+00:00",
+      "link": "https://openreview.net/forum?id=gojL67CfS8",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-yj7h3aml0k",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "The Promise of RL for Autoregressive Image Editing",
+      "abstract": "While image generation techniques are now capable of producing high-quality images that respect prompts which span multiple sentences, the task of text-guided image editing remains a challenge. Even edit requests that consist of only a few words often fail to be executed correctly. We explore three strategies to enhance performance on a wide range of image editing tasks: supervised fine-tuning (SFT), reinforcement learning (RL), and Chain-of-Thought (CoT) reasoning. In order to study all these components in one consistent framework, we adopt an autoregressive multimodal model that processes textual and visual tokens in a unified manner.\nWe find RL combined with a large multi-modal LLM verifier to be the most effective of these strategies.\nAs a result, we release **EARL**: **E**diting with **A**utoregression and **RL**, a strong RL-based image editing model that performs competitively on a diverse range of edits compared to strong baselines, despite using much less training data. Thus, EARL pushes the frontier of autoregressive multimodal models on image editing. We release our code, training data, and trained models at [https://github.com/mair-lab/EARL](https://github.com/mair-lab/EARL).",
+      "authors": [
+        "Saba Ahmadi",
+        "Rabiul Awal",
+        "Ankur Sikarwar",
+        "Amirhossein Kazemnejad",
+        "Ge Ya Luo",
+        "Juan A. Rodriguez",
+        "Sai Rajeswar",
+        "Siva Reddy",
+        "Christopher Pal",
+        "Benno Krojer",
+        "Aishwarya Agrawal"
+      ],
+      "primary_category": "Image editing",
+      "categories": [
+        "Image editing",
+        "Autoregressive",
+        "MLLM",
+        "GRPO",
+        "RL",
+        "Reasoning"
+      ],
+      "published": "2025-09-18T17:36:37.878+00:00",
+      "link": "https://openreview.net/forum?id=YJ7H3amL0k",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-pesrah82zh",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Vision Foundation Models as Effective Visual Tokenizers for Autoregressive Generation",
+      "abstract": "In this work, we present a novel direction to build an image tokenizer directly on top of a frozen vision foundation model, which is a largely underexplored area. Specifically, we employ a frozen vision foundation model as the encoder of our tokenizer. To enhance its effectiveness, we introduce two key components: (1) a region-adaptive quantization framework that reduces redundancy in the pre-trained features on regular 2D grids, and (2) a semantic reconstruction objective that aligns the tokenizer’s outputs with the foundation model’s representations to preserve semantic fidelity. Based on these designs, our proposed image tokenizer, \\textbf{\\ours}, achieves substantial improvements in image reconstruction and generation quality, while also enhancing token efficiency. It further boosts autoregressive (AR) generation---achieving a gFID of \\textbf{1.36} on ImageNet benchmarks, while accelerating model convergence by \\textbf{three times}, and enabling high-fidelity class-conditional synthesis without the need for classifier-free guidance (CFG). The code is available at \\href{https://github.com/CVMI-Lab/VFMTok}{https://github.com/CVMI-Lab/VFMTok}.",
+      "authors": [
+        "Anlin Zheng",
+        "Xin Wen",
+        "Xuanyang Zhang",
+        "Chuofan Ma",
+        "Tiancai Wang",
+        "Gang YU",
+        "Xiangyu Zhang",
+        "XIAOJUAN QI"
+      ],
+      "primary_category": "Image tokenizer; Autoregressive Image Generation; Vision Foundation Models;",
+      "categories": [
+        "Image tokenizer; Autoregressive Image Generation; Vision Foundation Models;"
+      ],
+      "published": "2025-09-18T17:32:19.19+00:00",
+      "link": "https://openreview.net/forum?id=PESrAH82Zh",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2024-qzswlclmcs",
+      "source": "NeurIPS-2024-Accepted",
+      "title": "Kaleido Diffusion: Improving Conditional Diffusion Models with Autoregressive Latent Modeling",
+      "abstract": "Diffusion models have emerged as a powerful tool for generating high-quality images from textual descriptions. Despite their successes, these models often exhibit limited diversity in the sampled images, particularly when sampling with a high classifier-free guidance weight. To address this issue, we present Kaleido, a novel approach that enhances the diversity of samples by incorporating autoregressive latent priors. Kaleido integrates an autoregressive language model that encodes the original caption and generates latent variables, serving as abstract and intermediary representations for guiding and facilitating the image generation process.\nIn this paper, we explore a variety of discrete latent representations, including textual descriptions, detection bounding boxes, object blobs, and visual tokens. These representations diversify and enrich the input conditions to the diffusion models, enabling more diverse outputs.\nOur experimental results demonstrate that Kaleido effectively broadens the diversity of the generated image samples from a given textual description while maintaining high image quality. Furthermore, we show that Kaleido adheres closely to the guidance provided by the generated latent variables, demonstrating its capability to effectively control and direct the image generation process.",
+      "authors": [
+        "Jiatao Gu",
+        "Ying Shen",
+        "Shuangfei Zhai",
+        "Yizhe Zhang",
+        "Navdeep Jaitly",
+        "Joshua M. Susskind"
+      ],
+      "primary_category": "diffusion models",
+      "categories": [
+        "diffusion models",
+        "autoregressive models",
+        "latent variable models",
+        "text-to-image"
+      ],
+      "published": "2024-09-25T18:14:09.864+00:00",
+      "link": "https://openreview.net/forum?id=qZSwlcLMCS",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-t79rmqgk4s",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Preserving Task-Relevant Information Under Linear Concept Removal",
+      "abstract": "Modern neural networks often encode unwanted concepts alongside task-relevant information, leading to fairness and interpretability concerns. Existing post-hoc approaches can remove undesired concepts but often degrade useful signals. We introduce SPLINCE—Simultaneous Projection for LINear concept removal and Covariance prEservation—which eliminates sensitive concepts from representations while exactly preserving their covariance with a target label. SPLINCE achieves this via an oblique projection that ``splices out'' the unwanted direction yet protects important label correlations. Theoretically, it is the unique solution that removes linear concept predictability and maintains target covariance with minimal embedding distortion. Empirically, SPLINCE outperforms baselines on benchmarks such as Bias in Bios and Winobias, removing protected attributes while minimally damaging main-task information.",
+      "authors": [
+        "Floris Holstege",
+        "Shauli Ravfogel",
+        "Bram Wouters"
+      ],
+      "primary_category": "ersaure; linear erasure",
+      "categories": [
+        "ersaure; linear erasure"
+      ],
+      "published": "2025-09-18T17:43:46.598+00:00",
+      "link": "https://openreview.net/forum?id=t79rMQGk4S",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-vohntoo5cg",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Removing Concepts from Text-to-Image Models with Only Negative Samples",
+      "abstract": "This work introduces Clipout, a method for removing a target concept in pre-trained text-to-image models. By randomly clipping units from the learned data embedding and using a contrastive objective, models are encouraged to differentiate these clipped embedding vectors. Our goal is to remove private, copyrighted, inaccurate, or harmful concepts from trained models without the need for retraining. This is achieved by considering only negative samples and generating them in a bootstrapping-like manner, requiring minimal prior knowledge. Additionally, theoretical analyses are provided to further understand our proposed Clipout. Extensive experiments on text-to-image show that Clipout is simple yet highly effective and efficient compared with previous state-of-the-art approaches.",
+      "authors": [
+        "Hanwen Liu",
+        "Yadong MU"
+      ],
+      "primary_category": "diffusion model",
+      "categories": [
+        "diffusion model",
+        "machine unlearning",
+        "contrastive learning"
+      ],
+      "published": "2025-09-18T17:41:01.864+00:00",
+      "link": "https://openreview.net/forum?id=voHNTOO5CG",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2024-kvr3l73pnh",
+      "source": "NeurIPS-2024-Accepted",
+      "title": "Data Attribution for Text-to-Image Models by Unlearning Synthesized Images",
+      "abstract": "The goal of data attribution for text-to-image models is to identify the training images that most influence the generation of a new image. Influence is defined such that, for a given output, if a model is retrained from scratch without the most influential images, the model would fail to reproduce the same output. Unfortunately, directly searching for these influential images is computationally infeasible, since it would require repeatedly retraining models from scratch. In our work, we propose an efficient data attribution method by simulating unlearning the synthesized image. We achieve this by increasing the training loss on the output image, without catastrophic forgetting of other, unrelated concepts. We then identify training images with significant loss deviations after the unlearning process and label these as influential. We evaluate our method with a computationally intensive but \"gold-standard\" retraining from scratch and demonstrate our method's advantages over previous methods.",
+      "authors": [
+        "Sheng-Yu Wang",
+        "Aaron Hertzmann",
+        "Alexei A Efros",
+        "Jun-Yan Zhu",
+        "Richard Zhang"
+      ],
+      "primary_category": "Data Attribution",
+      "categories": [
+        "Data Attribution",
+        "Influence Estimation",
+        "Text-to-Image models",
+        "Machine Unlearning"
+      ],
+      "published": "2024-09-25T18:07:30.929+00:00",
+      "link": "https://openreview.net/forum?id=kVr3L73pNH",
+      "pdf_url": null,
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ]
+    },
+    {
+      "id": "openreview-neurips-2025-xpwfummzeq",
+      "source": "NeurIPS-2025-Accepted",
+      "title": "Continuous Concepts Removal in Text-to-image Diffusion Models",
+      "abstract": "Text-to-image diffusion models have shown an impressive ability to generate high-quality images from input textual descriptions/prompts. However, concerns have been raised about the potential for these models to create content that infringes on copyrights or depicts disturbing subject matter.\nRemoving specific concepts from these models is a promising solution to this issue. However, existing methods for concept removal do not work well in practical but challenging scenarios where concepts need to be continuously removed. Specifically, these methods lead to poor alignment between the text prompts and the generated image after the continuous removal process.\nTo address this issue, we propose a novel concept removal approach called CCRT that includes a designed knowledge distillation paradigm.\nCCRT constrains the text-image alignment behavior during the continuous concept removal process by using a set of text prompts.\nThese prompts are generated through our genetic algorithm, which employs a designed fuzzing strategy. \nTo evaluate the effectiveness of CCRT, we conduct extensive experiments involving the removal of various concepts, algorithmic metrics, and human studies.\nThe results demonstrate that CCRT can effectively remove the targeted concepts from the model in a continuous manner while maintaining the high image generation quality (e.g., text-image alignment).\nThe code of CCRT is available at https://github.com/wssun/CCRT.",
+      "authors": [
+        "Tingxu Han",
+        "Weisong Sun",
+        "Yanrong Hu",
+        "Chunrong Fang",
+        "Yonglong zhang",
+        "Shiqing Ma",
+        "Tao Zheng",
+        "Zhenyu Chen",
+        "Zhenting Wang"
+      ],
+      "primary_category": "text-to-image diffusion model",
+      "categories": [
+        "text-to-image diffusion model",
+        "continuous concept removal",
+        "responsible AI"
+      ],
+      "published": "2025-09-18T17:30:57.641+00:00",
+      "link": "https://openreview.net/forum?id=xpwFuMmzeq",
+      "pdf_url": null,
+      "tags": [
+        "query:ce"
+      ]
+    }
+  ],
+  "queries": [
+    {
+      "type": "intent_query",
+      "tag": "ce",
+      "paper_tag": "query:ce",
+      "query_text": "Concept erasure methods for autoregressive image generation",
+      "sim_scores": {
+        "openreview-neurips-2024-vnbif0gmkb": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-neurips-2025-igb289kbej": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-neurips-2025-gxw10t7uom": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-neurips-2025-liqh1mocms": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-neurips-2025-2yxtr50mho": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-neurips-2025-nhnydm6pvz": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-neurips-2025-kcsbyjrqub": {
+          "score": 0.014492753623188406,
+          "rank": 9
+        },
+        "openreview-neurips-2025-43lkrdfqzb": {
+          "score": 0.0136986301369863,
+          "rank": 13
+        },
+        "openreview-neurips-2025-nmquvjay5x": {
+          "score": 0.013333333333333334,
+          "rank": 15
+        },
+        "openreview-neurips-2025-z4hi1a9fsb": {
+          "score": 0.01282051282051282,
+          "rank": 18
+        },
+        "openreview-neurips-2025-pesrah82zh": {
+          "score": 0.012658227848101266,
+          "rank": 19
+        },
+        "openreview-neurips-2024-gojl67cfs8": {
+          "score": 0.011764705882352941,
+          "rank": 25
+        },
+        "openreview-neurips-2025-y2ewc6jrlu": {
+          "score": 0.011627906976744186,
+          "rank": 26
+        },
+        "openreview-neurips-2025-ukt31lbrpi": {
+          "score": 0.011111111111111112,
+          "rank": 30
+        },
+        "openreview-neurips-2024-qzswlclmcs": {
+          "score": 0.010752688172043012,
+          "rank": 33
+        },
+        "openreview-neurips-2025-1qkvzx4qnp": {
+          "score": 0.01020408163265306,
+          "rank": 38
+        },
+        "openreview-neurips-2025-3ftvcezqrh": {
+          "score": 0.01,
+          "rank": 40
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "openreview-neurips-2025-43lkrdfqzb",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-igb289kbej",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-kcsbyjrqub",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-ukt31lbrpi",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-3ftvcezqrh",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2024-vnbif0gmkb",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-dkpmfiydrf",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-nhnydm6pvz",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-xpwfummzeq",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-1qkvzx4qnp",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-gcjpjihdzn",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-liqh1mocms",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-gxw10t7uom",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-vohntoo5cg",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-gojl67cfs8",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-zprmrpilgt",
+          "score": 0.6703296703296702,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-qzswlclmcs",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-gdz8rkfikp",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-vsir0fzfnp",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-n5v3dlick9",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-z4hi1a9fsb",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-jceqp4apmb",
+          "score": 0.5495495495495496,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-y2ewc6jrlu",
+          "score": 0.5495495495495496,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-yj7h3aml0k",
+          "score": 0.5213675213675214,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-2yxtr50mho",
+          "score": 0.5213675213675214,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-nmquvjay5x",
+          "score": 0.49392712550607265,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-pesrah82zh",
+          "score": 0.32035835650293487,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2024-ynx7ai4zts",
+          "score": 0.29792429792429775,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2024-93ktalfvnj",
+          "score": 0.2760180995475112,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2024-kvr3l73pnh",
+          "score": 0.23371647509578536,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-t79rmqgk4s",
+          "score": 0.06517094017094004,
+          "star_rating": 2
+        }
+      ]
+    },
+    {
+      "type": "intent_query",
+      "tag": "ce",
+      "paper_tag": "query:ce",
+      "query_text": "How to erase concepts in text to image autoregressive models",
+      "sim_scores": {
+        "openreview-neurips-2024-vnbif0gmkb": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-neurips-2025-vohntoo5cg": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-neurips-2025-43lkrdfqzb": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-neurips-2024-gdz8rkfikp": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-neurips-2025-ukt31lbrpi": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-neurips-2025-gxw10t7uom": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-neurips-2025-xpwfummzeq": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-neurips-2025-igb289kbej": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "openreview-neurips-2024-kvr3l73pnh": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "openreview-neurips-2024-qzswlclmcs": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "openreview-neurips-2024-93ktalfvnj": {
+          "score": 0.013333333333333334,
+          "rank": 15
+        },
+        "openreview-neurips-2025-nmquvjay5x": {
+          "score": 0.012987012987012988,
+          "rank": 17
+        },
+        "openreview-neurips-2025-t79rmqgk4s": {
+          "score": 0.012658227848101266,
+          "rank": 19
+        },
+        "openreview-neurips-2025-1qkvzx4qnp": {
+          "score": 0.0125,
+          "rank": 20
+        },
+        "openreview-neurips-2025-2yxtr50mho": {
+          "score": 0.012195121951219513,
+          "rank": 22
+        },
+        "openreview-neurips-2025-z4hi1a9fsb": {
+          "score": 0.011764705882352941,
+          "rank": 25
+        },
+        "openreview-neurips-2024-dkpmfiydrf": {
+          "score": 0.011494252873563218,
+          "rank": 27
+        },
+        "openreview-neurips-2025-zprmrpilgt": {
+          "score": 0.011363636363636364,
+          "rank": 28
+        },
+        "openreview-neurips-2025-liqh1mocms": {
+          "score": 0.010752688172043012,
+          "rank": 33
+        },
+        "openreview-neurips-2025-pesrah82zh": {
+          "score": 0.010638297872340425,
+          "rank": 34
+        },
+        "openreview-neurips-2025-y2ewc6jrlu": {
+          "score": 0.010526315789473684,
+          "rank": 35
+        },
+        "openreview-neurips-2025-kcsbyjrqub": {
+          "score": 0.010416666666666666,
+          "rank": 36
+        },
+        "openreview-neurips-2025-3ftvcezqrh": {
+          "score": 0.009900990099009901,
+          "rank": 41
+        },
+        "openreview-neurips-2025-yj7h3aml0k": {
+          "score": 0.009345794392523364,
+          "rank": 47
+        },
+        "openreview-neurips-2025-nhnydm6pvz": {
+          "score": 0.009174311926605505,
+          "rank": 49
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "openreview-neurips-2025-43lkrdfqzb",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-igb289kbej",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-vohntoo5cg",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-3ftvcezqrh",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-ukt31lbrpi",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-xpwfummzeq",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2024-gdz8rkfikp",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-dkpmfiydrf",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-zprmrpilgt",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-n5v3dlick9",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-y2ewc6jrlu",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-jceqp4apmb",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-gxw10t7uom",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-vsir0fzfnp",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-gcjpjihdzn",
+          "score": 0.702712746191007,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-ynx7ai4zts",
+          "score": 0.6703296703296702,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-t79rmqgk4s",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-93ktalfvnj",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-kvr3l73pnh",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-qzswlclmcs",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-vnbif0gmkb",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-yj7h3aml0k",
+          "score": 0.5495495495495496,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-nmquvjay5x",
+          "score": 0.5495495495495496,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-gojl67cfs8",
+          "score": 0.49392712550607265,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-kcsbyjrqub",
+          "score": 0.46719946719946726,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-z4hi1a9fsb",
+          "score": 0.4411571334648256,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-1qkvzx4qnp",
+          "score": 0.41577409931840303,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-liqh1mocms",
+          "score": 0.32035835650293487,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-2yxtr50mho",
+          "score": 0.29792429792429775,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-pesrah82zh",
+          "score": 0.21328671328671328,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-nhnydm6pvz",
+          "score": 0.1360089186176142,
+          "star_rating": 3
+        }
+      ]
+    },
+    {
+      "type": "intent_query",
+      "tag": "ce",
+      "paper_tag": "query:ce",
+      "query_text": "Remove concepts from autoregressive text to image models",
+      "sim_scores": {
+        "openreview-neurips-2025-vohntoo5cg": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-neurips-2024-vnbif0gmkb": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-neurips-2025-43lkrdfqzb": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-neurips-2025-xpwfummzeq": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-neurips-2025-gxw10t7uom": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-neurips-2024-gdz8rkfikp": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-neurips-2025-t79rmqgk4s": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-neurips-2025-ukt31lbrpi": {
+          "score": 0.013888888888888888,
+          "rank": 12
+        },
+        "openreview-neurips-2024-kvr3l73pnh": {
+          "score": 0.013333333333333334,
+          "rank": 15
+        },
+        "openreview-neurips-2024-93ktalfvnj": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "openreview-neurips-2025-1qkvzx4qnp": {
+          "score": 0.012658227848101266,
+          "rank": 19
+        },
+        "openreview-neurips-2025-igb289kbej": {
+          "score": 0.0125,
+          "rank": 20
+        },
+        "openreview-neurips-2024-qzswlclmcs": {
+          "score": 0.012345679012345678,
+          "rank": 21
+        },
+        "openreview-neurips-2025-nmquvjay5x": {
+          "score": 0.012195121951219513,
+          "rank": 22
+        },
+        "openreview-neurips-2025-kcsbyjrqub": {
+          "score": 0.011363636363636364,
+          "rank": 28
+        },
+        "openreview-neurips-2025-z4hi1a9fsb": {
+          "score": 0.011235955056179775,
+          "rank": 29
+        },
+        "openreview-neurips-2025-zprmrpilgt": {
+          "score": 0.01098901098901099,
+          "rank": 31
+        },
+        "openreview-neurips-2025-3ftvcezqrh": {
+          "score": 0.010869565217391304,
+          "rank": 32
+        },
+        "openreview-neurips-2025-pesrah82zh": {
+          "score": 0.010638297872340425,
+          "rank": 34
+        },
+        "openreview-neurips-2025-2yxtr50mho": {
+          "score": 0.010416666666666666,
+          "rank": 36
+        },
+        "openreview-neurips-2024-dkpmfiydrf": {
+          "score": 0.010101010101010102,
+          "rank": 39
+        },
+        "openreview-neurips-2025-yj7h3aml0k": {
+          "score": 0.009523809523809525,
+          "rank": 45
+        }
+      },
+      "ranked": [
+        {
+          "paper_id": "openreview-neurips-2025-xpwfummzeq",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-vohntoo5cg",
+          "score": 1.0,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-igb289kbej",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-43lkrdfqzb",
+          "score": 0.9586435070306036,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-3ftvcezqrh",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2024-gdz8rkfikp",
+          "score": 0.9185999185999183,
+          "star_rating": 5
+        },
+        {
+          "paper_id": "openreview-neurips-2025-ukt31lbrpi",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-zprmrpilgt",
+          "score": 0.8798076923076922,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-y2ewc6jrlu",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-gxw10t7uom",
+          "score": 0.8422090729783037,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-nmquvjay5x",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-vnbif0gmkb",
+          "score": 0.8057498057498057,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-vsir0fzfnp",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-jceqp4apmb",
+          "score": 0.7703788748564866,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-kcsbyjrqub",
+          "score": 0.73604826546003,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-n5v3dlick9",
+          "score": 0.702712746191007,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-qzswlclmcs",
+          "score": 0.702712746191007,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-1qkvzx4qnp",
+          "score": 0.6703296703296702,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-gojl67cfs8",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2024-dkpmfiydrf",
+          "score": 0.6388587937883712,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-liqh1mocms",
+          "score": 0.608262108262108,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-pesrah82zh",
+          "score": 0.578503688092729,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-z4hi1a9fsb",
+          "score": 0.5495495495495496,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-yj7h3aml0k",
+          "score": 0.5213675213675214,
+          "star_rating": 4
+        },
+        {
+          "paper_id": "openreview-neurips-2025-t79rmqgk4s",
+          "score": 0.46719946719946726,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-2yxtr50mho",
+          "score": 0.46719946719946726,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2024-ynx7ai4zts",
+          "score": 0.4411571334648256,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2024-93ktalfvnj",
+          "score": 0.41577409931840303,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-nhnydm6pvz",
+          "score": 0.3910256410256411,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2024-kvr3l73pnh",
+          "score": 0.25462134764460337,
+          "star_rating": 3
+        },
+        {
+          "paper_id": "openreview-neurips-2025-gcjpjihdzn",
+          "score": 0.1737891737891738,
+          "star_rating": 3
+        }
+      ]
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "autoregressive image generation",
+      "sim_scores": {
+        "openreview-neurips-2025-nmquvjay5x": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-neurips-2024-vnbif0gmkb": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-neurips-2025-nhnydm6pvz": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-neurips-2025-liqh1mocms": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-neurips-2025-1qkvzx4qnp": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-neurips-2025-gxw10t7uom": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-neurips-2025-z4hi1a9fsb": {
+          "score": 0.014492753623188406,
+          "rank": 9
+        },
+        "openreview-neurips-2025-kcsbyjrqub": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "openreview-neurips-2025-vsir0fzfnp": {
+          "score": 0.013888888888888888,
+          "rank": 12
+        },
+        "openreview-neurips-2025-2yxtr50mho": {
+          "score": 0.013333333333333334,
+          "rank": 15
+        },
+        "openreview-neurips-2025-y2ewc6jrlu": {
+          "score": 0.013157894736842105,
+          "rank": 16
+        },
+        "openreview-neurips-2024-gojl67cfs8": {
+          "score": 0.01282051282051282,
+          "rank": 18
+        },
+        "openreview-neurips-2025-yj7h3aml0k": {
+          "score": 0.012345679012345678,
+          "rank": 21
+        },
+        "openreview-neurips-2025-jceqp4apmb": {
+          "score": 0.011904761904761904,
+          "rank": 24
+        },
+        "openreview-neurips-2025-pesrah82zh": {
+          "score": 0.011363636363636364,
+          "rank": 28
+        },
+        "openreview-neurips-2024-qzswlclmcs": {
+          "score": 0.011111111111111112,
+          "rank": 30
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "autoregressive image generation models",
+      "sim_scores": {
+        "openreview-neurips-2024-vnbif0gmkb": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-neurips-2025-gxw10t7uom": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-neurips-2025-2yxtr50mho": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-neurips-2025-nhnydm6pvz": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-neurips-2025-liqh1mocms": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-neurips-2025-z4hi1a9fsb": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-neurips-2025-pesrah82zh": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "openreview-neurips-2024-gojl67cfs8": {
+          "score": 0.013888888888888888,
+          "rank": 12
+        },
+        "openreview-neurips-2025-1qkvzx4qnp": {
+          "score": 0.012987012987012988,
+          "rank": 17
+        },
+        "openreview-neurips-2025-kcsbyjrqub": {
+          "score": 0.01282051282051282,
+          "rank": 18
+        },
+        "openreview-neurips-2025-nmquvjay5x": {
+          "score": 0.012658227848101266,
+          "rank": 19
+        },
+        "openreview-neurips-2024-qzswlclmcs": {
+          "score": 0.009615384615384616,
+          "rank": 44
+        },
+        "openreview-neurips-2025-y2ewc6jrlu": {
+          "score": 0.009523809523809525,
+          "rank": 45
+        },
+        "openreview-neurips-2025-jceqp4apmb": {
+          "score": 0.00909090909090909,
+          "rank": 50
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "autoregressive model for text to image generation",
+      "sim_scores": {
+        "openreview-neurips-2025-gxw10t7uom": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-neurips-2024-vnbif0gmkb": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-neurips-2025-nmquvjay5x": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-neurips-2025-2yxtr50mho": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-neurips-2025-liqh1mocms": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-neurips-2025-kcsbyjrqub": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "openreview-neurips-2025-z4hi1a9fsb": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "openreview-neurips-2024-qzswlclmcs": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "openreview-neurips-2025-nhnydm6pvz": {
+          "score": 0.012987012987012988,
+          "rank": 17
+        },
+        "openreview-neurips-2025-y2ewc6jrlu": {
+          "score": 0.012345679012345678,
+          "rank": 21
+        },
+        "openreview-neurips-2025-pesrah82zh": {
+          "score": 0.012048192771084338,
+          "rank": 23
+        },
+        "openreview-neurips-2025-yj7h3aml0k": {
+          "score": 0.011627906976744186,
+          "rank": 26
+        },
+        "openreview-neurips-2025-1qkvzx4qnp": {
+          "score": 0.011235955056179775,
+          "rank": 29
+        },
+        "openreview-neurips-2024-gojl67cfs8": {
+          "score": 0.01098901098901099,
+          "rank": 31
+        },
+        "openreview-neurips-2024-kvr3l73pnh": {
+          "score": 0.00909090909090909,
+          "rank": 50
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "concept erasure",
+      "sim_scores": {
+        "openreview-neurips-2025-3ftvcezqrh": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-neurips-2025-43lkrdfqzb": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-neurips-2025-gcjpjihdzn": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-neurips-2025-ukt31lbrpi": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-neurips-2024-dkpmfiydrf": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-neurips-2025-igb289kbej": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-neurips-2024-gdz8rkfikp": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-neurips-2025-n5v3dlick9": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-neurips-2025-zprmrpilgt": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "concept erasure in machine learning models",
+      "sim_scores": {
+        "openreview-neurips-2025-ukt31lbrpi": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-neurips-2025-igb289kbej": {
+          "score": 0.016129032258064516,
+          "rank": 2
+        },
+        "openreview-neurips-2025-t79rmqgk4s": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-neurips-2025-gcjpjihdzn": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-neurips-2024-gdz8rkfikp": {
+          "score": 0.015151515151515152,
+          "rank": 6
+        },
+        "openreview-neurips-2025-n5v3dlick9": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-neurips-2025-43lkrdfqzb": {
+          "score": 0.014285714285714285,
+          "rank": 10
+        },
+        "openreview-neurips-2024-dkpmfiydrf": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "openreview-neurips-2024-ynx7ai4zts": {
+          "score": 0.012658227848101266,
+          "rank": 19
+        },
+        "openreview-neurips-2025-vohntoo5cg": {
+          "score": 0.011627906976744186,
+          "rank": 26
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "machine unlearning",
+      "sim_scores": {
+        "openreview-neurips-2024-ynx7ai4zts": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-neurips-2024-dkpmfiydrf": {
+          "score": 0.013513513513513514,
+          "rank": 14
+        },
+        "openreview-neurips-2024-93ktalfvnj": {
+          "score": 0.011627906976744186,
+          "rank": 26
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "machine unlearning for image generation",
+      "sim_scores": {
+        "openreview-neurips-2025-igb289kbej": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-neurips-2024-ynx7ai4zts": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-neurips-2024-93ktalfvnj": {
+          "score": 0.014925373134328358,
+          "rank": 7
+        },
+        "openreview-neurips-2024-dkpmfiydrf": {
+          "score": 0.014084507042253521,
+          "rank": 11
+        },
+        "openreview-neurips-2024-kvr3l73pnh": {
+          "score": 0.013333333333333334,
+          "rank": 15
+        },
+        "openreview-neurips-2025-kcsbyjrqub": {
+          "score": 0.009900990099009901,
+          "rank": 41
+        }
+      }
+    },
+    {
+      "type": "keyword",
+      "tag": "ce",
+      "paper_tag": "keyword:ce",
+      "query_text": "text-to-image autoregressive model",
+      "sim_scores": {
+        "openreview-neurips-2025-y2ewc6jrlu": {
+          "score": 0.01639344262295082,
+          "rank": 1
+        },
+        "openreview-neurips-2025-nmquvjay5x": {
+          "score": 0.015873015873015872,
+          "rank": 3
+        },
+        "openreview-neurips-2025-vsir0fzfnp": {
+          "score": 0.015625,
+          "rank": 4
+        },
+        "openreview-neurips-2025-jceqp4apmb": {
+          "score": 0.015384615384615385,
+          "rank": 5
+        },
+        "openreview-neurips-2025-gxw10t7uom": {
+          "score": 0.014705882352941176,
+          "rank": 8
+        },
+        "openreview-neurips-2025-2yxtr50mho": {
+          "score": 0.014492753623188406,
+          "rank": 9
+        }
+      }
+    }
+  ],
+  "global_candidate_ids": [
+    "openreview-neurips-2024-vnbif0gmkb",
+    "openreview-neurips-2025-igb289kbej",
+    "openreview-neurips-2025-vohntoo5cg",
+    "openreview-neurips-2025-tmf3keupol",
+    "openreview-neurips-2025-nmquvjay5x",
+    "openreview-neurips-2025-gxw10t7uom",
+    "openreview-neurips-2025-fxwwyz1p8a",
+    "openreview-neurips-2025-3ftvcezqrh",
+    "openreview-neurips-2025-43lkrdfqzb",
+    "openreview-neurips-2025-ukt31lbrpi",
+    "openreview-neurips-2025-fgjclxiujr",
+    "openreview-neurips-2024-3lkuc8rbyv",
+    "openreview-neurips-2025-kauckbcmvi",
+    "openreview-neurips-2025-dej3ztpdbc",
+    "openreview-neurips-2025-y2ewc6jrlu",
+    "openreview-neurips-2025-42vdmzv7qm",
+    "openreview-neurips-2025-rud3m6wlxh",
+    "openreview-neurips-2025-2yxtr50mho",
+    "openreview-neurips-2025-an0epypuoj",
+    "openreview-neurips-2025-kcsbyjrqub",
+    "openreview-neurips-2024-waq5x4qc3w",
+    "openreview-neurips-2025-z4hi1a9fsb",
+    "openreview-neurips-2024-dkpmfiydrf",
+    "openreview-neurips-2025-wh3f1zok70",
+    "openreview-neurips-2025-1qkvzx4qnp",
+    "openreview-neurips-2025-pesrah82zh",
+    "openreview-neurips-2025-liqh1mocms",
+    "openreview-neurips-2024-qzswlclmcs",
+    "openreview-neurips-2025-nhnydm6pvz",
+    "openreview-neurips-2024-gdz8rkfikp",
+    "openreview-neurips-2025-i4qafv04rz",
+    "openreview-neurips-2024-zdyxdr3clp",
+    "openreview-neurips-2024-93ktalfvnj",
+    "openreview-neurips-2024-kvr3l73pnh",
+    "openreview-neurips-2024-gojl67cfs8",
+    "openreview-neurips-2025-hmlugomsek",
+    "openreview-neurips-2024-ynx7ai4zts",
+    "openreview-neurips-2025-t79rmqgk4s",
+    "openreview-neurips-2025-yj7h3aml0k",
+    "openreview-neurips-2025-px9gwmjloi",
+    "openreview-neurips-2025-cabcyh1wkm",
+    "openreview-neurips-2025-2lq5lnwla9",
+    "openreview-neurips-2025-1wlzoi4w5o",
+    "openreview-neurips-2025-ny6ypsxcoy",
+    "openreview-neurips-2024-ql4nn6ew7u",
+    "openreview-neurips-2025-tomjbgxwhw",
+    "openreview-neurips-2025-zprmrpilgt",
+    "openreview-neurips-2024-ubvcpamdgk",
+    "openreview-neurips-2025-jceqp4apmb",
+    "openreview-neurips-2025-klntfa47dl",
+    "openreview-neurips-2025-nfxa2von7y",
+    "openreview-neurips-2024-h3k2nxu5bj",
+    "openreview-neurips-2025-wq5g71w7zx",
+    "openreview-neurips-2025-pe92nsple8",
+    "openreview-neurips-2025-2xpozhoo23",
+    "openreview-neurips-2025-chi8qxgrzh",
+    "openreview-neurips-2025-1yzrtbaazz",
+    "openreview-neurips-2024-mwfeh4rqva",
+    "openreview-neurips-2025-wqfo6aegbe",
+    "openreview-neurips-2024-zgn0ywy2he",
+    "openreview-neurips-2024-o4rcfjvubj",
+    "openreview-neurips-2024-4binoegdcm",
+    "openreview-neurips-2025-qhuqqekir4",
+    "openreview-neurips-2025-gcjpjihdzn",
+    "openreview-neurips-2025-kc1wtxzbrp",
+    "openreview-neurips-2024-1smxugzrh8",
+    "openreview-neurips-2024-vazkrbcgxt",
+    "openreview-neurips-2025-xpwfummzeq",
+    "openreview-neurips-2025-vsir0fzfnp",
+    "openreview-neurips-2025-n5v3dlick9",
+    "openreview-neurips-2024-dhedf5epbt",
+    "openreview-neurips-2025-77zz0jtnjn",
+    "openreview-neurips-2025-ig4unfun0r",
+    "openreview-neurips-2025-c2qmbkp7iq",
+    "openreview-neurips-2025-ljjgbcpn7q",
+    "openreview-neurips-2025-hvdd72iom4",
+    "openreview-neurips-2025-dpuqufb1j8",
+    "openreview-neurips-2024-zfbqnl1ais",
+    "openreview-neurips-2025-vlvtstqn34",
+    "openreview-neurips-2025-stpe7ueetz",
+    "openreview-neurips-2024-fqjekshovr",
+    "openreview-neurips-2025-z8rqhf8oot",
+    "openreview-neurips-2024-ow1ldvmnj6",
+    "openreview-neurips-2025-vntj7pglrz",
+    "openreview-neurips-2025-zfawtfbr9k",
+    "openreview-neurips-2025-3ishlkiykj",
+    "openreview-neurips-2025-mbqzwq6vfd",
+    "openreview-neurips-2025-dgthokjau2",
+    "openreview-neurips-2025-1kylg7l2oq",
+    "openreview-neurips-2025-ckoyn2hshu",
+    "openreview-neurips-2024-7nryncn2be",
+    "openreview-neurips-2025-eu2tqcvxih",
+    "openreview-neurips-2024-vojcpdlw53",
+    "openreview-neurips-2025-49uegcxa8w",
+    "openreview-neurips-2025-3ygus2rxdk",
+    "openreview-neurips-2024-ifkmfuxqdh",
+    "openreview-neurips-2025-3ln8f2noua",
+    "openreview-neurips-2025-mbjj9wcpg9",
+    "openreview-neurips-2025-u2lgi4nie7",
+    "openreview-neurips-2025-f6aopkge8l",
+    "openreview-neurips-2025-tyoyjstun9",
+    "openreview-neurips-2025-xakon2ifsp",
+    "openreview-neurips-2024-awfryojagi",
+    "openreview-neurips-2025-dvix32lq7j",
+    "openreview-neurips-2025-vzcvdwltwa",
+    "openreview-neurips-2024-i4gqcm1r3z",
+    "openreview-neurips-2025-u4j0ltcyid",
+    "openreview-neurips-2024-7g362fgjfd",
+    "openreview-neurips-2024-agqldloxxy",
+    "openreview-neurips-2024-souxmwl5ak",
+    "openreview-neurips-2024-e5icsxbd8q",
+    "openreview-neurips-2025-0wc6h6kgh8",
+    "openreview-neurips-2024-c8hoqimwkp",
+    "openreview-neurips-2025-ssoczifk94",
+    "openreview-neurips-2025-tfidsatsoc",
+    "openreview-neurips-2024-jih4w7r0rn",
+    "openreview-neurips-2025-bmeh70wjcu",
+    "openreview-neurips-2025-jmtvnz8np7",
+    "openreview-neurips-2024-clta4jfbml",
+    "openreview-neurips-2024-qabhlbf72k"
+  ],
+  "global_pool_lane_top_k": 30,
+  "global_pool_limit": 120,
+  "global_pool_guaranteed_per_lane": 2,
+  "global_pool_effective_size": 120,
+  "reranked_at": "2026-06-04T02:28:20.009283+00:00",
+  "llm_ranked": [
+    {
+      "paper_id": "openreview-neurips-2025-zprmrpilgt",
+      "score": 9.0,
+      "evidence_en": "concept unlearning in diffusion models",
+      "evidence_cn": "扩散模型中的概念遗忘",
+      "canonical_evidence": "扩散模型中的概念遗忘",
+      "tldr_en": "CURE introduces a training-free concept unlearning framework for diffusion models using orthogonal projection, enabling fast and precise concept removal without retraining.",
+      "tldr_cn": "针对文本到图像扩散模型中不安全内容生成的问题，现有方法存在去除不彻底或计算开销大的缺陷。本文提出CURE，一种无需训练的概念遗忘框架，通过在权重空间中使用正交投影（光谱擦除器）直接抑制特定概念。该方法支持快速、可解释且高度特异性的概念移除，同时保持模型的其他生成能力。实验表明CURE在多个基准上实现了有效的概念擦除，且对模型其他能力的影响极小。",
+      "title_zh": "CURE：通过正交表示编辑实现扩散模型的概念遗忘",
+      "motivation_cn": "现有扩散模型的安全干预方法在概念移除上不彻底，易受越狱攻击或导致计算效率低下。",
+      "method_cn": "提出训练无关的概念遗忘框架CURE，核心是光谱擦除器，通过闭式正交投影在权重空间中直接抑制目标概念。",
+      "result_cn": "在多个扩散模型上，CURE有效擦除不安全概念，同时最小化对其他生成能力的影响。",
+      "conclusion_cn": "CURE提供了一种高效、可解释的概念擦除方法，可作为扩散模型的安全工具。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-1qkvzx4qnp",
+      "score": 9.0,
+      "evidence_en": "autoregressive image generation without residual prediction",
+      "evidence_cn": "无需残差预测的自回归图像生成",
+      "canonical_evidence": "无需残差预测的自回归图像生成",
+      "tldr_en": "FlexVAR presents a novel autoregressive image generation paradigm that uses ground-truth prediction instead of residual prediction, enabling flexible resolution and multi-task capability.",
+      "tldr_cn": "现有视觉自回归模型依赖于残差预测范式，限制了生成灵活性和效率。本文提出FlexVAR，一种新型灵活视觉自回归范式，通过真实值预测替代残差预测，每步独立生成合理图像。仅用低分辨率图像训练，即可生成多种分辨率和长宽比的图像，并支持图像修复、外绘等任务。实验表明FlexVAR在多种任务上取得优异性能，是一种高效的通用图像生成框架。",
+      "title_zh": "FlexVAR：无需残差预测的灵活视觉自回归建模",
+      "motivation_cn": "传统的残差预测范式限制了自回归图像生成的灵活性和扩展性。",
+      "method_cn": "提出FlexVAR，使用真实值预测代替残差预测，每步独立生成图像，支持灵活分辨率和多任务。",
+      "result_cn": "仅用低分辨率训练即可生成高分辨率图像，并在多种图像到图像任务中表现优异。",
+      "conclusion_cn": "FlexVAR提供了一种更灵活高效的自回归图像生成新范式。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-igb289kbej",
+      "score": 9.0,
+      "evidence_en": "concept erasure via GFlowNet-driven denoising path exploration",
+      "evidence_cn": "通过GFlowNet驱动的去噪路径探索实现概念擦除",
+      "canonical_evidence": "通过GFlowNet驱动的去噪路径探索实现概念擦除",
+      "tldr_en": "EraseFlow casts concept unlearning as exploration over denoising trajectories, using GFlowNets to learn a policy that steers generation away from target concepts while preserving quality.",
+      "tldr_cn": "文本到图像生成模型的概念擦除技术常损害图像质量或需大量重新训练。本文提出EraseFlow，将概念遗忘建模为去噪路径空间的探索，利用GFlowNet和轨迹平衡目标学习随机策略。通过采样整个去噪轨迹而非单一终点，该方法有效引导生成远离目标概念，同时保持模型原有能力。在多个概念擦除基准上，EraseFlow在擦除效果和生成质量上均达到最优。",
+      "title_zh": "EraseFlow：通过GFlowNet驱动的对齐学习概念擦除策略",
+      "motivation_cn": "现有概念擦除方法存在图像质量下降或依赖脆弱的对抗损失等问题。",
+      "method_cn": "提出EraseFlow框架，将概念遗忘视为去噪轨迹的探索，使用GFlowNet优化轨迹平衡目标。",
+      "result_cn": "在多个数据集上，EraseFlow实现了高擦除率同时保持生成质量，优于现有方法。",
+      "conclusion_cn": "EraseFlow提供了一种基于路径探索的概念擦除新范式，有效平衡了擦除与质量。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2024-vnbif0gmkb",
+      "score": 9.0,
+      "evidence_en": "autoregressive image generation without vector quantization",
+      "evidence_cn": "无需向量量化的自回归图像生成",
+      "canonical_evidence": "无需向量量化的自回归图像生成",
+      "tldr_en": "Proposes Diffusion Loss for autoregressive models, enabling continuous-valued token generation and eliminating the need for discrete tokenizers.",
+      "tldr_cn": "传统自回归图像生成依赖向量量化将像素映射到离散空间，限制了模型能力。本文提出扩散损失函数，直接在连续值空间中建模每个令牌的概率分布，从而无需离散标记器。该方法应用于标准自回归和掩码自回归模型，在图像生成任务上取得与离散方法相当或更优的性能，开辟了连续空间自回归图像生成的新方向。",
+      "title_zh": "无需向量量化的自回归图像生成",
+      "motivation_cn": "自回归图像生成通常需要离散标记空间，但离散化会丢失信息。",
+      "method_cn": "提出扩散损失函数，通过扩散过程建模连续令牌的概率分布，避免向量量化。",
+      "result_cn": "在图像生成任务中，该方法与基于离散令牌的方法性能相当甚至更优。",
+      "conclusion_cn": "连续空间自回归生成是可行的，且避免了离散化的信息损失。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-3ftvcezqrh",
+      "score": 9.0,
+      "evidence_en": "zero-shot concept erasure in diffusion models via embedding neutralization",
+      "evidence_cn": "通过嵌入中和实现扩散模型中的零样本概念擦除",
+      "canonical_evidence": "通过嵌入中和实现扩散模型中的零样本概念擦除",
+      "tldr_en": "Semantic Surgery neutralizes undesired concepts at the embedding level before diffusion, achieving zero-shot concept erasure with high locality and completeness.",
+      "tldr_cn": "文本到图像扩散模型可能生成有害内容，现有概念擦除方法常损害生成能力。本文提出Semantic Surgery，一种训练无关的零样本概念擦除框架，直接在文本嵌入阶段动态检测并中和目标概念。该方法在概念出现之前从语义根源移除其影响，提高了擦除的完整性和局部性。实验证明，在多个概念擦除任务中，该方法在保持生成质量的同时有效消除了目标概念。",
+      "title_zh": "语义手术：扩散模型中的零样本概念擦除",
+      "motivation_cn": "现有概念擦除方法要么需要重训练，要么在擦除时损害生成能力。",
+      "method_cn": "提出Semantic Surgery，在扩散之前对文本嵌入进行动态中和操作，实现零样本概念擦除。",
+      "result_cn": "在多个概念擦除基准上，该方法在保持生成质量的同时有效擦除了目标概念。",
+      "conclusion_cn": "Semantic Surgery提供了一种高效且无损的训练无关概念擦除方案。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-n5v3dlick9",
+      "score": 9.0,
+      "evidence_en": "erasing conceptual knowledge from language models via distribution matching",
+      "evidence_cn": "通过分布匹配从语言模型中擦除概念知识",
+      "canonical_evidence": "通过分布匹配从语言模型中擦除概念知识",
+      "tldr_en": "ELM introduces a concept-level unlearning method for LLMs that uses the model's own classification to identify and erase target concepts via low-rank updates.",
+      "tldr_cn": "本文提出ELM（语言记忆擦除），一种面向语言模型的概念级遗忘方法。核心思想是利用模型自身的分类能力识别欲擦除概念，通过低秩更新降低相关内容的生成概率。在生物安全、网络安全和文学领域擦除任务上验证了有效性，同时保持模型通用能力。",
+      "title_zh": "从语言模型中擦除概念知识",
+      "motivation_cn": "语言模型可能记忆有害或隐私概念，需要高效且无损地擦除。",
+      "method_cn": "利用模型自身分类能力进行分布匹配，通过低秩更新减少概念相关生成概率。",
+      "result_cn": "在多个安全敏感领域成功擦除概念，并保持模型通用性能。",
+      "conclusion_cn": "ELM提供了一种原则性的语言模型概念擦除框架。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2024-ynx7ai4zts",
+      "score": 9.0,
+      "evidence_en": "single image unlearning for machine unlearning in multimodal LLMs",
+      "evidence_cn": "针对多模态大语言模型的单图像遗忘方法",
+      "canonical_evidence": "针对多模态大语言模型的单图像遗忘方法",
+      "tldr_en": "SIU enables efficient unlearning of visual concept recognition in MLLMs by fine-tuning on a single associated image for few steps.",
+      "tldr_cn": "本文提出单图像遗忘（SIU），面向多模态大语言模型的高效机器遗忘方法。通过构造多方面的微调数据并联合优化，仅需对单张相关图像微调少数几步即可遗忘视觉概念识别。解决了多模态模型中视觉数据泄露的遗忘问题。",
+      "title_zh": "单图像遗忘：多模态大语言模型中的高效机器遗忘",
+      "motivation_cn": "多模态大语言模型可能记忆泄露的视觉概念数据，需要高效遗忘。",
+      "method_cn": "基于单张图像构造多维度微调数据，联合优化实现概念遗忘。",
+      "result_cn": "仅需几步微调即可有效遗忘视觉概念识别，且保持模型其他能力。",
+      "conclusion_cn": "SIU为多模态模型提供了轻量级的机器遗忘方案。",
+      "matched_requirement_id": "req-3",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-gcjpjihdzn",
+      "score": 9.0,
+      "evidence_en": "post-hoc concept erasure method 'Obliviator' that handles nonlinear dependencies",
+      "evidence_cn": "处理非线性依赖的事后概念擦除方法Obliviator",
+      "canonical_evidence": "处理非线性依赖的事后概念擦除方法Obliviator",
+      "tldr_en": "Obliviator is a post-hoc concept erasure method that fully captures nonlinear statistical dependencies between representations and unwanted attributes.",
+      "tldr_cn": "本文提出Obliviator，一种事后概念擦除方法。现有方法无法捕获表示与不希望属性之间的非线性统计依赖，且缺乏对擦除代价的研究。Obliviator通过捕获所有非线性依赖实现更彻底的擦除，同时揭示了效用与擦除之间的权衡轨迹。",
+      "title_zh": "Obliviator揭示概念擦除中非线性防护的代价",
+      "motivation_cn": "现有概念擦除方法对非线性攻击脆弱，且擦除过程中的效用损失轨迹未知。",
+      "method_cn": "Obliviator通过建模非线性统计依赖实现完全擦除，并分析擦除代价。",
+      "result_cn": "更有效地抵御非线性攻击，并量化了效用-擦除权衡。",
+      "conclusion_cn": "Obliviator为概念擦除提供了更强健的非线性防护框架。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2024-dkpmfiydrf",
+      "score": 9.0,
+      "evidence_en": "concept erasure in diffusion models with adversarial training",
+      "evidence_cn": "扩散模型中的概念擦除结合对抗训练",
+      "canonical_evidence": "扩散模型中的概念擦除结合对抗训练",
+      "tldr_en": "Proposes AdvUnlearn, integrating adversarial training into machine unlearning for diffusion models to robustly erase concepts like nudity, defending against adversarial prompt attacks.",
+      "tldr_cn": "该论文针对扩散模型在概念擦除后面临的对抗性提示攻击问题，提出了AdvUnlearn框架，将对抗训练融入机器遗忘中。通过在遗忘过程中同时优化无概念和有概念样本上的对抗损失，使模型在擦除敏感概念后仍能抵御对抗攻击。实验结果表明该方法在保持图像质量的同时显著提升了鲁棒性。这项工作为概念擦除的安全部署提供了重要保障。",
+      "title_zh": "面向稳健概念擦除的防御性遗忘与对抗训练",
+      "motivation_cn": "扩散模型概念擦除技术易受对抗提示攻击，导致已擦除概念被重新生成。",
+      "method_cn": "提出AdvUnlearn，将对抗训练融入机器遗忘过程，联合优化遗忘损失和对抗损失。",
+      "result_cn": "在各种概念擦除任务上，AdvUnlearn显著提升了对抗鲁棒性，同时保持了生成质量。",
+      "conclusion_cn": "对抗训练能有效增强概念擦除的鲁棒性，为安全部署提供了新思路。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2024-gdz8rkfikp",
+      "score": 9.0,
+      "evidence_en": "concept erasure in diffusion models with adversarial preservation",
+      "evidence_cn": "基于对抗保留的扩散模型概念擦除",
+      "canonical_evidence": "基于对抗保留的扩散模型概念擦除",
+      "tldr_en": "Proposes adversarial concept preservation to erase undesirable concepts in diffusion models while minimizing impact on other concepts.",
+      "tldr_cn": "针对扩散模型生成有害内容的问题，本文提出对抗性概念保留方法，识别并保护受参数变化影响最大的概念，在擦除目标概念的同时最小化对其他概念的负面影响。实验表明该方法在有效去除不需要概念的同时保持了模型对其他概念的良好生成能力。",
+      "title_zh": "通过对抗保留擦除扩散模型中的不期望概念",
+      "motivation_cn": "扩散模型可能生成有害内容，现有概念擦除方法难以平衡擦除效果与对其他概念的影响。",
+      "method_cn": "提出对抗性概念保留，识别受参数变化影响最大的概念并在擦除过程中加以保护。",
+      "result_cn": "实验证明该方法能在有效擦除目标概念的同时保持对其他概念的生成质量。",
+      "conclusion_cn": "该方法为扩散模型概念擦除提供了更好的权衡方案，具有实用价值。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-xpwfummzeq",
+      "score": 9.0,
+      "evidence_en": "continuous concept removal in text-to-image diffusion models",
+      "evidence_cn": "文本到图像扩散模型中的连续概念移除",
+      "canonical_evidence": "文本到图像扩散模型中的连续概念移除",
+      "tldr_en": "Proposes CCRT for continuous concept removal in text-to-image diffusion models, addressing prompt-image alignment degradation during sequential removals.",
+      "tldr_cn": "现有概念移除方法在连续移除场景下会导致文本-图像对齐严重下降，本文提出CCRT方法，通过设计专门的机制解决连续移除中的累积偏差问题。实验表明CCRT在多次概念移除后仍能保持良好对齐，适用于实际动态需求。",
+      "title_zh": "文本到图像扩散模型中的连续概念移除",
+      "motivation_cn": "现有概念移除方法在需要连续移除多个概念时，文本提示与生成图像的对齐质量显著下降。",
+      "method_cn": "提出CCRT方法，设计专门的机制来维护连续移除过程中的文本-图像对齐。",
+      "result_cn": "实验证明CCRT在连续概念移除场景下优于现有方法，保持了对齐质量。",
+      "conclusion_cn": "该方法使得概念移除更具实用性，可应对动态需求的应用场景。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-vohntoo5cg",
+      "score": 9.0,
+      "evidence_en": "concept removal from text-to-image models using only negative samples",
+      "evidence_cn": "仅用负样本从文本到图像模型中移除概念",
+      "canonical_evidence": "仅用负样本从文本到图像模型中移除概念",
+      "tldr_en": "Introduces Clipout for concept removal without retraining, using only negative samples generated in a bootstrapping manner.",
+      "tldr_cn": "本文提出Clipout方法，仅需负样本即可从文本到图像模型中移除目标概念，无需重新训练。通过随机裁剪单元并使用对比目标，模型学会区分裁剪后的嵌入向量。理论分析和实验表明Clipout简单高效，优于现有方法。",
+      "title_zh": "仅用负样本从文本到图像模型中移除概念",
+      "motivation_cn": "现有概念移除方法通常需要重新训练或大量先验知识，开销大且效率低。",
+      "method_cn": "提出Clipout，利用随机裁剪嵌入单元和对比目标，仅使用自举生成的负样本进行概念移除。",
+      "result_cn": "实验证明Clipout在少量负样本下即可有效移除概念，且效率高于现有方法。",
+      "conclusion_cn": "该方法提供了一种轻量级的概念移除方案，适用于版权和有害内容移除等场景。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-nhnydm6pvz",
+      "score": 8.0,
+      "evidence_en": "autoregressive image generation via frequency ordering",
+      "evidence_cn": "基于频率排序的自回归图像生成",
+      "canonical_evidence": "基于频率排序的自回归图像生成",
+      "tldr_en": "NFIG introduces a multi-scale autoregressive framework that generates images by predicting frequency components from low to high, better aligning with the spectral hierarchy of images.",
+      "tldr_cn": "自回归图像生成通常按固定空间顺序生成像素，忽略了图像的频谱层次结构。NFIG提出按频率顺序生成，先低频后高频，有效捕捉全局结构并减少令牌数量。实验表明，该方法在保持生成质量的同时提高了效率。",
+      "title_zh": "NFIG：通过频率排序实现多尺度自回归图像生成",
+      "motivation_cn": "标准自回归方法按固定空间顺序生成像素，未能利用图像在频谱域中的层次结构。",
+      "method_cn": "将图像生成分解为多个频率指导的阶段，首先生成低频成分，然后逐步添加高频细节。",
+      "result_cn": "在多个图像生成基准上，NFIG以更少的令牌实现了有竞争力的生成质量。",
+      "conclusion_cn": "频率感知的自回归生成是一种有效的范式，可推广到其他视觉生成任务。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-nmquvjay5x",
+      "score": 8.0,
+      "evidence_en": "autoregressive text-to-image generation acceleration",
+      "evidence_cn": "自回归文本到图像生成加速",
+      "canonical_evidence": "自回归文本到图像生成加速",
+      "tldr_en": "Hawk applies speculative decoding to autoregressive text-to-image generation, using spatial context to align draft and target models for faster inference without quality loss.",
+      "tldr_cn": "自回归图像生成推理速度慢，本文引入投机解码，利用空间上下文设计轻量草稿模型，加速生成过程。实验表明，Hawk在保持图像质量的同时显著减少了推理时间。",
+      "title_zh": "Hawk：利用空间上下文加速自回归文本到图像生成",
+      "motivation_cn": "自回归图像生成推理速度慢，而投机解码在文本生成中有效，但应用于图像生成面临采样空间大等挑战。",
+      "method_cn": "设计轻量级草稿模型，利用二维空间结构建模局部依赖，使草稿输出与目标模型对齐。",
+      "result_cn": "在多个基准上，Hawk将推理速度提高了数倍，同时保持了图像质量。",
+      "conclusion_cn": "投机解码可有效加速自回归图像生成，空间上下文是关键。",
+      "matched_requirement_id": "req-2",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation"
+    },
+    {
+      "paper_id": "openreview-neurips-2024-gojl67cfs8",
+      "score": 8.0,
+      "evidence_en": "autoregressive image generation",
+      "evidence_cn": "自回归图像生成",
+      "canonical_evidence": "自回归图像生成",
+      "tldr_en": "VAR redefines autoregressive image generation as next-scale prediction, achieving state-of-the-art FID on ImageNet and surpassing diffusion models for the first time.",
+      "tldr_cn": "自回归图像生成通常按逐令牌方式生成，VAR提出按从粗到细的尺度预测，使GPT风格的自回归模型在ImageNet上首次超越扩散模型，FID从18.65降至1.73。该方法简单、高效，且具有强大的泛化能力。",
+      "title_zh": "视觉自回归建模：通过下一尺度预测实现可扩展图像生成",
+      "motivation_cn": "标准自回归图像生成采用逐令牌预测，未能利用图像的多尺度结构。",
+      "method_cn": "将自回归学习定义为从粗到细的“下一尺度预测”或“下一分辨率预测”。",
+      "result_cn": "在ImageNet 256x256上，VAR取得了1.73的FID，推理速度比扩散模型快约20倍。",
+      "conclusion_cn": "VAR为自回归图像生成提供了新范式，性能强大且可扩展。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-gxw10t7uom",
+      "score": 8.0,
+      "evidence_en": "autoregressive any-to-image generation including text-to-image",
+      "evidence_cn": "自回归任意到图像生成，包括文本到图像",
+      "canonical_evidence": "自回归任意到图像生成，包括文本到图像",
+      "tldr_en": "OmniGen-AR proposes a unified autoregressive framework for any-to-image generation, supporting text, segmentation, and other conditions within a single model.",
+      "tldr_cn": "现有自回归视觉生成模型通常只支持单一模态条件。OmniGen-AR通过共享视觉分词器和文本分词器，将多种视觉条件和文本提示离散化，首次实现统一的任意到图像生成框架。实验表明，该模型在多种条件输入下均能生成高质量图像。",
+      "title_zh": "OmniGen-AR：自回归任意到图像生成",
+      "motivation_cn": "现有自回归模型局限于单一模态条件，无法满足多条件输入的实际需求。",
+      "method_cn": "通过共享视觉分词器离散化各种视觉条件，结合文本分词器，在单一模型中支持文本、分割图等多种条件。",
+      "result_cn": "在多个文本到图像和条件图像生成任务上表现优异。",
+      "conclusion_cn": "统一的任意到图像生成为实际应用提供了更灵活的解决方案。",
+      "matched_requirement_id": "req-2",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation"
+    },
+    {
+      "paper_id": "openreview-neurips-2024-93ktalfvnj",
+      "score": 8.0,
+      "evidence_en": "post-unlearning alignment for text-to-image generative models",
+      "evidence_cn": "文本到图像生成模型的后遗忘对齐",
+      "canonical_evidence": "文本到图像生成模型的后遗忘对齐",
+      "tldr_en": "A framework that optimizes model updates post-unlearning to improve both unlearning quality and text-image alignment monotonically.",
+      "tldr_cn": "机器遗忘在文本到图像生成模型中常导致对齐质量下降。本文提出一个框架，在每个遗忘迭代中寻求最优更新，确保遗忘质量和文本-图像对齐单调改进。通过理论分析和实验验证，该方法在多个数据集上实现了更好的遗忘效果，同时保持甚至提升生成图像与提示的对齐，解决了遗忘与对齐之间的固有竞争。",
+      "title_zh": "提升后遗忘文本到图像生成模型的对齐质量",
+      "motivation_cn": "现有机器遗忘方法在消除有害知识时往往降低文本-图像对齐质量，两者存在竞争。",
+      "method_cn": "提出单调优化框架，每步寻找最优更新，同时提升遗忘质量和对齐性能。",
+      "result_cn": "在多数据集上，该方法在遗忘有效性和对齐指标上均优于基线。",
+      "conclusion_cn": "该框架有效调和了遗忘与对齐的矛盾，提升了文本到图像模型的安全性与质量。",
+      "matched_requirement_id": "req-3",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-vsir0fzfnp",
+      "score": 8.0,
+      "evidence_en": "watermarking bitwise autoregressive text-to-image models",
+      "evidence_cn": "针对比特级自回归文本到图像模型的水印方法",
+      "canonical_evidence": "针对比特级自回归文本到图像模型的水印方法",
+      "tldr_en": "BitMark proposes a watermarking method for bitwise autoregressive text-to-image models to prevent model collapse from generated data reuse.",
+      "tldr_cn": "本文提出BitMark，一种针对比特级自回归文本到图像模型的水印方法。该技术将人眼不可见但可检测的信号嵌入生成图像中，以缓解模型因重复使用自生成数据导致的性能退化问题。实验表明水印在保持图像质量的同时有效标记模型输出。",
+      "title_zh": "BitMark：比特级自回归图像生成模型的水印技术",
+      "motivation_cn": "自回归文本到图像模型的输出易被重新用作训练数据，导致模型崩溃，需要水印溯源。",
+      "method_cn": "提出比特级水印注入方法，在自回归生成过程中嵌入隐蔽信号。",
+      "result_cn": "水印可检测且不影响图像质量，有效防止模型崩溃。",
+      "conclusion_cn": "水印是保护自回归图像生成模型免于数据污染的有效手段。",
+      "matched_requirement_id": "req-2",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-y2ewc6jrlu",
+      "score": 8.0,
+      "evidence_en": "speculative Jacobi-denoising decoding to accelerate autoregressive text-to-image generation",
+      "evidence_cn": "推测性雅可比去噪解码加速自回归文本到图像生成",
+      "canonical_evidence": "推测性雅可比去噪解码加速自回归文本到图像生成",
+      "tldr_en": "SJD2 accelerates autoregressive T2I models by integrating denoising into Jacobi iterations for parallel token generation, achieving speedup without quality loss.",
+      "tldr_cn": "本文提出SJD2，通过将去噪过程融入雅可比迭代，实现自回归文本到图像模型的并行令牌生成。利用下一干净令牌预测范式，使预训练模型接受噪声扰动嵌入并对低代价微调进行处理。显著加速推理同时保持生成质量。",
+      "title_zh": "推测性雅可比去噪解码加速自回归文本到图像生成",
+      "motivation_cn": "自回归文本到图像模型逐令牌解码速度慢，需要数千次前向传播。",
+      "method_cn": "将去噪融入雅可比迭代，训练模型从噪声嵌入预测干净令牌以并行生成。",
+      "result_cn": "大幅提升生成速度，质量无损或略有提升。",
+      "conclusion_cn": "雅可比去噪解码为自回归生成提供了高效加速框架。",
+      "matched_requirement_id": "req-2",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-z4hi1a9fsb",
+      "score": 8.0,
+      "evidence_en": "autoregressive image generation model with self-guided training",
+      "evidence_cn": "自引导训练的自回归图像生成模型",
+      "canonical_evidence": "自引导训练的自回归图像生成模型",
+      "tldr_en": "Proposes self-guided training to improve visual semantics in autoregressive image generation, identifying and addressing three key properties that hinder learning of high-level semantics.",
+      "tldr_cn": "该论文首次系统研究了自回归图像生成中视觉语义学习的问题，指出局部依赖、语义不一致和空间不变性不足三个关键障碍；提出自监督训练目标以增强模型对图像高层语义的理解；实验表明该方法有效提升了生成质量，为自回归模型在视觉领域的应用提供了重要改进。",
+      "title_zh": "先理解再生成：面向自回归图像生成的自引导训练",
+      "motivation_cn": "现有自回归图像生成模型难以学习高层视觉语义，面临局部依赖、语义不一致和空间不变性不足等问题。",
+      "method_cn": "提出自监督训练目标，引入对图像高层理解的引导，解决自回归模型在视觉域的下一个词预测范式中的关键缺陷。",
+      "result_cn": "实验证明该方法能显著提升自回归图像生成的质量和语义一致性。",
+      "conclusion_cn": "自回归模型通过自监督理解训练可以更好地进行图像生成，为视觉表示学习提供新思路。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-jceqp4apmb",
+      "score": 8.0,
+      "evidence_en": "unified spacetime autoregressive modeling for visual generation",
+      "evidence_cn": "统一时空自回归建模用于视觉生成",
+      "canonical_evidence": "统一时空自回归建模用于视觉生成",
+      "tldr_en": "Presents InfinityStar, a unified autoregressive framework for high-resolution image and video generation, outperforming all AR models and some diffusion models.",
+      "tldr_cn": "本文提出InfinityStar，一个统一的时空自回归框架，支持文本到图像、文本到视频等多种生成任务。该框架在单个架构中联合捕获空间和时间依赖，在VBench上取得83.74分，优于所有自回归模型及部分扩散模型。展示了自回归模型在视觉生成中的强大潜力。",
+      "title_zh": "InfinityStar：统一的时空自回归建模用于视觉生成",
+      "motivation_cn": "现有自回归模型通常针对单一任务设计，缺乏统一处理图像和视频生成的能力。",
+      "method_cn": "提出统一时空自回归框架，在离散空间中联合建模空间和时间依赖性。",
+      "result_cn": "在多个基准上超越其他自回归模型和部分扩散模型，生成高质量图像和视频。",
+      "conclusion_cn": "统一自回归框架为视觉生成提供了高效且通用的解决方案。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-43lkrdfqzb",
+      "score": 7.0,
+      "evidence_en": "concept erasure for diffusion models",
+      "evidence_cn": "扩散模型的概念擦除",
+      "canonical_evidence": "扩散模型的概念擦除",
+      "tldr_en": "SPEED addresses concept erasure in text-to-image diffusion models by editing parameters in a null space that avoids affecting non-target concepts, achieving scalable and precise erasure.",
+      "tldr_cn": "为了解决扩散模型中概念擦除的效率和精度问题，本文提出SPEED方法，通过搜索零空间直接编辑模型参数，使得参数更新不影响非目标概念，从而实现对多个目标概念的可扩展、精确擦除。实验表明，SPEED在保持生成质量的同时有效擦除了目标概念。",
+      "title_zh": "SPEED：可扩展、精确、高效的扩散模型概念擦除方法",
+      "motivation_cn": "现有概念擦除方法要么耗时且难以精确擦除多个概念，要么因优化目标冲突而降低非目标概念生成质量。",
+      "method_cn": "搜索模型参数的零空间，在该空间内直接编辑参数，使更新只影响目标概念而不影响非目标概念。",
+      "result_cn": "在多个数据集上，SPEED实现了高效、精确的概念擦除，同时保持了非目标概念的生成质量。",
+      "conclusion_cn": "SPEED提供了一种可扩展的概念擦除范式，可直接应用于大规模扩散模型。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-ukt31lbrpi",
+      "score": 7.0,
+      "evidence_en": "concept erasure evaluation for diffusion models",
+      "evidence_cn": "扩散模型概念擦除评估",
+      "canonical_evidence": "扩散模型概念擦除评估",
+      "tldr_en": "This paper proposes a comprehensive suite of probing techniques to assess whether concepts are truly erased from diffusion models, revealing that current methods often leave residual traces.",
+      "tldr_cn": "概念擦除方法虽然发展迅速，但概念是否真正被移除尚不清楚。本文提出了一套独立的探测技术，包括提供视觉上下文、修改扩散轨迹等，用于评估擦除效果。实验发现当前方法往往未能完全移除概念，为未来研究提供了基准。",
+      "title_zh": "扩散模型中的概念何时被真正擦除？",
+      "motivation_cn": "概念擦除方法众多，但缺乏统一评估标准，难以判断概念是否真正被移除。",
+      "method_cn": "提出多种探测技术：提供视觉上下文、修改扩散轨迹、应用分类器指导、分析替代生成等。",
+      "result_cn": "对多种概念擦除方法进行评估，发现大多数方法留下残留信号。",
+      "conclusion_cn": "该探测套件为概念擦除的鲁棒性评估提供了重要工具。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-t79rmqgk4s",
+      "score": 7.0,
+      "evidence_en": "linear concept removal preserving task information",
+      "evidence_cn": "保持任务信息的线性概念移除",
+      "canonical_evidence": "保持任务信息的线性概念移除",
+      "tldr_en": "SPLINCE removes sensitive concepts from representations via oblique projection while preserving covariance with target labels, offering a theoretically optimal solution for concept removal.",
+      "tldr_cn": "神经网络中不希望的概念嵌入影响公平性和可解释性，现有后处理方法常破坏有用信号。本文提出SPLINCE，通过斜投影在移除线性概念可预测性的同时，精确保持与目标标签的协方差。理论上它是唯一满足该性质的解，且经验上在多个任务中优于现有方法，实现高效的概念净化。",
+      "title_zh": "在线性概念移除下保持任务相关信息",
+      "motivation_cn": "现有概念移除方法会退化有用信号，需要一种既能去除概念又能保留任务重要信息的方法。",
+      "method_cn": "提出SPLINCE，使用斜投影同时移除敏感概念方向并保护目标标签的协方差。",
+      "result_cn": "在多个基准上，SPLINCE在概念移除质量和任务性能保持上均超越现有方法。",
+      "conclusion_cn": "SPLINCE为线性概念移除提供了理论最优且实用的解决方案。",
+      "matched_requirement_id": "req-1",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models"
+    },
+    {
+      "paper_id": "openreview-neurips-2024-qzswlclmcs",
+      "score": 7.0,
+      "evidence_en": "improving diffusion models with autoregressive latent priors",
+      "evidence_cn": "通过自回归潜在先验改进扩散模型",
+      "canonical_evidence": "通过自回归潜在先验改进扩散模型",
+      "tldr_en": "Kaleido enhances diffusion model diversity by incorporating autoregressively generated latent priors from a language model, improving sample diversity.",
+      "tldr_cn": "扩散模型在条件生成中样本多样性有限，尤其是高引导权重时。本文提出Kaleido，引入自回归语言模型生成潜在变量作为先验，指导扩散过程。这些潜在变量作为抽象的中间表示，能够编码不同下游任务的信息。实验表明，该方法显著提升了生成图像的多样性，同时保持高质量，是扩散模型与自回归模型结合的有效尝试。",
+      "title_zh": "Kaleido扩散：用自回归潜在建模改进条件扩散模型",
+      "motivation_cn": "扩散模型在条件生成中多样性不足，尤其是高分类器自由引导权重下。",
+      "method_cn": "集成自回归语言模型编码原文本并生成潜在变量，作为扩散过程的抽象先验。",
+      "result_cn": "在多个文本到图像数据集上，该方法提高了生成图像的多样性，同时保持了质量。",
+      "conclusion_cn": "自回归潜在先验能有效提升扩散模型的生成多样性。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-kcsbyjrqub",
+      "score": 7.0,
+      "evidence_en": "autoregressive retrieval augmentation for image generation",
+      "evidence_cn": "面向图像生成的自回归检索增强",
+      "canonical_evidence": "面向图像生成的自回归检索增强",
+      "tldr_en": "AR-RAG enhances autoregressive image generation by per-step patch-level retrieval from a memory bank, improving quality while avoiding over-copying.",
+      "tldr_cn": "本文提出AR-RAG，一种自回归检索增强的图像生成范式。与传统单次检索不同，该方法在每一步生成时基于已生成块进行上下文感知的KNN检索，动态融入视觉参考。避免了过度复制和风格偏差等问题，在多个基准上提升了生成质量和多样性。",
+      "title_zh": "AR-RAG：面向图像生成的自回归检索增强",
+      "motivation_cn": "现有检索增强图像生成多采用静态单次检索，导致过度复制和风格偏差。",
+      "method_cn": "在自回归生成的每一步进行补丁级KNN检索，动态融入相关视觉参考。",
+      "result_cn": "有效避免过度复制，提升生成质量和多样性。",
+      "conclusion_cn": "自回归检索增强为图像生成提供了更灵活的上下文利用方式。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-liqh1mocms",
+      "score": 7.0,
+      "evidence_en": "entropy-informed decoding for faster autoregressive image generation",
+      "evidence_cn": "基于熵的加速自回归图像生成解码策略",
+      "canonical_evidence": "基于熵的加速自回归图像生成解码策略",
+      "tldr_en": "An entropy-informed decoding strategy for AR image generation uses spatial entropy to control temperature and acceptance, improving quality and speed.",
+      "tldr_cn": "本文从熵角度重新审视自回归图像生成的采样问题。提出基于空间熵的动态温度控制和熵感知接受规则，在不增加计算开销的情况下平衡多样性、对齐度和结构连贯性，实现更高质量和更快生成速度。适用于掩码和尺度模型。",
+      "title_zh": "从熵视角实现更好更快的自回归图像生成",
+      "motivation_cn": "自回归图像生成中图像令牌信息密度低且分布不均匀，现有解码策略效率低下。",
+      "method_cn": "利用令牌分布的空间熵动态调节温度，并设计熵感知的接受规则。",
+      "result_cn": "在多种自回归模型上提升了生成质量和速度，无额外计算开销。",
+      "conclusion_cn": "熵信息可有效指导自回归图像生成解码过程。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-2yxtr50mho",
+      "score": 7.0,
+      "evidence_en": "masked autoregressive modeling for panoramic image generation",
+      "evidence_cn": "掩码自回归建模用于全景图像生成",
+      "canonical_evidence": "掩码自回归建模用于全景图像生成",
+      "tldr_en": "PAR uses masked autoregressive modeling for unified text-conditioned and image-conditioned panoramic generation, outperforming diffusion models.",
+      "tldr_cn": "本文提出全景自回归模型PAR，利用掩码自回归建模统一处理文本条件生成和图像外推。克服了扩散模型在等距柱状投影中的i.i.d.假设违背问题。在多个全景生成任务上达到先进水平。",
+      "title_zh": "基于掩码自回归建模的条件全景图像生成",
+      "motivation_cn": "扩散模型不适合全景图像的等距柱状投影，且现有方法将文本和图像条件生成分离。",
+      "method_cn": "采用掩码自回归建模统一处理文本和图像条件，利用全景几何约束。",
+      "result_cn": "在全景生成任务上超越扩散基线，质量更高且更一致。",
+      "conclusion_cn": "自回归模型为全景图像生成提供了更自然的框架。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-pesrah82zh",
+      "score": 7.0,
+      "evidence_en": "vision foundation model as tokenizer for autoregressive generation",
+      "evidence_cn": "视觉基础模型作为自回归生成的分词器",
+      "canonical_evidence": "视觉基础模型作为自回归生成的分词器",
+      "tldr_en": "Proposes using frozen vision foundation models as tokenizer encoder for autoregressive image generation, with region-adaptive quantization and semantic reconstruction.",
+      "tldr_cn": "本文提出基于冻结视觉基础模型的图像分词器，用于自回归图像生成。通过区域自适应量化减少冗余，并引入语义重建目标保持语义保真度。实验表明该方法在图像重建和生成质量上取得显著提升，为自回归生成提供了更好的视觉表示。",
+      "title_zh": "视觉基础模型作为自回归生成的有效视觉分词器",
+      "motivation_cn": "现有图像分词器无法充分利用视觉基础模型的强大表示能力，限制了自回归生成模型的表现。",
+      "method_cn": "使用冻结视觉基础模型作为分词器编码器，引入区域自适应量化和语义重建目标。",
+      "result_cn": "在图像重建和生成质量上显著优于现有分词器，提升了自回归生成的效果。",
+      "conclusion_cn": "该工作展示了视觉基础模型在自回归生成分词中的巨大潜力。",
+      "matched_requirement_id": "req-4",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models"
+    },
+    {
+      "paper_id": "openreview-neurips-2024-kvr3l73pnh",
+      "score": 7.0,
+      "evidence_en": "machine unlearning for data attribution in text-to-image models",
+      "evidence_cn": "文本到图像模型中的数据归因与机器遗忘",
+      "canonical_evidence": "文本到图像模型中的数据归因与机器遗忘",
+      "tldr_en": "Simulates unlearning of synthesized images to identify influential training images for text-to-image models, avoiding retraining.",
+      "tldr_cn": "本文提出通过模拟遗忘合成图像来实现文本到图像模型的数据归因。通过增加输出图像的训练损失同时避免灾难性遗忘其他概念，有效识别影响特定输出的训练图像。该方法避免了重复训练的计算开销，为模型可解释性和数据管理提供了新工具。",
+      "title_zh": "通过遗忘合成图像实现文本到图像模型的数据归因",
+      "motivation_cn": "数据归因需要反复重新训练模型，计算成本极高，现有方法效率低。",
+      "method_cn": "模拟遗忘合成图像，通过增大目标输出损失并保持其他概念不变来识别关键训练图像。",
+      "result_cn": "该方法高效且准确地将生成图像归因于特定的训练样本。",
+      "conclusion_cn": "为文本到图像模型提供了一种实用的数据归因方法，有助于理解模型行为和训练数据影响。",
+      "matched_requirement_id": "req-3",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation"
+    },
+    {
+      "paper_id": "openreview-neurips-2025-yj7h3aml0k",
+      "score": 6.0,
+      "evidence_en": "autoregressive multimodal model for text-guided image editing",
+      "evidence_cn": "用于文本引导图像编辑的自回归多模态模型",
+      "canonical_evidence": "用于文本引导图像编辑的自回归多模态模型",
+      "tldr_en": "Explores SFT, RL, and CoT for autoregressive image editing, finding RL with a verifier most effective, and releases EARL model.",
+      "tldr_cn": "文本引导图像编辑任务中，自回归多模态模型面临执行编辑指令困难的挑战。本文系统比较了监督微调、强化学习和思维链推理三种策略，并在统一的自回归多模态模型框架下进行研究。发现结合大型多模态语言模型验证器的强化学习最为有效。最终发布了EARL模型，在多个编辑基准上取得了显著改进。",
+      "title_zh": "强化学习在自回归图像编辑中的前景",
+      "motivation_cn": "自回归模型在文本引导图像编辑中执行简单指令常失败，需要更好的训练策略。",
+      "method_cn": "在统一的自回归多模态模型中，比较监督微调、强化学习和思维链推理三种策略。",
+      "result_cn": "强化学习结合大型多模态验证器在编辑任务上取得最佳性能。",
+      "conclusion_cn": "强化学习是提升自回归模型图像编辑能力的关键方法。",
+      "matched_requirement_id": "req-2",
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation"
+    }
+  ],
+  "llm_ranked_at": "2026-06-04T02:29:32.856755+00:00",
+  "display_min_score": 4.0,
+  "pruned_at": "2026-06-04T02:29:32.894314+00:00"
+}
