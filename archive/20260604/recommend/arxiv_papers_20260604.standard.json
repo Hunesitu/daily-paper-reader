@@ -1,0 +1,306 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-04T21:51:28.789949+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 6,
+    "quick_skim_target": 11,
+    "quick_selected": 6
+  },
+  "deep_dive": [
+    {
+      "id": "2606.01911v1",
+      "source": "arxiv",
+      "title": "Residual Decoder Adapter: ID-Preserving Tokenizer Adaption for Autoregressive Text Rendering",
+      "abstract": "Visual Autoregressive (AR) models generate images by predicting discrete tokens that are decoded by a visual tokenizer. Despite demonstrating strong overall image generation ability, they still underperform on text rendering with blur strokes and disrupt letter shapes. In this work, we trace this limitation to the visual tokenizer, which struggles to reconstruct fine-grained detail. Improving the tokenizer is straightforward but expensive, as it necessitates retraining both the tokenizer and the AR model. Can we improve text rendering performance of AR models without retraining the existing tokenizer and AR model? To achieve this, we propose the Residual Decoder Adapter(RDA) that upgrades an existing tokenizer post-hoc without changing its token space. Specifically, it refines the decoder output of the visual tokenizer by introducing two novel components: (i) a paired codebook that shares the token distribution with the original one; (ii) a parallel branch to learn the tiny differences (residual) between the reconstructed image and the ground-truth images in the pixel space. This residual design allows us to enhance the tokenizer non-invasively while preserving compatibility with prior AR models. RDA substantially improves text rendering significantly by a large margin. For instance, we boost finetuned Janus-Pro OCR accuracy rises from 24.52% to 58.26% (TextVisionBlend), from 12.75% to 36.81% (StyledTextSynth) on competitive TextAtlas benchmark. The code is available at https://github.com/CSU-JPG/RDA",
+      "authors": [
+        "Dongxing Mao",
+        "Jinpeng Wang",
+        "Jiahao Tang",
+        "Kevin Qinghong Lin",
+        "Linjie Li",
+        "Zhengyuan Yang",
+        "Lijuan Wang",
+        "Min Li",
+        "Jingru Tan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-01T08:47:17+00:00",
+      "link": "https://arxiv.org/pdf/2606.01911v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "autoregressive image generation model; text rendering improvement",
+      "llm_evidence_cn": "自回归图像生成模型；文本渲染改进",
+      "llm_evidence": "自回归图像生成模型；文本渲染改进",
+      "canonical_evidence": "自回归图像生成模型；文本渲染改进",
+      "llm_tldr_en": "Improves text rendering in visual autoregressive models by a Residual Decoder Adapter that upgrades the tokenizer post-hoc without retraining the AR model, achieving better fine-grained detail reconstruction.",
+      "llm_tldr_cn": "视觉自回归模型在文本渲染上存在模糊笔画和字母变形的问题，根源在于视觉分词器难以重建细粒度细节。本文提出残差解码器适配器（RDA），无需重新训练分词器和自回归模型，通过后置升级分词器来提升文本生成质量。实验表明RDA有效增强了细粒度细节重建能力，使自回归模型在文本渲染任务上取得显著改进。",
+      "llm_tldr": "视觉自回归模型在文本渲染上存在模糊笔画和字母变形的问题，根源在于视觉分词器难以重建细粒度细节。本文提出残差解码器适配器（RDA），无需重新训练分词器和自回归模型，通过后置升级分词器来提升文本生成质量。实验表明RDA有效增强了细粒度细节重建能力，使自回归模型在文本渲染任务上取得显著改进。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.31245v1",
+      "source": "arxiv",
+      "title": "Toward Identifiable Sparse Autoencoders",
+      "abstract": "Recently, sparse autoencoders (SAEs) have emerged as an attractive tool for interpreting and interacting with representations in practical neural networks. While it is common empirical folklore, we also show theoretically that SAEs are highly unstable: different training runs are likely to produce different concept dictionaries and sparse codes. We characterize the model properties that hinder the stability of real-world SAEs, and address each of these problems through minimal changes to the architecture and training procedure. Together, these changes yield two versions of an \\textbf{i}dentifiable SAE (iSAE), a variant of the standard TopK SAE with lower reconstruction error and improved stability. We explain this improvement theoretically by connecting SAEs with traditional dictionary learning approaches, and show that the dictionaries learned in practice satisfy an approximate restricted isometry condition, rendering the corresponding sparse codes in those models near-identifiable.",
+      "authors": [
+        "Walter Nelson",
+        "Theofanis Karaletsos",
+        "Francesco Locatello"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-29T12:44:45+00:00",
+      "link": "https://arxiv.org/pdf/2605.31245v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "sparse autoencoders for interpretability; could enable concept erasure",
+      "llm_evidence_cn": "稀疏自编码器用于可解释性；可支持概念擦除",
+      "llm_evidence": "稀疏自编码器用于可解释性；可支持概念擦除",
+      "canonical_evidence": "稀疏自编码器用于可解释性；可支持概念擦除",
+      "llm_tldr_en": "Identifies instability of sparse autoencoders and proposes iSAE with improved stability and lower reconstruction error, providing a more reliable tool for concept dictionary extraction useful for concept erasure.",
+      "llm_tldr_cn": "稀疏自编码器（SAE）是神经网络表示解释和概念擦除的重要工具，但现有SAE在不同训练运行中产生不稳定的概念字典和稀疏编码。本文理论分析并发现造成不稳定性的模型属性，通过最小化架构和训练过程修改提出可识别的SAE（iSAE），显著提高稳定性和重建精度。iSAE为基于表示的概念编辑和擦除提供了更可靠的基础。",
+      "llm_tldr": "稀疏自编码器（SAE）是神经网络表示解释和概念擦除的重要工具，但现有SAE在不同训练运行中产生不稳定的概念字典和稀疏编码。本文理论分析并发现造成不稳定性的模型属性，通过最小化架构和训练过程修改提出可识别的SAE（iSAE），显著提高稳定性和重建精度。iSAE为基于表示的概念编辑和擦除提供了更可靠的基础。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.31604v2",
+      "source": "arxiv",
+      "title": "Representation Forcing for Bottleneck-Free Unified Multimodal Models",
+      "abstract": "Unified multimodal models (UMMs) aim to handle perception and generation in a single model. Yet existing UMMs still rely on a frozen, separately pretrained VAE for image generation, imposing a structural bottleneck. Naively removing it introduces a quality gap, as the model must learn both high-level structure and low-level details from raw pixels. In this paper, we propose Representation Forcing (RF), a technique that closes this gap by making representation prediction a native capability of the model. Concretely, RF forces the decoder to autoregressively predict visual representations as intermediate tokens before pixels; these tokens then stay in context to guide pixel diffusion within the same backbone. By turning representations from perception outputs into generation targets, RF eliminates the need for any external generative latent space. We find that RF benefits both understanding and generation. On image generation, our pixel-space model with RF matches state-of-the-art VAE-based unified models. On image understanding, pixel-space RF generally outperforms its VAE-based variant. Together, these results offer an effective step toward end-to-end, bottleneck-free UMMs.",
+      "authors": [
+        "Yuqing Wang",
+        "Zhijie Lin",
+        "Ceyuan Yang",
+        "Yang Zhao",
+        "Fei Xiao",
+        "Hao He",
+        "Qi Zhao",
+        "Zihan Ding",
+        "Fuyun Wang",
+        "Shuai Wang",
+        "Youliang Zhang",
+        "Haoqi Fan",
+        "Xihui Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-29T17:59:55+00:00",
+      "link": "https://arxiv.org/pdf/2605.31604v2",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "autoregressive visual representation prediction for image generation",
+      "llm_evidence_cn": "自回归视觉表示预测用于图像生成",
+      "llm_evidence": "自回归视觉表示预测用于图像生成",
+      "canonical_evidence": "自回归视觉表示预测用于图像生成",
+      "llm_tldr_en": "Representation Forcing (RF) closes the quality gap when removing VAE bottleneck in unified multimodal models by autoregressively predicting visual representations as intermediate tokens before pixel diffusion.",
+      "llm_tldr_cn": "针对统一多模态模型中移除VAE瓶颈带来的质量下降，提出表示强制（RF）方法，通过让解码器自回归预测视觉表示作为中间token再扩散像素，从而在单骨干内实现高质量生成，消除了外部瓶颈。",
+      "llm_tldr": "针对统一多模态模型中移除VAE瓶颈带来的质量下降，提出表示强制（RF）方法，通过让解码器自回归预测视觉表示作为中间token再扩散像素，从而在单骨干内实现高质量生成，消除了外部瓶颈。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.02129v1",
+      "source": "arxiv",
+      "title": "Equilibrated Diffusion: Frequency-aware Textual Embedding for Equilibrated Image Customization",
+      "abstract": "Image customization learns target subjects from reference concept images and generates conditioned images per text prompts, mainly modifying styles or backgrounds. Prevailing methods adopt fine-tuning to pack diverse concept attributes into a unified latent embedding, yet entangled attributes hinder elimination of irrelevant disturbances from style and background. To address this issue, we propose Equilibrated Diffusion, a frequency-driven approach that disentangles tangled concept features for balanced customization and consistent text-visual matching. Unlike conventional methods learning full concepts with shared embeddings and unified tuning, our work utilizes the inherent link between image frequency components and semantics: low frequencies represent subject content and high frequencies correspond to styles. We decompose concepts in frequency space and optimize each embedding independently. This separate optimization enables the denoiser to capture style detached from subject identity and generalize better to unseen stylistic prompts. Merging multi-frequency embeddings preserves the model's original spatial customization ability. We further deploy mask-guided diffusion to restrict irrelevant background changes and boost text alignment. Residual Reference Attention (RRA) is inserted into spatial attention to retain subject structure and identity consistency. Experiments prove Equilibrated Diffusion exceeds mainstream baselines on subject fidelity and text adherence, verifying our method's superiority.",
+      "authors": [
+        "Liyuan Ma",
+        "Xueji Fang",
+        "Guo-Jun Qi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-01T11:57:10+00:00",
+      "link": "https://arxiv.org/pdf/2606.02129v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "frequency-driven disentanglement for concept erasure",
+      "llm_evidence_cn": "频率驱动解耦用于概念擦除",
+      "llm_evidence": "频率驱动解耦用于概念擦除",
+      "canonical_evidence": "频率驱动解耦用于概念擦除",
+      "llm_tldr_en": "Equilibrated Diffusion proposes frequency-driven textual embedding to disentangle concept features, enabling removal of irrelevant style/background disturbances for balanced image customization.",
+      "llm_tldr_cn": "图像定制中概念属性纠缠导致难以消除无关风格和背景干扰。本文提出频率驱动方法均衡扩散，利用图像频率成分与语义的内在联系，解耦概念特征以去除不想要的扰动。实验证明该方法在保持目标概念的同时有效移除干扰。该工作为扩散模型中的概念擦除提供了可迁移的解耦机制。",
+      "llm_tldr": "图像定制中概念属性纠缠导致难以消除无关风格和背景干扰。本文提出频率驱动方法均衡扩散，利用图像频率成分与语义的内在联系，解耦概念特征以去除不想要的扰动。实验证明该方法在保持目标概念的同时有效移除干扰。该工作为扩散模型中的概念擦除提供了可迁移的解耦机制。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.00310v1",
+      "source": "arxiv",
+      "title": "Where to Refine, When to Stop: Rethinking Redundancy via Latent Discrepancy for Efficient Visual Autoregressive Generation",
+      "abstract": "Visual Autoregressive (VAR) models deliver high-quality image generation but suffer from significant inference latency at high resolutions. Recent acceleration approaches most rely on heuristic measures with layer features to prune tokens. Such heuristics are sensitive to complex contextual semantics, leading to inaccurate identification of redundant computation and poor adaptability across prompts. We rethink redundancy in VAR from the perspective of its impact on pixel-space generation and introduce Latent Discrepancy. This unified metric quantifies a token's contribution by measuring the change in model states during generation. Our analysis shows that redundancy is more accurately identified when guided by image latent or pixel-space signals. We further observed that in classifier-free guidance (CFG), the convergence trend of the discrepancy between conditional and unconditional branches exhibits high dynamics with different prompts. Based on these findings, we propose LD-Pruning (Latent Discrepancy Pruning), a training-free framework that removes redundancy via latent discrepancy by integrating decoding-free region selection and adaptive unconditional-branch skipping. Extensive experiments show that LD-Pruning substantially reduces inference latency while maintaining high generation quality, achieving up to 2.35x speedup on Infinity-8B.",
+      "authors": [
+        "Changwang Mei",
+        "Peisong Wang",
+        "Zekun Li",
+        "Changsheng Li",
+        "Shuang Qiu",
+        "Qinghao Hu",
+        "Gang Li",
+        "Yifan Zhang",
+        "Zhihui Wei",
+        "Jian Cheng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-29T19:34:39+00:00",
+      "link": "https://arxiv.org/pdf/2606.00310v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "visual autoregressive generation acceleration via latent discrepancy",
+      "llm_evidence_cn": "通过潜变量差异加速视觉自回归生成",
+      "llm_evidence": "通过潜变量差异加速视觉自回归生成",
+      "canonical_evidence": "通过潜变量差异加速视觉自回归生成",
+      "llm_tldr_en": "This paper introduces Latent Discrepancy to identify redundant computation in Visual Autoregressive models, enabling efficient token pruning without quality loss.",
+      "llm_tldr_cn": "视觉自回归（VAR）模型高分辨率推理延迟大，现有启发式剪枝方法适应性差。本文从像素空间生成角度提出潜变量差异指标，量化令牌贡献，准确识别冗余计算。实验表明，该方法在多种提示下均能有效剪枝，显著提升VAR推理效率，同时保持生成质量。该工作为自回归图像生成模型的加速提供了新视角。",
+      "llm_tldr": "视觉自回归（VAR）模型高分辨率推理延迟大，现有启发式剪枝方法适应性差。本文从像素空间生成角度提出潜变量差异指标，量化令牌贡献，准确识别冗余计算。实验表明，该方法在多种提示下均能有效剪枝，显著提升VAR推理效率，同时保持生成质量。该工作为自回归图像生成模型的加速提供了新视角。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.04457v1",
+      "source": "arxiv",
+      "title": "Imagine Before You Draw: Visual Prompt Engineering for Image Generation",
+      "abstract": "Incorporating visual semantic representations as an intermediate step before image generation can reduce the modeling difficulty between text and images, thereby improving generation quality. Recent works such as X-Omni and BLIP3o-Next have explored this direction, but they typically use a two-stage external pipeline: a separate autoregressive model first generates semantic tokens, which are then fed as conditioning to an independent diffusion decoder. Since the decoder cannot jointly access the original input and the semantic plan, this design introduces an information bottleneck that limits detail preservation in downstream tasks such as editing. Internal architectures such as Transfusion, BAGEL, and Show-o2 avoid this bottleneck by enabling cross-modal interaction within a single model, but they still face the difficult text-to-pixel modeling gap without intermediate semantic guidance. We propose Visual Prompt Engineering (VPE), which can be seamlessly integrated into such internal frameworks. Specifically, the model first autoregressively generates visual semantic tokens (e.g., SigLIP 2) as \"visual prompts\" that capture the semantic layout, then generates the full image tokens conditioned on this plan. We validate VPE across class-conditional generation, text-to-image generation, and image editing, covering various token types and model architectures. Results show that VPE can accelerate convergence, raise quality ceilings, and through internal integration, achieve substantially better editing preservation (PSNR: 26.76 vs. 19.92) than external alternatives of the same parameter scale, while maintaining competitive editing responsiveness.",
+      "authors": [
+        "Liyu Jia",
+        "Fengda Zhang",
+        "Jiachun Pan",
+        "Kesen Zhao",
+        "Saining Zhang",
+        "Wang Lin",
+        "Weijia Wu",
+        "Yue Liao",
+        "Aojun Zhou",
+        "Hanwang Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-03T05:01:36+00:00",
+      "link": "https://arxiv.org/pdf/2606.04457v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "autoregressive model for generating semantic tokens before image diffusion",
+      "llm_evidence_cn": "自回归模型生成语义token再扩散图像",
+      "llm_evidence": "自回归模型生成语义token再扩散图像",
+      "canonical_evidence": "自回归模型生成语义token再扩散图像",
+      "llm_tldr_en": "Explores visual prompt engineering for image generation by autoregressively generating semantic tokens before pixel diffusion, comparing external and internal architectures.",
+      "llm_tldr_cn": "研究在图像生成前先自回归生成语义表示的视觉提示工程，比较外部流水线和内部架构。指出外部架构存在信息瓶颈，而内部架构如Transfusion可避免，为提升文本到图像生成质量提供新思路。",
+      "llm_tldr": "研究在图像生成前先自回归生成语义表示的视觉提示工程，比较外部流水线和内部架构。指出外部架构存在信息瓶颈，而内部架构如Transfusion可避免，为提升文本到图像生成质量提供新思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.04461v1",
+      "source": "arxiv",
+      "title": "ChannelTok: Efficient Flexible-Length Vision Tokenization",
+      "abstract": "Leading flexible vision tokenizers achieve SOTA quality at an extreme cost, relying on parameter-heavy backbones and slow, multi-step generative decoders. We depart from this complex, spatial-token paradigm and introduce a simple, lightweight, and fast channel-wise flexible-length tokenizer. Our method treats each latent channel as a visual token, enabling a parameter-efficient CNN-Transformer hybrid backbone. Furthermore, employing a stochastic tail-dropping paradigm during training naturally forces channels to organize by semantic importance. This allows for flexible compression at inference by simply retaining the first $k$ channels, and naturally enables variable-length autoregressive image generation. We validate our approach through extensive experiments on ImageNet, demonstrating consistent quality across diverse token budgets. The results establish a new quality-efficiency frontier: our model achieves state-of-the-art perceptual quality (rFID 2.92) while being $8.6\\times$ faster in decoding and $2.1\\times$ smaller (159M params) than the next-best alternative. Our work establishes channel-wise tokenization as a powerful and practical paradigm for efficient visual representation. Project page: https://channeltok.github.io",
+      "authors": [
+        "Sukriti Paul",
+        "Arpit Bansal",
+        "Tom Goldstein"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-03T05:10:51+00:00",
+      "link": "https://arxiv.org/pdf/2606.04461v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "variable-length autoregressive image generation via channel-wise tokenization",
+      "llm_evidence_cn": "通过通道级分词实现可变长度自回归图像生成",
+      "llm_evidence": "通过通道级分词实现可变长度自回归图像生成",
+      "canonical_evidence": "通过通道级分词实现可变长度自回归图像生成",
+      "llm_tldr_en": "ChannelTok introduces a channel-wise flexible-length tokenizer that enables variable-length autoregressive image generation with efficient compression.",
+      "llm_tldr_cn": "ChannelTok提出通道级视觉分词器，将每个潜在通道视为视觉令牌，通过随机丢弃尾部通道训练实现按语义重要性排序，从而支持可变长度自回归图像生成。实验表明该方法轻量高效，但未涉及概念擦除。",
+      "llm_tldr": "ChannelTok提出通道级视觉分词器，将每个潜在通道视为视觉令牌，通过随机丢弃尾部通道训练实现按语义重要性排序，从而支持可变长度自回归图像生成。实验表明该方法轻量高效，但未涉及概念擦除。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

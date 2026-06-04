@@ -1,0 +1,482 @@
+Title: Imagine Before You Draw: Visual Prompt Engineering for Image Generation
+
+URL Source: https://arxiv.org/pdf/2606.04457v1
+
+Published Time: Thu, 04 Jun 2026 00:44:01 GMT
+
+Number of Pages: 17
+
+Markdown Content:
+# Imagine Before You Draw: Visual Prompt Engineering for Image Generation 
+
+Liyu Jia 1,∗ Fengda Zhang 1,∗,† Jiachun Pan 2,∗ Kesen Zhao 1 Saining Zhang 1
+
+Wang Lin 3 Weijia Wu 2 Yue Liao 2 Aojun Zhou 4 Hanwang Zhang 11Nanyang Technological University 2National University of Singapore 
+
+> 3
+
+Zhejiang University 4The Chinese University of Hong Kong 
+
+ji0011yu@e.ntu.edu.sg fdzhang328@gmail.com 
+
+## Abstract 
+
+Incorporating visual semantic representations as an intermediate step before image generation can reduce the modeling difficulty between text and images, thereby improving generation quality. Recent works such as X-Omni and BLIP3o-Next have explored this direction, but they typically use a two-stage external pipeline: a separate autoregressive model first generates semantic tokens, which are then fed as conditioning to an independent diffusion decoder. Since the decoder cannot jointly access the original input and the semantic plan, this design introduces an information bottleneck that limits detail preservation in downstream tasks such as editing. Internal architectures such as Transfusion, BAGEL, and Show-o2 avoid this bottleneck by enabling cross-modal interaction within a single model, but they still face the difficult text-to-pixel modeling gap without intermediate semantic guidance. We propose Visual Prompt Engineering (VPE), which can be seamlessly integrated into such internal frameworks. Specifically, the model first autoregres-sively generates visual semantic tokens ( e.g. , SigLIP 2) as “visual prompts” that capture the semantic layout, then generates the full image tokens conditioned on this plan. We validate VPE across class-conditional generation, text-to-image generation, and image editing, covering various token types and model architec-tures. Results show that VPE can accelerate convergence, raise quality ceilings, and through internal integration, achieve substantially better editing preservation (PSNR: 26.76 vs. 19.92) than external alternatives of the same parameter scale, while maintaining competitive editing responsiveness. 
+
+## 1 Introduction 
+
+Recent multimodal models [ 1 , 2, 3, 4 , 5] have made rapid progress in image generation. A central challenge in these models is bridging the gap between high-level semantic conditioning ( e.g. , class labels or text prompts) and low-level pixel-accurate image synthesis. Incorporating visual semantic representations as intermediate signals has emerged as a key trend, as it can reduce the modeling difficulty and improve generation quality. Several recent works have begun exploring this direction. X-Omni [ 6] and BLIP3o-Next [ 7 ] employ SigLIP 2 [ 8] tokens as conditioning signals for image generation. However, they adopt an external 
+
+architecture (Figure 1b) where a separate autoregressive model produces SigLIP 2 tokens that are then fed as conditioning to an independent diffusion model. This external design introduces a fundamental limitation: the diffusion decoder cannot jointly access the original conditioning and the semantic plan, creating an information bottleneck that is particularly harmful for tasks requiring detail preservation such as image editing. In contrast, internal architectures (Figure 1a) such as Transfusion [ 4], BAGEL [ 5], and Show-o2 [ 2] avoid this bottleneck by enabling cross-modal interaction within a 
+
+> Preprint.
+> arXiv:2606.04457v1 [cs.CV] 3 Jun 2026
+
+single model, but they have not incorporated visual semantic representations, leaving the difficult text-to-pixel modeling gap unaddressed. In addition, no prior work has systematically investigated whether visual semantic prompts benefit different types of image tokens (discrete tokens such as Emu3 [ 3] and continuous tokens such as VAE vectors [ 9 ]), how they affect convergence and quality ceilings, or what are the trade-offs between these two architectural paradigms. Drawing an analogy from chain-of-thought reasoning in large language models [ 10 ], where decompos-ing complex reasoning into intermediate steps dramatically improves performance, we propose Visual Prompt Engineering (VPE) to address these challenges. VPE inserts a compact set of SigLIP 2 visual tokens that capture the high-level semantic layout of the target image before the model generates the full image tokens, transforming a single difficult generation step into two easier sub-problems: 
+
+semantic planning (what to draw) followed by detail rendering (how to draw it). However, learning reliable semantic plans remains non-trivial. If the model is naively conditioned on ground-truth SigLIP 2 visual prompts during training, it can over-rely on these highly informative tokens and pay insufficient attention to other conditioning signals. At inference time, however, the model must condition on its own predicted visual prompts, which are inevitably imperfect; this train–inference discrepancy can lead to severe quality degradation. This issue is further amplified in continuous-token models, where the cross-entropy loss for predicting SigLIP 2 tokens and the flow-matching loss for image tokens operate at different scales, making joint optimization unstable. To address these challenges, we introduce a progressive training schedule that gradually increases the model’s reliance on visual prompts (Section 2.2). Crucially, VPE supports both internal integration (shared attention within a single model) and external integration (separate AR + DiT), allowing us to systematically analyze these paradigms. We validate VPE across class-conditional generation, text-to-image generation, and image editing, showing consistent improvements across these tasks. Our contributions are threefold: • We propose VPE, a general technique for improving image generation by inserting SigLIP 2 visual tokens. Through experiments, we validate its effectiveness across discrete and continuous token types, various image generation tasks, and multiple model architectures including a controlled comparison of internal and external paradigms. • We identify the train-inference gap and loss-scale imbalance as key challenges in VPE training, and provide a progressive training schedule that effectively addresses both issues for autoregressive and diffusion objectives. • Our experimental results show that internal architectures preserve finer details in editing than external ones, but directly modeling text-to-image within a single model is inherently harder to converge. VPE alleviates this difficulty by providing intermediate semantic guidance, accelerating the convergence of internal architectures while retaining their editing advantage. 
+
+## 2 Method 
+
+2.1 Visual Prompt Engineering 
+
+Given a conditioning signal c (class label, text prompt, or reference image) and a target image I,standard image generation models learn the mapping c → Timg , where Timg represents the image tokens (discrete codebook indices or continuous latent vectors). VPE introduces an intermediate semantic representation by first generating visual prompts Tvp (SigLIP 2 [ 8] tokens extracted from the target image) before generating the image tokens: 
+
+c → Tvp 
+
+|{z} 
+
+> semantic plan
+
+→ Timg 
+
+|{z} 
+
+> detail rendering
+
+(1) During training, the visual prompts are obtained by encoding the ground-truth image I with a frozen visual semantic encoder, specifically SigLIP 2-Giant-Patch16-384 [ 8, 6 ] in this paper. With a patch size of 16, the encoder produces a compact token grid at 16 × spatial downsampling: for example, 
+
+384 × 384 → 576 tokens and 224 × 224 → 196 tokens. The resulting tokens are then discretized using the frozen SigLIP-VQ tokenizer from X-Omni [ 6 ], which adopts a codebook of 16,384 entries. At inference time, the model autoregressively generates Tvp from c, then conditions image token generation on both c and the self-generated Tvp . SigLIP 2 tokens capture high-level semantic content 2VAE          
+
+> Encode r
+> Noise Input
+> Reference Text Target
+> Text
+> Tokenizer
+> SigLIP
+> VQ
+> VAE
+> Encode r
+> Noise Input
+> Reference Text Target
+> Text
+> Tokenizer
+> SigLIP
+> VQ
+> ×𝑁 Joint Self Attention
+> FFN
+> QK VQKV
+> FFN
+> Autoregressive Model Diffusion Model
+> ℒ!"
+> …
+> Autoregressive Block
+> Diffusion Block
+> Diffusion Block
+> …
+> 𝑁
+> Autoregressive Block 1
+> 𝑁
+> 1
+> ℒ#$ ℒ!" ℒ#$
+> (a) Internal architecture with VPE (b) External architecture with VPE
+
+Figure 1: VPE in two architectural frameworks. VPE inserts SigLIP 2 visual prompts before image generation as a semantic plan. (a) In the internal architecture, all modalities (text, SigLIP 2 tokens, image tokens) share attention within a single model via Eq. 4, enabling direct cross-referencing during generation. (b) In the external architecture, an AR model first produces SigLIP 2 features, which are then routed to a separate DiT decoder. While both frameworks benefit from VPE for generation, the external pipeline introduces an information bottleneck that limits editing fidelity (Section 4.3). (object categories, spatial layout, color distribution) while abstracting away pixel-level details, making them an effective intermediate representation for semantic planning. 
+
+Compatibility with different token types. A key advantage of VPE is its generality. The visual prompt generation is always autoregressive (predicting discrete SigLIP 2 token indices via cross-entropy loss), while the subsequent image generation can use any framework. For discrete image tokens such as Emu3 [ 3 ], the full sequence is [c, Tvp , Timg ], trained end-to-end with cross-entropy loss. For continuous image tokens such as VAE vectors, the image is generated via diffusion or flow matching [ 11 ] conditioned on the visual prompts, using cross-entropy loss for Tvp and the corresponding continuous generation loss for Timg . VPE only adds SigLIP 2 vocabulary embeddings to the model, resulting in < 4% additional parameters in our experiments. 
+
+2.2 Progressive Training Schedule 
+
+In our experiments, we observe that if the model is trained with ground-truth visual prompts from the start, it becomes overly dependent on them. At inference time, the model must rely on its own autoregressively generated SigLIP 2 tokens, which are inevitably imperfect in early training. This train-inference discrepancy causes significant quality degradation. To ensure the model can still generate reasonable images even when the visual prompts are noisy or incorrect, we introduce a progressive schedule that gradually increases the model’s reliance on visual prompts, preventing it from degenerating into a simple copying task that only works with perfect SigLIP 2 conditioning. Additionally, for continuous token models, the cross-entropy loss for SigLIP 2 tokens and the flow matching loss for image tokens operate at different scales. Without careful balancing, the cross-entropy gradient can dominate and impede the learning of flow matching denoising. 
+
+For discrete token models. We define a step-dependent masking probability: 
+
+pmask (s) = p0 · (1 − σ(s)) + p1 · σ(s), σ(s) = 11 + e−k(s/S −0.5) (2) where s is the current step, S is total steps, p0=0 .95 , p1=0 .05 , and k=10 . At each training step, visual prompt tokens are replaced with padding tokens with probability pmask , and no loss is computed on masked positions. This ensures early training focuses on learning image generation from c alone, while later training gradually introduces visual prompts as both targets and conditions. 
+
+For continuous token models. Since flow matching and cross-entropy losses operate at different scales, we keep visual prompts unmasked but modulate the cross-entropy loss coefficient: 
+
+λCE (s) = λ0 · (1 − σ(s)) + λ1 · σ(s) (3) 3with λ0=0 .03 , λ1=0 .1, and flow matching loss coefficient fixed at 1. This prevents the cross-entropy gradient from overwhelming the diffusion objective in early training. 
+
+2.3 Internal vs. External Architectures 
+
+Current image generation models can be broadly categorized into two architectural paradigms (Figure 1). External architectures, such as X-Omni [ 6 ] and BLIP3o-Next [ 7], use a two-stage pipeline where an autoregressive model first generates semantic tokens, which are then fed as conditioning to a separate diffusion decoder. The AR and DiT [ 12 ] share no parameters; the DiT receives the semantic features as cross-attention conditioning. Internal architectures process all modalities within a single model. Transfusion [ 4 ] applies causal attention for text tokens and bidirectional attention for image patches, enabling cross-modal interaction where the image generation process can directly access the conditioning information. BAGEL [ 5] further extends this with a Mixture-of-Transformers (MOT) design that uses parameter-disjoint experts within shared attention. Notably, external architectures have already begun incorporating visual semantic representations (X-Omni and BLIP3o-Next both use SigLIP 2 tokens), while internal architectures have not yet explored this direction. We therefore study how to integrate VPE into both paradigms: 
+
+Internal +VPE . Following the MOT design, the AR model handles text and SigLIP 2 tokens (cross-entropy loss), while the DiT model handles image tokens (flow matching loss). At each layer, both models use independent Q/K/V/O projections but compute attention over the concatenated key-value sequence: 
+
+A = Softmax 
+
+ Qi · [K1; K2]⊤
+
+√d
+
+
+
+· [V1; V2], i ∈ { 1, 2} (4) where Qi, Ki, Vi are the query, key, and value projections of model i. This enables the DiT model to directly attend to text, reference images, and SigLIP 2 features simultaneously. 
+
+External +VPE . The autoregressive model generates SigLIP 2 tokens from the conditioning signal, then a separate DiT model uses the SigLIP hidden features as cross-attention conditioning to generate image tokens via flow matching. In our experiments, both architectures have identical total parameter counts (4.16B for text-to-image, 4.57B for editing with reference image encoder), enabling fair comparison. 
+
+## 3 Related Work 
+
+Multimodal generation. Recent image generation models span diverse architectures. Autoregres-sive models [ 13 , 14 , 15 , 3] generate images via next-token prediction over discrete tokens [ 9, 16 ], recent variants [ 17 , 18 , 19 ] explore scalable alternatives. Diffusion and flow-based models [ 20 , 11 , 21 ]and their transformer variants [ 12 , 22 , 23 , 24 ] achieve high quality through denoising. Unified multi-modal models [ 1, 2, 4, 25 , 5] combine understanding and generation in a single architecture. Our work builds upon these frameworks and introduces visual prompts as a general enhancement. 
+
+Visual semantic tokens as intermediate representations. Vision-language encoders [ 26 , 8, 27 ]produce semantic features widely used as conditioning signals [ 28 , 29 ]. X-Omni [ 6] and BLIP3o-Next [ 7] generate SigLIP 2 tokens to condition external diffusion models. However, these works treat visual tokens as a fixed architectural choice rather than systematically studying their impact. In contrast, we investigate visual prompts as a general technique applicable to diverse frameworks and tasks, and reveal fundamental differences between internal and external integration. 
+
+Image editing. InstructPix2Pix [ 30 ] pioneered instruction-based editing using classifier-free guid-ance over both text and image conditions. Subsequent works have improved editing through curated data and AR formulations [ 31 , 32 , 33 ], attention and inversion techniques [ 34 , 35 , 36 ], and unified frameworks [ 37 , 38 , 39 ]. Our work reveals a fundamental architectural distinction: internal models that jointly attend to reference images, instructions, and semantic features can preserve details during editing, while external models that route through separate modules cannot. 4Table 1: C2I experimental setup.                    
+
+> Framework LlamaGen Transfusion Initialization —Qwen2.5-0.5B Resolution 512 ×512 256 ×256
+> Image tokens 1,024 256 SigLIP 2 tokens 196 121 Hidden size 1,280 896 Model +VPE params 1.07B +0.04B 0.37B +0.02B
+
+Table 2: C2I on ImageNet. Without CFG.                 
+
+> Method Ep/Step FID ↓
+> Discrete ( 512 ×512 )
+> LlamaGen 100 24.56
+> LlamaGen +VPE (ours) 100 8.69
+> Continuous ( 256 ×256 )
+> Transfusion 266k 15.18
+> Transfusion +VPE (ours) 266k 11.43
+
+## 4 Experiments 
+
+We evaluate VPE across three progressively complex tasks: class-to-image generation (§4.1), text-to-image generation (§4.2), and a controlled analysis of internal vs. external architectures for editing (§4.3). 
+
+4.1 Class-to-Image Generation Setup. We train on ImageNet-1K [ 40 ] with two frameworks (Table 1) to validate the effectiveness of VPE under both discrete and continuous schemes. VPE adds only a randomly initialized SigLIP 2 embedding layer ( < 4% parameter increase). All results are evaluated on the ImageNet validation set without classifier-free guidance (CFG =1.0). • Discrete. We adopt LlamaGen [ 15 ] with the Emu3 [ 3 ] tokenizer to generate 512 ×512 images (white-padded) as 1,024 tokens. LlamaGen +VPE prepends 196 SigLIP 2 tokens (from the 224 ×224 
+
+white-padded target image), increasing per-sample length from 1,025 to 1,221 tokens. Trained from scratch for 100 epochs with batch size 128 for both LlamaGen and LlamaGen +VPE , where the latter consumes 19.1% more tokens per epoch. • Continuous. We adopt Transfusion [ 4] to generate 256 ×256 images (center-cropped) as 256 VAE tokens, with fixed-length sequence packing [ 5] at 10,240 tokens per step. Transfusion +VPE prepends 121 SigLIP 2 tokens (from the 176 ×176 center-cropped target image) but sees approximately 32% fewer images per step due to longer per-sample sequences. The model loads non-embedding weights from Qwen2.5-0.5B and randomly initializes 1,000 class token embeddings, resulting in 0.37B total parameters. Trains 130k shared steps without VPE, then forks into Transfusion and Transfusion +VPE branches for 136k additional steps. 
+
+Results. VPE consistently improves final generation quality and convergence speed across Llama-Gen and Transfusion, validating its effectiveness under both discrete and continuous token paradigms. • Quality ceiling (Table 2, Figure 2). At comparable training budgets, VPE substantially raises the quality ceiling. LlamaGen +VPE achieves FID 8.69 vs. 24.56 at epoch 100. Transfusion +VPE 
+
+achieves FID 11.43 vs. 15.18 at step 266k. The training loss curves (Figure 2b,d) confirm that VPE converges to a lower loss in both frameworks. • Convergence acceleration (Figure 2). VPE dramatically accelerates convergence. As shown in Figure 2a, LlamaGen +VPE at epoch 50 already surpasses LlamaGen at epoch 100 (FID 22.07 vs. 24.56). Since VPE adds 19.1% more tokens per epoch, LlamaGen +VPE at epoch 50 consumes approximately 60% of LlamaGen’s total token budget at epoch 100. For Transfusion, where both branches consume the same tokens per step, Transfusion +VPE at step 184k surpasses Transfusion at step 266k (FID 14.02 vs. 15.18, Figure 2c). This illustrates that VPE effectively reduces the difficulty of directly modeling images from text. • Early-stage behavior (Figure 2). LlamaGen +VPE ’s early-epoch FID increase (epochs 30–40) is expected: progressive masking ( pmask =0 .95 ) limits the visual prompt signal initially. Once the model learns to leverage visual prompts (epoch 50+), improvement is decisive and monotonic. For Transfusion +VPE , the initial high FID at step 150k reflects the train-inference gap: training uses ground-truth SigLIP 2 tokens while inference relies on self-generated ones. This resolves quickly as the model learns to produce reliable visual prompts. 530 40 50 60 70 80 90 100               
+
+> Epoch
+> 10
+> 20
+> 30
+> 40
+> (a) FID-50K @512
+> LlamaGen
+> LlamaGen +VPE
+> 20 40 60 80 100
+> Epoch
+> 6.00
+> 6.25
+> 6.50
+> 6.75
+> (b) Training Loss
+> LlamaGen
+> LlamaGen +VPE
+> 72 120 168 216 264
+> Step (k)
+> 10
+> 20
+> 30
+> 40
+> (c) FID-50K @256
+> Shared
+> Transfusion
+> Transfusion +VPE
+> 72 120 168 216 264
+> Step (k)
+> 0.50
+> 0.52
+> 0.54
+> (d) Training Loss
+> Shared
+> Transfusion
+> Transfusion +VPE
+
+Figure 2: Convergence on ImageNet. (a) LlamaGen FID-50K ( 512 ×512 ): VPE starts higher due to progressive masking ( pmask =0 .95 ) but surpasses the baseline from epoch 50, with the gap widening to 15.87 by epoch 100. (b) LlamaGen training loss converges to a lower value with VPE. (c) Transfusion FID-50K ( 256 ×256 ): both branches fork from the shared checkpoint (dashed line). The initial high FID of VPE at 150k reflects the train-inference gap on self-generated visual prompts, which resolves quickly. (d) Transfusion flow loss curves for the shared base and both branches. Table 3: Text rendering on TextAtlas benchmarks. Metrics include CLIP Score (CS) ↑, OCR Accuracy (Acc.) ↑, F1 Score ↑, and Character Error Rate (CER) ↓. All results use CFG =5.5. Best open-source values in bold . Gray : closed-source models. ∗: continued training on 6.35M text rendering data. 
+
+TextScenesHQ TextVisionBlend StyleTextSynth Method CS ↑ Acc ↑ F1 ↑ CER ↓ CS ↑ Acc ↑ F1 ↑ CER ↓ CS ↑ Acc ↑ F1 ↑ CER ↓
+
+Grok 3 0.32 35.07 37.94 0.57 0.17 41.54 44.22 0.57 0.29 15.82 21.40 0.73 DALL-E 3 [41] 0.34 69.26 51.63 0.67 0.19 8.38 7.94 0.93 0.29 30.58 38.25 0.78 AnyText [42] 0.22 0.42 0.81 0.95 – – – – 0.25 0.35 0.66 0.98 TextDiffuser-2 [43] 0.23 0.66 1.25 0.96 – – – – 0.25 0.76 1.46 0.99 PixArt-Σ [24] 0.23 0.34 0.53 0.91 0.19 2.40 1.57 0.83 0.28 0.42 0.62 0.90 Infinity-2B [19] 0.23 1.06 1.74 0.88 0.20 2.98 3.44 0.83 0.27 0.80 1.42 0.93 SD3.5 Large [21] 0.24 19.03 24.45 0.73 0.18 14.55 16.25 0.88 0.28 27.21 33.86 0.73 Show-o2 ∗ (1.5B) [2] 0.29 2.62 4.36 0.88 0.16 76.45 77.40 0.22 0.29 21.83 27.72 0.59 Show-o2 +VPE (ours, 1.5B) 0.26 16.29 26.07 0.77 0.16 80.07 82.55 0.20 0.26 32.91 43.78 0.60 
+
+4.2 Text-to-Image Generation Text rendering setup. We fine-tune the pre-trained Show-o2-1.5B model [ 2 ] on 6.35M English text rendering images collected from TextAtlas [ 47 ] and AnyWord-3M [ 42 ], excluding Chinese text images and academic paper images whose text becomes illegible after white-padding preprocessing. Since the official Show-o2-1.5B was not trained on dense text data [ 2], we also continue-train the baseline on the same 6.35M data (denoted Show-o2 ∗) to ensure improvements stem from VPE rather than additional data. Show-o2 +VPE uses batch size 8 with max sequence length 1,856, while Show-o2 ∗
+
+uses batch size 12 with max sequence length 1,280, resulting in closely matched per-step token throughput ( < 3.5% difference). Both models are trained for 3 epochs on 24 H800 GPUs. The VPE model’s CE loss follows Eq. 3 with total training steps S=100 k. 
+
+Text rendering results. Show-o2 +VPE achieves notable improvements over existing open-source models and Show-o2 ∗, demonstrating that visual prompts effectively reduce the difficulty of directly modeling text-to-image within internal architectures such as Show-o2. • Comparison with open-source models (Table 3). Show-o2 +VPE at 1.5B parameters outperforms all open-source baselines. It only slightly trails SD3.5 Large on TextScenesHQ, but given that SD3.5 Large has 8.1B parameters ( 5.4× larger), this already demonstrates strong competitiveness. On TextVisionBlend, it achieves the highest accuracy (80.07%) and F1 (82.55) among all methods including closed-source ones. • Controlled comparison with Show-o2 ∗ (Table 3). Compared to Show-o2 ∗ trained on identical data without VPE, Show-o2 +VPE improves OCR accuracy from 2.62% to 16.29% ( 6.2×) on TextScenesHQ, from 76.45% to 80.07% on TextVisionBlend, and from 21.83% to 32.91% on StyleTextSynth. These consistent improvements confirm that visual prompts help the model “plan” 6Show -o2 * Show -o2 +VPE Show -o2 * Show -o2 +VPE Show -o2 * Show -o2 +VPE Show -o2 * Show -o2 +VPE Figure 3: Text rendering comparison. Show-o2 +VPE generates more accurate text compared to Show-o2 ∗, consistent with the quantitative improvements in Table 3. Table 4: GenEval benchmark. External +VPE at 4.16B surpasses many larger models, demonstrating the effectiveness of VPE for T2I generation quality. 
+
+Method #Params Single Two Count Color Pos. C.Attr. Overall ↑
+
+ILLUME [44] 7B 0.99 0.86 0.45 0.71 0.39 0.28 0.61 Transfusion [4] 7B – – – – – – 0.63 D-DiT [45] 2B 0.97 0.80 0.54 0.76 0.32 0.50 0.65 Emu3 [3] 8B – – – – – – 0.66 SD3-Medium [21] – 0.99 0.94 0.72 0.89 0.33 0.60 0.74 Show-o2 [2] 7B 1.00 0.87 0.58 0.92 0.52 0.62 0.76 MetaQuery-XL [46] 7B – – – – – – 0.80 Janus-Pro [25] 7B 0.99 0.89 0.59 0.90 0.79 0.66 0.80 
+
+Internal +VPE (ours) 4.16B 0.98 0.91 0.68 0.86 0.77 0.55 0.79 
+
+External +VPE (ours) 4.16B 0.98 0.90 0.69 0.86 0.76 0.68 0.81 
+
+text layout before rendering. By first generating SigLIP 2 tokens that encode the semantic content, the model produces more accurate character structures during the subsequent generation phase. • Qualitative results (Figure 3). Show-o2 +VPE generates more accurate and readable text compared to Show-o2 ∗, consistent with the quantitative improvements. 
+
+General T2I setup. Beyond text rendering, we evaluate whether VPE improves general T2I quality. We adopt two mainstream architectures illustrated in Figure 1: Internal +VPE (mixture-of-transformers) and External +VPE (AR + DiT). Both models load all parameters from Show-o2-1.5B [ 2] except for the lightweight SigLIP 2 embedding layer, which is randomly initialized. Since the T2I task has no image input, we remove the VAE encoder, resulting in 4.16B parameters. We collect 32M T2I images from the publicly available BLIP3o [ 7] data, combined with the 6.35M text rendering data described above. Training proceeds in two stages: • Stage-1 (text-to-SigLIP 2 alignment): trains only the AR model for 4 epochs on the 39M mixed data. The resulting AR checkpoint is shared by both architectures in Stage-2, ensuring identical text-to-SigLIP 2 alignment capability. • Stage-2 (image generation): trains on the same 39M mixed data, following each framework’s standard training paradigm. Internal +VPE performs joint training of both the AR and DiT models. External +VPE freezes the pretrained AR model and only trains the DiT. This setup also serves as the foundation for the editing experiments in Section 4.3. 7Change the jacket to a blouse          
+
+> Remove the mushrooms from the branch
+> Change the color of the heart from red to pink
+> Change the color of the berries to purple
+> Replace the laptop with a notebook
+> Change the book to a laptop
+> Add flowers around the sheep
+> Add deer in the forest
+> Remove the plane flying overhead
+> Remove the chair
+> Reference Internal +VPE External +VPE
+> Delete the flower in the puppy's mouth
+> Change the color of the chair to blue
+> Remove the rose
+> Change the color of the mouse from white to purple
+> Change the color of the roses from red to purple
+> Delete flowers on grass
+> Change the season from autumn to spring
+> Remove the paraglider flying over the mountain
+> Change the cabinets to be wooden
+> Change the color of the rose from red to blue
+> Remove the bee flying over the flowering tree branch
+> Reference Internal +VPE External +VPE Reference Internal +VPE External +VPE
+
+Figure 4: Editing comparison. Each triplet shows Reference / Internal +VPE / External +VPE .Internal +VPE preserves unedited regions while External +VPE regenerates inconsistent backgrounds. 
+
+General T2I results. Table 4 shows GenEval [ 48 ] results. At only 4.16B parameters, External +VPE 
+
+surpasses all compared 7B+ models on overall score, while Internal +VPE remains competitive with 7B-scale models. This illustrates that VPE reduces the modeling difficulty and improves generation quality, enabling smaller models to exceed much larger ones. 
+
+4.3 Analysis: Internal vs. External architecture Setup. Both Internal +VPE and External +VPE from Section 4.2 achieve comparable T2I quality (0.79 and 0.81 on GenEval), providing a relatively fair baseline for comparing internal and external paradigms on editing. Full training details are provided in Appendix C. Both models add a reference image encoder (initialized from Show-o2-1.5B [ 2] weights), bringing total parameters to 4.57B with the VAE encoder included. Starting from the Stage-2 T2I checkpoints, we fine-tune on 5.4M editing pairs from NHR-Edit [ 49 ] ( ×3 upsampling, 2.16M), UnicEdit [ 37 ] (2.03M), ShareGPT4o [ 50 ](×5, 233k), and Pico-Banana [ 38 ] ( ×4, 1.03M), with batch size 5 per GPU on 24 H200 GPUs for approximately 1.5 epochs (70k steps). We adopt InstructPix2Pix-style [ 30 ] conditional dropout (5%) for text and reference image conditions, where Internal +VPE drops text and SigLIP 2 tokens jointly 
+
+and External +VPE drops them independently (details in Appendix D). Inference uses classifier-free guidance with text CFG 2.5 and image CFG 1.0. We evaluate on PIE-Bench [36]. 
+
+Results. Table 5 shows that while both architectures achieve comparable T2I quality and editing 
+
+responsiveness (similar CLIP similarity scores), Internal +VPE dramatically outperforms External +VPE 
+
+in detail preservation , with 2.5× better Structure Distance (24.60 vs. 61.66), +6 .84 dB PSNR (26.76 8Table 5: Internal vs. External architecture comparison. Both architectures achieve comparable T2I quality (a, b), but Internal +VPE dramatically outperforms External +VPE in editing preservation (c).                                                                                
+
+> (a) GenEval (T2I quality, CFG =7.5)
+> Method Single Two Count Color Pos. C.Attr. Overall ↑
+> Internal +VPE 0.98 0.91 0.68 0.86 0.77 0.55 0.79 External +VPE 0.98 0.90 0.69 0.86 0.76 0.68 0.81
+> (b) TextAtlas (text rendering, CFG =5.5)
+> TextScenesHQ TextVisionBlend StyleTextSynth Method CS Acc ↑F1 ↑CER ↓CS Acc ↑F1 ↑CER ↓CS Acc ↑F1 ↑CER ↓
+> Internal +VPE 0.27 22.70 34.37 0.72 0.16 77.59 80.25 0.23 0.27 38.63 49.62 0.54 External +VPE 0.27 19.07 29.69 0.75 0.16 77.59 80.15 0.23 0.27 38.24 49.06 0.54
+> (c) PIE-Bench (Editing, Image CFG =1.0, Text CFG =2.5)
+> Method Struct. Dist. ↓PSNR ↑LPIPS ↓MSE ↓SSIM ↑CLIP Whole ↑
+> CLIP Edit ↑
+> Internal +VPE 24.60 26.76 58.61 46.76 86.66 23.00 20.50 External +VPE 61.66 19.92 158.09 150.88 70.02 23.09 20.69
+
+vs. 19.92), 2.7× better LPIPS (58.61 vs. 158.09), and +16 .6 SSIM (86.66 vs. 70.02). This gap arises despite identical parameter counts, training data, and training duration, revealing a fundamental architectural limitation of external pipelines for editing. Figure 4 shows representative examples: Internal +VPE faithfully preserves unedited regions while External +VPE regenerates the entire scene. We provide an explanation for this gap from an information perspective. Let x denote the reference image, t the edit instruction, and P ⊆ x the region that should remain unchanged. An ideal edit modifies only the attributes specified by t while keeping P intact. In the external pipeline, the AR model takes the reference image (via VAE encoding) and the edit instruction, producing s′ = fAR (x, t ), the SigLIP 2 representation of the target image after editing. Since SigLIP 2 is a semantic encoder that discards fine-grained spatial details [ 8], s′ inevitably loses the pixel-level information (textures, edges, background details) that must be preserved. The DiT decoder generates ˆx = gDiT (s′), and by the data processing inequality: 
+
+I(ˆ x; P) ≤ I(s′; P) < H (P) (5) The first inequality holds because ˆx is a function of s′. The strict inequality holds because s′ is a SigLIP 2 representation that has irreversibly discarded the fine-grained details of P.In contrast, the internal design allows the DiT to attend jointly to the full sequence [x, t, s′] at every layer through shared attention (Eq. 4): 
+
+I(ˆ x; P) ≤ I(x, t, s′; P) = H(P) (6) since P ⊆ x. The model can cross-reference t (what to change) with x (original details) at every decoding step, using s′ purely for semantic guidance. No information bottleneck exists because the decoder has direct access to x throughout the generation process. 
+
+## 5 Conclusion 
+
+We have presented Visual Prompt Engineering (VPE), a simple yet general technique that improves image generation by introducing SigLIP 2 visual tokens as intermediate representations. Our sys-tematic study demonstrates that VPE accelerates convergence and raises quality ceilings across discrete (LlamaGen +VPE ) and continuous (Transfusion +VPE ) token types, significantly enhances text rendering in text-to-image generation, and through internal architecture integration (Internal +VPE )enables effective image editing with strong detail preservation. Our analysis of the external bottleneck suggests that tasks requiring detail preservation may benefit from internal architectures where all modalities can interact within a single model. 9References 
+
+[1] Jinheng Xie, Weijia Mao, Zechen Bai, David Junhao Zhang, Weihao Wang, Kevin Qinghong Lin, Yuchao Gu, Zhijie Chen, Zhenheng Yang, and Mike Zheng Shou. Show-o: One single trans-former to unify multimodal understanding and generation. arXiv preprint arXiv:2408.12528 ,2024. [2] Jinheng Xie, Zhenheng Yang, and Mike Zheng Shou. Show-o2: Improved native unified multimodal models. arXiv preprint arXiv:2506.15564 , 2025. [3] Xinlong Wang, Xiaosong Zhang, Zhengxiong Luo, Quan Sun, Yufeng Cui, Jinsheng Wang, Fan Zhang, Yueze Wang, Zhen Li, Qiying Yu, et al. Emu3: Next-token prediction is all you need. 
+
+arXiv preprint arXiv:2409.18869 , 2024. [4] Chunting Zhou, Lili Yu, Arun Babu, Kushal Tirumala, Michihiro Yasunaga, Leonid Shamis, Jacob Kahn, Xuezhe Ma, Luke Zettlemoyer, and Omer Levy. Transfusion: Predict the next token and diffuse images with one multi-modal model. arXiv preprint arXiv:2408.11039 , 2024. [5] Chaorui Deng, Deyao Zhu, Kunchang Li, Chenhui Gou, Feng Li, Zeyu Wang, Shu Zhong, Weihao Yu, Xiaonan Nie, Ziang Song, et al. Emerging properties in unified multimodal pretraining. arXiv preprint arXiv:2505.14683 , 2025. [6] Zigang Geng, Yibing Wang, Yeyao Ma, Chen Li, Yongming Rao, Shuyang Gu, Zhao Zhong, Qinglin Lu, Han Hu, Xiaosong Zhang, et al. X-omni: Reinforcement learning makes discrete autoregressive image generative models great again. arXiv preprint arXiv:2507.22058 , 2025. [7] Jiuhai Chen, Le Xue, Zhiyang Xu, Xichen Pan, Shusheng Yang, Can Qin, An Yan, Honglu Zhou, Zeyuan Chen, Lifu Huang, et al. Blip3o-next: Next frontier of native image generation. 
+
+arXiv preprint arXiv:2510.15857 , 2025. [8] Michael Tschannen, Alexey Gritsenko, Xiao Wang, Muhammad Ferjad Naeem, Ibrahim Alab-dulmohsin, Nikhil Parthasarathy, Talfan Evans, Lucas Beyer, Ye Xia, Basil Mustafa, et al. Siglip 2: Multilingual vision-language encoders with improved semantic understanding, localization, and dense features. arXiv preprint arXiv:2502.14786 , 2025. [9] Aaron Van Den Oord, Oriol Vinyals, et al. Neural discrete representation learning. Advances in neural information processing systems , 30, 2017. [10] Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed Chi, Quoc V Le, Denny Zhou, et al. Chain-of-thought prompting elicits reasoning in large language models. 
+
+Advances in neural information processing systems , 35:24824–24837, 2022. [11] Yaron Lipman, Ricky TQ Chen, Heli Ben-Hamu, Maximilian Nickel, and Matt Le. Flow matching for generative modeling. arXiv preprint arXiv:2210.02747 , 2022. [12] William Peebles and Saining Xie. Scalable diffusion models with transformers. In Proceedings of the IEEE/CVF international conference on computer vision , pages 4195–4205, 2023. [13] Ming Ding, Zhuoyi Yang, Wenyi Hong, Wendi Zheng, Chang Zhou, Da Yin, Junyang Lin, Xu Zou, Zhou Shao, Hongxia Yang, et al. Cogview: Mastering text-to-image generation via transformers. Advances in neural information processing systems , 34:19822–19835, 2021. [14] Jiahui Yu, Yuanzhong Xu, Jing Yu Koh, Thang Luong, Gunjan Baid, Zirui Wang, Vijay Vasudevan, Alexander Ku, Yinfei Yang, Burcu Karagol Ayan, et al. Scaling autoregressive models for content-rich text-to-image generation. arXiv preprint arXiv:2206.10789 , 2(3):5, 2022. [15] Peize Sun, Yi Jiang, Shoufa Chen, Shilong Zhang, Bingyue Peng, Ping Luo, and Zehuan Yuan. Autoregressive model beats diffusion: Llama for scalable image generation. arXiv preprint arXiv:2406.06525 , 2024. [16] Patrick Esser, Robin Rombach, and Bjorn Ommer. Taming transformers for high-resolution image synthesis. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 12873–12883, 2021. 10 [17] Keyu Tian, Yi Jiang, Zehuan Yuan, Bingyue Peng, and Liwei Wang. Visual autoregressive modeling: Scalable image generation via next-scale prediction. Advances in neural information processing systems , 37:84839–84865, 2024. [18] Tianhong Li, Yonglong Tian, He Li, Mingyang Deng, and Kaiming He. Autoregressive image generation without vector quantization. Advances in Neural Information Processing Systems ,37:56424–56445, 2024. [19] Jian Han, Jinlai Liu, Yi Jiang, Bin Yan, Yuqi Zhang, Zehuan Yuan, Bingyue Peng, and Xiaobing Liu. Infinity: Scaling bitwise autoregressive modeling for high-resolution image synthesis. In 
+
+Proceedings of the Computer Vision and Pattern Recognition Conference , pages 15733–15744, 2025. [20] Jonathan Ho, Ajay Jain, and Pieter Abbeel. Denoising diffusion probabilistic models. Advances in neural information processing systems , 33:6840–6851, 2020. [21] Patrick Esser, Sumith Kulal, Andreas Blattmann, Rahim Entezari, Jonas Müller, Harry Saini, Yam Levi, Dominik Lorenz, Axel Sauer, Frederic Boesel, et al. Scaling rectified flow trans-formers for high-resolution image synthesis. In Forty-first international conference on machine learning , 2024. [22] Nanye Ma, Mark Goldstein, Michael S Albergo, Nicholas M Boffi, Eric Vanden-Eijnden, and Saining Xie. Sit: Exploring flow and diffusion-based generative models with scalable interpolant transformers. In European Conference on Computer Vision , pages 23–40. Springer, 2024. [23] Chitwan Saharia, William Chan, Saurabh Saxena, Lala Li, Jay Whang, Emily L Denton, Kamyar Ghasemipour, Raphael Gontijo Lopes, Burcu Karagol Ayan, Tim Salimans, et al. Photorealistic text-to-image diffusion models with deep language understanding. Advances in neural information processing systems , 35:36479–36494, 2022. [24] Junsong Chen, Chongjian Ge, Enze Xie, Yue Wu, Lewei Yao, Xiaozhe Ren, Zhongdao Wang, Ping Luo, Huchuan Lu, and Zhenguo Li. Pixart-σ: Weak-to-strong training of diffusion transformer for 4k text-to-image generation. In European Conference on Computer Vision ,pages 74–91. Springer, 2024. [25] Xiaokang Chen, Zhiyu Wu, Xingchao Liu, Zizheng Pan, Wen Liu, Zhenda Xie, Xingkai Yu, and Chong Ruan. Janus-pro: Unified multimodal understanding and generation with data and model scaling. arXiv preprint arXiv:2501.17811 , 2025. [26] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learning transferable visual models from natural language supervision. In International conference on machine learning ,pages 8748–8763. PmLR, 2021. [27] Maxime Oquab, Timothée Darcet, Théo Moutakanni, Huy Vo, Marc Szafraniec, Vasil Khalidov, Pierre Fernandez, Daniel Haziza, Francisco Massa, Alaaeldin El-Nouby, et al. Dinov2: Learning robust visual features without supervision. arXiv preprint arXiv:2304.07193 , 2023. [28] Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, and Mark Chen. Hierarchical text-conditional image generation with clip latents. arXiv preprint arXiv:2204.06125 , 1(2):3, 2022. [29] Sihyun Yu, Sangkyung Kwak, Huiwon Jang, Jongheon Jeong, Jonathan Huang, Jinwoo Shin, and Saining Xie. Representation alignment for generation: Training diffusion transformers is easier than you think. arXiv preprint arXiv:2410.06940 , 2024. [30] Tim Brooks, Aleksander Holynski, and Alexei A Efros. Instructpix2pix: Learning to follow image editing instructions. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 18392–18402, 2023. [31] Kai Zhang, Lingbo Mo, Wenhu Chen, Huan Sun, and Yu Su. Magicbrush: A manually annotated dataset for instruction-guided image editing. Advances in Neural Information Processing Systems , 36:31428–31449, 2023. 11 [32] Yuying Ge, Sijie Zhao, Jinguo Zhu, Yixiao Ge, Kun Yi, Lin Song, Chen Li, Xiaohan Ding, and Ying Shan. Seed-x: Multimodal models with unified multi-granularity comprehension and generation. arXiv preprint arXiv:2404.14396 , 2024. [33] Jiteng Mu, Nuno Vasconcelos, and Xiaolong Wang. Editar: Unified conditional generation with autoregressive models. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 7899–7909, 2025. [34] Amir Hertz, Ron Mokady, Jay Tenenbaum, Kfir Aberman, Yael Pritch, and Daniel Cohen-Or. Prompt-to-prompt image editing with cross attention control. arXiv preprint arXiv:2208.01626 ,2022. [35] Ron Mokady, Amir Hertz, Kfir Aberman, Yael Pritch, and Daniel Cohen-Or. Null-text inversion for editing real images using guided diffusion models. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 6038–6047, 2023. [36] Xuan Ju, Ailing Zeng, Yuxuan Bian, Shaoteng Liu, and Qiang Xu. Direct inversion: Boosting diffusion-based editing with 3 lines of code. arXiv preprint arXiv:2310.01506 , 2023. [37] Keming Ye, Zhipeng Huang, Canmiao Fu, Qingyang Liu, Jiani Cai, Zheqi Lv, Chen Li, Jing Lyu, Zhou Zhao, and Shengyu Zhang. Unicedit-10m: A dataset and benchmark breaking the scale-quality barrier via unified verification for reasoning-enriched edits. arXiv preprint arXiv:2512.02790 , 2025. [38] Yusu Qian, Eli Bocek-Rivele, Liangchen Song, Jialing Tong, Yinfei Yang, Jiasen Lu, Wenze Hu, and Zhe Gan. Pico-banana-400k: A large-scale dataset for text-guided image editing. arXiv preprint arXiv:2510.19808 , 2025. [39] Yuzhou Huang, Liangbin Xie, Xintao Wang, Ziyang Yuan, Xiaodong Cun, Yixiao Ge, Jiantao Zhou, Chao Dong, Rui Huang, Ruimao Zhang, et al. Smartedit: Exploring complex instruction-based image editing with multimodal large language models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 8362–8371, 2024. [40] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. Imagenet: A large-scale hierarchical image database. In 2009 IEEE conference on computer vision and pattern recognition , pages 248–255. Ieee, 2009. [41] James Betker, Gabriel Goh, Li Jing, Tim Brooks, Jianfeng Wang, Linjie Li, Long Ouyang, Juntang Zhuang, Joyce Lee, Yufei Guo, et al. Improving image generation with better captions. 
+
+Computer Science. https://cdn. openai. com/papers/dall-e-3. pdf , 2(3):8, 2023. [42] Yuxiang Tuo, Wangmeng Xiang, Jun-Yan He, Yifeng Geng, and Xuansong Xie. Anytext: Multilingual visual text generation and editing. arXiv preprint arXiv:2311.03054 , 2023. [43] Jingye Chen, Yupan Huang, Tengchao Lv, Lei Cui, Qifeng Chen, and Furu Wei. Textdiffuser-2: Unleashing the power of language models for text rendering. In European Conference on Computer Vision , pages 386–402. Springer, 2024. [44] Chunwei Wang, Guansong Lu, Junwei Yang, Runhui Huang, Jianhua Han, Lu Hou, Wei Zhang, and Hang Xu. Illume: Illuminating your llms to see, draw, and self-enhance. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 21612–21622, 2025. [45] Zijie Li, Henry Li, Yichun Shi, Amir Barati Farimani, Yuval Kluger, Linjie Yang, and Peng Wang. Dual diffusion for unified image generation and understanding. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 2779–2790, 2025. [46] Xichen Pan, Satya Narayan Shukla, Aashu Singh, Zhuokai Zhao, Shlok Kumar Mishra, Jialiang Wang, Zhiyang Xu, Jiuhai Chen, Kunpeng Li, Felix Juefei-Xu, et al. Transfer between modalities with metaqueries. arXiv preprint arXiv:2504.06256 , 2025. [47] Alex Jinpeng Wang, Dongxing Mao, Jiawei Zhang, Weiming Han, Zhuobai Dong, Linjie Li, Yiqi Lin, Zhengyuan Yang, Libo Qin, Fuwei Zhang, et al. Textatlas5m: A large-scale dataset for dense text image generation. arXiv preprint arXiv:2502.07870 , 2025. 12 [48] Dhruba Ghosh, Hannaneh Hajishirzi, and Ludwig Schmidt. Geneval: An object-focused framework for evaluating text-to-image alignment. Advances in Neural Information Processing Systems , 36:52132–52152, 2023. [49] Maksim Kuprashevich, Grigorii Alekseenko, Irina Tolstykh, Georgii Fedorov, Bulat Suleimanov, Vladimir Dokholyan, and Aleksandr Gordeev. Nohumansrequired: Autonomous high-quality image editing triplet mining. In Proceedings of the IEEE/CVF Winter Conference on Applica-tions of Computer Vision , pages 6059–6068, 2026. [50] Junying Chen, Zhenyang Cai, Pengcheng Chen, Shunian Chen, Ke Ji, Xidong Wang, Yunjin Yang, and Benyou Wang. Sharegpt-4o-image: Aligning multimodal models with gpt-4o-level image generation. arXiv preprint arXiv:2506.18095 , 2025. 13 A Full Class-to-Image Results 
+
+Tables 6 and 7 report the complete evaluation metrics at more checkpoints for the class-to-image experiments. Table 6: LlamaGen results on ImageNet 512 ×512. 
+
+LlamaGen +VPE LlamaGen Epoch FID ↓ IS ↑ Prec ↑ Rec ↑ FID ↓ IS ↑ Prec ↑ Rec ↑
+
+30 38.68 34.1 0.453 0.611 28.32 40.8 0.480 0.647 40 28.79 45.7 0.502 0.623 28.43 40.8 0.479 0.655 50 22.07 53.7 0.520 0.632 29.31 39.7 0.472 0.663 60 14.12 74.5 0.584 0.621 26.63 42.5 0.484 0.660 70 10.91 82.4 0.598 0.626 24.89 44.2 0.497 0.660 80 9.35 88.8 0.614 0.629 25.16 44.4 0.492 0.667 90 9.50 92.1 0.611 0.625 25.74 43.9 0.497 0.658 100 8.69 95.7 0.616 0.624 24.56 45.1 0.498 0.666 
+
+Table 7: Transfusion results on ImageNet 256 ×256. Steps 72k–130k are shared training before the fork point. “—” indicates the model variant does not exist at that step. 
+
+Transfusion +VPE Transfusion Step (k) FID ↓ IS ↑ Prec ↑ Rec ↑ FID ↓ IS ↑ Prec ↑ Rec ↑
+
+72 — — — — 29.05 45.9 0.421 0.614 96 — — — — 22.07 59.3 0.468 0.621 130 — — — — 18.26 69.6 0.488 0.629 140 198.92 4.1 0.084 0.376 17.91 69.8 0.492 0.629 150 36.62 57.5 0.518 0.354 17.73 70.1 0.495 0.626 162 17.10 147.8 0.676 0.271 17.66 70.2 0.496 0.628 172 15.32 166.5 0.689 0.280 17.00 72.4 0.501 0.629 184 14.02 172.0 0.691 0.307 16.72 73.4 0.497 0.632 206 12.72 166.1 0.679 0.343 15.50 77.5 0.511 0.633 226 12.12 159.6 0.672 0.369 15.00 80.2 0.513 0.628 246 11.87 152.9 0.664 0.388 15.26 79.0 0.509 0.629 266 11.43 148.2 0.660 0.404 15.18 78.8 0.508 0.637 330 10.92 136.8 0.641 0.435 — — — —530 12.10 107.7 0.593 0.495 — — — —
+
+## B Text Rendering at Matched Steps 
+
+To address potential concerns about different numbers of gradient updates at evaluation, we also compare Show-o2 +VPE and Show-o2 ∗ at the same checkpoint step (72k). Because the SigLIP 2 tokens increase the per-sample sequence length, Show-o2 +VPE uses a smaller micro batch size (8 vs. 12) to maintain comparable per-step token throughput ( 8 × 1,856 = 14 ,848 vs. 12 × 1,280 = 15 ,360 
+
+tokens/step, < 3.5% difference). This means that at the same step count, Show-o2 +VPE has seen fewer total images and fewer image tokens. Despite this data disadvantage, it still achieves substantially higher OCR accuracy (Table 8), confirming that the improvement stems from VPE. Table 8: Text rendering at matched steps (72k). All results at CFG =5.5. ∗: continued training on 6.35M text rendering data. 
+
+TextScenesHQ TextVisionBlend StyleTextSynth Method CS ↑ Acc ↑ F1 ↑ CER ↓ CS ↑ Acc ↑ F1 ↑ CER ↓ Acc ↑ F1 ↑ CER ↓
+
+Show-o2 ∗ (72k) 0.29 2.62 4.36 0.88 0.16 76.45 77.40 0.22 21.83 27.72 0.59 Show-o2 +VPE (ours, 72k) 0.26 12.10 20.66 0.82 0.16 79.83 82.34 0.20 26.73 37.05 0.67 
+
+14 C Internal vs. External Training Details 
+
+SigLIP 2 encoder. We use the SigLIP 2-Giant-Patch16-384 model [ 8] as the visual semantic encoder. Target images are resized to 384 × 384 with white padding to extract 24 × 24 = 576 
+
+SigLIP 2 tokens. The resulting tokens are then discretized using the frozen SigLIP-VQ tokenizer from X-Omni [6], which adopts a codebook of 16,384 entries. Table 9: Training hyperparameters for each stage. Stage 1 is shared, Stages 2 and 3 differ between internal and external architectures. “CE only” indicates that only cross-entropy loss on SigLIP 2 tokens is used (no flow matching loss). “Flow only” indicates that only flow matching loss is used (no cross-entropy loss).                                                              
+
+> Stage 2 (T2I) Stage 3 (Editing) Stage 1 Internal External Internal External GPUs 16 H200 24 H200 24 H200 24 H200 24 H200 Data 39M 39M 39M 5.4M 5.4M Epochs 422∼1.5 ∼1.5 BS / GPU 30 8855Grad Accum 11122LR 10 −410 −410 −45×10 −55×10 −5
+> LR Schedule const+warm const+warm const+warm const+warm const+warm EMA —0.9995 0.9995 0.9995 0.9995
+> λCE :λflow CE only 0.03 →0.1:1.0 Flow only 0.1:1.0 CE only Frozen DiT —AR —DiT
+
+Stage 1: SigLIP 2 alignment. Both architectures share the same Stage-1 checkpoint. The model learns to autoregressively predict SigLIP 2 tokens given text prompts, using only cross-entropy loss. The DiT and all image-related modules are frozen, only the AR (LLM) is trained. We train for 4 epochs on 39M mixed data (32M T2I + 6.35M text rendering) with constant LR 10 −4 and 2,000 warmup steps. 
+
+Stage 2: T2I training. Both Internal +VPE and External +VPE load the Stage-1 checkpoint and are trained on 39M mixed data for 2 epochs. The two training strategies follow the standard pipelines of their respective architectures. Internal +VPE : all parameters are unfrozen and jointly trained following the Transfusion-style training paradigm. For Internal +VPE , the CE loss coefficient λCE 
+
+is progressively increased from 0.03 to 0.1 during training to balance the CE and flow matching objectives. External +VPE : the AR is frozen throughout and only the DiT is trained for the full 2 epochs, following the standard external paradigm [ 6, 7 ] where the AR serves as a fixed semantic encoder, so no loss balancing is needed. 
+
+Stage 3: Editing. Both models load their respective Stage-2 T2I checkpoints and add a reference image encoder initialized from Show-o2-1.5B [ 2] weights, increasing parameters from 4.16B to 4.57B. Both are trained on 5.4M editing pairs for approximately 1.5 epochs (70k steps) with the same data, batch size, and training duration. 
+
+Internal +VPE : all parameters are unfrozen. The model receives the reference image, edit instruction, and SigLIP 2 tokens within a single sequence, and is trained with both cross-entropy loss ( λCE = 0 .1)and flow matching loss ( λflow = 1 .0). We adopt InstructPix2Pix-style [ 30 ] conditional dropout: with 5% probability drop the reference image, with 5% probability drop text and SigLIP 2 tokens jointly, and with 5% probability drop all conditions. Text and SigLIP 2 tokens are coupled because both serve as semantic prompts for the generation process (details in Appendix D). 
+
+External +VPE : the DiT is frozen and only the AR model is trained. In the external architecture, the DiT always receives SigLIP 2 features as conditioning regardless of the task. For editing, the new capability the model needs to learn is how to incorporate the reference image information into the SigLIP 2 representation, which is handled entirely by the AR component. Therefore, only the AR is trained with cross-entropy loss. Conditional dropout uses 5% probability independently for text and reference image (details in Appendix D). 15 D Editing CFG Formulation 
+
+Internal model (Internal +VPE ). We denote the reference image tokens as xref , the edit instruction as t, the SigLIP 2 visual prompt tokens as s, and the generated image tokens as xgen . Special tokens include [BOS ]/[EOS ] (sequence boundaries), [BOI ]/[EOI ] (image boundaries), and [BOT ]/[EOT ] (visual prompt boundaries). Same notations apply to the external model. The internal model uses four input configurations during training, with the last three at 5% probability each: Full: [BOS ][ BOI ] xref [EOI ] t [BOT ] s [EOT ] [ BOI ] xgen [EOI ][ EOS ]
+
+No-text: [BOS ][ BOI ] xref [EOI ] [ BOI ] xgen [EOI ][ EOS ]
+
+No-ref: [BOS ] t [BOT ] s [EOT ] [ BOI ] xgen [EOI ][ EOS ]
+
+Null: [BOS ][ BOI ] xgen [EOI ][ EOS ]
+
+Note that text and SigLIP 2 tokens are always dropped jointly in the internal model, since they are semantically coupled through the AR model. 
+
+External model (External +VPE ). The external model’s AR component uses three input configura-tions during editing training, with the last two at 5% probability each: Full: [BOS ][ BOI ] xref [EOI ] t [BOT ] s [EOT ][ EOS ]
+
+No-text: [BOS ][ BOI ] xref [EOI ] [ BOT ] s [EOT ][ EOS ]
+
+No-ref: [BOS ] t [BOT ] s [EOT ][ EOS ]
+
+Unlike the internal model, the external model drops text and reference image independently . During editing, only the AR component is trained (DiT remains frozen), since the AR effectively serves as a visual semantic encoder that translates the reference image and edit instruction into SigLIP 2 tokens for the DiT, following the standard external paradigm [6, 7]. 
+
+## E Training Loss Curves 
+
+We provide training loss curves for all experiments. Smooth curves (moving average) are overlaid on raw data (low opacity) for clarity. 
+
+## F Limitations 
+
+VPE has not been validated on larger-scale models, and scaling behavior remains future work. We study only SigLIP 2 as the visual semantic representation, and other semantic representations (CLIP, DINOv2) may offer different trade-offs. The progressive training schedule introduces hyperpa-rameters ( p0, p 1, k, λ 0, λ 1) that we have not extensively tuned. Better schedules may yield further improvements. 
+
+## G Broader Impact 
+
+This work improves the quality and efficiency of image generation models, which carries both positive and negative societal implications. On the positive side, more efficient training reduces computational cost and energy consumption, making image generation research more accessible. On the negative side, higher-quality image generation could be misused to create misleading or harmful visual content such as deepfakes. We note that VPE is a general training technique applied to existing open-source architectures and does not introduce new risks beyond those already present in the underlying models. We encourage the community to develop and deploy appropriate safeguards, including watermarking and content provenance tools, alongside advances in generation quality. 16 500k 1000k 
+
+Training Step 
+
+6.00 
+
+6.25 
+
+6.50 
+
+6.75 
+
+> Train Loss
+
+(a) LlamaGen C2I 
+
+> LlamaGen +VPE
+> LlamaGen
+
+0 200k 
+
+Training Step 
+
+0.50 
+
+0.55 
+
+0.60 
+
+0.65 
+
+> Flow Loss  fork
+
+(b) Transfusion C2I 
+
+> Shared Base
+> Transfusion
+> Transfusion +VPE
+
+50k 100k 
+
+Training Step 
+
+0.000 
+
+0.025 
+
+0.050 
+
+0.075 
+
+0.100 
+
+> Flow Loss
+
+(c) Show-o2* text rendering 
+
+> Show-o2 +VPE
+> Show-o2*
+
+0 200k 
+
+Training Step 
+
+3.0 
+
+3.5 
+
+4.0 
+
+> NTP Loss
+
+(d) Stage 1: SigLIP alignment 
+
+> Stage 1 NTP
+
+0 100k 200k 
+
+Training Step 
+
+0.00 
+
+0.05 
+
+0.10 
+
+0.15 
+
+> Flow Loss
+
+(e) Stage 2: Internal vs External 
+
+> Internal +VPE
+> External +VPE
+
+0 50k 
+
+Training Step 
+
+0.05 
+
+0.10 
+
+0.15 
+
+> Flow Loss
+
+(f) Editing: Internal vs External 
+
+> Internal +VPE
+> External +VPE
+
+Figure 5: Training loss curves. Top row: VPE vs. baseline training loss for each framework. (a) 
+
+LlamaGen +VPE converges to lower loss than LlamaGen. (b) Transfusion +VPE converges to lower flow loss than Transfusion after forking from the shared base. (c) Show-o2 +VPE achieves lower flow loss than Show-o2 ∗ on text rendering. Bottom row: Internal vs. External architecture training. (d) 
+
+Stage-1 SigLIP 2 alignment. (e) Stage-2: both architectures achieve similar flow loss. (f) Editing: Internal +VPE achieves lower flow loss than External +VPE , consistent with its superior preservation metrics (Table 5). 17
