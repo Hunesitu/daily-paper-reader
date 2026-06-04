@@ -1,0 +1,801 @@
+Title: Orthogonal Concept Erasure for Diffusion Models
+
+URL Source: https://arxiv.org/pdf/2605.28902v1
+
+Published Time: Fri, 29 May 2026 00:05:40 GMT
+
+Number of Pages: 22
+
+Markdown Content:
+# Orthogonal Concept Erasure for Diffusion Models 
+
+Yuhao Sun 1 Lingyun Yu 1 Haoxiang Xu 1 Fengyuan Miao 1 Zhuoer Xu 2 Hongtao Xie 1Van Gogh Airplane 100 Celebrities in only 4.3 s 
+
+…
+
+…
+
+(a) Single -Concept Erasure (b) Multi -Concept Erasure 
+
+Non -Target 
+
+> Pretrained
+> Weight
+> Matrix
+
+Previous Method 
+
+Ours (OCE) 
+
+> 𝑊 ∆
+> 𝑊 𝑃
+> Pretrained
+> Weight
+> Matrix
+
+(c) OCE vs Baselines 
+
+Figure 1. Our proposed method, OCE, achieves strong performance in both single-concept and multi-concept erasure. (a) OCE effectively removes target concepts in object and artistic style erasure while preserving non-target concepts. (b) OCE supports efficient large-scale multi-concept erasure of up to 100 concepts at once, requiring only 4.3 s. (c) OCE reformulates previous additive editing as multiplicative orthogonal editing, introducing a new editing-based concept erasure paradigm. 
+
+## Abstract 
+
+Concept erasure has emerged as a promising ap-proach to mitigate undesired or unsafe content in diffusion models, yet existing methods still face significant limitations. While training-based methods are effective, their high computational cost limits scalability. Editing-based methods are more efficient and deployment-friendly, yet they struggle to simultaneously achieve precise con-cept erasure and preserve overall generative ca-pacity. We identify this core limitation of the editing-based methods as reliance on additive pa-rameter updates. Our empirical analysis reveals that concept semantics primarily depend on neu-ron direction rather than neuron magnitude , while overall generative capacity relies on the angular geometry of neurons. As additive updates inher-ently entangle direction, magnitude, and angular geometry, they inevitably introduce unintended interference between concept erasure and over-all generation performance. To address this, we propose Orthogonal Concept Erasure (OCE) ,which reformulates editing-based erasure as mul-
+
+> 1
+
+University of Science and Technology of China 2Ant Group. Correspondence to: Lingyun Yu <yuly@ustc.edu.cn >.
+
+Preprint. May 29, 2026. 
+
+tiplicative parameter updates from a geometric perspective. Specifically, OCE applies layer-wise orthogonal transformations derived from a closed-form solution to the parameters, enabling precise concept erasure while preserving the neuron mag-nitude and angular geometry. Furthermore, to ad-dress conflicting constraints in multi-concept era-sure, OCE introduces a subspace-level objective with structured subspace manipulation, yielding a more effective and scalable erasure. Extensive experiments on single- and multi-concept erasure demonstrate that OCE outperforms existing meth-ods in concept erasure and non-target preserva-tion, erasing up to 100 concepts in 4.3 s. Code: 
+
+https://github.com/HansSunY/OCE .
+
+## 1. Introduction 
+
+Text-to-image (T2I) diffusion models (Ho et al., 2020; Song et al., 2020a;b; Rombach et al., 2022; Ho & Salimans, 2022; Nichol et al., 2021; Ramesh et al., 2022) have achieved re-markable performance in synthesizing high-fidelity and di-verse images from text prompts. However, their impressive generative capacity can lead to the generation of undesirable concepts, including copyrighted content (Jiang et al., 2023), offensive or sensitive visual attributes (Schramowski et al., 2023; Zhang et al., 2024c), and identity-related information 1
+
+> arXiv:2605.28902v1 [cs.AI] 27 May 2026 Orthogonal Concept Erasure for Diffusion Models
+
+(Carlini et al., 2023; Mirsky & Lee, 2021), raising concerns about safety, ethics, and privacy. Consequently, concept erasure has emerged as a critical research direction. The task of concept erasure involves precisely removing the specific concepts from the pretrained model while preserv-ing the prior concepts. Existing concept erasure techniques can be broadly categorized into inference-time intervention, training-based and editing-based methods. Inference-time intervention methods (Schramowski et al., 2023; Yoon et al., 2024; Wang et al., 2025) adjust sampling trajectories with-out modifying model parameters, but they are vulnerable to bypassing. Training-based methods (Kumari et al., 2023; Gandikota et al., 2023; Lyu et al., 2024; Lu et al., 2024) achieve concept erasure by fine-tuning a subset of model parameters with carefully designed objectives to remove target concepts. While effective, these approaches typically require multiple rounds of optimization, leading to substan-tial computational time and overhead, which significantly limits their practicality in real-world scenarios. By contrast, editing-based methods (Gandikota et al., 2024; Gong et al., 2024; Li et al., 2025c) operate directly on model parameters, such as the projection weights in cross-attention layers, us-ing closed-form solutions. This makes editing-based meth-ods more efficient and scalable to real-world scenarios like multi-concept erasure. However, despite their efficiency, existing editing-based methods still suffer from several limi-tations. In particular, they often exhibit insufficient erasure precision, struggle to reliably preserve prior concepts, and often rely on relatively complex erasure pipelines, which makes them less concise and principled than desired. In this work, we argue that the core limitation of existing editing-based methods (Gandikota et al., 2024; Gong et al., 2024; Li et al., 2025c) lies in how concept erasure is for-mulated. Most existing methods define concept erasure as additive updates of model parameters W + ∆ , as shown in Fig. 1(c). While simple and flexible, such additive up-dates simultaneously perturb neurons in both magnitude and direction. More critically, even small additive changes can arbitrarily alter the angular geometry of neurons, in-cluding inter-neuron angles and correlations. Inspired by previous studies on hyperspherical energy (Liu et al., 2017; 2018; Chen et al., 2020; Qiu et al., 2023), we design a toy experiment, which reveals that (1) neuron direction is cru-cial for encoding concept semantics, whereas magnitude has little effect, and (2) preserving the angular geometry 
+
+is essential for maintaining the model’s overall generative capabilities. Consequently, additive updates inevitably en-tangle direction, magnitude, and angular geometry, resulting in unstable erasure and poor preservation of prior concepts. 
+
+This motivates a geometric perspective on concept era-sure: rather than performing unconstrained additive corrections, effective erasure should directly manipu-late neuron directions, which encode concept semantics, while preserving their magnitudes and intrinsic angular geometry .From this geometric perspective, we propose Orthogonal 
+
+Concept Erasure (OCE) for diffusion model. Instead of additive updates, OCE applies a layer-wise orthogonal trans-formation derived from a closed-form solution to model parameters, precisely rotating neuron directions for concept erasure while preserving the neuron magnitude and angular geometry. Furthermore, to address conflicting constraints in multi-concept erasure, we extend the vector-wise erasure ob-jective to a subspace-level projection objective. Specifically, we represent the target and anchor concepts as their respec-tive subspaces and then minimize the components of the target subspace that lie outside the orthogonal complement of the anchor subspace, which provides a more structured and gentle form of concept erasure. By explicitly controlling neuron directions through a multiplicative and structured up-date, OCE achieves precise erasure of target concepts while preserving the generation ability of non-target concepts. It provides a principled, and efficient closed-form solution for both single- and multi-concept erasure scenarios. The main contributions of this work are summarized as follows: • We propose OCE, a geometry-driven, editing-based method that performs concept erasure via layer-wise orthogonal transformations, enabling precise removal of target concepts while preserving the intrinsic angular geometry of pretrained models. • We introduce a structured subspace-level projection objective with closed-form solutions. By extending vector-wise erasure to a subspace projection formula-tion, OCE provides a principled, scalable, and efficient solution for both single- and multi-concept erasure, achieving improved erasure precision and prior con-cept preservation. • Extensive experiments across diverse erasure tasks, demonstrating that OCE consistently outperforms exist-ing training-based and editing-based methods in terms of erasure effectiveness and overall generation quality. 
+
+## 2. Related Work 
+
+2.1. Concept Erasure in Diffusion Models 
+
+Text-to-image diffusion models can generate copyrighted, offensive and privacy content, raising serious concerns for real-world deployment. To better regulate the content gen-erated by these models, early approaches focused on re-training with curated datasets (Rombach, 2022) or introduc-ing output filters (Rando et al., 2022) to block undesirable generations. However, retraining is computationally expen-sive, while output filters can be easily bypassed. This has 2Orthogonal Concept Erasure for Diffusion Models 
+
+led to increasing interest in concept erasure, which selec-tively removes target concepts from models, categorized into three paradigms. Inference-time intervention methods (Schramowski et al., 2023; Yoon et al., 2024; Jain et al., 2024; Wang et al., 2025) modify sampling trajectories or guidance signals during generation to suppress undesired concepts. Training-based methods (Kumari et al., 2023; Gandikota et al., 2023; Zhang et al., 2024a; Lyu et al., 2024; Lu et al., 2024; Zhang et al., 2024b; Srivatsan et al., 2025; Nguyen et al., 2025; Sun et al., 2025) fine-tune model pa-rameters with specific erasure objectives and regularization terms to preserve general generation quality. Editing-based method (Orgad et al., 2023; Gandikota et al., 2024; Gong et al., 2024; Li et al., 2025c; Lin et al., 2025) directly mod-ify model parameters with closed-form updates for more efficient concept removal. In contrast to existing additive update paradigms in editing-based approaches, our method reformulates the concept erasure paradigm as an orthogonal transformation from a geometric perspective, enabling more structured and effective concept erasure. 
+
+2.2. Orthogonalization in Parameter Space 
+
+Orthogonalization has been widely explored in parameter space as a principled way to fine-tuning models and reduc-ing interference across objectives. In continual and multi-task learning, orthogonal gradient methods (Bennani et al., 2020; Farajtabar et al., 2020) project gradients onto the or-thogonal complement of past task subspaces or decompose updates to mitigate negative transfer between tasks. More recently, orthogonal transformations have been introduced for parameter-efficient fine-tuning. Orthogonal Fine-Tuning (OFT) (Qiu et al., 2023) and its variants (Liu et al., 2023; Ma et al., 2024; Qiu et al., 2025) apply structured orthog-onal transformations to weight matrices, preserving the in-trinsic pretrained structure. Despite their success, existing parameter-space orthogonalization methods primarily focus on stabilizing training dynamics or text-to-image customiza-tion. In contrast, our work leverages orthogonal transform as a geometric tool for closed-form concept erasure, en-abling targeted concept suppression through a structured transformation in parameter space, while maintaining over-all generation capacity of the model. 
+
+## 3. Geometric Analysis of Concept Erasure 
+
+In this section, we analyze concept erasure from a geometric perspective and argue that its effectiveness and stability are fundamentally governed by the angular structure of the neu-ron. Our analysis is centered around two key claims: (C1) 
+
+Concept semantics in diffusion models are more strongly associated with neuron directions than with magnitudes. 
+
+(C2) Preserving inter-neuron angular geometry is critical for maintaining the overall generation quality. Case A Case B Case C          
+
+> a photo of  cat
+> Direction Magnitude Inter -geometry Direction Magnitude Inter -geometry Direction Magnitude Inter -geometry
+> Figure 2. A toy experiment to demonstrate the importance of the angular information for concept expression in diffusion models.
+
+3.1. Concept Expression in Neuron Angular Geometry 
+
+We analyze controlled geometric transformations of the cross-attention projection matrices in diffusion models to disentangle the roles of magnitude, direction, and inter-neuron geometry in concept expression. Specifically, we focus on the key and value matrices, denoted as W , which play a central role in mapping text embeddings to visual semantics. We design three controlled modification of W :
+
+Case A: Magnitude-only scaling. We scale the weights by a scalar factor α as 
+
+˜W = αW, α ∈ (0 , 1) , (1) which changes neuron magnitudes only. 
+
+Case B: Neuron-wise orthogonal rotation. We apply inde-pendent orthogonal transformations to individual neurons: 
+
+˜wi = Qiwi, Q⊤ 
+
+> i
+
+Qi = I, (2) where wi denotes the i-th column of W and each Qi is a neuron-wise orthogonal matrix. This preserves neuron mag-nitudes but breaks the directions and inter-neuron angular geometry. 
+
+Case C: Layer-wise orthogonal rotation. We apply a shared orthogonal transformation Q to the entire layer: 
+
+˜W = QW, Q⊤Q = I, (3) which changes neuron directions only. We evaluate the effects of these three modifications on the generation of the concept “cat” as shown in Fig. 2. For Case A, scaling the weights by α = 0 .5 has negligible effect on the generation of concept “cat”. By contrast, applying a small layer-wise orthogonal rotation (Case C) results in a clear semantic shift of the “cat” concept in the generated images, confirming that neuron directions are the primary carriers of concept semantics ( C1 ). In addition, applying independent neuron-wise rotations (Case B) substantially degrades overall image quality, highlighting that maintain-ing the relative angular geometry among neurons is crucial 3Orthogonal Concept Erasure for Diffusion Models 
+
+for generation capability ( C2 ). These observations are also consistent with prior studies on hyperspherical energy (Liu et al., 2017; 2018; Chen et al., 2020; Qiu et al., 2023). 
+
+3.2. Additive vs. Orthogonal Updates 
+
+Based on the above discussion, we analyze why layer-wise orthogonal update is a principled choice for concept erasure. 
+
+Additive updates. An additive update takes the form 
+
+W ∗ = W + ∆ , w∗ 
+
+> i
+
+= wi + δi, (4) for each neuron wi. These updates primarily rotate neuron directions cosθ ∗
+
+> i
+
+̸ = cos θi, but also alter neuron magnitudes 
+
+∥w∗ 
+
+> i
+
+∦ = ∥wi∥ and inter-neuron angles cos ϕ∗
+
+> ij
+
+̸ = cos ϕij .These combined effects explain why additive updates often fail to precisely erase target concepts and why they can dis-rupt non-target concepts by disturbing the angular geometry that encodes semantic structure. As a result, additive up-dates often fail to precisely remove target concepts, since magnitude changes contribute little to semantic erasure, and they also degrade the preservation of non-target concepts due to changes in angular geometry. 
+
+Layer-wise orthogonal updates. A layer-wise orthogonal update takes the form 
+
+W ∗ = QW, Q⊤Q = I, w∗ 
+
+> i
+
+= Qw i.
+
+Such a multiplicative update rotates all neurons in the layer by a shared orthogonal transformation. As a result, neuron magnitudes are preserved, ∥w∗ 
+
+> i
+
+∥ = ∥wi∥, and pairwise inter-neuron angles remain unchanged, cos ϕ∗ 
+
+> ij
+
+= cos ϕij . The update modifies directions in a structured manner, without introducing changes to magnitude or angular geometry. In summary, additive updates entangle changes in direction, magnitude, and angular geometry, making precise erasure and preservation of non-target concepts difficult. In contrast, layer-wise orthogonal updates modify neuron directions while strictly preserving magnitudes and angular geometry, which better matches the geometric structure underlying semantic representations. This makes orthogonal transfor-mations a more principled choice for concept erasure. 
+
+## 4. Problem Formulation 
+
+In text-to-image diffusion models, semantic concepts are encoded through text embeddings c processed by a pre-trained CLIP text encoder. During image generation, these embeddings are injected into the denoising U-Net with cross-attention layers, where the key and value projection matri-ces, denoted as Wk and Wv , play a central role in shaping semantic alignment. For simplicity, we denote a generic projection matrix as W .
+
+4.1. Additive Closed-Form Concept Erasure 
+
+Editing-based concept erasure aims to modify the projection matrix W such that target concepts are suppressed while non-target concepts remain unaffected. Following prior ap-proaches, we consider three sets of concept embeddings: an erasure set E = {c(i)1 }NE 
+
+> i=1
+
+containing target concepts to be removed, a retain set R = {c(j)0 }NR 
+
+> j=1
+
+containing non-target concepts to be preserved, and an anchor set A = {c(i) 
+
+> ∗
+
+}NE
+
+> i=1
+
+,where each target concept c(i)1 is mapped onto an anchor con-cept c(i) 
+
+> ∗
+
+that serves as a semantically similar surrogate. We stack the embeddings of the erasure, anchor and retain sets into matrices C1, C∗ and C0 respectively. Additive erasure methods, with UCE as a representative example, optimize a parameter perturbation ∆ on W through the following least-squares formulation: 
+
+min  
+
+> ∆
+
+∥(W + ∆) C1 − W C ∗∥2 
+
+> F
+
++ ∥(W + ∆) C0 − W C 0∥2 
+
+> F
+
+.
+
+(5) The first term enforces effective erasure by mapping each tar-get concept to its anchor, while the second term is designed to preserve non-target concept. This objective provides a closed-form solution, enabling efficient parameter updates without iterative optimization. Despite its simplicity and efficiency, as shown in Sec. 3, additive erasure suffers from intrinsic geometric limitations, which constrain both erasure precision and the preservation of non-target concepts. 
+
+4.2. From Additive to Orthogonal Erasure 
+
+Motivated by the geometric analysis in Sec. 3, we reformu-late concept erasure from additive parameter perturbations to multiplicative orthogonal transformations. We seek an orthogonal matrix P that modifies the projection space in a structured manner. This leads to the following simple orthogonal erasure objective: 
+
+min   
+
+> P⊤P=I
+
+∥P W C 1 − W C ∗∥2 
+
+> F
+
++ ∥P W C 0 − W C 0∥2 
+
+> F
+
+. (6) Compared to additive formulations, this orthogonal per-spective provides a geometrically principled foundation for concept erasure, aligning with the observations in Sec. 3 that concept semantics are direction-sensitive and that preserv-ing angular geometry is critical for maintaining generation quality. The solution and further refinement of this objective are presented in the method section. 
+
+## 5. Orthogonal Concept Erasure (OCE) 
+
+5.1. Closed-Form Solution for Orthogonal Update Solving the Vector-wise Objective. After defining the initial vector-wise objective for orthogonal erasure in Eq. 6, we first discuss how to solve this problem in closed form. 4Orthogonal Concept Erasure for Diffusion Models 
+
+First, we stack the two terms in Eq. 6 into block matrices: 
+
+A = [ W C 1, W C 0], B = [ W C ∗, W C 0]. (7) The objective is equivalently written as 
+
+min   
+
+> P⊤P=I
+
+∥P A − B∥2 
+
+> F
+
+. (8) This is equivalent to the following trace maximization: 
+
+max   
+
+> P⊤P=I
+
+tr( P M ), M = BA ⊤. (9) Detailed derivation is shown in Appendix. A.1. The closed-form solution follows from the classical Procrustes theo-rem (Sch ¨onemann, 1966). Specifically, we compute the cross-covariance matrix M and perform its Singular Value Decomposition (SVD): 
+
+M = U ΣV ⊤, (10) from which the optimal orthogonal transformation is 
+
+P = U V ⊤. (11) 
+
+Construction of M . When calculating M , we expand it in terms of the original blocks gives 
+
+M = ( W C ∗)( W C 1)⊤ + ( W C 0)( W C 0)⊤ (12) 
+
+= W (C∗C⊤ 
+
+> 1
+
++ C0C⊤ 
+
+> 0
+
+)W ⊤. (13) For the term involving C0C⊤ 
+
+> 0
+
+, we further decompose the retain set into two subsets: a set of generic concepts Rg that should be universally preserved, and a set of local neighbor-ing concepts Rn that are specific to the current erasure task. Correspondingly, we write C0 = [ Cg , C n ], where Cg and 
+
+Cn stack the embeddings from Rg and Rn, respectively. The cross-covariance term then becomes 
+
+W (C0C⊤ 
+
+> 0
+
+)W ⊤ = W (Cg C⊤ 
+
+> g
+
++ CnC⊤ 
+
+> n
+
+)W ⊤. (14) The generic preservation term Cg C⊤ 
+
+> g
+
+is independent of the target concept and can therefore be precomputed once and reused across different erasure tasks. Concretely, we com-pute all the token embeddings c over the COCO-30k dataset and precompute 
+
+K0 = Cg C⊤ 
+
+> g
+
+= Ec[cc ⊤], (15) which serves as a global preservation prior shared by all erasure instances. Finally, M can be written as 
+
+M = W (C∗C⊤ 
+
+> 1
+
++ K0 + CnC⊤ 
+
+> n
+
+)W ⊤. (16) This objective achieves strict vector-wise alignment between target embeddings and anchors for erasure and preservation of the generation capacity. It is effective for single-concept erasure. However, in multi-concept erasure scenario, si-multaneously enforcing exact alignment for multiple targets introduces conflicting constraints, which can interfere with each other and degrade erasure performance. This motivates a more global, subspace-level erasure objective. 
+
+5.2. Subspace-level Erasure Objective 
+
+Instead of enforcing vector-wise alignment between target and anchor embeddings, we further reformulate concept era-sure as a geometric subspace suppression problem, where erase directions are discouraged from lying in the orthogo-nal complement of the anchor subspace. This formulation better respects the intrinsic geometry of the latent space and enables a more structured erasure. 
+
+Target and Anchor Subspaces. We first define the target and anchor subspaces in the transformed feature space in-duced by W . Given sets of concept embeddings C1 and C∗,we first map each embedding through W and normalize the resulting vectors. Then, an orthonormal basis for each sub-space is obtained via Gram–Schmidt orthogonalization. For-mally, we denote G = orth( W C 1) and G∗ = orth( W C ∗)
+
+where orth( ·) returns an orthonormal basis spanning the col-umn space of its argument. The corresponding orthogonal projection matrices are given by 
+
+R = GG ⊤, R∗ = G∗G⊤∗ . (17) 
+
+Subspace Suppression. Instead of enforcing point-wise alignment between W C 1 and W C ∗, we consider a subspace-level suppression objective that discourages the transformed target subspace from collapsing into the orthogonal com-plement of the anchor subspace. Formally, we seek an orthogonal transformation P that pushes the target subspace away from directions orthogonal to the anchor space, while preserving the retain set C0 through vector-wise constraints: 
+
+min   
+
+> P⊤P=I
+
+−∥ P R − R∗,⊥∥2 
+
+> F
+
++ ∥P W C 0 − W C 0∥2 
+
+> F
+
+, (18) where R∗,⊥ = I − R∗ is the projector onto the orthogonal complement of the anchor subspace. This objective can then be equivalently rewritten as a trace maximization: 
+
+max   
+
+> P⊤P=I
+
+tr( P M total ), (19) where Mtotal combines contributions from target suppres-sion and local retain: 
+
+Mtotal = −R(I − R∗) + W (K0 + CnC⊤ 
+
+> n
+
+)W ⊤. (20) Detailed derivation is shown in Appendix. A.2. Here, we still write C0 = [ Cg , C n] as Eq. 14 and incorporate the global preservation prior K0 to enforce global retention. Eq. 18 also corresponds to a classical orthogonal Procrustes problem. Following the same procedure as Eq. 10 and 11, we perform SVD on Mtotal and compute the closed-form solution as P = U V ⊤.5Orthogonal Concept Erasure for Diffusion Models 
+
+Table 1. Evaluation of Object Erasure on CIFAR-10. We report Acc e (lower indicates more successful erasure), Acc s (higher indicates better preservation of non-target concepts) and Ho (higher indicates better overall performance) across the first five categories. All values are expressed as percentages (%). The original model’s performance is included for reference.                                                                                                                                                                                                            
+
+> Concept Airplane Automobile Bird Cat Deer Average
+> Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑
+> SD v1.4 96.06 98.92 7.58 95.75 98.95 8.15 99.72 98.51 0.56 98.93 98.60 2.12 99.87 98.49 0.26 98.07 98.69 3.79 CA 96.24 98.55 7.24 94.41 98.47 10.58 99.55 98.53 0.90 98.94 98.63 2.10 99.45 98.47 1.09 97.72 98.53 4.46 ESD 7.38 85.48 88.91 30.29 91.02 78.95 13.17 86.17 86.50 11.77 91.45 89.81 18.14 73.81 77.63 16.15 85.59 84.71 FMN 96.76 98.32 6.27 95.08 96.86 9.36 99.46 98.13 1.07 94.89 97.97 9.71 98.95 94.13 2.08 97.03 97.08 5.77 UCE 40.32 98.79 74.41 4.73 99.02 97.11 10.71 98.35 93.60 2.35 98.02 97.83 11.88 98.39 92.97 14.00 98.51 91.83 MACE 9.06 95.39 93.11 6.97 95.18 94.09 9.88 97.45 93.64 2.22 98.85 98.31 13.47 97.71 91.78 8.32 96.92 94.23 RECE 15.01 98.76 91.36 36.13 99.04 77.66 7.95 98.01 94.94 15.76 98.51 90.82 9.62 98.27 94.16 16.89 98.52 90.16 SPEED 57.78 98.74 59.15 10.33 98.52 93.89 38.48 98.23 75.66 0.36 98.57 99.10 2.17 98.31 98.07 21.82 98.47 87.16
+> Ours 6.89 98.85 95.89 8.79 99.07 94.98 3.40 98.30 97.44 0.15 98.71 99.28 3.81 98.45 97.31 4.61 98.68 97.01
+
+Table 2. Evaluation of Artistic Style Erasure. We report CLIP Score (CS) for each style generation, where lower CS indicates better erasure. We also report FID and CS on MSCOCO-30k, where lower FID and higher CS indicate better preservation quality.                                                                                     
+
+> Method
+> Van Gogh Picasso Monet CS ↓MSCOCO CS ↓MSCOCO CS ↓MSCOCO FID ↓CS ↑FID ↓CS ↑FID ↓CS ↑
+> CA 25.01 8.11 26.26 26.33 7.40 26.28 24.20 7.02 26.25 ESD 20.10 13.60 26.29 21.10 12.20 25.82 19.73 13.51 25.87 FMN 22.36 13.85 26.06 21.24 14.63 26.00 25.23 14.25 26.09 UCE 21.22 14.53 26.45 22.84 7.65 26.24 23.17 14.44 25.77 MACE 23.49 12.28 26.21 23.77 12.08 26.24 21.70 12.28 26.25 RECE 22.78 8.05 26.49 24.01 7.67 26.22 22.30 8.65 25.79 SPEED 21.68 7.49 26.20 23.24 7.52 26.31 21.91 7.51 26.27
+> Ours 21.08 7.15 26.52 20.92 8.57 26.46 21.35 7.30 26.32
+
+The proposed subspace-level formulation generalizes vector-wise erasure by lifting the objective from vector-wise align-ment to subspace energy suppression. This design mitigates interference among multiple erased concepts and enables a unified closed-form solution, balancing targeted erasure with global representation stability. Notably, we impose erasure at the subspace level while enforcing preservation in a vector-wise manner. This asym-metric design is intentional and principled. Compared with erasure, preservation requires finer-grained control. Vector-wise preservation ensures high-fidelity retention of indi-vidual non-target concepts and does not suffer from cross-concept interference. Using subspace-level constraints for preservation would be unnecessarily restrictive. Our abla-tion studies in Sec. 6.4 further confirm that this asymmetric formulation achieves a better balance between effective era-sure and faithful preservation. 
+
+## 6. Experiments 
+
+In this section, we evaluate OCE on three representative con-cept erasure settings: single concept erasure, multi-concept erasure and implicit concept erasure (Appendix. 6.3). We compare OCE with several commonly adopted baselines, including CA (Kumari et al., 2023), ESD (Gandikota et al., 2023), FMN (Zhang et al., 2024a), UCE (Gandikota et al., 2024), MACE (Lu et al., 2024), RECE (Gong et al., 2024), SPEED (Li et al., 2025c). Our evaluation measures both 
+
+efficacy and specificity : efficacy measures the target concept erasure, while specificity measures the preservation of unre-lated concepts. All experiments are conducted on 1SD v1.4. More implementation details can be found in Appendix. C. 
+
+6.1. Single Concept Erasure Evaluation Setup. We evaluate single concept erasure on object erasure and artistic style erasure. For object erasure , we edit ten models with each model targeted to erase one object class of the CIFAR-10 dataset. To evaluate efficiency , we generate 200 images using prompt “a photo of the {erased class }” with each model. All the images are classified using CLIP, where lower classification accuracy Acc e indicates more effective erasure. To assess 
+
+specificity , we generate 200 images for each of the nine re-maining classes using the prompt “a photo of the {unrelated class }” with each model, where higher classification accu-racy Acc s indicates better preservation of unrelated con-cepts. The harmonic mean Ho = 2(1 −Acc e)−1+(Acc s)−1 is adopted to assess the overall performance of erasure. For artistic style erasure , we use CLIP Score (CS) and Fr ´echet Inception Distance (FID) as metrics. For efficiency ,we generate 100 images using prompt “a painting in the style of {style }” for each style. We compute the average CS between the prompts and generated images, where lower CS indicates more effective erasure. For specificity , we generate images with the first 10K prompts from the MSCOCO-30k dataset, then compute CLIP scores and Fr’echet Inception Distance (FID) against the original images. Higher CLIP scores and lower FID indicate better preservation. 
+
+Analysis and discussion. Tab. 1 compares different meth-ods on CIFAR-10. Our method achieves the best average 
+
+> 1
+
+https://github.com/CompVis/ stable-diffusion 
+
+6Orthogonal Concept Erasure for Diffusion Models CA ESD FMN UCE MACE RECE SPEED Ours        
+
+> Original: Prompt:
+> (a) “A portrait of Adriana Lima ”
+> (b) “An image capturing Aretha Franklin at a public event” (a) (b)
+> 10
+> celeb
+> 50
+> celeb
+> 100
+> celeb
+
+Figure 3. Quantitative comparison of the Multi-Concept Erasure in erasing celebrities. Red boxes indicate the erased target celebrity, while green boxes denote the preserved non-target celebrity. Our method achieves precise erasure of up to 100 concepts while effectively preserving non-target concepts. Notably, our method exhibits stable performance across varying erasure scales. 
+
+Table 3. Evaluation of Multi-Concept Erasure for celebrity with 10, 50, 100 target concepts. We report Acc e, Acc r , Ho and Time (s). Our method consistently achieves strong erasure performance across different scales, effectively erasing up to 100 concepts while preserving non-target concepts with minimal degradation. It also demonstrates competitive efficiency, erasing 100 concepts in only 4.3 s on a single A100 GPU.                                                                                                                                                                                                            
+
+> Erase 10 Celebrities MSCOCO Erase 50 Celebrities MSCOCO Erase 100 Celebrities MSCOCO Method Acc e↓Acc s↑Ho↑Time ↓CS ↑FID ↓Acc e↓Acc s↑Ho↑Time ↓CS ↑FID ↓Acc e↓Acc s↑Ho↑Time ↓CS ↑FID ↓
+> SD v1.4 94.43 97.51 10.54 –26.56 –97.11 97.51 5.61 –26.56 –99.17 97.51 1.65 –26.56 –CA 25.52 87.29 80.38 1200 26.30 11.28 1.87 32.25 48.55 2640 25.66 16.97 0.80 11.13 20.01 5400 25.59 18.29 ESD 9.83 34.86 50.28 300 26.02 16.26 26.21 34.46 46.98 960 25.90 16.54 18.84 24.16 37.24 1800 25.97 17.24 FMN 44.90 66.43 60.24 12.0 26.36 11.84 35.82 56.10 59.87 28.0 26.37 11.66 51.48 49.20 48.86 53.0 26.40 11.43 UCE 2.45 90.89 94.10 1.5 25.83 17.37 38.90 88.31 72.23 1.8 26.19 19.86 58.67 76.79 53.74 2.1 25.23 28.07 MACE 1.86 96.72 97.42 200 26.31 13.87 3.82 93.23 94.68 840 25.44 17.68 8.02 91.60 91.79 1800 24.81 20.92 RECE 0.30 80.04 88.91 6.0 19.70 90.38 0.00 36.19 53.15 12.0 13.80 218.96 0.00 21.78 35.77 25.0 12.93 140.08 SPEED 3.22 96.52 96.65 3.8 26.55 10.96 4.00 95.07 95.53 4.2 26.30 16.21 5.21 92.67 93.72 5.0 26.29 18.40 Ours 0.61 96.92 98.14 3.2 26.53 11.20 2.66 95.91 96.62 3.6 26.43 16.03 3.44 94.42 95.48 4.3 26.33 18.33
+
+performance across the five concept erasure tasks. Com-pared to the state-of-the-art method, our method reduces the average Acc e from 8.32 to 4.61, indicating substantially stronger erasure effectiveness. Meanwhile, it preserves 
+
+Acc s almost perfectly, with only a 0.01% drop compared to the original model. As a result, our method achieves the highest average harmonic score Ho. The results for the remaining five classes are provided in Appendix. D.1. Tab. 2 reports the results on artistic style erasure. Although ESD exhibits relatively strong erasure capability (lower CS), it significantly degrades the model’s generation quality. RECE and SPEED preserve generation ability well; how-ever, their erasure performance becomes unreliable in some cases. In contrast, our method consistently achieves effec-tive erasure and preservation of overall generation quality. 
+
+6.2. Multi-Concept Erasure Evaluation Setup Multi-concept erasure poses a more challenging setting, as mass concepts are erased simultane-ously. We follow the experiment setup in SPEED (Li et al., 2025c) for large-scale celebrity erasure, conducting exper-iments that erase 10, 50 and 100 celebrities, respectively. In addtion, we collect a separate set of 100 celebrities as non-target concepts to evaluate preservation behavior. Dur-ing evaluation, we employ five prompt templates for each celebrity. For both target and non-target sets, we generate 500 images in total by adjusting the number of images per celebrity accordingly. All generated images are then eval-uated using the GIPHY Celebrity Detector (GCD) (Hasty et al., 2019), where we report the top-1 detection accu-racy. Acc e measures the detection accuracy on erased target concepts and Acc s on non-target concepts. Meanwhile, to assess the overall performance of erasure, we compute the 
+
+Ho and report the CS and FID results on MSCOCO. 
+
+Analysis and discussion. Tab. 3 further demonstrates the superiority of our method in multi-concept erasure. Com-pared to the state-of-the-art methods MACE and SPEED, our method achieves stronger erasure effectiveness while better preserving non-target concepts. In contrast, other methods tend to suffer from severe generation collapse as the number of erasure concepts increases. Notably, our method also offers clear efficiency advantages. While both SPEED and our approach are significantly faster than MACE, it is important to note that the reported runtime of SPEED does 7Orthogonal Concept Erasure for Diffusion Models Original Mickey Original Van Gogh 
+
+Elon Musk NSFW Original Original 
+
+(a) Object erasure on FLUX (b) Style erasure on FLUX 
+
+(c) Celebrity erasure on FLUX (d) Implicit concept erasure on FLUX 
+
+* *
+
+* Masks added by authors for publication  
+
+> Figure 4. Extension to DiT-based models. All experiments are conducted on FLUX.1 dev. (a) Object erasure results for the target concept “Mickey ”, together with generations of non-target concepts (“ Pikachu ” and “ Snoopy ”). (b) Artistic style erasure results for “ Van Gogh ”, together with non-target styles “ Monet ” and “ Picasso ”. (c) Celebrity erasure results for “ Elon Musk ”. (d) Implicit concept erasure results for NSFW content. Across all settings, our method achieves effective erasure while preserving non-target concepts, demonstrating strong transferability to DiT-based diffusion models.
+
+not include the additional three preprocessing required for its preservation sets. By contrast, our method requires no such preprocessing and can be applied in a single-step man-ner, making it substantially more practical for large-scale multi-concept erasure. We also present qualitative results in Fig. 3, which show that our method maintains stable and effective erasure performance as the number of erased con-cepts increases, with minimal impact on non-target concepts compared to existing methods. 
+
+6.3. Implicit Concept Erasure Evaluation setup. We evaluate our method on implicit concept erasure in scenarios where the target concept (e.g., nudity) is not explicitly appear in the prompt. Follow the set-tings in SPEED (Li et al., 2025c), we generate images with the Inappropriate Image Prompt (I2P) dataset (Schramowski et al., 2023) for evaluation, which consists of a diverse set of implicitly inappropriate prompts covering violence and sexual content. To further examine adversarial robustness, we evaluate all methods on two popular adversarial attack benchmarks, including Ring-A-Bell (Tsai et al., 2023) and MMA-Diffusion (Yang et al., 2024) . We use Nudenet with a threshold of 0.6 to detect sexual content and report the Attack Success Rate (ASR). We further generate images with the first 1K prompts from MSCOCO-30k, and report CS and FID to measure general preservation. 
+
+Analysis and discussion. We introduce additional base-line methods, including CPE (Lee et al., 2025), AdvUnlearn (Zhang et al., 2024b), RACE (Kim et al., 2024), Receler (Huang et al., 2024), STEREO (Srivatsan et al., 2025) and EraseFlow (Kusumba et al., 2026), which defend against adversarial attacks with adversarial training objectives. Fol-lowing SPEED (Li et al., 2025c), we also adapt our method with adversarial editing (denoted as Ours w/ AT) following the setting in RECE (Gong et al., 2024) for a fair compar-ison. As shown in Tab. 4, although some training-based methods (e.g., CPE) achieve strong robustness in concept erasure, they substantially degrade the generation quality of non-target concepts on COCO and incur prohibitive compu-tational costs. In contrast, editing-based methods are gen-erally more efficient, but often fail to provide sufficiently reliable erasure under such adversarial settings. Compared to these methods, our method can be seamlessly integrated with adversarial editing strategies, enabling robust concept erasure while effectively preserving the generation quality of unrelated concepts. 
+
+6.4. Further Analysis Extension to DiT-based Models. To evaluate the transfer-ability of our method, we further conduct experiments on the DiT-based model 2FLUX.1 dev, covering object erasure, artistic style erasure, celebrity erasure, and implicit concept erasure. Unlike U-Net-based diffusion models, DiT-based architectures do not contain explicit cross-attention layers. 
+
+> 2https://github.com/black-forest-labs/ flux
+
+8Orthogonal Concept Erasure for Diffusion Models 
+
+Table 4. Comparison under implicit concept erasure and adversarial attacks. Lower is better for I2P, MMA, Ring-A-Bell, and FID; higher is better for CS.                                                                                 
+
+> Method I2P ↓MMA ↓Ring-A-Bell ↓MSCOCO CS ↑FID ↓
+> SD v1.4 0.52 0.63 0.98 26.32 -MACE 0.21 0.04 0.05 24.06 52.78 CPE 0.07 0.01 0.00 26.32 48.23 AdvUnlearn 0.04 0.00 0.00 24.05 57.22 UCE 0.24 0.38 0.39 26.24 38.60 RECE 0.14 0.20 0.18 25.98 40.37 RACE 0.23 0.29 0.21 25.54 42.73 Receler 0.13 0.07 0.01 25.93 40.29 SPEED 0.20 0.24 0.20 26.29 37.82 SPEED w/ AT 0.10 0.01 0.00 26.03 39.51 STEREO 0.01 0.03 0.12 25.33 47.10 EraseFlow 0.04 0.02 0.10 25.11 42.33
+> Ours w/o AT 0.11 0.12 0.05 26.33 38.31
+> Ours w/ AT 0.05 0.01 0.00 26.10 39.73
+
+Therefore, following 3UCE, we choose to edit specific em-bedding layers in MMDiT. As shown in Fig. 4, our method consistently achieves strong erasure performance on FLUX while effectively preserving non-target concepts, demonstrating its effectiveness across different diffusion architectures. Additional quantitative results are provided in the Appendix. D.2. 
+
+Ablation on Objective Designs. We conduct an ablation study to analyze the effect of different objective formula-tions under the multi-concept erasure setting. Specifically, we compare three variants: (1) vector-wise erasure with vector-wise preservation, (2) subspace-level erasure with subspace-level preservation, and (3) subspace-level erasure with vector-wise preservation (OCE). The results in Tab. 5 show that our asymmetric design achieves the best over-all erasure performance. Specifically, subspace-level era-sure mitigates interference among multiple erased concepts, while vector-wise preservation provides finer-grained con-trol for preservation of non-target concepts. These results further validate the effectiveness of our asymmetric design. 
+
+Ablation on global preservation prior K0. We study the effect of the size of the generic concept set used to construct 
+
+K0. Specifically, we evaluate reduced settings using 1/3 and 2/3 of the original COCO-30K tokens, as well as a variant without K0 in the multi-concept erasure setting. In the latter case, we replace the original preservation term ∥P W C 0 −
+
+W C 0∥2 
+
+> F
+
+with ∥P W C n − W C n∥2 
+
+> F
+
++ ∥P W − W ∥2 
+
+> F
+
+, which changes the closed-form solution’s preservation component to W (I + CnC⊤ 
+
+> n
+
+)W ⊤. As shown in Tab. 6, increasing the number of generic concepts consistently improves the 
+
+> 3
+
+https://github.com/rohitgandikota/ unified-concept-editing 
+
+Table 5. Ablation study on different objective formulations under the multi-concept erasure setting. E and P denote the erasure and preservation objective, respectively.                                          
+
+> Ablation Subspace Erase 100 Celebrities MSCOCO
+> EPAcc e↓Acc s↑Ho↑CS ↑FID ↓
+> 1××7.59 91.37 91.70 25.83 20.79 2✓✓4.54 93.01 94.22 26.17 18.10
+> Ours ✓×3.44 94.42 95.48 26.33 18.33 SD v1.4 ––99.17 97.51 1.65 26.56 –
+
+Table 6. Ablation study on the effect of the global preservation prior under the multi-concept erasure setting.                                      
+
+> |Cg|ratio Erase 100 Celebrities MSCOCO Acc e↓Acc s↑Ho↑CS ↑FID ↓
+> None 6.72 94.32 93.80 26.14 22.76 1/3 4.47 93.44 94.47 26.31 19.31 2/3 3.85 93.63 94.87 26.35 18.60
+> Full 3.44 94.42 95.48 26.33 18.33 SD v1.4 99.17 97.51 1.65 26.56 –
+
+trade-off between erasure and preservation performance, demonstrating the effectiveness of the global preservation prior. The computation of K0 is efficient ( 3s on A100 GPU) and performed offline. 
+
+## 7. Limitations. 
+
+Although OCE achieves effective erasure, it still has several limitations. First, the SVD-based subspace erasure may in-troduce additional computational overhead when scaling to larger models. Second, since OCE enforces subspace-level rather than strict vector-wise constraints, the generated out-puts may fall into intermediate semantic regions instead of precisely matching fine-grained anchor concepts, which can limit its applicability in editing tasks. Finally, further explo-ration is needed for erasure of more implicit concepts such as relational, compositional understanding, or watermarks. 
+
+## 8. Conclusion 
+
+In this work, we propose Orthogonal Concept Erasure (OCE) , a geometry-driven editing-based method for concept erasure in text-to-image diffusion models. By revisiting con-cept erasure from a geometric perspective, OCE formulates concept erasure as a multiplicative orthogonal transforma-tion applied to the parameters. This design enables direct control over neuron directions while preserving their intrin-sic angular geometry. Moreover, by extending vector-wise erasure to a structured subspace-level projection objective with a closed-form solution, OCE achieves precise and sta-ble erasure of target concepts while effectively retaining non-target concepts. This formulation naturally scales to multi-concept erasure and transfers to DiT-based models. 9Orthogonal Concept Erasure for Diffusion Models 
+
+## Acknowledgments 
+
+This work is supported by the National Nature Science Foundation of China (62425114, 62121002, U23B2028, 62472395). 
+
+## Impact Statement 
+
+Our work proposes Orthogonal Concept Erasure (OCE), a method for efficiently and precisely removing sensitive or undesired concepts from text-to-image diffusion models while preserving the overall generative capabilities. OCE supports both single- and multi-concept erasure with min-imal interference on unrelated concepts, providing a con-trollable mechanism to improve the safety and reliability of generative AI models. By reducing the risk of generating harmful, offensive, or privacy-violating content, OCE pro-motes safer AI deployment in content creation, education, and public platforms. This approach offers a practical and scalable solution for enhancing model controllability and aligning generative outputs with ethical and social standards. 
+
+## References 
+
+Bennani, M. A., Doan, T., and Sugiyama, M. Generali-sation guarantees for continual learning with orthogonal gradient descent. arXiv preprint arXiv:2006.11942 , 2020. Biswas, S. D., Roy, A., and Roy, K. Cure: Concept un-learning via orthogonal representation editing in diffu-sion models. In The Thirty-ninth Annual Conference on Neural Information Processing Systems , 2025. Bui, A., Vu, T., Vuong, L., Le, T., Montague, P., Abraham, T., Kim, J., and Phung, D. Fantastic targets for concept erasure in diffusion models and where to find them. arXiv preprint arXiv:2501.18950 , 2025. Carlini, N., Hayes, J., Nasr, M., Jagielski, M., Sehwag, V., Tramer, F., Balle, B., Ippolito, D., and Wallace, E. Extracting training data from diffusion models. In 32nd USENIX security symposium (USENIX Security 23) , pp. 5253–5270, 2023. Chen, B., Liu, W., Yu, Z., Kautz, J., Shrivastava, A., Garg, A., and Anandkumar, A. Angular visual hardness. In 
+
+International conference on machine learning , pp. 1637– 1648. PMLR, 2020. Fan, C., Liu, J., Zhang, Y., Wong, E., Wei, D., and Liu, S. Salun: Empowering machine unlearning via gradient-based weight saliency in both image classification and generation. arXiv preprint arXiv:2310.12508 , 2023. Farajtabar, M., Azizan, N., Mott, A., and Li, A. Orthogonal gradient descent for continual learning. In International conference on artificial intelligence and statistics , pp. 3762–3773. PMLR, 2020. Gandikota, R., Materzynska, J., Fiotto-Kaufman, J., and Bau, D. Erasing concepts from diffusion models. In 
+
+Proceedings of the IEEE/CVF international conference on computer vision , pp. 2426–2436, 2023. Gandikota, R., Orgad, H., Belinkov, Y., Materzy ´nska, J., and Bau, D. Unified concept editing in diffusion models. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision , pp. 5111–5120, 2024. Gao, D., Lu, S., Zhou, W., Chu, J., Zhang, J., Jia, M., Zhang, B., Fan, Z., and Zhang, W. Eraseanything: Enabling concept erasure in rectified flow transformers. In Forty-second International Conference on Machine Learning ,2025. Gong, C., Chen, K., Wei, Z., Chen, J., and Jiang, Y.-G. Reliable and efficient concept erasure of text-to-image diffusion models. In European Conference on Computer Vision , pp. 73–88. Springer, 2024. Hasty, N., Kroosh, I., Voitekh, D., and Korduban, D. Gi-phy celebrity detector, 2019. URL https://github. com/Giphy/celeb-detection-oss .Ho, J. and Salimans, T. Classifier-free diffusion guidance. 
+
+arXiv preprint arXiv:2207.12598 , 2022. Ho, J., Jain, A., and Abbeel, P. Denoising diffusion proba-bilistic models. Advances in neural information process-ing systems , 33:6840–6851, 2020. Huang, C.-P., Chang, K.-P., Tsai, C.-T., Lai, Y.-H., Yang, F.-E., and Wang, Y.-C. F. Receler: Reliable concept erasing of text-to-image diffusion models via lightweight erasers. In European Conference on Computer Vision , pp. 360–376. Springer, 2024. Jain, A., Kobayashi, Y., Shibuya, T., Takida, Y., Memon, N., Togelius, J., and Mitsufuji, Y. Trasce: Trajectory steering for concept erasure. arXiv preprint arXiv:2412.07658 ,2024. Jiang, H. H., Brown, L., Cheng, J., Khan, M., Gupta, A., Workman, D., Hanna, A., Flowers, J., and Gebru, T. Ai art and its impact on artists. In Proceedings of the 2023 AAAI/ACM Conference on AI, Ethics, and Society , pp. 363–374, 2023. Kim, C., Min, K., and Yang, Y. Race: Robust adversarial concept erasure for secure text-to-image diffusion model. In European Conference on Computer Vision , pp. 461– 478. Springer, 2024. 10 Orthogonal Concept Erasure for Diffusion Models 
+
+Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., and Zhu, J.-Y. Ablating concepts in text-to-image dif-fusion models. In Proceedings of the IEEE/CVF Interna-tional Conference on Computer Vision , pp. 22691–22702, 2023. Kusumba, N. S. A., Patel, M., Min, K., Kim, C., Baral, C., and Yang, Y. Eraseflow: Learning concept erasure poli-cies via gflownet-driven alignment. Advances in Neural Information Processing Systems , 38:70876–70911, 2026. Lee, B. H., Lim, S., Lee, S., Kang, D. U., and Chun, S. Y. Concept pinpoint eraser for text-to-image diffu-sion models via residual attention gate. arXiv preprint arXiv:2506.22806 , 2025. Li, F., Xu, Q., Bao, S., Yang, Z., Cao, X., and Huang, Q. One image is worth a thousand words: A usability preservable text-image collaborative erasing framework. 
+
+arXiv preprint arXiv:2505.11131 , 2025a. Li, L., Lu, S., Ren, Y., and Kong, A. W.-K. Set you straight: Auto-steering denoising trajectories to sidestep unwanted concepts. In Proceedings of the 33rd ACM International Conference on Multimedia , pp. 9257–9266, 2025b. Li, O., Wang, Y., Hu, X., Jiang, H., Liang, T., Hao, Y., Ma, G., and Feng, F. Speed: Scalable, precise, and efficient concept erasure for diffusion models. arXiv preprint arXiv:2503.07392 , 2025c. Lin, Y., Huang, N., Huang, K., Liu, H., Yan, Y., Guo, J., Lee, T.-Y., and Li, X. Ice: Intercede concept erasure in text-to-image diffusion models. In Proceedings of the 33rd ACM International Conference on Multimedia , pp. 11328–11336, 2025. Liu, W., Zhang, Y.-M., Li, X., Yu, Z., Dai, B., Zhao, T., and Song, L. Deep hyperspherical learning. Advances in neural information processing systems , 30, 2017. Liu, W., Liu, Z., Yu, Z., Dai, B., Lin, R., Wang, Y., Rehg, J. M., and Song, L. Decoupled networks. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition , pp. 2771–2779, 2018. Liu, W., Qiu, Z., Feng, Y., Xiu, Y., Xue, Y., Yu, L., Feng, H., Liu, Z., Heo, J., Peng, S., et al. Parameter-efficient orthogonal finetuning via butterfly factorization. arXiv preprint arXiv:2311.06243 , 2023. Liu, Y., An, J., Zhang, W., Li, M., Wu, D., Gu, J., Lin, Z., and Wang, W. Realera: Semantic-level concept erasure via neighbor-concept mining. arXiv preprint arXiv:2410.09140 , 2024. Lu, S., Wang, Z., Li, L., Liu, Y., and Kong, A. W.-K. Mace: Mass concept erasure in diffusion models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pp. 6430–6440, 2024. Lyu, M., Yang, Y., Hong, H., Chen, H., Jin, X., He, Y., Xue, H., Han, J., and Ding, G. One-dimensional adapter to rule them all: Concepts diffusion models and erasing applications. In Proceedings of the IEEE/CVF Confer-ence on Computer Vision and Pattern Recognition , pp. 7559–7568, 2024. Ma, X., Chu, X., Yang, Z., Lin, Y., Gao, X., and Zhao, J. Parameter efficient quasi-orthogonal fine-tuning via givens rotation. arXiv preprint arXiv:2404.04316 , 2024. Mirsky, Y. and Lee, W. The creation and detection of deep-fakes: A survey. ACM computing surveys (CSUR) , 54(1): 1–41, 2021. Nguyen, K., Tran, A., and Pham, C. Suma: A subspace mapping approach for robust and effective concept era-sure in text-to-image diffusion models. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pp. 19587–19596, 2025. Nichol, A., Dhariwal, P., Ramesh, A., Shyam, P., Mishkin, P., McGrew, B., Sutskever, I., and Chen, M. Glide: Towards photorealistic image generation and editing with text-guided diffusion models. arXiv preprint arXiv:2112.10741 , 2021. Orgad, H., Kawar, B., and Belinkov, Y. Editing implicit assumptions in text-to-image diffusion models. In Pro-ceedings of the IEEE/CVF International Conference on Computer Vision , pp. 7053–7061, 2023. Qiu, Z., Liu, W., Feng, H., Xue, Y., Feng, Y., Liu, Z., Zhang, D., Weller, A., and Sch ¨olkopf, B. Controlling text-to-image diffusion by orthogonal finetuning. Advances in Neural Information Processing Systems , 36:79320– 79362, 2023. Qiu, Z., Liu, W., Weller, A., and Sch ¨olkopf, B. Or-thogonal finetuning made scalable. arXiv preprint arXiv:2506.19847 , 2025. Ramesh, A., Dhariwal, P., Nichol, A., Chu, C., and Chen, M. Hierarchical text-conditional image generation with clip latents. arXiv preprint arXiv:2204.06125 , 1(2):3, 2022. Rando, J., Paleka, D., Lindner, D., Heim, L., and Tram `er, F. Red-teaming the stable diffusion safety filter. arXiv preprint arXiv:2210.04610 , 2022. Rombach, R. Stable diffusion 2.0 release, November 2022. Rombach, R., Blattmann, A., Lorenz, D., Esser, P., and Ommer, B. High-resolution image synthesis with latent diffusion models. In Proceedings of the IEEE/CVF con-ference on computer vision and pattern recognition , pp. 10684–10695, 2022. 11 Orthogonal Concept Erasure for Diffusion Models 
+
+Sch ¨onemann, P. H. A generalized solution of the orthogonal procrustes problem. Psychometrika , 31(1):1–10, 1966. Schramowski, P., Brack, M., Deiseroth, B., and Kersting, K. Safe latent diffusion: Mitigating inappropriate degenera-tion in diffusion models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,pp. 22522–22531, 2023. Song, J., Meng, C., and Ermon, S. Denoising diffusion im-plicit models. arXiv preprint arXiv:2010.02502 , 2020a. Song, Y., Sohl-Dickstein, J., Kingma, D. P., Kumar, A., Er-mon, S., and Poole, B. Score-based generative modeling through stochastic differential equations. arXiv preprint arXiv:2011.13456 , 2020b. Srivatsan, K., Shamshad, F., Naseer, M., Patel, V. M., and Nandakumar, K. Stereo: A two-stage framework for adversarially robust concept erasing from text-to-image diffusion models. In Proceedings of the Computer Vision and Pattern Recognition Conference , pp. 23765–23774, 2025. Sun, Y., Zhang, Y., Liu, G., Xie, H., and Liu, S. Invisible watermarks, visible gains: Steering machine unlearning with bi-level watermarking design. In Proceedings of the IEEE/CVF International Conference on Computer Vision ,pp. 2417–2428, 2025. Tsai, Y.-L., Hsu, C.-Y., Xie, C., Lin, C.-H., Chen, J.-Y., Li, B., Chen, P.-Y., Yu, C.-M., and Huang, C.-Y. Ring-a-bell! how reliable are concept removal methods for diffusion models? arXiv preprint arXiv:2310.10012 , 2023. Wang, Y., Li, O., Mu, T., Hao, Y., Liu, K., Wang, X., and He, X. Precise, fast, and low-cost concept erasure in value space: Orthogonal complement matters. In 2025 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pp. 28759–28768. IEEE, 2025. Yang, Y., Gao, R., Wang, X., Ho, T.-Y., Xu, N., and Xu, Q. Mma-diffusion: Multimodal attack on diffusion models. In Proceedings of the IEEE/CVF Conference on Com-puter Vision and Pattern Recognition , pp. 7737–7746, 2024. Yoon, J., Yu, S., Patil, V., Yao, H., and Bansal, M. Safree: Training-free and adaptive guard for safe text-to-image and video generation. arXiv preprint arXiv:2410.12761 ,2024. Zhang, G., Wang, K., Xu, X., Wang, Z., and Shi, H. Forget-me-not: Learning to forget in text-to-image diffusion models. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pp. 1755–1764, 2024a. Zhang, Y., Chen, X., Jia, J., Zhang, Y., Fan, C., Liu, J., Hong, M., Ding, K., and Liu, S. Defensive unlearning with adversarial training for robust concept erasure in diffusion models. Advances in neural information pro-cessing systems , 37:36748–36776, 2024b. Zhang, Y., Jia, J., Chen, X., Chen, A., Zhang, Y., Liu, J., Ding, K., and Liu, S. To generate or not? safety-driven un-learned diffusion models are still easy to generate unsafe images... for now. In European Conference on Computer Vision , pp. 385–403. Springer, 2024c. Zhang, Y., Jin, E., Dong, Y., Wu, Y., Torr, P., Khakzar, A., Stegmaier, J., and Kawaguchi, K. Minimalist concept erasure in generative models. arXiv preprint arXiv:2507.13386 , 2025. 12 Orthogonal Concept Erasure for Diffusion Models 
+
+## A. Additional Theoretical Analysis 
+
+A.1. Derivation of the Vector-wise Orthogonal Erasure 
+
+We provide a detailed derivation of the closed-form solution to the vector-wise orthogonal erasure objective in Eq. (9). Starting from the objective 
+
+min   
+
+> P⊤P=I
+
+∥P A − B∥2 
+
+> F
+
+, (21) we expand the Frobenius norm as 
+
+∥P A − B∥2 
+
+> F
+
+= tr(( P A − B)⊤(P A − B)) (22) 
+
+= tr( A⊤A) + tr( B⊤B) − 2 tr( P ⊤BA ⊤), (23) where we use the orthogonality constraint P ⊤P = I.Since tr( A⊤A) and tr( B⊤B) are constant with respect to P , minimizing the original objective is equivalent to maximizing 
+
+max   
+
+> P⊤P=I
+
+tr( P ⊤M ), M = BA ⊤. (24) This is the classical orthogonal Procrustes problem, whose optimal solution is given by 
+
+P = U V ⊤, (25) where U ΣV ⊤ is the singular value decomposition of M .
+
+A.2. Derivation of Subspace-level Orthogonal Concept Erasure (OCE) 
+
+In this appendix, we provide detailed derivations for the proposed subspace-level Orthogonal Concept Erasure (OCE) objective. In particular, we clarify the connection between vector-wise and subspace-level formulations, and rigorously justify the unified quadratic objective used to obtain the closed-form orthogonal update. A.2.1. S UBSPACE -LEVEL ERASURE OBJECTIVE 
+
+For erasure, instead of enforcing point-wise alignment between target and anchor embeddings, we operate at the subspace level. Let 
+
+G = orth( W C 1), G∗ = orth( W C ∗) (26) denote orthonormal bases for the target and anchor subspaces, respectively. Their corresponding projection matrices are 
+
+R = GG ⊤, R∗ = G∗G⊤∗ . (27) We aim to suppress components of the transformed target subspace that lie outside the anchor subspace. This leads to the following erasure objective: 
+
+min   
+
+> P⊤P=I
+
+−∥ P R − R∗,⊥∥2 
+
+> F
+
+. (28) Where R∗,⊥ = I − R∗,⊥, Expanding the Frobenius norm and discarding constants gives 
+
+∥P R − R∗,⊥∥2 
+
+> F
+
+= tr  R⊤P ⊤P R  − 2 tr  R⊤∗,⊥P R  + const (29) Under the orthogonality constraint P ⊤P = I, the first term is constant. Therefore, minimizing Eq. (28) is equivalent to the following linear trace maximization: 
+
+max   
+
+> P⊤P=I
+
+tr  P ⊤Me
+
+ , Me = −(I − R∗)R. (30) 13 Orthogonal Concept Erasure for Diffusion Models 
+
+A.2.2. V ECTOR -WISE PRESERVATION OBJECTIVE 
+
+Recall that the vector-wise preservation objective for the retain set C0 is defined as 
+
+min   
+
+> P⊤P=I
+
+∥P W C 0 − W C 0∥2 
+
+> F
+
+. (31) Expanding the squared Frobenius norm yields 
+
+∥P W C 0 − W C 0∥2 
+
+> F
+
+= tr  C⊤ 
+
+> 0
+
+W ⊤P ⊤P W C 0
+
+ − 2 tr  C⊤ 
+
+> 0
+
+W ⊤P W C 0
+
+ + const . (32) Under the orthogonality constraint P ⊤P = I, the first term is constant. Therefore, minimizing Eq. (31) is equivalent to the following linear trace maximization: 
+
+max   
+
+> P⊤P=I
+
+tr( P ⊤M0), M0 = W C 0C⊤ 
+
+> 0
+
+W ⊤, (33) where M0 is symmetric and positive semidefinite. Combining Eq. (33) and Eq. (30) leads to the final objective: 
+
+max   
+
+> P⊤P=I
+
+tr( P ⊤(Me + M0)) . (34) 
+
+## B. Extented Related Works 
+
+In addition to the concept erasure methods discussed in the main text, there is also a large body of machine unlearning and concept erasure methods, including EA (Gao et al., 2025), MCE (Zhang et al., 2025), Co-Erasing (Li et al., 2025a), ANT (Li et al., 2025b), AGE (Bui et al., 2025), Realera (Liu et al., 2024), Salun (Fan et al., 2023), AdaVD (Wang et al., 2025), CPE (Lee et al., 2025), RACE (Kim et al., 2024), Receler (Huang et al., 2024), CURE (Biswas et al., 2025). Due to practical constraints on time and computational resources, it is infeasible to include exhaustive comparisons with all existing methods. Nevertheless, these methods provide valuable insights into efficient erasure, robustness, and controllability of diffusion models under different unlearning settings. It is worth noting that the notion of orthogonality has also been explored in prior works such as AdaVD (Wang et al., 2025) and CURE (Biswas et al., 2025). However, these methods are fundamentally different from our approach. Specifically, AdaVD and CURE focus on feature-level interventions during inference , where orthogonal projections are employed as operational tools to suppress or filter target concepts at inference time. In contrast, our method represents a paradigm-level innovation for editing-based concept erasure . We study orthogonal updates from a parameter-space geometric perspective .We systematically analyze why orthogonal transformations are advantageous for concept erasure, and formulate a rigorous erasure objective directly in the parameter space . This formulation admits a closed-form solution and provides explicit theoretical guarantees, resulting in a more general, principled, and novel framework for concept erasure. 
+
+## C. Implementation Details 
+
+Our method introduces three hyperparameters λe, λ0, and λr to balance the contributions of erasure and preservation. The 
+
+Mtotal is formulated as 
+
+Mtotal = −λeR(I − R∗) + W  λ0K0 + λr CnC⊤
+
+> n
+
+W ⊤, (35) where the first term enforces suppression of the target concept, and the second term preserves generic ( K0) and neighboring (Cn) concepts, weighted respectively by λ0 and λr . For all tasks, we edit the Wk in the cross-attention modules for erasure.  
+
+> Table 7. Object classes and corresponding anchors used in object erasure.
+
+Object Classes Airplane Automobile Bird Cat Deer Dog Frog Horse Ship Truck 
+
+Anchors Sky Truck Cat Dog Horse Cat Bird Deer Airplane Ship 
+
+14 Orthogonal Concept Erasure for Diffusion Models 
+
+Table 8. Evaluation of Object Erasure on CIFAR-10. We report Acc e (lower indicates more successful erasure), Acc s (higher indicates better preservation of non-target concepts) and Ho (higher indicates better overall performance) across the first five categories. All values are expressed as percentages (%). The original model’s performance is included for reference.                                                                                                                                                                                                            
+
+> Concept Dog Frog Horse Ship Truck Average
+> Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑
+> SD v1.4 98.74 98.62 2.49 99.93 98.49 0.14 99.78 98.50 0.44 98.64 98.63 2.68 98.89 98.60 2.20 99.20 98.57 1.59 CA 98.50 98.57 2.96 99.92 98.62 0.16 99.74 98.63 0.52 98.18 98.50 3.57 98.50 98.61 2.96 98.97 98.59 2.04 ESD 27.03 89.75 80.49 12.32 88.05 87.86 17.69 82.23 82.27 18.38 94.32 87.51 26.11 85.35 79.21 20.31 87.94 83.61 FMN 97.64 98.12 4.61 91.60 94.59 15.43 99.63 93.14 0.74 97.97 98.21 3.98 97.64 97.86 4.61 96.90 96.38 6.01 UCE 13.22 98.69 92.35 20.86 98.32 87.69 4.66 98.32 96.91 6.13 98.41 96.09 20.58 98.16 87.80 13.09 98.38 89.24 MACE 11.07 96.77 92.68 11.45 97.75 92.92 4.89 97.48 96.28 8.58 98.56 94.86 7.29 98.38 95.46 8.66 97.79 94.46 RECE 17.72 98.51 89.67 11.69 98.43 93.10 9.98 98.10 93.89 21.92 98.41 87.07 30.42 98.43 81.53 18.35 98.38 89.24 SPEED 1.32 98.43 98.55 5.63 98.18 96.24 3.84 97.83 96.99 0.78 98.44 98.83 7.49 98.55 95.43 3.81 98.29 97.23
+> Ours 0.74 98.47 98.86 1.27 98.45 98.59 0.35 98.39 99.02 0.15 98.64 99.24 1.38 98.53 98.57 0.78 98.50 98.86
+
+Table 9. Quantitative experiments on implicit concept erasure with FLUX.1 dev. Lower is better for I2P, Ring-A-Bell, and FID; higher is better for CS. 
+
+Method I2P ↓ Ring-A-Bell ↓ MSCOCO CS ↑ FID ↓
+
+FLUX 0.44 0.93 25.64 –UCE 0.30 0.56 25.63 30.41 ESD 0.23 0.61 24.97 55.43 EraseFlow 0.21 0.44 24.72 40.64 
+
+Ours 0.23 0.43 25.55 26.29 
+
+C.1. Experimental Setup Details Single-concept erasure. For object erasure, we conduct experiments on the ten objects classes of the CIFAR-10 dataset, as detailed in Tab. 7. For erasure of each class, we edit the original model with λe = 1000 , λ0 = 50 , and λr = 1 . In evaluation, 200 images are generated using the prompt “a photo of the class ” for the target concept and the nine remaining concepts. For artistic style erasure, we conduct experiments on three style: Van Gogh, Monet and Picasso. we edit the original model with λe = 500 , λ0 = 100 , and λr = 1 . In evaluation, 100 images are generated with the prompt “a painting in the style of 
+
+style ” for the target style. 
+
+Multi-concept erasure. Following the experiment setup of SPEED (Li et al., 2025c), we introduce a dataset of 200 celebrities, whose portraits generated by SD v1.4 can be reliably recognized with high accuracy by the GIPHY Celebrity Detector (GCD) (Hasty et al., 2019). We divide this dataset into an erasure set containing 100 celebrities, and a retain set of 100 other celebrities. We provide the full lists for both sets in Tab. 13. We conduct experiments erasing 10, 50, and 100 celebrities from the predefined erasure set, while including the full retain set. For erasing 10 celebrities, we set the hyperparameters as λe = 1500 , λ0 = 50 , and λr = 3 . For erasing 50 celebrities, we set λe = 1200 , λ0 = 50 , and λr = 3 
+
+For the 100-celebrity erasure scenario, we set λe = 900 , λ0 = 50 , and λr = 3 . In evaluation, we use five celebrity templates: “a portrait of celebrity ”, “a sketch of celebrity ”, “an oil painting of celebrity ”, “ celebrity in an official photo”, and “an image capturing celebrity at a public event”. We generate 500 images for each set. For non-target concepts, we generate 1 image per template for each of the 100 concepts. For target concepts, the number of images per template is adjusted to maintain 500 images overall. 
+
+Implementation of baselines. We compare OCE with seven baselines: 4CA (Kumari et al., 2023), 5ESD (Gandikota et al., 2023), 6FMN (Zhang et al., 2024a), 7UCE (Gandikota et al., 2024), 8MACE (Lu et al., 2024), 9RECE(Gong et al., 
+
+> 4
+
+https://github.com/nupurkmr9/concept-ablation 
+
+> 5
+
+https://github.com/rohitgandikota/erasing 
+
+> 6
+
+https://github.com/SHI-Labs/Forget-Me-Not 
+
+> 7
+
+https://github.com/rohitgandikota/unified-concept-editing 
+
+> 8
+
+https://github.com/Shilin-LU/MACE 
+
+> 9
+
+https://github.com/CharlesGong12/RECE 
+
+15 Orthogonal Concept Erasure for Diffusion Models 
+
+Table 10. Ablation study on selection of anchor concepts on CIFAR-10.                                                                                                
+
+> Concept Airplane Automobile Bird Cat Deer Average
+> Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑Acc e↓Acc s↑Ho↑
+> Empty 9.22 97.63 94.08 12.61 97.13 92.00 3.12 97.90 97.38 5.03 98.41 96.66 6.90 98.47 95.71 7.38 97.91 95.17 Random 7.71 98.62 95.35 10.91 98.56 93.59 5.62 97.36 95.85 2.49 98.55 98.02 4.28 98.32 97.00 6.20 98.28 95.96
+> Ours 6.89 98.85 95.89 8.79 99.07 94.98 3.40 98.30 97.44 0.15 98.71 99.28 3.81 98.45 97.31 4.61 98.68 96.98
+
+Table 11. Ablation study on selection of anchor concepts in multi-concept erasure scenarios. 
+
+Anchor Erase 100 Celebrities MSCOCO Acc e ↓ Acc s ↑ Ho ↑ CS ↑ FID ↓
+
+Empty 4.28 91.58 93.60 26.04 18.64 Car 4.48 94.68 95.10 25.85 18.18 Cat 4.24 92.20 93.95 25.92 18.45 Person 3.85 94.50 95.32 26.40 18.29 
+
+Ours 3.44 94.42 95.48 26.33 18.33 
+
+2024), 10 SPEED (Li et al., 2025c). All the baselines are implemented using the default configurations from their official repositories. 
+
+## D. Additional Experiments 
+
+D.1. Additional Evaluation Results of Object Erasure on CIFAR-10 
+
+We further present the results of erasing the remaining five object classes of the CIFAR-10 dataset in Tab. 8. OCE achieves the highest Ho in all erasure of these five class of objects. This demonstrates that OCE consistently maintains a superior balance between effective concept erasure and preservation of non-target generation capacity. 
+
+D.2. Additional Experiments on FLUX 
+
+We conducted additional quantitative experiments on implicit concept erasure with FLUX.1 dev. We generate images with the I2P and Ring-A-Bell dataset for evaluation. The results are summarized in Tab. 9. Compared with baseline methods, OCE achieves a better balance between concept erasure and prior preservation, demonstrating its strong transferability to different model architectures. For all baseline methods, we use the official implementations with default settings for fair comparison. 
+
+D.3. Ablation on Selection of Anchor Concepts 
+
+For anchor selection, we adopt a heuristic strategy: anchor concepts are chosen to belong to the same high-level category as the target concept, sharing some similarity but also exhibiting noticeable differences. This ensures smooth and stable concept erasure. To further investigate the impact of anchor choice, we conducted experiments on CIFAR-10 (in Tab. 10) and multi-concept erasure scenarios (in Tab. 11). We compared our heuristic selections with random anchors and the empty anchor. The performance varies under different anchor settings, and our heuristic strategy consistently improves erasure effectiveness. 
+
+D.4. Ablation on the Hyperparameters 
+
+We conduct an ablation study on the trade-off parameters λe, λ0, and λr in the multi-concept erasure scenario. The results are summarized in the Tab. 12. From the table, we can observe: λe mainly affects the erasure effectiveness ( Acc e), λ0
+
+mainly affects the overall generation quality (FID(COCO)),and λp mainly affects the preservation of neighboring concepts (Acc r ).These findings are consistent with our design. In our experiments, we choose λe = 900 , λ0 = 50 , and λr = 3 to achieve a balanced trade-off between erasure and preservation. 
+
+> 10
+
+https://github.com/ouxiang-li/speed 
+
+16 Orthogonal Concept Erasure for Diffusion Models  
+
+> Table 12. Ablation study on hyperparameters in multi-concept erasure scenarios.
+
+λe λ0 λr
+
+Erase 100 Celebrities MSCOCO Acc e ↓ Acc s ↑ Ho ↑ CS ↑ FID ↓
+
+900 50 3 3.44 94.42 95.48 26.33 18.33 1000 50 3 2.85 93.25 95.16 26.29 19.01 1200 50 3 2.03 89.73 93.67 26.24 19.69 600 50 3 7.70 93.48 92.89 26.41 17.61 900 20 3 3.05 94.01 95.46 26.12 21.05 900 80 3 5.67 93.85 94.09 26.44 17.55 900 50 1 1.84 89.57 93.67 26.34 18.63 900 50 5 6.52 94.49 93.98 26.37 18.34 
+
+D.5. Additional Qualitative Results 
+
+In this section, we provide more comprehensive qualitative results across a variety of concept erasure tasks, including object erasure (Fig. 5), style erasure (Fig. 6), celebrity erasure (Fig. 7) and implicit concept erasure (Fig. 8). 17 Orthogonal Concept Erasure for Diffusion Models 
+
+Table 13. Evaluation setup for multi-concept erasure. The dataset contains an Erasure Set and a Retain Set of celebrities. 
+
+Group Number Anchor Concept Celebrity Erasure Set 10 ‘celebrity’ ‘Adam Driver’, ‘Adriana Lima’, ‘Amber Heard’, ‘Amy Adams’, ‘Andrew Garfield’, ‘Angelina Jolie’, ‘Anjelica Huston’, ‘Anna Faris’, ‘Anna Kendrick’, ‘Anne Hathaway’ 
+
+50 ‘celebrity’ 
+
+‘Adam Driver’, ‘Adriana Lima’, ‘Amber Heard’, ‘Amy Adams’, ‘Andrew Garfield’, ‘Angelina Jolie’, ‘Anjelica Huston’, ‘Anna Faris’, ‘Anna Kendrick’, ‘Anne Hathaway’, ‘Arnold Schwarzenegger’, ‘Barack Obama’, ‘Beth Behrs’, ‘Bill Clinton’, ‘Bob Dylan’, ‘Bob Marley’, ‘Bradley Cooper’, ‘Bruce Willis’, ‘Bryan Cranston’, ‘Cameron Diaz’, ‘Channing Tatum’, ‘Charlie Sheen’, ‘Charlize Theron’, ‘Chris Evans’, ‘Chris Hemsworth’, ‘Chris Pine’, ‘Chuck Norris’, ‘Courteney Cox’, ‘Demi Lovato’, ‘Drake’, ‘Drew Barrymore’, ‘Dwayne Johnson’, ‘Ed Sheeran’, ‘Elon Musk’, ‘Elvis Presley’, ‘Emma Stone’, ‘Frida Kahlo’, ‘George Clooney’, ‘Glenn Close’, ‘Gwyneth Paltrow’, ‘Harrison Ford’, ‘Hillary Clinton’, ‘Hugh Jackman’, ‘Idris Elba’, ‘Jake Gyllenhaal’, ‘James Franco’, ‘Jared Leto’, ‘Jason Momoa’, ‘Jennifer Aniston’, ‘Jennifer Lawrence’ 
+
+100 ‘celebrity’ 
+
+‘Adam Driver’, ‘Adriana Lima’, ‘Amber Heard’, ‘Amy Adams’, ‘Andrew Garfield’, ‘Angelina Jolie’, ‘Anjelica Huston’, ‘Anna Faris’, ‘Anna Kendrick’, ‘Anne Hathaway’, ‘Arnold Schwarzenegger’, ‘Barack Obama’, ‘Beth Behrs’, ‘Bill Clinton’, ‘Bob Dylan’, ‘Bob Marley’, ‘Bradley Cooper’, ‘Bruce Willis’, ‘Bryan Cranston’, ‘Cameron Diaz’, ‘Channing Tatum’, ‘Charlie Sheen’, ‘Charlize Theron’, ‘Chris Evans’, ‘Chris Hemsworth’, ‘Chris Pine’, ‘Chuck Norris’, ‘Courteney Cox’, ‘Demi Lovato’, ‘Drake’, ‘Drew Barrymore’, ‘Dwayne Johnson’, ‘Ed Sheeran’, ‘Elon Musk’, ‘Elvis Presley’, ‘Emma Stone’, ‘Frida Kahlo’, ‘George Clooney’, ‘Glenn Close’, ‘Gwyneth Paltrow’, ‘Harrison Ford’, ‘Hillary Clinton’, ‘Hugh Jackman’, ‘Idris Elba’, ‘Jake Gyllenhaal’, ‘James Franco’, ‘Jared Leto’, ‘Jason Momoa’, ‘Jennifer Aniston’, ‘Jennifer Lawrence’, ‘Jennifer Lopez’, ‘Jeremy Renner’, ‘Jessica Biel’, ‘Jessica Chastain’, ‘John Oliver’, ‘John Wayne’, ‘Johnny Depp’, ‘Julianne Hough’, ‘Justin Timberlake’, ‘Kate Bosworth’, ‘Kate Winslet’, ‘Leonardo Dicaprio’, ‘Margot Robbie’, ‘Mariah Carey’, ‘Melania Trump’, ‘Meryl Streep’, ‘Mick Jagger’, ‘Mila Kunis’, ‘Milla Jovovich’, ‘Morgan Freeman’, ‘Nick Jonas’, ‘Nicolas Cage’, ‘Nicole Kidman’, ‘Octavia Spencer’, ‘Olivia Wilde’, ‘Oprah Winfrey’, ‘Paul Mccartney’, ‘Paul Walker’, ‘Peter Dinklage’, ‘Philip Seymour Hoffman’, ‘Reese Witherspoon’, ‘Richard Gere’, ‘Ricky Gervais’, ‘Rihanna’, ‘Robin Williams’, ‘Ronald Reagan’, ‘Ryan Gosling’, ‘Ryan Reynolds’, ‘Shia Labeouf’, ‘Shirley Temple’, ‘Spike Lee’, ‘Stan Lee’, ‘Theresa May’, ‘Tom Cruise’, ‘Tom Hanks’, ‘Tom Hardy’, ‘Tom Hiddleston’, ‘Whoopi Goldberg’, ‘Zac Efron’, ‘Zayn Malik’ 
+
+Retain Set 10, 50, and 100 -
+
+‘Aaron Paul’, ‘Alec Baldwin’, ‘Amanda Seyfried’, ‘Amy Poehler’, ‘Amy Schumer’, ‘Amy Winehouse’, ‘Andy Samberg’, ‘Aretha Franklin’, ‘Avril Lavigne’, ‘Aziz Ansari’, ‘Barry Manilow’, ‘Ben Affleck’, ‘Ben Stiller’, ‘Benicio Del Toro’, ‘Bette Midler’, ‘Betty White’, ‘Bill Murray’, ‘Bill Nye’, ‘Britney Spears’, ‘Brittany Snow’, ‘Bruce Lee’, ‘Burt Reynolds’, ‘Charles Manson’, ‘Christie Brinkley’, ‘Christina Hendricks’, ‘Clint Eastwood’, ‘Countess Vaughn’, ‘Dakota Johnson’, ‘Dane Dehaan’, ‘David Bowie’, ‘David Tennant’, ‘Denise Richards’, ‘Doris Day’, ‘Dr Dre’, ‘Elizabeth Taylor’, ‘Emma Roberts’, ‘Fred Rogers’, ‘Gal Gadot’, ‘George Bush’, ‘George Takei’, ‘Gillian Anderson’, ‘Gordon Ramsey’, ‘Halle Berry’, ‘Harry Dean Stanton’, ‘Harry Styles’, ‘Hayley Atwell’, ‘Heath Ledger’, ‘Henry Cavill’, ‘Jackie Chan’, ‘Jada Pinkett Smith’, ‘James Garner’, ‘Jason Statham’, ‘Jeff Bridges’, ‘Jennifer Connelly’, ‘Jensen Ackles’, ‘Jim Morrison’, ‘Jimmy Carter’, ‘Joan Rivers’, ‘John Lennon’, ‘Johnny Cash’, ‘Jon Hamm’, ‘Judy Garland’, ‘Julianne Moore’, ‘Justin Bieber’, ‘Kaley Cuoco’, ‘Kate Upton’, ‘Keanu Reeves’, ‘Kim Jong Un’, ‘Kirsten Dunst’, ‘Kristen Stewart’, ‘Krysten Ritter’, ‘Lana Del Rey’, ‘Leslie Jones’, ‘Lily Collins’, ‘Lindsay Lohan’, ‘Liv Tyler’, ‘Lizzy Caplan’, ‘Maggie Gyllenhaal’, ‘Matt Damon’, ‘Matt Smith’, ‘Matthew Mcconaughey’, ‘Maya Angelou’, ‘Megan Fox’, ‘Mel Gibson’, ‘Melanie Griffith’, ‘Michael Cera’, ‘Michael Ealy’, ‘Natalie Portman’, ‘Neil Degrasse Tyson’, ‘Niall Horan’, ‘Patrick Stewart’, ‘Paul Rudd’, ‘Paul Wesley’, ‘Pierce Brosnan’, ‘Prince’, ‘Queen Elizabeth’, ‘Rachel Dratch’, ‘Rachel Mcadams’, ‘Reba Mcentire’, ‘Robert De Niro’ 
+
+18 Orthogonal Concept Erasure for Diffusion Models Original Dog Original Ship Original Horse 
+
+Figure 5. Additional qualitative results on Object Erasure. 
+
+19 Orthogonal Concept Erasure for Diffusion Models Original Van  Gogh Original Monet Original Picasso 
+
+Figure 6. Additional qualitative results on Artistic Style Erasure. 
+
+20 Orthogonal Concept Erasure for Diffusion Models Original 10 Celeb Original 50 Celeb Original 100 Celeb 
+
+Figure 7. Additional qualitative results on Celebrity Erasure. 
+
+21 Orthogonal Concept Erasure for Diffusion Models Original nud eOriginal nude Original nude 
+
+# *
+
+# * *
+
+# *
+
+# * *
+
+# * * * * * *
+
+# * *
+
+# * * * *
+
+# *
+
+Figure 8. Additional qualitative results on Implicit Concept Erasure on I2P. 
+
+22

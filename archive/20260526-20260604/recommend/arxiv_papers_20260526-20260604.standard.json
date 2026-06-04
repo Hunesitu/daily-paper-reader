@@ -1,0 +1,531 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-04T02:06:42.448308+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 8,
+    "deep_cap": 6,
+    "deep_selected": 6,
+    "quick_candidates": 7,
+    "quick_skim_target": 11,
+    "quick_selected": 7
+  },
+  "deep_dive": [
+    {
+      "id": "2605.29390v1",
+      "source": "arxiv",
+      "title": "Orthogonal Negative Guidance in Attention Feature Space for Text-to-Image Generation",
+      "abstract": "Text-to-image (T2I) models have become increasingly capable of generating high-quality images. Yet, enforcing the explicit absence of a specified object or attribute remains a fundamentally challenging problem. Existing approaches, including prompt negation, post-hoc editing, and negative guidance, remain insufficient for explicit concept suppression, often failing to remove the target concept or degrading overall image quality. To this end, we propose Orthogonal Negative Guidance in attention feature space, a training-free method that operates in the attention output space of MM-DiT-based T2I transformers. Our method orthogonalizes negative-prompt attention features with respect to positive-prompt features and subtracts only the orthogonal component, suppressing unwanted concepts while preserving desired semantics. Experiments on FLUX-dev and FLUX-schnell show that our method achieves favorable trade-offs between concept suppression, prompt alignment, and image quality. In human evaluation, our method outperforms the second-best baseline by 18.78%. We further show that our method supports multi-concept suppression and adjustable concept suppression.",
+      "authors": [
+        "Jungmin Ko",
+        "Jungwon Park",
+        "Jimyeong Kim",
+        "Changin Choi",
+        "Wonseok Lee",
+        "Wonjong Rhee"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-28T05:43:43+00:00",
+      "link": "https://arxiv.org/pdf/2605.29390v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "proposes orthogonal negative guidance for explicit concept suppression in text-to-image generation",
+      "llm_evidence_cn": "提出了在文本到图像生成中用于明确概念抑制的正交负面指导",
+      "llm_evidence": "提出了在文本到图像生成中用于明确概念抑制的正交负面指导",
+      "canonical_evidence": "提出了在文本到图像生成中用于明确概念抑制的正交负面指导",
+      "llm_tldr_en": "Orthogonal Negative Guidance is a training-free method for explicit concept suppression in T2I transformers by orthogonalizing negative-prompt attention features.",
+      "llm_tldr_cn": "本论文针对文本到图像生成中显式禁止特定对象或属性难以实现的问题，提出训练无关的正交负面指导方法，在MM-DiT的注意力输出空间中将负面提示特征正交化后减去，有效抑制目标概念而不降低图像质量。",
+      "llm_tldr": "本论文针对文本到图像生成中显式禁止特定对象或属性难以实现的问题，提出训练无关的正交负面指导方法，在MM-DiT的注意力输出空间中将负面提示特征正交化后减去，有效抑制目标概念而不降低图像质量。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.01658v1",
+      "source": "arxiv",
+      "title": "CoreUnlearn: Rethinking Concept Unlearning through Disentangled Component-Level Erasure in Text-guided Diffusion Models",
+      "abstract": "Text guided diffusion models have revolutionized image synthesis but also raise ethical concerns, such as privacy violation and harmful content generation. To mitigate these issues, prevailing methods typically leverage an alignment mechanism, with predefined erasure references, to fine-tune pretrained model weights. However, these techniques are intrinsically limited by the representational capacity of textual space and display high sensitivity to the choice of predefined erasure references, e.g., suboptimal references may significantly affect the model utility preservation during erasure. To overcome these limitations, we introduce CoreUnlearn, aiming to disentangle and remove the erasure-critical component of the undesirable concept. Specifically, CoreUnlearn comprises a Component Extraction Module (CEM) and a Swap Disentangling Strategy (SDS). Guided by SDS, CEM is pre-trained to decompose concept embeddings into distinct component types. Leveraging this decomposition, CoreUnlearn then removes the erasure-critical component while retaining non-critical ones by fine-tuning model weights. Extensive experiments demonstrate that CoreUnlearn achieves effective concept erasure with minimal impact on overall model performance.",
+      "authors": [
+        "Mengnan Zhao",
+        "Lihe Zhang",
+        "Baocai Yin"
+      ],
+      "primary_category": "cs.CR",
+      "categories": [
+        "cs.CR"
+      ],
+      "published": "2026-06-01T04:09:45+00:00",
+      "link": "https://arxiv.org/pdf/2606.01658v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "proposes CoreUnlearn for concept unlearning in text-guided diffusion models",
+      "llm_evidence_cn": "提出了面向文本引导扩散模型的概念遗忘方法CoreUnlearn",
+      "llm_evidence": "提出了面向文本引导扩散模型的概念遗忘方法CoreUnlearn",
+      "canonical_evidence": "提出了面向文本引导扩散模型的概念遗忘方法CoreUnlearn",
+      "llm_tldr_en": "CoreUnlearn performs concept unlearning in text-guided diffusion models by disentangling and removing erasure-critical components, overcoming limitations of textual space representation.",
+      "llm_tldr_cn": "本论文针对文本引导扩散模型概念遗忘中文本空间表示能力有限且对擦除参考敏感的问题，提出CoreUnlearn方法，通过解缠并移除擦除关键组件来实现概念遗忘，在保持模型效用同时有效去除目标概念。",
+      "llm_tldr": "本论文针对文本引导扩散模型概念遗忘中文本空间表示能力有限且对擦除参考敏感的问题，提出CoreUnlearn方法，通过解缠并移除擦除关键组件来实现概念遗忘，在保持模型效用同时有效去除目标概念。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.03695v1",
+      "source": "arxiv",
+      "title": "Don't Forget Your Embeddings: Robust Knowledge Erasure via Precise Editing of Embeddings",
+      "abstract": "As language models are increasingly deployed in real-world applications, the ability to erase specific knowledge from them becomes critical for safety and compliance. Prominent methods seek persistent removal by updating the model's parameters, yet the target knowledge often can be recovered through adversarial prompting or relearning. In this work, we hypothesize this limitation stems in part from existing methods overlooking the embedding layer. To address this, we introduce EMBedding ERasure (EMBER), a plug-n-play erasure module that leverages Sparse Matrix Factorization for precise erasure of concept-related features from token embeddings. Through comprehensive evaluations across diverse concepts on Gemma-2-2B-it and Llama-3.1-8B-Instruct, we find that augmenting existing methods with EMBER consistently improves erasure efficacy and specificity across task formats, with minimal coherence loss. Moreover, it dramatically improves robustness to relearning, reducing regained accuracy by up to 50%, limiting it to 35% on Llama compared to 70%-76% for prior methods. Further analysis shows that the coherence cost is localized, affecting only a small set of concept-exclusive tokens. Our work establishes that precise embedding-level intervention is necessary for robust concept erasure, and demonstrates that existing methods can benefit from such augmentation.",
+      "authors": [
+        "Clara Haya Suslik",
+        "Or Shafran",
+        "Mor Geva"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-02T14:15:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.03695v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "embedding-based concept erasure for language models",
+      "llm_evidence_cn": "基于嵌入的概念擦除方法用于语言模型",
+      "llm_evidence": "基于嵌入的概念擦除方法用于语言模型",
+      "canonical_evidence": "基于嵌入的概念擦除方法用于语言模型",
+      "llm_tldr_en": "EMBER introduces sparse matrix factorization to precisely erase concept-related features from token embeddings, achieving robust knowledge erasure in LLMs.",
+      "llm_tldr_cn": "本文发现现有知识擦除方法忽略了嵌入层，导致擦除不彻底。为此提出EMBER方法，利用稀疏矩阵分解精确擦除词嵌入中的概念相关特征，在多项概念擦除任务上取得显著效果，并保持了模型整体能力，为语言模型安全合规提供了新方案。",
+      "llm_tldr": "本文发现现有知识擦除方法忽略了嵌入层，导致擦除不彻底。为此提出EMBER方法，利用稀疏矩阵分解精确擦除词嵌入中的概念相关特征，在多项概念擦除任务上取得显著效果，并保持了模型整体能力，为语言模型安全合规提供了新方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.28167v1",
+      "source": "arxiv",
+      "title": "DebFilter: Eradicating Biases Stashed in Value",
+      "abstract": "Text-to-image diffusion models, which are theoretically equivalent to score-based generative models, generate images through a multi-step denoising process guided by text embeddings extracted from pretrained vision-language models such as CLIP. However, these text embeddings inherently encode social and semantic biases -- such as those related to gender and age -- that are subsequently propagated and amplified through the guidance mechanism, along with the model's training on large-scale datasets that are imbalanced with respect to these bias-related concepts, often leading to skewed outputs in text-to-image generation. We propose DebFilter, a lightweight and training-free framework for mitigating such biases in text-to-image diffusion models. Observing that the model's error prediction at each denoising step is primarily influenced by cross-attention dynamics, we introduce a bias-correction strategy that adjusts the value components within cross-attention. Specifically, we apply a fixed offset to the slice of guidance embedding, effectively steering the semantic direction of cross-attention values toward unbiased representations. This adjustment reconfigures the score landscape to produce balanced outputs while maintaining alignment with the intended text semantics. Unlike prior approaches that rely on fine-tuning or retraining, DebFilter operates entirely at inference time, requiring no additional data or model updates. Our results demonstrate that this method effectively mitigates social biases in generated images, offering an efficient and scalable pathway toward fairer and more inclusive text-to-image generation.",
+      "authors": [
+        "Seung Hyuk Lee",
+        "Songkuk Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-27T08:49:41+00:00",
+      "link": "https://arxiv.org/pdf/2605.28167v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "training-free bias mitigation in text-to-image diffusion models by correcting value embeddings",
+      "llm_evidence_cn": "通过纠正值嵌入实现文本到图像扩散模型的无训练偏见消除",
+      "llm_evidence": "通过纠正值嵌入实现文本到图像扩散模型的无训练偏见消除",
+      "canonical_evidence": "通过纠正值嵌入实现文本到图像扩散模型的无训练偏见消除",
+      "llm_tldr_en": "Proposes DebFilter, a lightweight training-free framework that mitigates social and semantic biases in text-to-image diffusion models by correcting biased value embeddings in cross-attention.",
+      "llm_tldr_cn": "针对文本到图像扩散模型中嵌入的社会偏见（如性别、年龄）被放大问题，提出DebFilter，一种轻量级无训练框架，通过观察模型错误并纠正交叉注意力中的值嵌入，有效消除偏见概念，而无需重新训练模型。该方法实现了机器遗忘在图像生成中的直接应用。",
+      "llm_tldr": "针对文本到图像扩散模型中嵌入的社会偏见（如性别、年龄）被放大问题，提出DebFilter，一种轻量级无训练框架，通过观察模型错误并纠正交叉注意力中的值嵌入，有效消除偏见概念，而无需重新训练模型。该方法实现了机器遗忘在图像生成中的直接应用。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.28902v1",
+      "source": "arxiv",
+      "title": "Orthogonal Concept Erasure for Diffusion Models",
+      "abstract": "Concept erasure has emerged as a promising approach to mitigate undesired or unsafe content in diffusion models, yet existing methods still face significant limitations. While training-based methods are effective, their high computational cost limits scalability. Editing-based methods are more efficient and deployment-friendly, yet they struggle to simultaneously achieve precise concept erasure and preserve overall generative capacity. We identify this core limitation of the editing-based methods as reliance on additive parameter updates. Our empirical analysis reveals that concept semantics primarily depend on neuron direction rather than neuron magnitude, while overall generative capacity relies on the angular geometry of neurons. As additive updates inherently entangle direction, magnitude, and angular geometry, they inevitably introduce unintended interference between concept erasure and overall generation performance. To address this, we propose Orthogonal Concept Erasure (OCE), which reformulates editing-based erasure as multiplicative parameter updates from a geometric perspective. Specifically, OCE applies layer-wise orthogonal transformations derived from a closed-form solution to the parameters, enabling precise concept erasure while preserving the neuron magnitude and angular geometry. Furthermore, to address conflicting constraints in multi-concept erasure, OCE introduces a subspace-level objective with structured subspace manipulation, yielding a more effective and scalable erasure. Extensive experiments on single- and multi-concept erasure demonstrate that OCE outperforms existing methods in concept erasure and non-target preservation, erasing up to 100 concepts in 4.3 s. Code: https://github.com/HansSunY/OCE.",
+      "authors": [
+        "Yuhao Sun",
+        "Lingyun Yu",
+        "Haoxiang Xu",
+        "Fengyuan Miao",
+        "Zhuoer Xu",
+        "Hongtao Xie"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-27T15:58:20+00:00",
+      "link": "https://arxiv.org/pdf/2605.28902v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "concept erasure in diffusion models, proposes orthogonal editing to avoid capacity loss",
+      "llm_evidence_cn": "扩散模型中的概念擦除，提出正交编辑避免生成能力损失",
+      "llm_evidence": "扩散模型中的概念擦除，提出正交编辑避免生成能力损失",
+      "canonical_evidence": "扩散模型中的概念擦除，提出正交编辑避免生成能力损失",
+      "llm_tldr_en": "Orthogonal Concept Erasure identifies that additive edits entangle concept removal and generative capacity, and proposes a direction-based orthogonal projection method to precisely erase concepts while preserving image quality in diffusion models. This work directly advances concept erasure methodology.",
+      "llm_tldr_cn": "现有基于编辑的概念擦除方法依赖加法参数更新，这导致概念语义与生成能力交织，难以同时实现精准擦除和保持模型容量。本文发现概念语义主要依赖神经元方向而非幅度，生成能力依赖神经元的角几何。因此提出正交投影方法，在方向空间中解耦擦除和生成，无需重训即可精确擦除概念且保持图像质量。实验证明该方法在多种扩散模型上有效，为概念擦除提供新范式，并可用于文本到图像模型的安全性改进。",
+      "llm_tldr": "现有基于编辑的概念擦除方法依赖加法参数更新，这导致概念语义与生成能力交织，难以同时实现精准擦除和保持模型容量。本文发现概念语义主要依赖神经元方向而非幅度，生成能力依赖神经元的角几何。因此提出正交投影方法，在方向空间中解耦擦除和生成，无需重训即可精确擦除概念且保持图像质量。实验证明该方法在多种扩散模型上有效，为概念擦除提供新范式，并可用于文本到图像模型的安全性改进。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.30317v1",
+      "source": "arxiv",
+      "title": "VPG: Visual Prefix Guidance for Autoregressive Image and Video Generation",
+      "abstract": "Autoregressive image and video generators are trained with teacher-forced histories but must sample from their own generated prefixes at inference time, making them vulnerable to exposure bias and prefix drift. Existing remedies either modify training or apply sampling-time guidance aimed primarily at external semantic conditions, such as class labels or text prompts, rather than testing whether a next-step prediction provides strong posterior support for the generated prefix itself. We propose Visual Prefix Guidance (VPG), a training-free inference-time guidance method for autoregressive image and video generation. VPG improves next-step prediction by contrasting the model's output under the generated prefix with its output under a corrupted prefix, then extrapolating logits toward candidates that strengthen the posterior support of the generated prefix. Across class-conditional image generation with VAR, text-to-image generation with Infinity, and text-to-video generation with InfinityStar, VPG improves generation quality without retraining the base model, reducing FID on VAR by 0.36 on average and improving benchmark performance on both image and video generation.",
+      "authors": [
+        "Xinyao Liao",
+        "Qiyuan He",
+        "Yicong Li",
+        "Jiayin Zhu",
+        "Xiaoye Qu",
+        "Wei Wei",
+        "Angela Yao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-28T17:55:06+00:00",
+      "link": "https://arxiv.org/pdf/2605.30317v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proposes training-free guidance for autoregressive image generation",
+      "llm_evidence_cn": "提出了针对自回归图像生成的无训练指导方法",
+      "llm_evidence": "提出了针对自回归图像生成的无训练指导方法",
+      "canonical_evidence": "提出了针对自回归图像生成的无训练指导方法",
+      "llm_tldr_en": "VPG is a training-free inference-time guidance method that improves next-step prediction in autoregressive image and video generation by contrasting outputs under generated and corrupted prefixes.",
+      "llm_tldr_cn": "本论文针对自回归图像和视频生成中的暴露偏差和前缀漂移问题，提出一种无训练推理时指导方法VPG，通过对比生成前缀与损坏前缀下的模型输出来改善下一步预测，从而在不修改训练过程的情况下提升生成质量。",
+      "llm_tldr": "本论文针对自回归图像和视频生成中的暴露偏差和前缀漂移问题，提出一种无训练推理时指导方法VPG，通过对比生成前缀与损坏前缀下的模型输出来改善下一步预测，从而在不修改训练过程的情况下提升生成质量。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.31293v1",
+      "source": "arxiv",
+      "title": "Divergence Decoding: Inference-Time Unlearning via Auxiliary Models",
+      "abstract": "Large Language Models (LLMs) frequently memorize sensitive training data thereby creating significant privacy and copyright risks. Addressing these risks, i.e., removing such knowledge from an existing model checkpoint, has proven challenging as many unlearning methods lead to catastrophic utility loss or are ineffective for complex queries. We introduce Divergence Decoding (DD), a mechanism that uses small auxiliary models to steer the logits of the LLM away from specific data during inference. Training these models is straight forward, i.e., we use standard pre-training and fine-tuning setups. We find the method decisively outperforms state-of-the-art (SOTA) baselines on unlearning benchmarks across a variety of model and training dataset scales consistent with DD being an effective and inexpensive solution to unlearning. We then demonstrate that this steered distribution can be trivially distilled back into the base model. Since the method is generally applicable to any probabilistic model, we explore its efficacy outside of text generation and find evidence of generalization to the domain of images.",
+      "authors": [
+        "Humzah Merchant",
+        "Bradford Levy"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-05-29T13:29:01+00:00",
+      "link": "https://arxiv.org/pdf/2605.31293v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "inference-time unlearning via auxiliary model steering",
+      "llm_evidence_cn": "基于辅助模型推理时忘却",
+      "llm_evidence": "基于辅助模型推理时忘却",
+      "canonical_evidence": "基于辅助模型推理时忘却",
+      "llm_tldr_en": "Divergence Decoding uses small auxiliary models to steer LLM logits away from targeted data, achieving state-of-the-art unlearning without retraining.",
+      "llm_tldr_cn": "针对LLM中敏感数据遗忘困难的问题，本文提出Divergence Decoding，在推理时利用小型辅助模型引导logits远离目标数据，无需重新训练，在多种遗忘基准上超越现有方法，有效平衡了遗忘效果与模型效用。",
+      "llm_tldr": "针对LLM中敏感数据遗忘困难的问题，本文提出Divergence Decoding，在推理时利用小型辅助模型引导logits远离目标数据，无需重新训练，在多种遗忘基准上超越现有方法，有效平衡了遗忘效果与模型效用。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2606.03808v1",
+      "source": "arxiv",
+      "title": "PURGE: Projected Unlearning via Retain-Guided Erasure",
+      "abstract": "We propose PURGE, a machine unlearning algorithm built on a simple but an under-exploited observation: continual learning (CL) and machine unlearning (MU) which are fundamentally dual problems. CL tries to learn new tasks without forgetting old ones; MU tries to erase specific data without hurting retained performance representing the same underlying tension in opposite directions. PURGE leverages this duality by adapting gradient projection from A-GEM (Chaudhry et al., 2019) so that every unlearning step is constrained to not increase the retain-set loss. On top of this, it performs multi-layer representation erasure, pushing forget-set activations in intermediate layers towards the retain distribution to remove information from hidden representations rather than just suppressing it at the output. A key design choice is the retain-confusion target: rather than pushing forget outputs toward the uniform distribution, which we found to be surprisingly easy for membership inference attacks to detect, we instead target the model's natural confusion pattern on retain data. This makes the unlearned model hard to distinguish from one retrained from scratch. Two self-regulating stopping criteria (a retain-loss budget and a forget-accuracy target) let the algorithm decide on its own when to stop, removing the need for manual epoch tuning. In experiments on five datasets (CIFAR-10, MNIST, SVHN, STL10, PathMNIST) across 22 class-level forgetting tasks, PURGE consistently keeps retain accuracy above 96% while achieving MIA AUROC close to 0.5 (the ideal), outperforming gradient ascent, KL-uniform, and several published baselines on the privacy-utility frontier.",
+      "authors": [
+        "Vedant Jawandhia",
+        "Daksh Ahuja",
+        "Ghufran Alam Siddiqui",
+        "Prashant Trivedi",
+        "Yash Sinha",
+        "Pratik Narang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CR"
+      ],
+      "published": "2026-06-02T15:53:01+00:00",
+      "link": "https://arxiv.org/pdf/2606.03808v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "machine unlearning method with representation erasure and retain-guided projection",
+      "llm_evidence_cn": "带有表示擦除和保留引导投影的机器遗忘方法",
+      "llm_evidence": "带有表示擦除和保留引导投影的机器遗忘方法",
+      "canonical_evidence": "带有表示擦除和保留引导投影的机器遗忘方法",
+      "llm_tldr_en": "PURGE proposes a machine unlearning algorithm that adapts gradient projection from continual learning to erase specific data without harming retained performance, and performs multi-layer representation erasure to remove hidden information.",
+      "llm_tldr_cn": "PURGE提出一种机器遗忘算法，利用持续学习中的梯度投影思想，将每次遗忘步骤约束为不增加保留集损失。在此基础上进行多层表示擦除，将遗忘集在中间层的激活推向保留分布，从而从隐藏表示中移除信息，而不仅仅是输出层。实验表明该方法能在有效擦除指定数据的同时保持模型原有性能，为机器遗忘提供了新的投影式解法。",
+      "llm_tldr": "PURGE提出一种机器遗忘算法，利用持续学习中的梯度投影思想，将每次遗忘步骤约束为不增加保留集损失。在此基础上进行多层表示擦除，将遗忘集在中间层的激活推向保留分布，从而从隐藏表示中移除信息，而不仅仅是输出层。实验表明该方法能在有效擦除指定数据的同时保持模型原有性能，为机器遗忘提供了新的投影式解法。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.31162v1",
+      "source": "arxiv",
+      "title": "Guidance for Low-Level Perceptual Editing in Unconditional Diffusion Models",
+      "abstract": "Unconditional diffusion models offer powerful generative priors, yet steering them toward aesthetically enhanced outputs remains largely unexplored. We show that h-space patching, the dominant paradigm for training-free diffusion editing, systematically fails for global, low-level transformations required for aesthetic and perceptual refinement. We introduce a novel, generalized framework for image-editing in unconditional diffusion models without explicit training. This inference-time mechanism operates on low-level features by extracting degradation concept vectors and combining bottleneck patching with classifier-free guidance to guide sampling away from the degraded manifold, producing consistently improved images without any model retraining.",
+      "authors": [
+        "Shreyansh Modi",
+        "Akshat Tomar",
+        "Aarush Aggarwal"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-05-29T11:11:04+00:00",
+      "link": "https://arxiv.org/pdf/2605.31162v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "extracts degradation concept vectors to guide sampling away from degraded manifold",
+      "llm_evidence_cn": "提取退化概念向量引导采样远离退化流形",
+      "llm_evidence": "提取退化概念向量引导采样远离退化流形",
+      "canonical_evidence": "提取退化概念向量引导采样远离退化流形",
+      "llm_tldr_en": "Proposes inference-time editing for unconditional diffusion models using degradation concept vectors and bottleneck patching to produce improved images without retraining.",
+      "llm_tldr_cn": "针对无条件扩散模型，本文提出一种无需训练的推理时编辑框架。通过提取退化概念向量并结合瓶颈修补与无分类器引导，引导采样远离退化流形，从而在不重新训练模型的情况下持续生成质量提升的图像。该工作展示了概念擦除在扩散模型中的潜力。",
+      "llm_tldr": "针对无条件扩散模型，本文提出一种无需训练的推理时编辑框架。通过提取退化概念向量并结合瓶颈修补与无分类器引导，引导采样远离退化流形，从而在不重新训练模型的情况下持续生成质量提升的图像。该工作展示了概念擦除在扩散模型中的潜力。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.00105v1",
+      "source": "arxiv",
+      "title": "Visual-Noise Guided In-Context Distillation for Multimodal Large Language Model Unlearning",
+      "abstract": "Multimodal Large Language Models (MLLMs) have achieved remarkable progress on vision-language tasks, but they may also memorize and expose sensitive or restricted knowledge, raising concerns about privacy and broader safety risks. Machine Unlearning (MU) provides a promising way to remove targeted undesirable knowledge from trained models without retraining from scratch while preserving general model utility. Nevertheless, effective unlearning in MLLMs remains particularly challenging. Existing training-based methods often struggle to balance unlearning effectiveness and model utility. In contrast, training-free methods such as in-context unlearning preserve model utility by avoiding parameter updates, but they do not remove memorized knowledge at the parameter level and may remain vulnerable to reverse-engineering attacks. More importantly, in-context unlearning is insufficient in multimodal settings, where visual inputs can provide strong conditioning signals and induce undesirable outputs. To address these challenges, we propose Visual-Noise Guided In-Context Distillation (VGID), a distillation-based framework for MLLM unlearning. VGID dynamically constructs an unlearning-oriented teacher distribution from the frozen base model through dual-modal intervention that combines visual perturbation with textual in-context unlearning. The resulting intervention-induced distribution serves as a teacher signal for distillation, guiding the student model toward parameter-level unlearning without requiring external teacher models or explicit undesirable response annotations. Experimental results show that VGID achieves strong unlearning effectiveness while preserving competitive model utility, reducing forget set ROUGE-L by 0.371 with only a 0.055 drop in retain set ROUGE-L in a representative setting.",
+      "authors": [
+        "Junkai Chen",
+        "Yuhao He",
+        "Junxiang You",
+        "Ruiqi Liu",
+        "Chenyu Wang",
+        "Shu Wu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-26T12:49:34+00:00",
+      "link": "https://arxiv.org/pdf/2606.00105v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "machine unlearning for multimodal LLMs, directly tackles removing undesirable knowledge from image generation models",
+      "llm_evidence_cn": "多模态大语言模型的机器遗忘，直接处理从图像生成模型中移除不需要的知识",
+      "llm_evidence": "多模态大语言模型的机器遗忘，直接处理从图像生成模型中移除不需要的知识",
+      "canonical_evidence": "多模态大语言模型的机器遗忘，直接处理从图像生成模型中移除不需要的知识",
+      "llm_tldr_en": "Visual-Noise Guided In-Context Distillation enables effective unlearning in multimodal LLMs without retraining, balancing unlearning and utility for image-related tasks.",
+      "llm_tldr_cn": "多模态大语言模型可能记忆并泄露敏感知识，机器遗忘旨在移除这些知识而不重训模型。现有训练方法难以平衡遗忘效果与模型能力，而免训练方法无法彻底消除记忆。本文提出视觉噪声引导的上下文蒸馏方法，通过引入视觉噪声和上下文学习来指导遗忘，同时利用蒸馏保持模型效用。实验表明该方法在多项多模态遗忘任务上取得最佳平衡，为图像生成模型的机器遗忘提供了有效方案。",
+      "llm_tldr": "多模态大语言模型可能记忆并泄露敏感知识，机器遗忘旨在移除这些知识而不重训模型。现有训练方法难以平衡遗忘效果与模型能力，而免训练方法无法彻底消除记忆。本文提出视觉噪声引导的上下文蒸馏方法，通过引入视觉噪声和上下文学习来指导遗忘，同时利用蒸馏保持模型效用。实验表明该方法在多项多模态遗忘任务上取得最佳平衡，为图像生成模型的机器遗忘提供了有效方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.31604v1",
+      "source": "arxiv",
+      "title": "Representation Forcing for Bottleneck-Free Unified Multimodal Models",
+      "abstract": "Unified multimodal models (UMMs) aim to handle perception and generation in a single model. Yet existing UMMs still rely on a frozen, separately pretrained VAE for image generation, imposing a structural bottleneck. Naively removing it introduces a quality gap, as the model must learn both high-level structure and low-level details from raw pixels. In this paper, we propose Representation Forcing (RF), a technique that closes this gap by making representation prediction a native capability of the model. Concretely, RF forces the decoder to autoregressively predict visual representations as intermediate tokens before pixels; these tokens then stay in context to guide pixel diffusion within the same backbone. By turning representations from perception outputs into generation targets, RF eliminates the need for any external generative latent space. We find that RF benefits both understanding and generation. On image generation, our pixel-space model with RF matches state-of-the-art VAE-based unified models. On image understanding, pixel-space RF generally outperforms its VAE-based variant. Together, these results offer an effective step toward end-to-end, bottleneck-free UMMs.",
+      "authors": [
+        "Yuqing Wang",
+        "Zhijie Lin",
+        "Ceyuan Yang",
+        "Yang Zhao",
+        "Fei Xiao",
+        "Hao He",
+        "Qi Zhao",
+        "Zihan Ding",
+        "Fuyun Wang",
+        "Shuai Wang",
+        "Youliang Zhang",
+        "Haoqi Fan",
+        "Xihui Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-29T17:59:55+00:00",
+      "link": "https://arxiv.org/pdf/2605.31604v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "uses autoregressive representation prediction for image generation within a unified model",
+      "llm_evidence_cn": "在统一模型中使用自回归表示预测进行图像生成",
+      "llm_evidence": "在统一模型中使用自回归表示预测进行图像生成",
+      "canonical_evidence": "在统一模型中使用自回归表示预测进行图像生成",
+      "llm_tldr_en": "Representation Forcing enables bottleneck-free unified multimodal models by autoregressively predicting visual representations as intermediate tokens before pixel diffusion.",
+      "llm_tldr_cn": "本论文针对统一多模态模型中依赖冻结VAE带来的结构瓶颈，提出表示迫使方法，使解码器自回归预测视觉表示作为中间令牌，再在同一骨干中进行像素扩散，消除了VAE瓶颈并保持了生成质量。",
+      "llm_tldr": "本论文针对统一多模态模型中依赖冻结VAE带来的结构瓶颈，提出表示迫使方法，使解码器自回归预测视觉表示作为中间令牌，再在同一骨干中进行像素扩散，消除了VAE瓶颈并保持了生成质量。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.01543v1",
+      "source": "arxiv",
+      "title": "PathAR: Structure-First Autoregressive Synthesis of Multimodal Pathology Images",
+      "abstract": "Data scarcity in multimodal pathology motivates unified generative models that synthesize modality-specific appearance while preserving anatomically coherent structure. Although modalities differ in appearance statistics, morphological structures such as cellular topology and tissue boundaries are largely preserved across acquisition protocols. However, existing methods often model these factors within a homogeneous token stream, implicitly coupling structure with appearance and weakening structural controllability under modality shifts. To address this, we propose pathology Autorgressive modeling (PathAR), a structure-first autoregressive synthesis framework that explicitly factorizes structure and appearance for modality-label-conditioned pathology generation.PathAR employs a dual vector quantization (Dual-VQ) tokenizer to decompose samples into mask-grounded structure and appearance tokens, and an interleaved autoregressive (IAR) transformer with asymmetric attention visibility to enforce structure-to-appearance dependence. PathAR stabilizes morphology under heterogeneous modality-specific appearances and enables spatially aligned image--mask pair generation. Extensive experiments show that PathAR improves structural consistency and modality fidelity over baselines, maintains sample diversity, supports downstream segmentation in data-scarce regimes, and demonstrates extensibility to finer-grained intra-modality organ-label variation.",
+      "authors": [
+        "Yuan Zhang",
+        "Jiahao Xia",
+        "Junzhang Huang",
+        "Meng Wang",
+        "Feng Chen",
+        "Guanyu Yang",
+        "Huazhu Fu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-01T01:43:48+00:00",
+      "link": "https://arxiv.org/pdf/2606.01543v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "autoregressive image synthesis for pathology",
+      "llm_evidence_cn": "用于病理图像的自回归生成",
+      "llm_evidence": "用于病理图像的自回归生成",
+      "canonical_evidence": "用于病理图像的自回归生成",
+      "llm_tldr_en": "PathAR proposes a structure-first autoregressive framework for multimodal pathology image synthesis, factorizing structure and appearance.",
+      "llm_tldr_cn": "PathAR提出一种结构优先的自回归框架，用于多模态病理图像合成，显式分解结构信息和外观信息，使得在模态转换时保持解剖结构一致性，解决了现有方法中结构与外观耦合的问题，为自回归图像生成领域提供了新思路。",
+      "llm_tldr": "PathAR提出一种结构优先的自回归框架，用于多模态病理图像合成，显式分解结构信息和外观信息，使得在模态转换时保持解剖结构一致性，解决了现有方法中结构与外观耦合的问题，为自回归图像生成领域提供了新思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.03972v1",
+      "source": "arxiv",
+      "title": "AAD-1: Asymmetric Adversarial Distillation for One-Step Autoregressive Video Generation",
+      "abstract": "We present AAD-1, an Asymmetric Adversarial Distillation framework for One-step autoregressive image-to-video generation. State-of-the-art methods adopt adversarial distillation but suffer from motion collapse and training instability, resulting in static videos. AAD-1 addresses these challenges through two key designs in architecture and training strategy. Our key architectural insight is to break the symmetry between generator and discriminator. While the generator remains causal to preserve autoregressive sampling capability, the discriminator attends bidirectionally over the full spatiotemporal context and produces a single holistic realism score for the entire video sequence. This asymmetric design enables the discriminator to effectively detect global temporal failures and long-range drift that cause motion collapse in autoregressive generation. To stabilize training, we introduce a phased strategy that first uses distribution matching to bootstrap a stable one-step generator, providing a warm-up phase that brings the student distribution closer to the teacher before adversarial distillation begins. Extensive experiments on VBench demonstrate that AAD-1 achieves state-of-the-art performance in one-step autoregressive video generation.",
+      "authors": [
+        "Haobo Li",
+        "Yanhong Zeng",
+        "Yunhong Lu",
+        "Jiapeng Zhu",
+        "Hao Ouyang",
+        "Qiuyu Wang",
+        "Ka Leong Cheng",
+        "Yujun Shen",
+        "Zhipeng Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-02T17:55:30+00:00",
+      "link": "https://arxiv.org/pdf/2606.03972v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "autoregressive image-to-video generation model, using causal generator",
+      "llm_evidence_cn": "自回归图像到视频生成模型，使用因果生成器",
+      "llm_evidence": "自回归图像到视频生成模型，使用因果生成器",
+      "canonical_evidence": "自回归图像到视频生成模型，使用因果生成器",
+      "llm_tldr_en": "AAD-1 proposes an asymmetric adversarial distillation framework for one-step autoregressive image-to-video generation, solving motion collapse by using a causal generator and bidirectional discriminator. It demonstrates a credible autoregressive generation approach relevant to image generation.",
+      "llm_tldr_cn": "现有对抗蒸馏方法用于自回归视频生成时面临运动崩溃和训练不稳定。AAD-1通过非对称设计：生成器保持因果自回归采样能力，判别器使用双向注意力评估整体视频真实性，实现单步生成。该方法虽面向视频，但其自回归框架和单向注意力机制对自回归图像生成有参考价值，展示了在保持高效生成的同时提升动态效果的可能性。",
+      "llm_tldr": "现有对抗蒸馏方法用于自回归视频生成时面临运动崩溃和训练不稳定。AAD-1通过非对称设计：生成器保持因果自回归采样能力，判别器使用双向注意力评估整体视频真实性，实现单步生成。该方法虽面向视频，但其自回归框架和单向注意力机制对自回归图像生成有参考价值，展示了在保持高效生成的同时提升动态效果的可能性。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

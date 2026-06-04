@@ -1,0 +1,852 @@
+Title: VPG: Visual Prefix Guidance for Autoregressive Image and Video Generation
+
+URL Source: https://arxiv.org/pdf/2605.30317v1
+
+Published Time: Fri, 29 May 2026 01:54:11 GMT
+
+Number of Pages: 22
+
+Markdown Content:
+# VPG: Visual Prefix Guidance for Autoregressive Image and Video Generation 
+
+Xinyao Liao 1,2 Qiyuan He 1∗ Yicong Li 1 Jiayin Zhu 1
+
+Xiaoye Qu 2 Wei Wei 2 Angela Yao 11National University of Singapore 2Huazhong University of Science & Technology 
+
+Figure 1: Visual Prefix Guidance (VPG) sharpens dependence on the generated visual prefix ,complementing CFG along an axis a frozen model cannot reach. Left: same-prompt, same-seed comparisons w/o vs. w/ VPG; the first two columns use Infinity [12] prompts for a “VPG” wax seal and an owl among shattered mirrors, the third uses VAR-d30 [40] for “macaw”, and the last two rows use InfinityStar [28] for a moss-covered mech tending rooftop bonsai. Right: CFG sharpens 
+
+p(c | r≤k)γ , while VPG sharpens p(r<k | rk, c )λ. See Appendix E.1. 
+
+## Abstract 
+
+Autoregressive image and video generators are trained with teacher-forced histories but must sample from their own generated prefixes at inference time, making them vulnerable to exposure bias and prefix drift. Existing remedies either modify training or apply sampling-time guidance aimed primarily at external semantic conditions, such as class labels or text prompts, rather than testing whether a next-step prediction provides strong posterior support for the generated prefix itself. We propose Visual Prefix Guidance (VPG) , a training-free inference-time guidance method for autoregressive image and video generation. VPG improves next-step prediction by contrasting the model’s output under the generated prefix with its output under a corrupted prefix, then extrapolating logits toward candidates that strengthen the posterior support of the generated prefix. Across class-conditional image generation with VAR, text-to-image generation with Infinity, and text-to-video generation with InfinityStar, VPG improves generation quality without re-training the base model, reducing FID on VAR by 0.36 on average and improving benchmark performance on both image and video generation. 
+
+> ∗Project lead. Preprint.
+> arXiv:2605.30317v1 [cs.CV] 28 May 2026
+
+## 1 Introduction 
+
+Visual autoregressive models [12, 28, 37, 40] are becoming a strong alternative to diffusion mod-els [22, 23, 27, 42] for both image and video generation. Instead of denoising continuous latents through an iterative reverse process, these models generate visual tokens, scales, or latent variables sequentially. This formulation brings visual synthesis closer to GPT-style sequence modeling [1, 39] ,which scale well in language and multimodal systems [6, 38]. Autoregressive models recursively generate each new prediction based on the generated history. We use the term prefix to denote this history for general model, independent of the prediction unit, which may be a single token, a token map, or a full image frame. During training, these models are usually trained with teacher forcing: each next-step prediction is conditioned on the ground-truth prefix, so the model only observes correct histories during optimization. However, during inference, ground-truth prefixes are unavailable, and the model must condition on its own sampled history. The training-inference mismatch creates exposure bias [4, 43] : early sampling errors can lead the model into unseen or low-probability prefix states and accumulate errors over subsequent predictions. At inference time, errors in this generated prefix can accumulate and shift later predictions away from the training distribution. In visual generation, such prefix drift often appears as structural errors, object inconsistency, or unstable high-frequency details [20, 36]. Recent work addresses it from two angles. Training-time methods incorporate generated or perturbed histories during optimization [4, 15, 24, 26, 33] to make the model more robust against the drifted prefix. Sampling-time guidance modifies the inference rule to mitigate exposure bias by strengthening the textual conditioning component available in the prefix, as in CFG [16] and recent variants based on degraded or self-perturbed references [2, 17, 21, 36, 44] . Yet both lines of work leave a key question unaddressed: when conditioning on a self-generated visual prefix, how should the next prediction be adjusted to reduce subsequent drift? Exposure bias matters not only because the prefix may contain errors, but because later predictions may become increasingly unsupported by that generated history. This motivates Visual Prefix Guidance (VPG) , a training-free, drop-in sampling rule for next-scale prediction. In standard visual AR, sampling proceeds from the conditional likelihood pθ (rk | r<k , c ).VPG adds a different lens: at each step, it favors candidates that increase the posterior support of the generated prefix, p(r<k | rk, c ), thereby suppressing unsupported drift before it compounds. To realize this prefix-posterior objective, VPG forms a paired prediction contrast between the genuine generated prefix and an inference-time corrupted prefix (as in Fig. 5). The corrupted branch approximates a prefix-marginalized likelihood that a frozen visual AR model does not provide natively, playing the prefix-axis analogue of the null condition in CFG. We instantiate this reference by same-scale full-embedding replacement : at each prefix scale, we replace a random fraction of token-position embeddings with full embeddings copied from other positions at the same scale. This yields a weaker prefix branch while preserving the model’s scale-conditional input statistics. This prefix-posterior view is complementary to condition-based guidance such as CFG while targeting a different failure mode: unsupported drift from the generated history itself. We evaluate VPG in class-conditional image generation with VAR [40] , text-to-image generation with Infinity [12] , and text-to-video generation with InfinityStar [28] . Across these settings, VPG improves prediction quality, all without retraining the base generator. On class-conditional VAR, VPG reduces FID by 0.36 on average across model sizes, and by as much as 0.63 for VAR-d16. On text-to-image generation, VPG improves both GenEval Overall and DPG-Bench Overall. On video generation, VPG improves the VBench [20] Overall score by 0.49 , with gains across all sub-scores. Our contributions are summarized as follows: • We identify a previously underexplored inference-time objective for visual autoregressive generation by strengthening posterior support for the generated prefix. This improves next-step prediction by directly targeting the accumulation of exposure bias in the prefix. • We propose Visual Prefix Guidance (VPG), a training-free, drop-in sampling rule for next-scale prediction that realizes this objective with a corrupted-prefix contrast and same-scale full-embedding replacement, requiring no auxiliary head or retraining. • We show that VPG consistently improves autoregressive image and video generation across VAR, Infinity, and InfinityStar, reducing FID on VAR by 0.36 on average and improving benchmark scores on both text-to-image and text-to-video generation. 22 Related work 
+
+Visual autoregressive generation. Autoregressive (AR) models are now a competitive paradigm for visual generation [5, 10, 32, 37] . They have been applied to both image and video synthesis. Direct pixel-level autoregression is prohibitively expensive, so modern AR systems instead operate on compressed visual latents, often with discrete tokenizers such as VQ-VAE [41] and VQ-GAN [8] .Recent work improves this pipeline through better tokenization [25, 30, 31, 45–47] . Other work changes the autoregressive structure itself, for example through coarse-to-fine scale prediction in VAR [40] and bitwise tokenization with scalable generation in Infinity [12, 28]. 
+
+Exposure bias and prefix mismatch. Autoregressive models are commonly trained with teacher forcing, where each prediction conditions on a ground-truth prefix. At inference time, the model must condition on its own sampled prefix, creating exposure bias [4, 43] . This train–test mismatch has long been studied in sequence modeling. Classical remedies either mix model-generated prefix into training [4, 34, 49] , align teacher-forced and free-running dynamics [24] , or train on noisy or revised autoregressive contexts [15, 33] . A complementary line of work studies how severe exposure bias actually is, framing it through generalization or explicit error-accumulation analyses [3, 35, 43] .In visual generation, recent methods likewise regularize self-generated rollouts or add post-training refinement objectives [19, 26, 29] . These approaches mainly modify training or add post-training optimization, whereas our goal is to improve robustness purely at inference time. 
+
+Sampling-time guidance and self-contrasting strategy. A complementary line of work studies training-free sampling-time guidance . The canonical example is classifier-free guidance (CFG), which combines conditional and unconditional predictions to bias the generation toward an external semantic condition such as a class label or text prompt [16] . Follow-up works replace the uncon-ditional reference with a degraded internal reference. Variants of the reference have been explored from different perspectives, including weaker denoisers for autoguidance [21] , attention manipula-tion [2, 13, 14, 17] , and feature swaps in diffusion models [48, 51] . The analogues in autoregressive visual generation use reweighted conditional predictions or scale-specific self-guidance [36, 44] .These methods show that internal contrast can be a powerful guidance signal, though they are still primarily organized around external condition. In contrast, our work focus on if next-step prediction is supported by the generated prefix itself, giving a direct sampling-time handle on prefix drift. 
+
+## 3 Preliminaries 
+
+3.1 Next-Scale Visual Autoregressive Models 
+
+Following VAR [40] and its bitwise extension Infinity [12] , we model visual generation as a next-scale prediction process. A multi-scale tokenizer maps an image I into K coarse-to-fine residual token maps R = ( r1, . . . , r K ), where each scale corresponds to one stage of the residual decomposition. Thus, K is the total number of residual prediction stages, ordered from the coarsest map r1 to the finest map rK . Each residual token map is written as rk ∈ V hk ×wk , where V denotes the token space at each spatial location. In VAR, entries of rk are VQ-VAE [41] codebook indices; in Infinity, they are represented by BSQ codes [50]. The AR model factorizes generation over these residual scales: 
+
+pθ (R | c) = 
+
+> K
+
+Y
+
+> k=1
+
+pθ (rk | r<k , c ), (1) where c is an external condition, such as a class label or text prompt. The prefix r<k contains all previous residual scales. During training, it comes from ground-truth token maps. During inference, it is replaced by the model’s sampled prefix, which for simplicity, we also denote as r<k .Given condition c and a generated prefix r<k , the transformer outputs the scale-k logit tensor 
+
+ℓk(c, r <k ). These logits define one token distribution at each spatial location of the next hk × wk
+
+residual map. Sampling them produces ˆrk ∈ V hk ×wk . The sampled token map is then de-quantized and added to the partial latent reconstruction: 
+
+zk = Q−1 
+
+> k
+
+(ˆ rk), ˆfk = ˆfk−1 + Uk(zk), ˆf0 = 0 , (2) where Q−1 
+
+> k
+
+is the scale-specific de-quantizer and Uk upsamples the residual feature map to the latent resolution. After the final scale, the decoder maps the accumulated latent to the image, ˆI = D( ˆfK ).3Table 1: Guidance axes in conditional visual autoregression. In pθ (rk | r<k , c ), the fixed axis is unchanged between the two compared branches being, while the contrasted axis is the conditioning variable that is perturbed to form the guidance signal. CFG guides the external condition c, while VPG guides the generated prefix r<k . The two contrasts can be composed to guide both axes. Method Fixed axis Contrasted axis Guided dependence CFG r<k c vs. ∅ external condition c
+
+VPG c r<k vs. ˜r<k generated prefix r<k 
+
+CFG+VPG – both contrasts c and r<k 
+
+3.2 Classifier-Free Guidance in Visual Autoregression 
+
+The factorization in Eq. (1) exposes two conditioning inputs: the external condition c and the autoregressive prefix r<k . We use this distinction to organize sampling-time guidance methods by which input is held fixed and which input is contrasted to form a guidance direction (Tab. 1). Sampling directly from the next-scale conditional pθ (rk | r<k , c ) in Eq. (1) does not necessarily lead to generations faithful to the external condition c; the sampler may favor rk with high prefix-prior likelihood pθ (rk | r<k ) but only weakly support c. Classifier-free guidance (CFG) [16] addresses this at sampling time by sharpening the posterior compatibility of the external condition, p(c | r≤k), with the prefix sequence after appending rk, where r≤k = ( r<k , r k). This is realized by exponentiating the compatibility term in the augmented (unnormalized) conditional 
+
+pCFG  
+
+> θ
+
+(rk | r<k , c ) ∝ pθ (rk | r<k , c ) p(c | r≤k)γ , (3) where γ ≥ 0 is the guidance strength. Eq. (3) is written as a classifier-guidance objective because it seems to require the posterior p(c | r≤k). However, applying Bayes’ rule along the AR chain removes the need for an explicit classifier: 
+
+p(c | r≤k) ∝rk
+
+pθ (rk | r<k , c )
+
+p(rk | r<k ) .
+
+Therefore CFG samples from the same augmented distribution by reweighting the next-scale condi-tional with a conditional/unconditional likelihood ratio, 
+
+pCFG  
+
+> θ
+
+(rk | r<k , c ) ∝ pθ (rk | r<k , c )
+
+ pθ (rk | r<k , c )
+
+p(rk | r<k )
+
+γ
+
+,
+
+up to normalization over rk (full derivation in App. A.1). The remaining inaccessible term is the unconditional predictive p(rk | r<k ). Classifier-free training supplies a learned null condition ∅ to approximate this term, i.e . pθ (rk | r<k ) ≈ pθ (rk | r<k , ∅). Sampling from Eq. (3) then translates directly to the logit-space extrapolation rule. 
+
+ℓCFG  
+
+> k
+
+= ℓck + γ ℓck − ℓ∅
+
+> k
+
+ = (1 + γ) ℓck − γ ℓ ∅
+
+> k
+
+. (4) Above, ℓck = ℓk(c, r <k ) and ℓ∅ 
+
+> k
+
+= ℓk(∅, r <k ) denote the scale-k logits under the condition and the null-condition branches with the same generated prefix, respectively, and γ is the CFG scale. Increasing γ pushes the sampler toward next-scale candidates that maximize p(c | r≤k).In the autoregressive conditional pθ (rk | r<k , c ), the standard CFG only guides the external condition 
+
+c, by contrasting c with ∅ while keeping the generated prefix fixed. This view casts CFG as a log-ratio guidance over one conditioning axis. 
+
+## 4 Method 
+
+4.1 Visual Prefix Guidance as Log-Ratio Guidance 
+
+Visual Prefix Guidance (VPG) starts from the inference-time setting in which the next-scale model must sample from pθ (rk | r<k , c ), where r<k is the generated prefix available at step k. Under exposure bias, later predictions can drift because they are weakly supported by this generated history. VPG therefore changes the sampling objective: among plausible next-scale candidates, it favors those that provide a stronger posterior support for the prefix r<k , i.e . p(r<k | rk, c ).4Causal VAR Transforme r                             
+
+> (causal next-scale prediction)
+> c
+> 1
+> 1
+> 134···
+> 134··· 189···
+> 134··· 189··· c
+> 124··· 183···
+> 189···
+> 1134··· 189··· (II) VPG in Logit Space
+> (for position k)
+> logit coord. 1
+> Δk
+> λkΔk
+> logit coord. 2
+> (I) Corruption method
+> 1243
+> 4221
+> replace
+> Generated
+> Prefix
+> Corrupted
+> Prefix
+> Text
+> condition
+> VPG guided
+> logits
+> Corrupted
+> token
+
+Figure 2: Visual Prefix Guidance (VPG) framework. VPG contrasts logits from the generated prefix r<k and same-scale corrupted prefix ˜r<k using the same frozen transformer and condition c.The resulting direction is extrapolated before sampling the next token map ˆrk.This offers a training-free way to target prefix drift. Instead of modifying the model or revising the prefix, VPG augments the next-step conditional with a prefix-compatibility term: 
+
+pVPG  
+
+> θ
+
+(rk | r<k , c ) ∝ pθ (rk | r<k , c ) p(r<k | rk, c )λ, (5) where pVPG  
+
+> θ
+
+denotes the VPG-guided sampling distribution and λ ≥ 0 is the prefix-guidance strength. This mirrors the compatibility-augmentation view of CFG (Sec. 3.2), but acts on a different conditioning axis: CFG sharpens agreement with the external condition c, while VPG sharpens agreement with the generated visual prefix (Tab. 1). Fig. 2 illustrates the resulting two-pass pipeline and the logit-space extrapolation used before sampling the next scale. Eq. (5) is written as a prefix-classifier objective because it seems to require the posterior p(r<k | rk, c ).However, applying Bayes’ rule along the prefix axis removes the need for an explicit classifier: 
+
+p(r<k | rk, c ) ∝rk
+
+pθ (rk | r<k , c )
+
+p(rk | c) , where p(rk | c) = 
+
+Z
+
+pθ (rk | r<k , c ) p(r<k | c) d μ(r<k ).
+
+(6) Here μ denotes the base measure over prefixes; for discrete token prefixes, the integral reduces to a sum under the counting measure. Therefore ,VPG samples from the same augmented distribution by reweighting the next-scale conditional with a prefix-conditional/prefix-marginalized likelihood ratio, 
+
+pVPG  
+
+> θ
+
+(rk | r<k , c ) ∝ pθ (rk | r<k , c )
+
+ pθ (rk | r<k , c )
+
+p(rk | c)
+
+λ
+
+,
+
+up to a normalization term over rk (see full derivation in App. A.2). The remaining intractable term is the prefix-marginalized likelihood p(rk | c), which is exactly because it requires marginalizing over all possible prefixes. Unlike CFG, a frozen visual AR model is not trained with a dedicated null-prefix input. Replacing the prefix with random tokens may mimic a null condition but can also introduce out-of-distribution inputs. We therefore use a tractable surrogate whose prefix remains compatible with the pretrained model while carrying less prefix-specific information than the clean prefix r<k . Specifically, VPG constructs a weak-prefix reference by evaluating the frozen model under an inference-time corrupted prefix: 
+
+pref (rk | c) := pθ (rk | ˜r<k , c ). (7) The corrupted prefix plays a role analogous to the null condition in CFG, but along the autoregressive prefix axis rather than the external-condition axis. Although such a surrogate may be inconsistent, as can also occur for null-condition guidance under model misspecification [11, 16] , we empirically find that it help improve conditioning ability on the prefix. We provide further discussion in App. A.2. 5Sampling from Eq. (5) then translates directly to a logit-space extrapolation rule. Let ℓgen  
+
+> k
+
+≡
+
+ℓk(c, r <k ) and ℓcorr  
+
+> k
+
+≡ ℓk(c, ˜r<k ) denote the scale-k logits from the generated-prefix and corrupted-prefix branches respectively. The prefix-guided logit ℓVPG  
+
+> k
+
+is then given as 
+
+ℓVPG  
+
+> k
+
+= ℓgen  
+
+> k
+
++ λ ℓgen  
+
+> k
+
+− ℓcorr 
+
+> k
+
+ = (1 + λ) ℓgen  
+
+> k
+
+− λ ℓ corr  
+
+> k
+
+, (8) Eq. (8) is applied position-wise before sampling the next-scale tokens: for VAR-style models, over the parallel prediction heads at all hkwk sites; for Infinity-style models, over the corresponding bitwise logits. Note that VPG changes only the inference-time sampling distribution and introduces no auxiliary model, learned guidance head, or retraining objective. 
+
+Composition with CFG. CFG and VPG are composed directly in logit space. We first apply CFG separately to the genuine-prefix and corrupted-prefix branches, 
+
+ggen  
+
+> k
+
+= ℓk(c, r <k ) + γ ℓk(c, r <k ) − ℓk(∅, r <k )| {z }
+
+> CFG on genuine prefix
+
+, (9) 
+
+gcorr  
+
+> k
+
+= ℓk(c, ˜r<k ) + γ ℓk(c, ˜r<k ) − ℓk(∅, ˜r<k )| {z }
+
+> CFG on corrupted prefix
+
+, (10) where γ is the CFG scale, and ggen  
+
+> k
+
+and gcorr  
+
+> k
+
+denote the CFG-guided intermediate logits from the generated-prefix and corrupted-prefix branches. We then apply VPG between these two branch logits: 
+
+ℓCFG+VPG  
+
+> k
+
+= ggen 
+
+> k
+
+|{z} 
+
+> CFG-guided base
+
++ λ ggen  
+
+> k
+
+− gcorr 
+
+> k
+
+| {z }
+
+> VPG
+
+. (11) Eq. (11) first strengthens agreement with the external semantic condition c on each prefix branch, then strengthens agreement with the genuine generated prefix. The corresponding likelihood interpretation and derivation are provided in App. A.3. 
+
+4.2 Constructing a Corrupted Prefix 
+
+The corrupted prefix ˜r<k enters VPG as a single-sample surrogate for the prefix-marginalized predictive p(rk | c) = Er<k ∼p(·| c)[pθ (rk | r<k , c )] in Eq. (6) . The ideal surrogate is a draw from 
+
+p(r<k | c), that is content-independent of the generated prefix, while ensuring every other model input (scale geometry, position encoding, c, weights) stays within the training distribution. We approximate such a draw at zero training cost by same-scale full embedding replacement : across the prefix, a uniformly random fraction np of sites have their full embedding (visual code with its scale-position encoding) replaced with that of another site at the same scale, where np is the 
+
+corruption fraction (See ablations in Sec. 5.4). The replacement embeddings come from the model itself, so scale-conditional statistics are preserved, while the content-position binding, or the prefix-axis information VPG targets, is corrupted. Building a weak-condition branch by reorganizing the model’s own activations to avoid additional post-training is a recurring pattern in inference-time guidance [2, 17, 21, 44]. Sec. 5.4 ablates each component of this construction. Formally, each prefix segment j ∈ { 1, . . . , k − 1} uses the downsampled cumulative feature at the corresponding scale. It is embedded with the model’s visual projection and scale-position encoding. 
+
+ej,u = Emb( ¯Fj [u]) + PosEmb( j, u ), 1 ≤ j < k, (12) where u indexes spatial sites. At each guided step, Sk is a uniformly random subset of prefix sites of size |S k| = np
+
+P 
+
+> j<k
+
+hj wj . For selected pairs (j, u ) ∈ S k, we sample a donor π(j, u ) = ( j, u ′)
+
+from the same scale j and replace the full embedding. 
+
+˜ej,u =
+
+ej,u ′ , (j, u ) ∈ S k, (j, u ′) = π(j, u ),ej,u , (j, u ) /∈ S k. (13) The corrupted-prefix prediction pc, ˜r<k (rk) uses the replaced embeddings from Eq. (13). 
+
+## 5 Experiments 
+
+Our experiments cover class-conditional image generation with VAR [40] , text-to-image generation with Infinity [12] , and text-to-video generation with InfinityStar [28] . We first report main results in these three settings, then ablate the corrupted-prefix construction and VPG hyperparameters on VAR. 6Table 2: ImageNet 256 ×256 class-conditional generation with VAR. λ denotes the VPG guidance scale selected by best FID; green values report ∆FID relative to the unguided baseline. VPG improves FID across all evaluated sizes. 
+
+Model #Params λ FID ↓ Model #Params λ FID ↓
+
+VAR-d16 310M — 3.35 VAR-d24 1.0B — 2.15 
+
++ VPG (Ours) 310M 3.0 2.72 (-0.63) + VPG (Ours) 1.0B 1.8 1.83 (-0.32) 
+
+VAR-d20 600M — 2.67 VAR-d30 2.0B — 1.94 
+
++ VPG (Ours) 600M 2.4 2.28 (-0.39) + VPG (Ours) 2.0B 1.3 1.84 (-0.10) 
+
+Table 3: Text-to-image evaluation on GenEval and DPG-Bench. † indicates prompt rewriting; bold 
+
+and underlined mark best and second-best results; green values report improvements over Infinity. VPG ties the best GenEval score, and improves DPG-Bench Overall.                                                                  
+
+> GenEval ↑DPG-Bench ↑
+> Method #Params Two Object Position Color Attribute Overall Overall
+> Diffusion Models
+> SDv2.1 0.9B 0.51 0.07 0.17 0.50 68.09 SDXL 2.6B 0.74 0.15 0.23 0.55 74.65 PixArt-Σ0.6B 0.62 0.14 0.27 0.55 80.54 SD3 ( d=24 )2B 0.74 0.34 0.36 0.62 84.08
+> SD3 ( d=38 )8B 0.89 0.34 0.47 0.71 –
+> Autoregressive Models
+> LlamaGen 0.8B 0.34 0.07 0.04 0.32 –Show-o 1.3B 0.80 0.31 0.50 0.68 67.48 Emu3 8.5B 0.81 †0.49 †0.45 †0.66 †81.60 Infinity 2B 0.83 †0.39 †0.56 †0.70 †83.46
+> + VPG (Ours) 2B 0.85 †
+> (+0.02)
+> 0.41 †
+> (+0.02)
+> 0.56 †
+> (+0.00)
+> 0.71 †
+> (+0.01)
+> 83.80
+> (+0.34)
+
+5.1 Experimental setup 
+
+We evaluate released checkpoints without retraining or architectural changes. For class-conditional image generation, we use official VAR checkpoints at depths 16/20/24/30 and follow the standard ImageNet [7] 256 ×256 protocol with 50,000 generated samples. We use the ADM evaluation suite and report Fréchet Inception Distance (FID) as the main metric. For text-to-image generation, we evaluate the released Infinity checkpoint on GenEval [9] and DPG-Bench [18] . For text-to-video generation, we evaluate the released InfinityStar checkpoint on all 946 VBench prompts [20]. 
+
+5.2 Main results Class-conditional generation For VAR, baseline sampling follows the public evaluation scripts with top-k=900 , top-p=0 .96 , and CFG weight 1.5. VPG uses same-scale full-embedding replacement to construct the corrupted prefix: a fraction np of prefix sites is replaced by the full embedding of a uniformly sampled donor site from the same scale, including visual code and scale-position encoding (Sec. 4.2). We set np=0 .1 for all VAR depths and select λ by best FID for each model size. 
+
+Text-to-image generation Tab. 2 reports the best-FID operating point of VPG at each VAR depth. Across all four capacities, VPG lowers FID. The average reduction is 0.36 FID, with the largest gain on VAR-d16 (3.35 → 2.72). The most competitive operating point is VAR-d24+VPG: its FID of 1.83 is slightly better than the unguided VAR-d30 (1.94) and nearly identical to VAR-d30+VPG (1.84), despite using half the parameters. The gain becomes smaller as model capacity increases, suggesting that prefix contrast is most useful when the generator has less capacity. Tab. 3 reproduces the Infinity comparison table [12] and includes our VPG result. We follow the same sampling pipeline as the Infinity baselines and apply same-scale full-embedding replacement with np=0 .1 and λ=0 .2. Infinity + VPG improves the more compositional GenEval dimensions, including Two Obj. and Position, by +0.02 each, while maintaining Infinity’s best Color Attribute score of 0.56. As a result, the GenEval Overall score increases from 0.70 to 0.71, matching the 7Table 4: Text-to-video evaluation on VBench. bold and underlined mark best and second-best results; green values report changes relative to unguided InfinityStar. VPG gives InfinityStar the best Multi-object and Semantic scores while improving Overall. 
+
+Model #Params Human Action Scene Multi object Appearance Style Quality Score Semantic Score Overall 
+
+Diffusion Models 
+
+AnimateDiff-V2 1.5B 92.60 50.19 36.88 22.42 82.90 69.75 80.27 VideoCrafter-2.0 1.5B 95.00 55.29 40.66 25.13 82.20 73.42 80.44 OpenSora V1.2 1.1B 85.80 42.47 58.41 23.89 80.71 73.30 79.23 Show-1 6B 95.60 47.03 45.47 23.06 80.42 72.98 78.93 Gen-3 – 96.40 54.57 53.64 24.31 84.11 75.17 82.32 CogVideoX-5B 5B 99.40 53.20 62.11 24.91 82.75 77.04 81.61 HunyuanVideo 13B 94.40 53.88 68.55 19.80 85.09 75.82 83.24 Goku 2B 97.60 57.08 79.48 23.08 85.60 81.87 84.85 
+
+Wan 2.1 14B 98.80 53.67 81.44 21.13 85.64 80.95 84.70 
+
+Autoregressive Models 
+
+Nova 0.6B 95.20 54.06 77.52 20.92 80.39 79.05 80.12 Emu3 8B 77.71 37.11 44.64 20.92 84.09 68.43 80.96 InfinityStar 8B 98.00 54.51 87.50 20.54 84.14 82.74 83.86 
+
++ VPG (Ours) 8B 98.00 
+
+> (+0.00)
+
+56.61 
+
+> (+2.10)
+
+89.63 
+
+> (+2.13)
+
+20.60 
+
+> (+0.06)
+
+84.56 
+
+> (+0.42)
+
+83.51 
+
+> (+0.77)
+
+84.35 
+
+> (+0.49) Infinity +VPG
+> a photo of four books
+> a photo of two hair driers
+> microwave and bench
+> fork and baseball glove
+> bear above spoon
+> horse right of broccoli
+
+Figure 3: GenEval qualitative comparison for Infinity vs. Infinity + VPG. VPG corrects failures in counting, two-object binding, and spatial position. best score in the table and achieving the strongest performance among autoregressive models. On DPG-Bench, VPG improves Infinity from 83.46 to 83.80. 
+
+Text-to-video generation Tab. 4 compares the released InfinityStar checkpoint with and without VPG under the † protocol. We apply same-scale full-embedding replacement with np=0 .05 and 
+
+λ=0 .25 . A smaller corruption fraction is important for video generation, as long spatiotemporal rollouts are more sensitive to prefix perturbations; see Appendix B.2 for more details. VPG improves InfinityStar’s Overall score from 83.86 to 84.35. The most notable gains are semantic: VPG achieves the best Multi-object score of 89.63 and the best Semantic score of 83.51 among all listed models, while also improving Scene to the second-best result. 
+
+5.3 Qualitative study 
+
+Fig. 3 shows matched GenEval examples from categories where Infinity + VPG improves over the Infinity baseline. The examples illustrate the same trend as Tab. 3: VPG helps when the unguided autoregressive sampler drops objects, merges two entities, or loses spatial relations under a strong scene prior. Additional visualizations are provided in Appendix E, including class-conditional VAR comparisons (Figs. 7–9), InfinityStar video-frame comparisons (Figs. 10–12), and DPG-Bench text-to-image examples (Figs. 13–16). 8(Left) FID, IS vs. λ (np=0 .1, across model sizes). (Right) FID, IS vs. λ for corruption levels. 
+
+Figure 4: VPG sweeps on class-conditional VAR (ImageNet 256 ×256). Left: guidance strength 
+
+λ with fixed corruption fraction np=0 .1, across four VAR capacities. Right: the same λ sweep on VAR-d16 with the corruption fraction varied over np ∈ { 0.05 , 0.10 , 0.15 , 0.20 , 0.25 }; larger np
+
+amplifies the FID/IS response to λ while small np remains close to the baseline. 
+
+5.4 Ablations 
+
+We ablate VPG on class-conditional VAR because it provides a controlled protocol with 50k-sample FID evaluation. The ablations answer two questions. (i) what kind of corrupted prefix creates a useful weak reference? (ii) how sensitive is VPG to the guidance scale λ and corruption fraction np? All ablations use the ImageNet 256 ×256 ADM protocol, making them directly comparable to Tab. 2. 
+
+Effect of corrupted-prefix construction Tab. 5 ablates how the corrupted prefix ˜r<k is built on VAR-d16 with fixed np=0 .1. The replacement rules are formalized in Appendix B.1. The three incomplete or off-manifold corruptions all increase FID relative to the 3.35 baseline: random codebook gives +3 .91 (7.26), same-scale token gives +2 .52 (5.87), and same-scale position gives 
+
++1 .11 (4.46). Only same-scale full-embedding replacement improves over the baseline, reducing FID by 0.63 (3.35 → 2.72), a relative reduction of 18 .8% . This supports the design criterion in Sec. 4.2: the corrupted branch must be weak enough to break content-position binding, but close enough to preserve same-scale input statistics. The corresponding FID/IS curves are provided in Appendix B.1. Table 5: Corrupted-prefix replacement variants on VAR-d16. each row reports the best FID for one replacement strategy (λ > 0 ). Same-scale embed. is the only variant that improves over the baseline.       
+
+> Variant Best FID ↓
+> None (baseline) 3.35 Random codebook 7.26 Same-scale token 5.87 Same-scale position 4.46
+> Same-scale embed. (Ours) 2.72 (-0.63)
+
+Sensitivity to guidance strength and corruption frac-tion Fig. 4 studies the two main inference hyperpa-rameters. The left panel varies the guidance strength λ
+
+across four VAR capacities with fixed np=0 .1. VPG consistently reaches a lower FID than the unguided baseline, while the best λ decreases as model size in-creases. The right panel fixes VAR-d16 and sweeps 
+
+np ∈ { 0.05 , 0.10 , 0.15 , 0.20 , 0.25 } across the same λ
+
+range. Larger corruption fractions amplify the response to λ, whereas np=0 .05 remains close to the baseline. Across the tested range, moderate corruption and a suffi-ciently large guidance scale give the best FID trade-off, matching the operating point used in Tab. 2. 
+
+## 6 Conclusion 
+
+We presented Visual Prefix Guidance (VPG), a training-free sampling rule that treats the generated prefix as an explicit guidance source in visual autoregressive generation. VPG favors next-step candidates that better support the existing prefix by contrasting genuine-prefix and corrupted-prefix predictions, yielding a simple logit extrapolation without auxiliary models or retraining. VPG complements CFG: CFG sharpens dependence on the external condition, while VPG sharpens dependence on the internal visual history. Across VAR, Infinity, and InfinityStar, this prefix-axis guidance improves image and video generation, especially when the unguided sampler drops objects, weakens spatial relations, or lets video semantics drift. These results show that prefix support is a practical inference-time control signal for autoregressive visual generation. 9References 
+
+[1] Josh Achiam, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman, Shyamal Anadkat, et al. Gpt-4 technical report. arXiv preprint arXiv:2303.08774 , 2023. [2] Donghoon Ahn, Hyoungwon Cho, Jaewon Min, Wooseok Jang, Jungwoo Kim, SeonHwa Kim, Hyun Hee Park, Kyong Hwan Jin, and Seungryong Kim. Self-rectifying diffusion sampling with perturbed-attention guidance. In European Conference on Computer Vision , pages 1–17. Springer, 2024. [3] Kushal Arora, Layla El Asri, Hareesh Bahuleyan, and Jackie Cheung. Why exposure bias matters: An imitation learning perspective of error accumulation in language generation. In Findings of the Association for Computational Linguistics: ACL 2022 , pages 700–710, 2022. doi: 10.18653/v1/2022.findings-acl.58. URL https://aclanthology.org/2022.findings-acl.58/ .[4] Samy Bengio, Oriol Vinyals, Navdeep Jaitly, and Noam Shazeer. Scheduled sampling for sequence prediction with recurrent neural networks. Advances in Neural Information Processing Systems , 28, 2015. [5] Mark Chen, Alec Radford, Rewon Child, Jeffrey Wu, Heewoo Jun, David Luan, and Ilya Sutskever. Generative pretraining from pixels. In International conference on machine learning , pages 1691–1703. PMLR, 2020. [6] Chaorui Deng, Deyao Zhu, Kunchang Li, Chenhui Gou, Feng Li, Zeyu Wang, Shu Zhong, Weihao Yu, Xiaonan Nie, Ziang Song, Guang Shi, and Haoqi Fan. Emerging properties in unified multimodal pretraining. arXiv preprint arXiv:2505.14683 , 2025. [7] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. Imagenet: A large-scale hierarchical image database. In 2009 IEEE conference on computer vision and pattern recognition , pages 248–255. Ieee, 2009. [8] Patrick Esser, Robin Rombach, and Bjorn Ommer. Taming transformers for high-resolution image synthesis. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 12873–12883, 2021. [9] Dhruba Ghosh, Hannaneh Hajishirzi, and Ludwig Schmidt. Geneval: An object-focused framework for evaluating text-to-image alignment. Advances in Neural Information Processing Systems , 36:52132–52152, 2023. [10] Karol Gregor, Ivo Danihelka, Andriy Mnih, Charles Blundell, and Daan Wierstra. Deep autoregressive networks. In International Conference on Machine Learning , pages 1242–1250. PMLR, 2014. [11] Peter Grünwald and John Langford. Suboptimal behavior of bayes and mdl in classification under misspecification. Machine Learning , 66(2):119–149, 2007. [12] Jian Han, Jinlai Liu, Yi Jiang, Bin Yan, Yuqi Zhang, Zehuan Yuan, Bingyue Peng, and Xiaobing Liu. Infinity: Scaling bitwise autoregressive modeling for high-resolution image synthesis. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 15733–15744, June 2025. [13] Qiyuan He and Angela Yao. Conceptrol: Concept control of zero-shot personalized image generation. 
+
+arXiv preprint arXiv:2503.06568 , 2025. [14] Qiyuan He, Jinghao Wang, Ziwei Liu, and Angela Yao. Aid: Attention interpolation of text-to-image diffusion. arXiv preprint arXiv:2403.17924 , 2024. [15] Qiyuan He, Yicong Li, Haotian Ye, Jinghao Wang, Xinyao Liao, Pheng-Ann Heng, Stefano Ermon, James Zou, and Angela Yao. REAR: Rethinking visual autoregressive models via generator-tokenizer consistency regularization. arXiv preprint arXiv:2510.04450 , 2025. [16] Jonathan Ho and Tim Salimans. Classifier-free diffusion guidance. arXiv preprint arXiv:2207.12598 ,2022. [17] Susung Hong. Smoothed energy guidance: Guiding diffusion models with reduced energy curvature of attention. Advances in Neural Information Processing Systems , 37:66743–66772, 2024. [18] Xiwei Hu, Rui Wang, Yixiao Fang, Bin Fu, Pei Cheng, and Gang Yu. Ella: Equip diffusion models with llm for enhanced semantic alignment. arXiv preprint arXiv:2403.05135 , 2024. [19] Xun Huang, Zhengqi Li, Guande He, Mingyuan Zhou, and Eli Shechtman. Self forcing: Bridging the train-test gap in autoregressive video diffusion, 2025. URL https://arxiv.org/abs/2506.08009 .
+
+10 [20] Ziqi Huang, Yinan He, Jiashuo Yu, Fan Zhang, Chenyang Si, Yuming Jiang, Yuanhan Zhang, Tianxing Wu, Qingyang Jin, Nattapol Chanpaisit, Yaohui Wang, Xinyuan Chen, Limin Wang, Dahua Lin, Yu Qiao, and Ziwei Liu. Vbench: Comprehensive benchmark suite for video generative models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 21807–21818, 2024. [21] Tero Karras, Miika Aittala, Tuomas Kynkäänniemi, Jaakko Lehtinen, Timo Aila, and Samuli Laine. Guiding a diffusion model with a bad version of itself. In Advances in Neural Information Processing Systems , volume 37, 2024. [22] Weijie Kong, Qi Tian, Zijian Zhang, Rox Min, Zuozhuo Dai, Jin Zhou, Jiangfeng Xiong, Xin Li, Bo Wu, Jianwei Zhang, et al. Hunyuanvideo: A systematic framework for large video generative models, 2024. URL https://arxiv.org/abs/2412.03603 .[23] Black Forest Labs. FLUX.2: Frontier Visual Intelligence. https://bfl.ai/blog/flux-2 , 2025. [24] Alex M. Lamb, Anirudh Goyal, Ying Zhang, Saizheng Zhang, Aaron C. Courville, and Yoshua Bengio. Professor forcing: A new algorithm for training recurrent networks. In Advances in Neural Information Processing Systems , volume 29, 2016. [25] Tianhong Li, Yonglong Tian, He Li, Mingyang Deng, and Kaiming He. Autoregressive image generation without vector quantization. Advances in Neural Information Processing Systems , 37:56424–56445, 2024. [26] Xinyao Liao, Qiyuan He, Kai Xu, Xiaoye Qu, Yicong Li, Wei Wei, and Angela Yao. VA-π: Variational policy alignment for pixel-aware autoregressive generation. arXiv preprint arXiv:2512.19680 , 2025. [27] Xinyao Liao, Wei Wei, Xiaoye Qu, and Yu Cheng. Step-level reward for free in rl-based t2i diffusion model fine-tuning. arXiv preprint arXiv:2505.19196 , 2025. [28] Jinlai Liu, Jian Han, Bin Yan, Hui Wu, Fengda Zhu, Xing Wang, Yi Jiang, Bingyue Peng, and Zehuan Yuan. Infinitystar: Unified spacetime autoregressive modeling for visual generation, 2025. URL https: //arxiv.org/abs/2511.04675 .[29] Xiaolu Liu, Yicong Li, Qiyuan He, Jiayin Zhu, Wei Ji, Angela Yao, and Jianke Zhu. Interp3d: Correspondence-aware interpolation for generative textured 3d morphing. In The Fourteenth Interna-tional Conference on Learning Representations , 2026. URL https://openreview.net/forum?id= au6cziMtGM .[30] Chuofan Ma, Yi Jiang, Junfeng Wu, Jihan Yang, Xin Yu, Zehuan Yuan, Bingyue Peng, and Xiaojuan Qi. Unitok: A unified tokenizer for visual generation and understanding. arXiv preprint arXiv:2502.20321 ,2025. [31] Fabian Mentzer, David Minnen, Eirikur Agustsson, and Michael Tschannen. Finite scalar quantization: Vq-vae made simple. arXiv preprint arXiv:2309.15505 , 2023. [32] Niki Parmar, Ashish Vaswani, Jakob Uszkoreit, Lukasz Kaiser, Noam Shazeer, Alexander Ku, and Dustin Tran. Image transformer. In International conference on machine learning , pages 4055–4064. PMLR, 2018. [33] Sucheng Ren, Qihang Yu, Ju He, Xiaohui Shen, Alan Yuille, and Liang-Chieh Chen. Beyond next-token: Next-x prediction for autoregressive visual generation. arXiv preprint arXiv:2502.20388 , 2025. [34] Stephane Ross, Geoffrey Gordon, and Drew Bagnell. A reduction of imitation learning and structured prediction to no-regret online learning. In Proceedings of the Fourteenth International Conference on Artificial Intelligence and Statistics , volume 15 of Proceedings of Machine Learning Research , pages 627–635, 2011. URL https://proceedings.mlr.press/v15/ross11a.html .[35] Florian Schmidt. Generalization in generation: A closer look at exposure bias. In Proceedings of the 3rd Workshop on Neural Generation and Translation , pages 157–167, 2019. doi: 10.18653/v1/D19-5616. URL https://aclanthology.org/D19-5616/ .[36] Youngwoo Shin, Jiwan Hur, and Junmo Kim. SSG: Scaled spatial guidance for multi-scale visual autoregressive generation. In The Fourteenth International Conference on Learning Representations , 2026. URL https://openreview.net/forum?id=S6oLw7VixT .[37] Peize Sun, Yi Jiang, Shoufa Chen, Shilong Zhang, Bingyue Peng, Ping Luo, and Zehuan Yuan. Autore-gressive model beats diffusion: Llama for scalable image generation. arXiv preprint arXiv:2406.06525 ,2024. 
+
+11 [38] Chameleon Team. Chameleon: Mixed-modal early-fusion foundation models. arXiv preprint arXiv:2405.09818 , 2024. [39] Gemini Team, Rohan Anil, Sebastian Borgeaud, Jean-Baptiste Alayrac, Jiahui Yu, Radu Soricut, Johan Schalkwyk, Andrew M Dai, Anja Hauth, Katie Millican, et al. Gemini: a family of highly capable multimodal models. arXiv preprint arXiv:2312.11805 , 2023. [40] Keyu Tian, Yi Jiang, Zehuan Yuan, Bingyue Peng, and Liwei Wang. Visual autoregressive modeling: Scalable image generation via next-scale prediction. Advances in neural information processing systems ,37:84839–84865, 2024. [41] Aaron Van Den Oord, Oriol Vinyals, et al. Neural discrete representation learning. Advances in neural information processing systems , 30, 2017. [42] Team Wan, Ang Wang, Baole Ai, Bin Wen, Chaojie Mao, Chen-Wei Xie, Di Chen, Feiwu Yu, Haiming Zhao, Jianxiao Yang, et al. Wan: Open and advanced large-scale video generative models. arXiv preprint arXiv:2503.20314 , 2025. [43] Chaojun Wang and Rico Sennrich. On exposure bias, hallucination and domain shift in neural machine translation. arXiv preprint arXiv:2005.03642 , 2020. [44] Dongli Xu, Aleksei Tiulpin, and Matthew B. Blaschko. SoftCFG: Uncertainty-guided stable guidance for visual autoregressive model. In The Fourteenth International Conference on Learning Representations ,2026. URL https://openreview.net/forum?id=G7tqQ5Upcs .[45] Haotian Ye, Qiyuan He, Jiaqi Han, Puheng Li, Jiaojiao Fan, Zekun Hao, Fitsum Reda, Yogesh Balaji, Huayu Chen, Sheng Liu, et al. Infotok: Adaptive discrete video tokenizer via information-theoretic compression. arXiv preprint arXiv:2512.16975 , 2025. [46] Lijun Yu, José Lezama, Nitesh B Gundavarapu, Luca Versari, Kihyuk Sohn, David Minnen, Yong Cheng, Vighnesh Birodkar, Agrim Gupta, Xiuye Gu, et al. Language model beats diffusion–tokenizer is key to visual generation. arXiv preprint arXiv:2310.05737 , 2023. [47] Qihang Yu, Mark Weber, Xueqing Deng, Xiaohui Shen, Daniel Cremers, and Liang-Chieh Chen. An image is worth 32 tokens for reconstruction and generation. Advances in Neural Information Processing Systems , 37:128940–128966, 2024. [48] Weijia Zhang, Yuehao Liu, Shanyan Guan, Wu Ran, Yanhao Ge, Wei Li, and Chao Ma. Guiding a diffusion model by swapping its tokens, 2026. URL https://arxiv.org/abs/2604.08048 .[49] Wen Zhang, Yang Feng, Fandong Meng, Di You, and Qun Liu. Bridging the gap between training and inference for neural machine translation. In Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics , pages 4334–4343, 2019. doi: 10.18653/v1/P19-1426. URL https: //aclanthology.org/P19-1426/ .[50] Yue Zhao, Yuanjun Xiong, and Philipp Krähenbühl. Image and video tokenization with binary spherical quantization, 2024. URL https://arxiv.org/abs/2406.07548 .[51] Jiayin Zhu, Guoji Fu, Xiaolu Liu, Qiyuan He, Yicong Li, and Angela Yao. Relaxflow: Text-driven amodal 3d generation, 2026. URL https://arxiv.org/abs/2603.05425 .
+
+12 A Theoretical derivations 
+
+This section gives the full compatibility-augmentation derivations for CFG (Sec. 3.2) and VPG (Sec. 4.1) in next-scale visual autoregression. Both methods are obtained by exponentiating a posterior compatibility term in an augmented (unnormalized) conditional, then substituting a Bayes identity that expresses the compatibility as a log-ratio between two next-scale predictions of the same frozen model. The two derivations differ only in which axis is contrasted: the external condition c for CFG, and the generated prefix r<k versus a corrupted prefix ˜r<k for VPG. 
+
+A.1 CFG: enhancing p(c | r≤k)
+
+Augmented conditional. We start from pθ (rk | r<k , c ) and define the augmented (unnormalized) conditional by exponentiating the posterior compatibility p(c | r≤k), where r≤k = ( r<k , r k):
+
+pCFG  
+
+> θ
+
+(rk | r<k , c ) ∝ pθ (rk | r<k , c ) p(c | r≤k)γ , (14) with guidance strength γ ≥ 0. Taking log gives, up to a constant in rk,
+
+log pCFG  
+
+> θ
+
+(rk | r<k , c ) = log pθ (rk | r<k , c ) + γ log p(c | r≤k) + const . (15) 
+
+Bayes decomposition along the AR chain. Applying Bayes’ rule to the prefix-conditioned joint 
+
+p(rk, c | r<k ) yields 
+
+pθ (rk | r<k , c ) = p(c | r≤k) pθ (rk | r<k )
+
+p(c | r<k ) . (16) Since p(c | r<k ) does not depend on rk, taking log and rearranging Eq. (16) gives, up to a constant in rk,
+
+log p(c | r≤k) = log pθ (rk | r<k , c ) − log pθ (rk | r<k ) + const . (17) Eq. (17) is the AR analogue of the classifier-gradient identity used by diffusion CFG: the implicit “classifier” that scores how well the prefix-and-current-token sequence supports c is exactly the log-ratio of the conditional and unconditional next-scale distributions. Substituting this identity back into Eq. (14) gives the distribution-level form used in the main text: 
+
+pCFG  
+
+> θ
+
+(rk | r<k , c ) ∝ pθ (rk | r<k , c )
+
+ pθ (rk | r<k , c )
+
+p(rk | r<k )
+
+γ
+
+. (18) Thus the classifier posterior p(c | r≤k)γ is never evaluated by a separate classifier; it is represented by a likelihood ratio between two next-scale predictions. 
+
+From two predictions to guided logits. CFG approximates the unconditional p(rk | r<k ) with the same generative model evaluated under a learned null condition ∅, p(rk | r<k ) ≈ pθ (rk | r<k , ∅).Substituting Eq. (17) into Eq. (15) expresses the augmented log-density as a linear combination of the two predictions: 
+
+log pCFG  
+
+> θ
+
+(rk | r<k , c ) = (1 + γ) log pθ (rk | r<k , c ) − γ log pθ (rk | r<k , ∅) + const . (19) Because visual autoregressive models output logits before the softmax, Eq. (19) translates directly to the logit-space extrapolation rule in Eq. (4). With ℓck ≡ ℓk(c, r <k ) and ℓ∅ 
+
+> k
+
+≡ ℓk(∅, r <k ),
+
+ℓCFG  
+
+> k
+
+= (1 + γ) ℓck − γ ℓ ∅
+
+> k
+
+.
+
+Remark (parameterization). Many papers write CFG with a guidance scale s ≥ 1 as ℓCFG  
+
+> k
+
+=
+
+ℓ∅ 
+
+> k
+
++ s (ℓck − ℓ∅
+
+> k
+
+), which matches Eq. (4) by setting s = 1 + γ.
+
+A.2 VPG: enhancing p(r<k | rk, c )
+
+VPG applies the same compatibility-augmentation logic along the prefix axis. Whereas CFG enhances 
+
+p(c | r≤k) by contrasting the external condition c against the null condition ∅ at fixed prefix, VPG enhances the posterior of the prefix given the next-scale token map and the external condition, 
+
+p(r<k | rk, c ), by contrasting the genuine generated prefix r<k against an inference-time corrupted prefix ˜r<k while holding c fixed. 13 Augmented conditional. We start from pθ (rk | r<k , c ) and define the augmented (unnormalized) conditional by exponentiating the posterior compatibility p(r<k | rk, c ):
+
+pVPG  
+
+> θ
+
+(rk | r<k , c ) ∝ pθ (rk | r<k , c ) p(r<k | rk, c )λ, (20) with prefix-guidance strength λ ≥ 0. Taking log gives, up to a constant in rk,
+
+log pVPG  
+
+> θ
+
+(rk | r<k , c ) = log pθ (rk | r<k , c ) + λ log p(r<k | rk, c ) + const . (21) 
+
+Bayes decomposition along the AR chain. Applying Bayes’ rule to the prefix-axis posterior yields 
+
+p(r<k | rk, c ) = pθ (rk | r<k , c ) p(r<k | c)
+
+p(rk | c) , (22) where the marginal p(rk | c) = R pθ (rk | r<k , c ) p(r<k | c) d μ(r<k ) is taken over prefixes drawn from the model’s prefix distribution, with μ denoting the appropriate base measure. For discrete token prefixes, this integral is a sum under the counting measure. Since p(r<k | c) does not depend on rk, taking log and rearranging Eq. (22) gives, up to a constant in rk,
+
+log p(r<k | rk, c ) = log pθ (rk | r<k , c )
+
+| {z }
+
+> prefix-conditional
+
+− log p(rk | c)
+
+| {z }
+
+> prefix-marginalized
+
++const . (23) Eq. (23) is the prefix-axis analogue of Eq. (17) : the implicit “classifier” that scores how well the next-scale token map rk supports the genuine prefix r<k is the log-ratio between the prefix-conditional model and the prefix-marginalized predictive. Substituting this identity back into Eq. (20) gives the distribution-level form used in the main text: 
+
+pVPG  
+
+> θ
+
+(rk | r<k , c ) ∝ pθ (rk | r<k , c )
+
+ pθ (rk | r<k , c )
+
+p(rk | c)
+
+λ
+
+. (24) Thus the prefix posterior p(r<k | rk, c )λ is never evaluated by a separate classifier; it is represented by a likelihood ratio between the prefix-conditional next-scale prediction and the prefix-marginalized predictive. 
+
+Figure 5: Illustration of Visual Prefix Guidance. 
+
+Corrupted-prefix surrogate for the prefix-marginalized predictive. The prefix-marginalized predictive distribution pθ (rk | c) is not directly accessible from a frozen visual AR model. In principle, it requires marginalizing over all possible prefixes, which is intractable. This is analogous to CFG, where the unconditional branch cannot be obtained from a conditional model unless the model has been trained with a null-condition mode. CFG addresses this issue by using a learned null condition, i.e., 
+
+pθ (rk | r<k ) ≈ pθ (rk | r<k , ∅). (25) For visual AR models, one could similarly train a dedicated null-prefix mode for next-token predic-tion, but this would require retraining the model. Instead, we seek an inference-time surrogate prefix that satisfies three desiderata: (i) it should provide a weaker reference than the clean-prefix prediction 
+
+pθ (rk | r<k , c ); (ii) it should better reflect the role of the prefix-marginalized predictive pθ (rk | c) in the guidance objective; and (iii) it should remain within, or at least close to, the training distribution of the frozen model. A simple surrogate is to use a uniformly random token prefix as a null-prefix condition. Let 
+
+U<k = ( U1, . . . , U k−1), Ui
+
+> i.i.d.
+
+∼ Unif( V), (26) where V denotes the visual token vocabulary. The corresponding random-prefix reference can be written as 
+
+prand  
+
+> ref
+
+(rk | c) := pθ (rk | U<k , c ). (27) 14 However, since the frozen AR model has not been trained to condition on such random prefixes, this input can fall outside the training distribution and may lead to degenerate or unstable guidance. This motivates using a perturbed version of the observed visual prefix rather than an independently sampled random prefix since the observed visual prefix falls into the training distribution. VPG therefore constructs the reference along the autoregressive prefix axis by evaluating the same frozen model under an inference-time corrupted prefix ˜r<k :
+
+pref (rk | c) := pθ (rk | ˜r<k , c ). (28) The corrupted prefix has the same scale and format as the clean prefix, allowing the frozen transformer to process it in a familiar input regime, while carrying weaker prefix-specific evidence than r<k . This reference can be viewed as an interpolation between the clean-prefix prediction pθ (rk | r<k , c ) and the ideal prefix-marginalized predictive pθ (rk | c), balancing input validity against approximation accuracy. It therefore serves as a weak-prefix reference, playing a role analogous to the null condition 
+
+∅ in CFG, but along the autoregressive prefix axis rather than the external-condition axis. 
+
+From two predictions to guided logits. Substituting Eq. (28) into Eq. (23) and then into Eq. (21) expresses the augmented log-density as a linear combination of the genuine-prefix and corrupted-prefix predictions: 
+
+log pVPG  
+
+> θ
+
+(rk | r<k , c ) = (1 + λ) log pθ (rk | r<k , c ) − λ log pθ (rk | ˜r<k , c ) + const . (29) Translating to logit space, Eq. (29) recovers the VPG extrapolation rule used in Eq. (8) . Writing 
+
+ℓgen  
+
+> k
+
+≡ ℓk(c, r <k ) and ℓcorr  
+
+> k
+
+≡ ℓk(c, ˜r<k ),
+
+ℓVPG  
+
+> k
+
+= ℓgen  
+
+> k
+
++ λ ℓgen  
+
+> k
+
+− ℓcorr 
+
+> k
+
+ = (1 + λ) ℓgen  
+
+> k
+
+− λ ℓ corr  
+
+> k
+
+.
+
+Interpretation. The derivation shows VPG is the prefix-axis dual of CFG. The two methods share the same template: an augmented conditional that exponentiates a posterior compatibility term, a Bayes identity that rewrites the compatibility as a log-ratio between a conditional model and a marginal predictive, and a paired-prediction surrogate for the otherwise-inaccessible marginal. The dualities are summarized below. CFG VPG Compatibility enhanced p(c | r≤k) p(r<k | rk, c )
+
+Required marginal p(rk | r<k ) p(rk | c)
+
+Surrogate null condition ∅ corrupted prefix ˜r<k 
+
+Fixed axis generated prefix r<k external condition c
+
+Both are paired-prediction methods that exploit the same Bayes identity to avoid an explicit auxiliary classifier and require no retraining of the frozen autoregressive model. 
+
+A.3 Composing CFG and VPG 
+
+The implementation composes the two guidance operations sequentially. First, CFG is applied at each prefix branch. For an arbitrary prefix branch a<k ,
+
+pCFG  
+
+> θ
+
+(rk | a<k , c ) ∝ pθ (rk | a<k , c ) p(c | a<k , r k)γ . (30) Using the CFG derivation in Sec. A.1, Eq. (30) is implemented by the branch-wise CFG logits 
+
+gk(a<k ) = ℓk(c, a <k ) + γ ℓk(c, a <k ) − ℓk(∅, a <k ).
+
+Second, VPG contrasts the CFG-guided distribution under the genuine prefix against the CFG-guided distribution under the corrupted prefix: 
+
+pCFG+VPG  
+
+> θ
+
+(rk | r<k , c ) ∝ pCFG  
+
+> θ
+
+(rk | r<k , c )
+
+ pCFG  
+
+> θ
+
+(rk | r<k , c )
+
+pCFG  
+
+> θ
+
+(rk | ˜r<k , c )
+
+λ
+
+. (31) Taking logits of Eq. (31) directly yields the update in Eq. (11) . With ggen  
+
+> k
+
+= gk(r<k ) and gcorr  
+
+> k
+
+=
+
+gk(˜ r<k ),
+
+ℓCFG+VPG  
+
+> k
+
+= ggen  
+
+> k
+
++ λ ggen  
+
+> k
+
+− gcorr 
+
+> k
+
+.
+
+This composition differs from exponentiating the original CFG and VPG compatibility terms once in a single raw-model conditional; that alternative would not produce Eq. (11) . The sequential form matches the actual sampler: CFG first sharpens the text-condition axis on each branch, and VPG then contrasts the two CFG-guided branches along the prefix axis. 15 B Experimental details and ablations 
+
+This section collects implementation details that support the main experimental claims in Sec. 5. We first formalize the corrupted-prefix replacement variants used in the VAR ablation, then report the InfinityStar schedule and latency measurements referenced by the text-to-video results. 
+
+B.1 VPG corrupted-prefix replacement variants 
+
+Sec. 5.4 ablates how the corrupted prefix ˜r<k should be constructed on VAR-d16 (Tab. 5). All variants use the same evaluation protocol: the base sampler, checkpoint, ImageNet validation metric pipeline, corruption probability np=0 .1, and guidance-strength sweep are fixed; only the replacement rule for selected prefix sites changes. We report each run by its change from the unguided baseline, 
+
+∆FID = FID variant − FID baseline , FID baseline = 3 .35 .
+
+The ablation tests three design requirements for the corrupted-prefix branch: it should weaken prefix evidence, remain near the model’s familiar same-scale input distribution, and disrupt content-position binding rather than only content or only position. We use the same prefix-embedding notation as Sec. 4.2: ej,u = Emb( ¯Fj [u]) + PosEmb( j, u ) at scale j and spatial site u. For a selected site 
+
+(j, u ), the same-scale variants sample a donor site u′ from the same scale; unselected sites remain unchanged. 
+
+Random codebook replacement. Replaces selected sites with embeddings drawn from the global VQ codebook rather than from same-scale prefix activations. This creates a weak reference but can move the corrupted branch off the model’s scale-conditioned input manifold, so it tests whether “weak” alone is sufficient. 
+
+Same-scale token replacement. Uses 
+
+˜ej,u = Emb( ¯Fj [u′]) + PosEmb( j, u ).
+
+The visual projection is weakened by copying the donor feature from another same-scale site, but the original scale-position encoding is preserved. This tests whether content weakening alone provides a useful prefix contrast. 
+
+Same-scale position replacement. Uses 
+
+˜ej,u = Emb( ¯Fj [u]) + PosEmb( j, u ′).
+
+The visual content is preserved, but its position-associated embedding is copied from another same-scale site. This tests whether perturbing spatial alignment alone is sufficient. 
+
+Same-scale full-embedding replacement (Ours). Uses 
+
+˜ej,u = Emb( ¯Fj [u′]) + PosEmb( j, u ′) = ej,u ′ .
+
+The entire donor embedding is copied from another same-scale site. This preserves same-scale embedding statistics while breaking the binding between local content and its original position, matching the intended weak-prefix surrogate in Sec. 4.2. 16 Figure 6: FID/IS curves for corrupted-prefix replacement variants on VAR-d16. Settings: VAR-d16 ImageNet sampling with np=0 .1 and guidance-strength sweeps for random codebook, same-scale token, same-scale position, and same-scale full-embedding replacement. Same-scale full-embedding replacement is the only variant that improves FID over the unguided baseline, while incomplete or off-manifold corruptions degrade rapidly as λ increases. 
+
+B.2 InfinityStar VPG schedule and latency 
+
+Sec. 5.2 reports a single VPG schedule for InfinityStar; we describe the schedule space and the corresponding wall-clock overhead here. 
+
+All-scale VPG. Applies the generated vs. corrupted prefix contrast at every spacetime scale (genuine-prefix and corrupted-prefix branches), yielding ∼2.7 × per-clip latency relative to unguided InfinityStar due to GPU memory constraints and offload / onload kv-cache of each prefix. 
+
+Semantic-only VPG. Restricts the contrast to early (semantic) spacetime scales, where prompt-grounded structure is established. 
+
+Semantic-only scheduled VPG (Ours). Further restricts where the corrupted-prefix branch runs across the semantic scales, lowering wall-clock overhead while preserving the semantic-axis benefit. Among full-suite runs we tried – unguided, all-scale VPG, and semantic-only scheduled VPG – the semantic-only scheduled variant with λ=0 .2 and np=0 .05 achieves the highest leaderboard Overall (84 .35 vs. 83 .91 for all-scale). All-scale prefix-contrast guidance is ∼2.7 × slower per clip and underperforms this schedule on Overall in our runs; semantic-scale scheduling keeps overhead near 
+
+∼1.2 × while yielding the strongest aggregate. The lower corruption probability is important for long spacetime rollouts because InfinityStar generates many more tokens than image models, so excessive prefix corruption is amplified across subsequent video predictions [28]. Table 6: VBench efficiency on InfinityStar. Settings: full VBench evaluation on the InfinityStar reproduction, with overhead measured relative to unguided sampling. Semantic-only scheduled VPG reduces the all-scale overhead from ∼2.66 × to ∼1.19 × while giving the best Overall score among the measured schedules.                 
+
+> Method Overall ↑Semantic ↑Latency (rel.) ↓Overhead ↓
+> InfinityStar (unguided) 83.86 82.74 1.00 ×1.00 ×
+> + All-scale VPG 83.91 82.69 ∼2.66 ×∼2.66 ×
+> + Semantic-only scheduled VPG ( λ=0 .2)84.35 83.51 ∼1.19 ×∼1.19 ×
+
+17 B.3 Data, model, and asset access 
+
+VPG is training-free and uses no new data, model weights, or annotations. Experiments use released checkpoints and public evaluation assets from ImageNet validation statistics, GenEval, DPG-Bench, and VBench. We do not include supplementary code with the anonymous submission, but plan to open-source the VPG implementation in the near future. 
+
+B.4 Compute resources 
+
+All experiments were run on a single NVIDIA A800 80GB GPU. 
+
+B.5 Existing assets, licenses, and terms 
+
+We use existing models, benchmarks, and evaluation code for research evaluation only, cite the original sources, and do not redistribute third-party datasets or pretrained weights. The local codebases used here include VAR, Infinity, and InfinityStar under the MIT License, and VBench under Apache-2.0. Reproduction requires obtaining datasets, checkpoints, and benchmark assets from their original providers and following their licenses and terms. 
+
+## C Limitations 
+
+VPG is an inference-time guidance rule, and its scope is therefore complementary to training-time approaches that change the learned dynamics of the generator. The corruption fraction np
+
+and guidance scale λ are sampling hyperparameters, analogous to the CFG scale. We find stable settings across the evaluated image and video models, but the best operating point can depend on sequence length, model family, and evaluation target. In particular, long video rollouts amplify prefix perturbations, which is why our InfinityStar setting uses a lower corruption probability and a scheduled semantic-scale application (App. B.2). 
+
+## D Broader impacts 
+
+VPG is a sampler-level method for existing autoregressive image and video generators. Its main positive effect is practical: it can improve prompt faithfulness and visual coherence without retraining a large model, which may reduce additional training compute when a released checkpoint is already adequate for deployment or research use. The same improvement can also increase the capability of synthetic-media systems used for deception, impersonation, spam, or disinformation. Because VPG operates at inference time and is compatible with released generators, it should inherit the safeguards of the underlying model stack, including access control, provenance or watermarking mechanisms, usage monitoring, and safety filtering. We therefore do not view VPG as changing the relevant governance requirements; rather, it strengthens the case that inference-time guidance methods should be evaluated under the same deployment and misuse standards as the generators they modify. 
+
+## E Qualitative details and examples 
+
+This section collects qualitative material that complements the quantitative results in Sec. 5.2. The teaser explanation clarifies the controlled comparisons in Fig. 1; the VAR examples show controlled ImageNet comparisons; the InfinityStar examples show video-frame comparisons; and the DPG-Bench examples show where VPG changes Infinity generations on dense text prompts. 
+
+E.1 Teaser figure details 
+
+Fig. 1 pairs controlled qualitative comparisons (left) with the conditioning-axis view that motivates VPG (right). We expand each region here. 18 Left (same-seed qualitative comparisons). Each w/o VPG and w/ VPG pair uses the same prompt, same random seed, same frozen checkpoint, and matched sampling configuration; only the VPG branch is enabled or disabled. In the first two rows, the first two columns use the frozen Infinity [12] image generator. The first prompt asks for a wax seal embossed with the letters “VPG”: without VPG, the seal reads closer to “VDG”, while VPG recovers the intended text. The second prompt describes an owl standing among shattered mirror pieces on a floor; the baseline loses the owl under the strong broken-glass scene prior, while VPG preserves the subject. The third column uses VAR-d30 [40] on the ImageNet [7] class “macaw”: the baseline produces an occluded, structurally weak bird, while VPG yields a coherent scarlet macaw. The last two rows use InfinityStar [28] for text-to-video generation with the prompt: “A towering moss-covered mech kneeling to tend a tiny rooftop bonsai garden during light rain, steam mixing with mist, tactile metal textures, contemplative mood, ultra-realistic.” The displayed frames are sampled from same-seed clips; VPG keeps the mech, bonsai, and rooftop setting more consistently across the sequence. 
+
+Right (conditioning-axis motivation). VPG and classifier-free guidance act on disjoint condition-ing axes of the next-scale conditional pθ (rk | r<k , c ). CFG exponentiates the external-condition posterior p(c | r≤k)γ to sharpen dependence on the text condition c, whereas VPG exponentiates the prefix posterior p(r<k | rk, c )λ to sharpen dependence on the generated visual prefix r<k . Standard CFG cannot reach the prefix axis in a frozen visual AR model because the model is not trained with a null-prefix mode; VPG fills this gap with a corrupted-prefix surrogate (Sec. 4.1). 
+
+E.2 VAR qualitative study 
+
+Figs. 7–9 provide same-class VAR-d30 qualitative comparisons on ImageNet. Each figure fixes the class and sampling configuration, with six samples per row. The rows compare the base VAR-d30 
+
+sampler, VAR-d30 with CFG, and VAR-d30 with both CFG and VPG. 
+
+Figure 7: VAR-d30 qualitative comparison for golden retriever . Settings: matched ImageNet class sampling with six samples per row; rows show VAR-d30 , +CFG, and +VPG with np=0 .1, λ=1 .0.VPG improves object coherence. 19 Figure 8: VAR-d30 qualitative comparison for tabby cat . Settings: matched ImageNet class sampling with six samples per row; rows show VAR-d30 , +CFG, and +VPG with np=0 .1, λ=1 .0.VPG yields more recognizable object structure. 
+
+Figure 9: VAR-d30 qualitative comparison for cheeseburger . Settings: matched ImageNet class sampling with six samples per row; rows show VAR-d30 , +CFG, and +VPG with np=0 .1, λ=1 .0.VPG produces more stable food layouts. 
+
+E.3 InfinityStar qualitative study 
+
+Figs. 10–12 provide matched text-to-video comparisons on InfinityStar. Each row shows five uniformly sampled frames from the generated clip; the VPG row uses semantic-only scheduled VPG with λ=0 .2 and np=0 .05 . Prompts: train library : “A vintage train car transformed into a traveling library speeding through snowy mountains at sunrise, warm interior lamps, fluttering book pages, parallax through the windows, cinematic realism”; subway greenhouse : “An abandoned underground subway platform transformed into a lush greenhouse, vines wrapping around old train cars, bioluminescent flowers pulsing as a train breeze moves the leaves, cinematic realism, rich tactile textures”; origami whale : “A colossal origami whale gliding through a foggy harbor at dawn, folded paper surfaces catching golden light, tiny tugboats circling below, gulls and mist moving through the scene, poetic cinematic realism, ultra-detailed.” 
+
+20 Figure 10: InfinityStar qualitative comparison for the train-library prompt. Settings: matched clips with five sampled frames per row; VPG uses np=0 .05 , λ=0 .2. VPG maintains the train-library concept. 
+
+Figure 11: InfinityStar qualitative comparison for the subway-greenhouse prompt. Settings: matched clips with five sampled frames per row; VPG uses np=0 .05 , λ=0 .2. VPG better preserves vegetation and bioluminescent flower cues while maintaining the overall train-like appearance. 
+
+Figure 12: InfinityStar qualitative comparison for the origami-whale prompt. Settings: matched clips with five sampled frames per row; VPG uses np=0 .05 , λ=0 .2. VPG keeps the folded-paper whale, harbor scale. 
+
+E.4 Infinity qualitative study on DPG-Bench 
+
+We compare the unguided Infinity [12] baseline with Infinity + VPG on dense DPG-Bench prompts. Each figure uses the same checkpoint, sampler, and seeds, with the prompt on the left, four baseline samples in the middle, and four VPG samples on the right. 
+
+Figure 13: DPG-Bench qualitative comparison for a surveillance-camera prompt. Settings: matched Infinity baseline and Infinity + VPG generations under the same checkpoint, sampler, and seeds. VPG recovers the small cameras dropped by the baseline. 21 Figure 14: DPG-Bench qualitative comparison for a lunar multi-entity prompt. Settings: matched Infinity baseline and Infinity + VPG generations under the same checkpoint, sampler, and seeds. VPG better preserves distinct entities and relative positions. 
+
+Figure 15: DPG-Bench qualitative comparison for a two-food prompt. Settings: matched Infinity baseline and Infinity + VPG generations under the same checkpoint, sampler, and seeds. VPG renders both food groups side by side. 
+
+Figure 16: DPG-Bench qualitative comparison for an owl-and-mirror prompt. Settings: matched Infinity baseline and Infinity + VPG generations under the same checkpoint, sampler, and seeds. VPG produces clearer mirror fragments. Across all four prompts, the qualitative trend matches Tab. 3: VPG helps when the unguided model omits or merges minor entities under a strong scene prior. 22
