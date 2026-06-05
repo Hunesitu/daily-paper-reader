@@ -6,41 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-04
-- 运行时间：2026-06-04 21:56:41 UTC
+- 最新运行日期：2026-06-05
+- 运行时间：2026-06-05 21:19:42 UTC
 - 运行状态：成功
-- 本次总论文数：7
-- 精读区：1
-- 速读区：6
+- 本次总论文数：3
+- 精读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读1篇关于自回归文本渲染中身份保持的论文，速读涵盖稀疏自编码器、扩散模型频率感知及视觉提示工程等方向；最值得关注精读的Residual Decoder Adapter（8.0分）在tokenizer适配中保持身份特征，以及速读中Equilibrated Diffusion（7.0分）的频率感知文本嵌入优化；建议普通读者优先深入了解身份保持技术，并关注图像定制与视觉提示合成的新思路。
-- 详情：[/202606/04/README](/202606/04/README)
+今日共推荐3篇论文，其中精读2篇、速读1篇。最值得关注的是并行雅可比解码与视觉自回归模型知识蒸馏两大方向，分别提升自回归图像生成速度与模型压缩效果。建议关注这些高效生成策略，以平衡速度与质量。
+- 详情：[/202606/05/README](/202606/05/README)
 
 ### 精读区论文标签
-1. [Residual Decoder Adapter: ID-Preserving Tokenizer Adaption for Autoregressive Text Rendering](/202606/04/2606.01911v1-residual-decoder-adapter-id-preserving-tokenizer-adaption-for-autoregressive-text-rendering)  
+1. [Parallel Jacobi Decoding for Fast Autoregressive Image Generation](/202606/05/2606.05703v1-parallel-jacobi-decoding-for-fast-autoregressive-image-generation)  
    标签：评分：8.0/10、query:ce
-   evidence：自回归图像生成模型；文本渲染改进
+   evidence：自回归图像生成加速方法
+2. [Knowledge Distillation for Visual Autoregressive Models](/202606/05/2606.06078v1-knowledge-distillation-for-visual-autoregressive-models)  
+   标签：评分：8.0/10、query:ce
+   evidence：对自回归图像生成模型的蒸馏策略进行了系统性研究。
 
 ### 速读区论文标签
-1. [Toward Identifiable Sparse Autoencoders](/202606/04/2605.31245v1-toward-identifiable-sparse-autoencoders)  
-   标签：评分：7.0/10、query:ce
-   evidence：稀疏自编码器用于可解释性；可支持概念擦除
-2. [Equilibrated Diffusion: Frequency-aware Textual Embedding for Equilibrated Image Customization](/202606/04/2606.02129v1-equilibrated-diffusion-frequency-aware-textual-embedding-for-equilibrated-image-customization)  
-   标签：评分：7.0/10、query:ce
-   evidence：频率驱动解耦用于概念擦除
-3. [Imagine Before You Draw: Visual Prompt Engineering for Image Generation](/202606/04/2606.04457v1-imagine-before-you-draw-visual-prompt-engineering-for-image-generation)  
-   标签：评分：7.0/10、query:ce
-   evidence：自回归模型生成语义token再扩散图像
-4. [ChannelTok: Efficient Flexible-Length Vision Tokenization](/202606/04/2606.04461v1-channeltok-efficient-flexible-length-vision-tokenization)  
-   标签：评分：7.0/10、query:ce
-   evidence：通过通道级分词实现可变长度自回归图像生成
-5. [Representation Forcing for Bottleneck-Free Unified Multimodal Models](/202606/04/2605.31604v2-representation-forcing-for-bottleneck-free-unified-multimodal-models)  
+1. [AAD-1: Asymmetric Adversarial Distillation for One-Step Autoregressive Video Generation](/202606/05/2606.03972v2-aad-1-asymmetric-adversarial-distillation-for-one-step-autoregressive-video-generation)  
    标签：评分：6.0/10、query:ce
-   evidence：自回归视觉表示预测用于图像生成
-6. [Where to Refine, When to Stop: Rethinking Redundancy via Latent Discrepancy for Efficient Visual Autoregressive Generation](/202606/04/2606.00310v1-where-to-refine-when-to-stop-rethinking-redundancy-via-latent-discrepancy-for-efficient-visual-autoregressive-generation)  
-   标签：评分：6.0/10、query:ce
-   evidence：通过潜变量差异加速视觉自回归生成
+   evidence：自回归视频生成方法，使用对抗蒸馏
 
 
 <div class="dpr-home-promo-card">

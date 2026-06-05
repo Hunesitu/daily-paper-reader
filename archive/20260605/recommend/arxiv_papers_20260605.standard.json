@@ -1,0 +1,136 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-05T21:17:01.487861+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.05703v1",
+      "source": "arxiv",
+      "title": "Parallel Jacobi Decoding for Fast Autoregressive Image Generation",
+      "abstract": "Autoregressive (AR) models have demonstrated remarkable performance in generating high-fidelity images. However, their inherently sequential next-token prediction leads to significantly slower inference. Recent studies have introduced Jacobi-style decoding to accelerate autoregressive image generation. Extending the draft sequence initially improves efficiency, yet the acceleration quickly saturates as error propagation in the one-dimensional sequence hinders convergence. Observing that images exhibit strong local spatial correlations, we propose Parallel Jacobi Decoding (PJD), a training-free decoding approach that expands draft tokens in the two-dimensional spatial domain to enable efficient spatially parallel refinement. PJD adjusts the attention mask to mitigate error accumulation and improve convergence stability. Extensive experiments on diverse datasets show that PJD achieves 4.8x-6.4x acceleration across multiple autoregressive image generation models while maintaining competitive generation quality.",
+      "authors": [
+        "Boya Liao",
+        "Ying Li",
+        "Siyong Jian",
+        "Huan Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-04T04:50:22+00:00",
+      "link": "https://arxiv.org/pdf/2606.05703v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Autoregressive image generation acceleration method",
+      "llm_evidence_cn": "自回归图像生成加速方法",
+      "llm_evidence": "自回归图像生成加速方法",
+      "canonical_evidence": "自回归图像生成加速方法",
+      "llm_tldr_en": "Proposes Parallel Jacobi Decoding to accelerate autoregressive image generation by leveraging spatial correlations.",
+      "llm_tldr_cn": "该论文针对自回归图像生成推理慢的问题，提出并行雅可比解码（PJD），利用图像的空间相关性在二维空间域扩展草稿令牌，实现空间并行细化，无需训练即可加速生成。实验表明该方法能有效提升推理速度且不牺牲质量，为自回归模型的高效部署提供了新思路。",
+      "llm_tldr": "该论文针对自回归图像生成推理慢的问题，提出并行雅可比解码（PJD），利用图像的空间相关性在二维空间域扩展草稿令牌，实现空间并行细化，无需训练即可加速生成。实验表明该方法能有效提升推理速度且不牺牲质量，为自回归模型的高效部署提供了新思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.06078v1",
+      "source": "arxiv",
+      "title": "Knowledge Distillation for Visual Autoregressive Models",
+      "abstract": "Autoregressive (AR) image generation models are highly expressive but computationally intensive, motivating effective model compression. Knowledge distillation (KD) is a natural approach for model compression and has been widely studied in language modeling, yet its behavior in visual AR generation remains underexplored. In this work, we present the first systematic study of distillation strategies for AR image models. Our analysis shows that while standard distillation can yield meaningful gains, recent methods developed for language do not directly transfer to images: long decoding horizons and visual token ambiguity make teacher supervision unreliable especially under student-conditioned contexts. To address this, we propose VarKD, a distillation framework for visual autoregressive models that distills on student samples while selectively applying teacher supervision and reducing token-level ambiguity. Experiments on ImageNet across multiple AR backbones show that VarKD consistently outperforms prior distillation baselines, narrowing the gap to large-scale models.",
+      "authors": [
+        "Elia Peruzzo",
+        "Aritra Bhowmik",
+        "Guillaume Sautiere",
+        "Yuki M Asano",
+        "Amirhossein Habibian"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-04T12:15:31+00:00",
+      "link": "https://arxiv.org/pdf/2606.06078v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Systematic study of knowledge distillation for autoregressive image generation models.",
+      "llm_evidence_cn": "对自回归图像生成模型的蒸馏策略进行了系统性研究。",
+      "llm_evidence": "对自回归图像生成模型的蒸馏策略进行了系统性研究。",
+      "canonical_evidence": "对自回归图像生成模型的蒸馏策略进行了系统性研究。",
+      "llm_tldr_en": "First systematic study of distillation for visual autoregressive models, proposing VarKD to address unreliable teacher supervision in long decoding horizons.",
+      "llm_tldr_cn": "自回归图像生成模型计算量大，知识蒸馏可用于压缩但语言模型方法不直接适用。本文首次系统研究视觉自回归模型的蒸馏，发现长解码视野和视觉token歧义导致教师监督不可靠。提出VarKD框架，通过自适应学生条件监督缓解问题。在多个基准上验证了有效性，推动了AR图像模型的高效推理。",
+      "llm_tldr": "自回归图像生成模型计算量大，知识蒸馏可用于压缩但语言模型方法不直接适用。本文首次系统研究视觉自回归模型的蒸馏，发现长解码视野和视觉token歧义导致教师监督不可靠。提出VarKD框架，通过自适应学生条件监督缓解问题。在多个基准上验证了有效性，推动了AR图像模型的高效推理。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.03972v2",
+      "source": "arxiv",
+      "title": "AAD-1: Asymmetric Adversarial Distillation for One-Step Autoregressive Video Generation",
+      "abstract": "We present AAD-1, an Asymmetric Adversarial Distillation framework for One-step autoregressive image-to-video generation. State-of-the-art methods adopt adversarial distillation but suffer from motion collapse and training instability, resulting in static videos. AAD-1 addresses these challenges through two key designs in architecture and training strategy. Our key architectural insight is to break the symmetry between generator and discriminator. While the generator remains causal to preserve autoregressive sampling capability, the discriminator attends bidirectionally over the full spatiotemporal context and produces a single holistic realism score for the entire video sequence. This asymmetric design enables the discriminator to effectively detect global temporal failures and long-range drift that cause motion collapse in autoregressive generation. To stabilize training, we introduce a phased strategy that first uses distribution matching to bootstrap a stable one-step generator, providing a warm-up phase that brings the student distribution closer to the teacher before adversarial distillation begins. Extensive experiments on VBench demonstrate that AAD-1 achieves state-of-the-art performance in one-step autoregressive video generation.",
+      "authors": [
+        "Haobo Li",
+        "Yanhong Zeng",
+        "Yunhong Lu",
+        "Jiapeng Zhu",
+        "Hao Ouyang",
+        "Qiuyu Wang",
+        "Ka Leong Cheng",
+        "Yujun Shen",
+        "Zhipeng Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-02T17:55:30+00:00",
+      "link": "https://arxiv.org/pdf/2606.03972v2",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "autoregressive video generation method with adversarial distillation",
+      "llm_evidence_cn": "自回归视频生成方法，使用对抗蒸馏",
+      "llm_evidence": "自回归视频生成方法，使用对抗蒸馏",
+      "canonical_evidence": "自回归视频生成方法，使用对抗蒸馏",
+      "llm_tldr_en": "Proposes AAD-1, an asymmetric adversarial distillation framework for one-step autoregressive image-to-video generation, addressing motion collapse and training instability.",
+      "llm_tldr_cn": "本文提出AAD-1，一种非对称对抗蒸馏框架，用于一步自回归图像到视频生成。该方法通过打破生成器和判别器的对称性，解决了现有方法中的运动崩溃和训练不稳定性问题。实验表明，AAD-1能够生成高质量的视频序列，在保真度和效率上优于先前工作。该项工作为自回归视频生成提供了新的稳定训练范式。",
+      "llm_tldr": "本文提出AAD-1，一种非对称对抗蒸馏框架，用于一步自回归图像到视频生成。该方法通过打破生成器和判别器的对称性，解决了现有方法中的运动崩溃和训练不稳定性问题。实验表明，AAD-1能够生成高质量的视频序列，在保真度和效率上优于先前工作。该项工作为自回归视频生成提供了新的稳定训练范式。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
