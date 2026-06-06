@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-06",
+  "date": "2026-06-06",
+  "generated_at": "2026-06-06T20:52:17",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/06/2605.30904v1-mergetok-unified-continuous-and-discrete-visual-tokenization-via-token-merging",
+      "section": "deep",
+      "title_en": "MergeTok: Unified Continuous and Discrete Visual Tokenization via Token Merging",
+      "authors": "Luyuan Zhang, Siyuan Li, Zedong Wang, Qingsong Xie, Cheng Tan, Anna Wang, Yanhao Zhang, Chen Chen, Haonan Lu, Haoqian Wang",
+      "date": "2026-05-29",
+      "pdf": "https://arxiv.org/pdf/2605.30904v1",
+      "score": "8.0",
+      "evidence": "用于自回归生成的视觉分词",
+      "tldr": "视觉分词器分为连续VAE和离散VQ两类，各有局限。MergeTok通过token合并技术，在编码阶段聚类相似token，为VAE和VQ分支提供双重监督，实现语义对齐与训练稳定。在ImageNet-256上，它兼顾高保真重建与语义可控生成，rFID显著优于强基线。该工作表明单一架构即可赋予分词器语义组织与生成器友好的离散性。",
+      "tags": "query:ce",
+      "abstract_en": "Most visual tokenizers for image generation are bifurcated into two families with complementary limitations: continuous VAEs offer high-fidelity reconstruction but suffer from dense, entangled latents that are poorly suited for semantic control, whereas discrete VQ-based models enable autoregressive generation yet struggle with gradient sparsity, unstable training, and codebook collapse. In this work, we introduce MergeTok, a unified tokenizer that jointly optimizes continuous (VAE) and discrete (VQ) tokenizers within a encoder-decoder architecture, leveraging token merging techniques as a semantic bridge. By clustering similar tokens during encoding, MergeTok establishes a structural prior that provides dual supervision signals: (i) it imposes merged-token semantic alignment in the VAE branch, regularizing its latent space toward disentangled, semantic-aware representations; (ii) it derives group-wise constraints, promoting intra-group diversity and inter-group exclusivity that stabilize VQ training. MergeTok shows competitive reconstruction and generation performance on ImageNet-256, with substantially lower rFID than strong VAE and VQ models under matched token budgets, while producing semantically-organized token representations compatible with both autoregressive and diffusion generators. This shows that a single architecture can endow visual tokenizers with robust semantic organization and generator-friendly discreteness.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/06/2605.31304v1-interpretability-without-tradeoffs-disentangling-polysemanticity-at-equal-predictive-performance",
+      "section": "quick",
+      "title_en": "Interpretability Without Tradeoffs: Disentangling Polysemanticity At Equal Predictive Performance",
+      "authors": "Doğukan Bağcı, Bernt Schiele, Simone Schaub-Meyer, Jonas Fischer, Robin Hesse",
+      "date": "2026-05-29",
+      "pdf": "https://arxiv.org/pdf/2605.31304v1",
+      "score": "7.0",
+      "evidence": "解缠多语义神经元，实现概念分离，支持概念擦除",
+      "tldr": "该论文针对深度神经网络神经元编码多重概念导致可解释性差的问题，提出ELUDe方法，在保持准确率的同时将潜在表示分解为清晰的、可检查的子单元，这些子单元具有类似单一语义的特征。该方法无需更改模型架构或降低性能，可直接用于概念擦除和模型解释。实验表明，ELUDe能有效解缠多语义性，且不损害下游性能。",
+      "tags": "query:ce",
+      "abstract_en": "Deep neural networks (DNNs) are widely used, but interpreting what they actually learn remains difficult. A major obstacle is that individual neurons often encode multiple unrelated concepts, obscuring the decision process of the network. While prior work, such as sparse autoencoders, can separate these mixed signals into more meaningful, \"monosemantic\" features, this typically requires altering the model in ways that can degrade downstream performance. To overcome this, we introduce ELUDe (explicit, lossless, unsupervised disentanglement), a method for improving the interpretability of DNNs while preserving their functional equivalence. ELUDe breaks latent representations into clear, inspectable sub-units that behave like interpretable features, while guaranteeing that the model's outputs remain exactly the same. It requires no explicit training, no labels, and can be applied to pretrained models. ELUDe works by reorganizing how information flows between layers, re-routing concept-specific contributions while preserving the original computation by construction. Across several vision models, including DINOv2 and supervised ViT-B/16, ELUDe improves interpretability, keeps downstream accuracy unchanged, runs efficiently, and supports practical uses such as steering model representations. In short, ELUDe offers interpretability (almost) without a tradeoff: clearer, scalable, and actionable model insights with no loss in performance.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/06/2606.03746v2-qwen-image-flash-beyond-objective-design",
+      "section": "quick",
+      "title_en": "Qwen-Image-Flash: Beyond Objective Design",
+      "authors": "Tianhe Wu, Kun Yan, Zikai Zhou, Lihan Jiang, Jiahao Li, Jie Zhang, Kaiyuan Gao, Ningyuan Tang, Shengming Yin, Xiaoyue Chen, Xiao Xu, Yilei Chen, Yuxiang Chen, Yan Shu, Yixian Xu, Yanran Zhang, Zihao Liu, Zhendong Wang, Zekai Zhang, Deqing Li, Liang Peng, Yi Wang, Jingren Zhou, Chenfei Wu",
+      "date": "2026-06-02",
+      "pdf": "https://arxiv.org/pdf/2606.03746v2",
+      "score": "7.0",
+      "evidence": "基于自回归模型的文本到图像生成，涉及少步蒸馏",
+      "tldr": "该论文以Qwen-Image-2.0为代表，系统研究了统一文本到图像生成和指令编辑的少步蒸馏训练配方，包括数据组成、教师指导和任务混合。尽管未直接涉及概念擦除，但其对自回归文本到图像生成模型的蒸馏优化为后续擦除任务提供了基础，属于方法论桥梁。",
+      "tags": "query:ce",
+      "abstract_en": "Few-step distillation has become an effective strategy for accelerating advanced visual generative models, yet prior work has largely focused on distillation objectives. In this work, we revisit few-step distillation from a complementary perspective, focusing on the training recipe that critically shapes student performance. Using Qwen-Image-2.0 as a representative case, we systematically investigate three factors in unified text-to-image generation and instruction-guided image editing distillation: data composition, teacher guidance, and task mixture. Our empirical analysis reveals several non-obvious behaviors, which motivate the development of Qwen-Image-Flash. Overall, our results suggest that effective few-step distillation requires not only carefully designed objectives, but also principled organization of the broader training pipeline.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
