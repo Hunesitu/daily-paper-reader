@@ -1,0 +1,93 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-08T21:16:40.560326+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.02920v1",
+      "source": "arxiv",
+      "title": "Fast Unlearning at Scale via Margin Self-Correction",
+      "abstract": "Language-model unlearning updates a trained model to behave as if it had not seen selected training examples, while preserving utility and avoiding costly retraining. Existing approaches typically fine-tune the pretrained model with a fixed training budget and select the final model afterwards by evaluating several saved checkpoints on downstream validation data. Two sources of unnecessary computation limit scalability: training beyond the desired forget-retain trade-off, and checkpoint selection that requires extra storage and repeated evaluations. To address these limitations, we introduce MArgin Self-Correction (MASC), an efficient unlearning method with an online stopping rule that does not require downstream evaluation. Given a text sequence to be forgotten, MASC actively reduces the logit gap between the original next token and the most likely alternatives. It outputs a final model once this gap is small on average over a sufficiently large proportion of token positions across all forget sequences. On TOFU, MUSE News, and MUSE Books, MASC achieves a competitive forget-retain trade-off at a fraction of the computational cost of existing baselines. We further observe that as we increase model size (a.k.a. number of parameters), the trade-offs improve for both MASC and SimNPO -- the forget metrics remain comparable while retain utility increases.",
+      "authors": [
+        "Federico Di Gennaro",
+        "Alexander Shevchenko",
+        "Fanny Yang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-01T21:49:54+00:00",
+      "link": "https://arxiv.org/pdf/2606.02920v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "language-model unlearning method for concept erasure",
+      "llm_evidence_cn": "基于语言模型的概念擦除遗忘方法",
+      "llm_evidence": "基于语言模型的概念擦除遗忘方法",
+      "canonical_evidence": "基于语言模型的概念擦除遗忘方法",
+      "llm_tldr_en": "MASC introduces an online stopping rule for efficient language-model unlearning, eliminating need for downstream validation and reducing computation.",
+      "llm_tldr_cn": "本文提出MASC方法，通过在线停止规则高效实现语言模型遗忘，无需下游验证即可达到遗忘-保留权衡，显著降低计算开销，为大规模模型遗忘提供了可扩展方案。",
+      "llm_tldr": "本文提出MASC方法，通过在线停止规则高效实现语言模型遗忘，无需下游验证即可达到遗忘-保留权衡，显著降低计算开销，为大规模模型遗忘提供了可扩展方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.06120v1",
+      "source": "arxiv",
+      "title": "Diff-CA: Separating Common and Salient Factors with Diffusion Models",
+      "abstract": "Contrastive Analysis aims to separate factors that are common between two data distributions from those that are salient to only one of them. Existing contrastive methods are based on generative models (e.g., VAEs or GANs) that often suffer from limited reconstruction and image quality, which hampers effective latent factor separation and limits their applicability to high-fidelity image generation and edition. We propose a novel conditioning framework for diffusion models that enables contrastive decomposition without compromising generation quality. We first train a prompt-free, image-conditioned diffusion model, and then learn to decompose the conditioning into a common and a salient factor, using weak supervision. We prove that the additive contrastive factorization, commonly assumed in prior work, is identifiable under mild conditions. This factorization enables targeted operations by swapping or interpolating only the salient factor.",
+      "authors": [
+        "Michaël Soumm",
+        "Alexandre Fournier Montgieux",
+        "Yunlong He",
+        "Pietro Gori",
+        "Alasdair Newson"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-04T13:07:18+00:00",
+      "link": "https://arxiv.org/pdf/2606.06120v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Contrastive decomposition separates common and salient factors, transferable to concept erasure",
+      "llm_evidence_cn": "对比分解分离共同与显著因子，可迁移至概念擦除",
+      "llm_evidence": "对比分解分离共同与显著因子，可迁移至概念擦除",
+      "canonical_evidence": "对比分解分离共同与显著因子，可迁移至概念擦除",
+      "llm_tldr_en": "Diff-CA uses diffusion models for contrastive analysis, learning to separate common and salient factors via weak supervision, enabling high-fidelity image editing and generation.",
+      "llm_tldr_cn": "现有对比分析方法基于VAE/GAN，重建质量受限。Diff-CA提出基于扩散模型的条件框架，通过弱监督将条件分解为共同和显著因子，在不损失生成质量的前提下实现高保真图像编辑与生成。实验证明该方法能有效分离因子，为概念擦除提供了新的方法论基础。",
+      "llm_tldr": "现有对比分析方法基于VAE/GAN，重建质量受限。Diff-CA提出基于扩散模型的条件框架，通过弱监督将条件分解为共同和显著因子，在不损失生成质量的前提下实现高保真图像编辑与生成。实验证明该方法能有效分离因子，为概念擦除提供了新的方法论基础。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
