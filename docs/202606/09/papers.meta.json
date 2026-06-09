@@ -1,0 +1,69 @@
+{
+  "label": "2026-06-09",
+  "date": "2026-06-09",
+  "generated_at": "2026-06-09T21:55:49",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202606/09/2606.09156v1-omnigen-ar-autoregressive-any-to-image-generation",
+      "section": "deep",
+      "title_en": "OmniGen-AR: AutoRegressive Any-to-Image Generation",
+      "authors": "Junke Wang, Xun Wang, Qiushan Guo, Peize Sun, Weilin Huang, Zuxuan Wu, Yu-Gang Jiang",
+      "date": "2026-06-08",
+      "pdf": "https://arxiv.org/pdf/2606.09156v1",
+      "score": "9.0",
+      "evidence": "统一的用于文本到图像生成的自回归框架",
+      "tldr": "现有自回归视觉生成模型多局限于单一模态条件（如文本），难以应对现实中多样的控制需求。为此，提出OmniGen-AR统一框架，将各类视觉条件离散化并与文本token结合，实现任意条件到图像生成。通过解耦因果注意力（DCA）在训练时分离条件与内容注意力，避免信息泄露，推理时仍用标准自回归。在GenEval和VBench上分别达到0.63和80.02，性能领先或持平。",
+      "tags": "query:ce",
+      "abstract_en": "Autoregressive (AR) models have demonstrated strong potential in visual generation, offering superior performance with simple architectures and optimization objectives. However, existing methods are typically limited to single-modality conditions, e.g., text, restricting their applicability in real-world scenarios that demand image synthesis from diverse controls. In this work, we present OmniGen-AR, a unified autoregressive framework for Any-to-Image generation. By discretizing various visual conditions through a shared visual tokenizer and text prompts with a text tokenizer, OmniGen-AR supports a broad spectrum of conditional inputs within a single model, including text (text-to-image generation), spatial signals (segmentation-to-image and depth-to-image), and visual context (image editing, frame prediction, and text-to-video generation). To mitigate the risk of information leakage from condition tokens to content tokens, we introduce Disentangled Causal Attention (DCA), which separates the full-sequence causal mask into condition causal attention and content causal attention. It serves as a training-time regularizer without affecting the standard next-token prediction during inference. With this design, OmniGen-AR achieves new state-of-the-art or at least competitive results across a range of benchmark, e.g., 0.63 on GenEval and 80.02 on VBench, demonstrating its effectiveness in flexible and high-fidelity visual generation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/09/2606.07688v1-tracer-token-reassignment-for-concept-erasure-in-generative-recommendation",
+      "section": "deep",
+      "title_en": "TRACER: Token ReAssignment for Concept ERasure in Generative Recommendation",
+      "authors": "Ziheng Chen, Jiali Cheng, Zezhong Fan, Hadi Amiri, Diyuan Wu, Gabriele Tolomei, Yang Zhang",
+      "date": "2026-06-05",
+      "pdf": "https://arxiv.org/pdf/2606.07688v1",
+      "score": "8.0",
+      "evidence": "自回归生成式推荐中的概念擦除",
+      "tldr": "生成式推荐使用语义ID（SID）进行序列预测，但SID在遗忘与保留物品间共享，导致概念擦除与推荐效用冲突。TRACER框架通过重分配概念相关物品到替代token，并引入一致性正则化，实现有效概念遗忘同时最小化对保留物品的影响。实验表明，TRACER在真实数据集上显著优于现有方法，在去除目标概念的同时更好地保持推荐效用。",
+      "tags": "query:ce",
+      "abstract_en": "Generative recommendation formulates next-item prediction as autoregressive generation over semantic ID (SID) sequences derived from users' historical interactions, making modern recommender systems structurally similar to large language models (LLMs). As privacy and safety concerns grow, these systems increasingly require concept unlearning to remove sensitive or harmful concepts associated with items. However, existing LLM unlearning methods cannot be directly applied to generative recommendation. Unlike word tokens with explicit semantics, SIDs are abstract identifiers that are often shared by both forget and retain items, leading to severe conflicts between concept removal and recommendation utility preservation.   To address this challenge, we propose TRACER, an end-to-end concept unlearning framework based on token reassignment. Rather than directly suppressing shared SIDs, TRACER reassigns concept-related items to alternative tokens that better facilitate forgetting while minimizing side effects on retained items. We further introduce a coherence regularizer to preserve semantic consistency among retain items during unlearning. Experiments on real-world recommendation datasets demonstrate that TRACER effectively removes target concepts while substantially better preserving recommendation utility than existing unlearning baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/09/2606.08302v1-hack-towards-more-effective-head-aware-key-value-compression-for-efficient-visual-autoregressive-modeling",
+      "section": "deep",
+      "title_en": "HACK++: Towards More Effective Head-Aware Key-Value Compression for Efficient Visual Autoregressive Modeling",
+      "authors": "Ziran Qin, Yuchen Jiang, Mingbao Lin, Youru Lv, Hang Guo, Wen Fei, Weiyao Lin",
+      "date": "2026-06-06",
+      "pdf": "https://arxiv.org/pdf/2606.08302v1",
+      "score": "8.0",
+      "evidence": "针对视觉自回归模型的KV缓存压缩，直接提升自回归图像生成效率",
+      "tldr": "视觉自回归模型采用下一尺度预测范式，但跨尺度的键值缓存累积导致注意力复杂度高和内存开销大。通过分析发现注意力头分为维持语义的上下文头和保持空间结构的结构头，二者对历史尺度的依赖不同，现有统一压缩方法失效。提出HACK++，一种无训练的头感知压缩框架，通过离线校准分类头类型并解耦注意力与缓存压缩，使用模式特定策略和依赖感知预算分配。在Infinity-2B/8B上，仅用30%注意力预算和10%缓存预算即实现近无损生成，即使在1%缓存预算下仍保持鲁棒。",
+      "tags": "query:ce",
+      "abstract_en": "Visual Autoregressive (VAR) models adopt a next-scale prediction paradigm, offering high-quality generation with substantially fewer decoding steps. However, existing VAR models suffer from significant attention complexity and severe memory overhead due to the accumulation of key-value (KV) caches across scales. In this paper, we tackle this challenge by introducing KV cache compression into the next-scale paradigm. We begin with an in-depth analysis of VAR attention and observe that attention heads can be stably divided into two functionally distinct categories: Contextual Heads focus on maintaining semantic consistency, while Structural Heads preserve spatial coherence. Their functional divergence makes existing one-size-fits-all compression methods perform poorly on VAR models. We further find that the two head types differ markedly in their reliance on historical scales, and that this reliance shifts across layers and generation steps, arguing for an adaptive cache budget allocation. To address these challenges, we propose HACK++, a training-free Head-Aware key-value Compression frameworK for VAR models. From a one-time offline calibration, HACK++ classifies head types and derives head-specific priors. At inference, it decouples attention from cache compression under independent budgets, bounding the current-scale attention cost while compressing the accumulated cache far more aggressively, via pattern-specific strategies and a reliance-aware budget allocation. Extensive experiments on multiple VAR models across text-to-image, class-conditional, and unified understanding-and-generation tasks validate the effectiveness and generalizability of HACK++. For example, on Infinity-2B/8B, HACK++ maintains near-lossless generation with only a 30% attention budget and a 10% cache budget, and remains robust even under a 1% cache budget.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/09/2606.07451v1-tevi-text-conditioned-editing-of-visual-representations-via-sparse-autoencoders-for-improved-vision-language-alignment",
+      "section": "quick",
+      "title_en": "TEVI: Text-Conditioned Editing of Visual Representations via Sparse Autoencoders for Improved Vision-Language Alignment",
+      "authors": "Sweta Mahajan, Sukrut Rao, Jiahao Xie, Alexander Koller, Bernt Schiele",
+      "date": "2026-06-05",
+      "pdf": "https://arxiv.org/pdf/2606.07451v1",
+      "score": "7.0",
+      "evidence": "利用稀疏自编码器基于标题选择性保留内容，实现概念擦除",
+      "tldr": "视觉语言模型如CLIP存在图像与文本嵌入对齐不良的问题，根源在于图像信息多于标题描述。为此提出TEVI框架，利用稀疏自编码器解耦图像嵌入，并训练掩码模块根据给定标题选择性重建嵌入。在合成与自然图像上，TEVI有效保留标题描述的属性并丢弃无关信息，在MS COCO、Flickr等短标题及IIW、DOCCI长标题基准上显著提升检索性能，且标题越丰富增益越强。该工作通过文本条件编辑视觉表征，提升了视觉语言对齐质量与模型鲁棒性。",
+      "tags": "query:ce",
+      "abstract_en": "Vision-language models such as CLIP are highly useful for diverse tasks due to their shared image-text embedding space. Despite this, the image and text embeddings are often poorly aligned, affecting downstream performance. Recent work has shown that this can be attributed to an information imbalance: images contain more information than their captions describe. In this work, we propose TEVI, a framework that uses captions as a signal for what to retain from image embeddings. Specifically, we use sparse autoencoders to disentangle image embeddings and train a masking module to selectively reconstruct the embedding based on a given caption. In a controlled setup with synthetic captions, we show that TEVI is effective at preserving caption-described attributes while discarding others. By applying TEVI to CLIP models trained on natural images, we further achieve improved retrieval performance across coarse-grained short-caption (MS COCO, Flickr) and fine-grained long-caption (IIW, DOCCI) benchmarks, with stronger gains on richer captions, and improved robustness on the RoCOCO benchmark.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

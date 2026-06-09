@@ -1,0 +1,183 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-09T21:51:55.207808+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.09156v1",
+      "source": "arxiv",
+      "title": "OmniGen-AR: AutoRegressive Any-to-Image Generation",
+      "abstract": "Autoregressive (AR) models have demonstrated strong potential in visual generation, offering superior performance with simple architectures and optimization objectives. However, existing methods are typically limited to single-modality conditions, e.g., text, restricting their applicability in real-world scenarios that demand image synthesis from diverse controls. In this work, we present OmniGen-AR, a unified autoregressive framework for Any-to-Image generation. By discretizing various visual conditions through a shared visual tokenizer and text prompts with a text tokenizer, OmniGen-AR supports a broad spectrum of conditional inputs within a single model, including text (text-to-image generation), spatial signals (segmentation-to-image and depth-to-image), and visual context (image editing, frame prediction, and text-to-video generation). To mitigate the risk of information leakage from condition tokens to content tokens, we introduce Disentangled Causal Attention (DCA), which separates the full-sequence causal mask into condition causal attention and content causal attention. It serves as a training-time regularizer without affecting the standard next-token prediction during inference. With this design, OmniGen-AR achieves new state-of-the-art or at least competitive results across a range of benchmark, e.g., 0.63 on GenEval and 80.02 on VBench, demonstrating its effectiveness in flexible and high-fidelity visual generation.",
+      "authors": [
+        "Junke Wang",
+        "Xun Wang",
+        "Qiushan Guo",
+        "Peize Sun",
+        "Weilin Huang",
+        "Zuxuan Wu",
+        "Yu-Gang Jiang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-08T07:47:53+00:00",
+      "link": "https://arxiv.org/pdf/2606.09156v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "unified autoregressive framework for text-to-image generation",
+      "llm_evidence_cn": "统一的用于文本到图像生成的自回归框架",
+      "llm_evidence": "统一的用于文本到图像生成的自回归框架",
+      "canonical_evidence": "统一的用于文本到图像生成的自回归框架",
+      "llm_tldr_en": "OmniGen-AR proposes a unified autoregressive framework for any-to-image generation, including text-to-image, by discretizing visual conditions through a shared tokenizer.",
+      "llm_tldr_cn": "现有自回归图像生成方法通常局限于单一模态条件。本文提出OmniGen-AR，一个统一的任意条件图像生成自回归框架，通过共享视觉分词器和文本分词器处理多种条件输入，包括文本、分割图、深度图等。实验表明该框架在多种任务上表现优异，为多模态图像生成提供了通用方案。",
+      "llm_tldr": "现有自回归图像生成方法通常局限于单一模态条件。本文提出OmniGen-AR，一个统一的任意条件图像生成自回归框架，通过共享视觉分词器和文本分词器处理多种条件输入，包括文本、分割图、深度图等。实验表明该框架在多种任务上表现优异，为多模态图像生成提供了通用方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.07688v1",
+      "source": "arxiv",
+      "title": "TRACER: Token ReAssignment for Concept ERasure in Generative Recommendation",
+      "abstract": "Generative recommendation formulates next-item prediction as autoregressive generation over semantic ID (SID) sequences derived from users' historical interactions, making modern recommender systems structurally similar to large language models (LLMs). As privacy and safety concerns grow, these systems increasingly require concept unlearning to remove sensitive or harmful concepts associated with items. However, existing LLM unlearning methods cannot be directly applied to generative recommendation. Unlike word tokens with explicit semantics, SIDs are abstract identifiers that are often shared by both forget and retain items, leading to severe conflicts between concept removal and recommendation utility preservation.   To address this challenge, we propose TRACER, an end-to-end concept unlearning framework based on token reassignment. Rather than directly suppressing shared SIDs, TRACER reassigns concept-related items to alternative tokens that better facilitate forgetting while minimizing side effects on retained items. We further introduce a coherence regularizer to preserve semantic consistency among retain items during unlearning. Experiments on real-world recommendation datasets demonstrate that TRACER effectively removes target concepts while substantially better preserving recommendation utility than existing unlearning baselines.",
+      "authors": [
+        "Ziheng Chen",
+        "Jiali Cheng",
+        "Zezhong Fan",
+        "Hadi Amiri",
+        "Diyuan Wu",
+        "Gabriele Tolomei",
+        "Yang Zhang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-06-05T05:19:31+00:00",
+      "link": "https://arxiv.org/pdf/2606.07688v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "concept erasure in autoregressive generative recommendation",
+      "llm_evidence_cn": "自回归生成式推荐中的概念擦除",
+      "llm_evidence": "自回归生成式推荐中的概念擦除",
+      "canonical_evidence": "自回归生成式推荐中的概念擦除",
+      "llm_tldr_en": "TRACER addresses concept unlearning in autoregressive generative recommendation by reassigning semantic IDs to resolve conflicts between forget and retain items, achieving effective concept removal with minimal utility loss.",
+      "llm_tldr_cn": "生成式推荐系统将用户交互序列建模为自回归生成，但其使用的语义ID高度重叠，导致直接应用大模型遗忘方法时概念移除与推荐效用严重冲突。本文提出TRACER方法，通过令牌重新分配策略将遗忘物品的语义ID映射到保留物品的ID上，从而在不降低推荐性能的前提下有效擦除敏感概念。实验在多个推荐数据集上验证了TRACER的优越性，其思想也为其他依赖抽象标识符的自回归生成任务中的概念擦除提供了新思路。",
+      "llm_tldr": "生成式推荐系统将用户交互序列建模为自回归生成，但其使用的语义ID高度重叠，导致直接应用大模型遗忘方法时概念移除与推荐效用严重冲突。本文提出TRACER方法，通过令牌重新分配策略将遗忘物品的语义ID映射到保留物品的ID上，从而在不降低推荐性能的前提下有效擦除敏感概念。实验在多个推荐数据集上验证了TRACER的优越性，其思想也为其他依赖抽象标识符的自回归生成任务中的概念擦除提供了新思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.08302v1",
+      "source": "arxiv",
+      "title": "HACK++: Towards More Effective Head-Aware Key-Value Compression for Efficient Visual Autoregressive Modeling",
+      "abstract": "Visual Autoregressive (VAR) models adopt a next-scale prediction paradigm, offering high-quality generation with substantially fewer decoding steps. However, existing VAR models suffer from significant attention complexity and severe memory overhead due to the accumulation of key-value (KV) caches across scales. In this paper, we tackle this challenge by introducing KV cache compression into the next-scale paradigm. We begin with an in-depth analysis of VAR attention and observe that attention heads can be stably divided into two functionally distinct categories: Contextual Heads focus on maintaining semantic consistency, while Structural Heads preserve spatial coherence. Their functional divergence makes existing one-size-fits-all compression methods perform poorly on VAR models. We further find that the two head types differ markedly in their reliance on historical scales, and that this reliance shifts across layers and generation steps, arguing for an adaptive cache budget allocation. To address these challenges, we propose HACK++, a training-free Head-Aware key-value Compression frameworK for VAR models. From a one-time offline calibration, HACK++ classifies head types and derives head-specific priors. At inference, it decouples attention from cache compression under independent budgets, bounding the current-scale attention cost while compressing the accumulated cache far more aggressively, via pattern-specific strategies and a reliance-aware budget allocation. Extensive experiments on multiple VAR models across text-to-image, class-conditional, and unified understanding-and-generation tasks validate the effectiveness and generalizability of HACK++. For example, on Infinity-2B/8B, HACK++ maintains near-lossless generation with only a 30% attention budget and a 10% cache budget, and remains robust even under a 1% cache budget.",
+      "authors": [
+        "Ziran Qin",
+        "Yuchen Jiang",
+        "Mingbao Lin",
+        "Youru Lv",
+        "Hang Guo",
+        "Wen Fei",
+        "Weiyao Lin"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-06T18:58:26+00:00",
+      "link": "https://arxiv.org/pdf/2606.08302v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "KV cache compression for visual autoregressive models, directly addressing autoregressive image generation efficiency",
+      "llm_evidence_cn": "针对视觉自回归模型的KV缓存压缩，直接提升自回归图像生成效率",
+      "llm_evidence": "针对视觉自回归模型的KV缓存压缩，直接提升自回归图像生成效率",
+      "canonical_evidence": "针对视觉自回归模型的KV缓存压缩，直接提升自回归图像生成效率",
+      "llm_tldr_en": "HACK++ analyzes VAR attention heads and introduces KV cache compression specific to contextual and structural heads, reducing memory overhead and enabling efficient visual autoregressive generation.",
+      "llm_tldr_cn": "视觉自回归（VAR）模型因跨尺度KV缓存累积导致高昂内存开销。HACK++通过分析发现注意力头可分为语义头与结构头，并提出针对性的KV压缩方法，显著降低内存占用，同时保持生成质量。该工作直接改进自回归图像生成模型，为相关研究提供效率优化方案。",
+      "llm_tldr": "视觉自回归（VAR）模型因跨尺度KV缓存累积导致高昂内存开销。HACK++通过分析发现注意力头可分为语义头与结构头，并提出针对性的KV压缩方法，显著降低内存占用，同时保持生成质量。该工作直接改进自回归图像生成模型，为相关研究提供效率优化方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.07451v1",
+      "source": "arxiv",
+      "title": "TEVI: Text-Conditioned Editing of Visual Representations via Sparse Autoencoders for Improved Vision-Language Alignment",
+      "abstract": "Vision-language models such as CLIP are highly useful for diverse tasks due to their shared image-text embedding space. Despite this, the image and text embeddings are often poorly aligned, affecting downstream performance. Recent work has shown that this can be attributed to an information imbalance: images contain more information than their captions describe. In this work, we propose TEVI, a framework that uses captions as a signal for what to retain from image embeddings. Specifically, we use sparse autoencoders to disentangle image embeddings and train a masking module to selectively reconstruct the embedding based on a given caption. In a controlled setup with synthetic captions, we show that TEVI is effective at preserving caption-described attributes while discarding others. By applying TEVI to CLIP models trained on natural images, we further achieve improved retrieval performance across coarse-grained short-caption (MS COCO, Flickr) and fine-grained long-caption (IIW, DOCCI) benchmarks, with stronger gains on richer captions, and improved robustness on the RoCOCO benchmark.",
+      "authors": [
+        "Sweta Mahajan",
+        "Sukrut Rao",
+        "Jiahao Xie",
+        "Alexander Koller",
+        "Bernt Schiele"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-06-05T16:54:40+00:00",
+      "link": "https://arxiv.org/pdf/2606.07451v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "text-conditioned editing via sparse autoencoders selectively retains content based on caption, enabling concept erasure",
+      "llm_evidence_cn": "利用稀疏自编码器基于标题选择性保留内容，实现概念擦除",
+      "llm_evidence": "利用稀疏自编码器基于标题选择性保留内容，实现概念擦除",
+      "canonical_evidence": "利用稀疏自编码器基于标题选择性保留内容，实现概念擦除",
+      "llm_tldr_en": "TEVI uses sparse autoencoders to disentangle image embeddings and trains a masking module to selectively reconstruct based on a caption, effectively erasing irrelevant information from visual representations.",
+      "llm_tldr_cn": "现有视觉语言模型如图像嵌入包含过多不匹配文本的信息，导致对齐不良。TEVI提出使用稀疏自编码器分解图像嵌入，并训练掩码模块根据给定标题选择性重建嵌入，从而保留相关内容并擦除无关信息。实验证明该方法能有效提升对齐性能，为概念擦除提供了一种轻量级表示编辑方案。",
+      "llm_tldr": "现有视觉语言模型如图像嵌入包含过多不匹配文本的信息，导致对齐不良。TEVI提出使用稀疏自编码器分解图像嵌入，并训练掩码模块根据给定标题选择性重建嵌入，从而保留相关内容并擦除无关信息。实验证明该方法能有效提升对齐性能，为概念擦除提供了一种轻量级表示编辑方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
