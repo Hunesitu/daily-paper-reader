@@ -1,0 +1,146 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-10T22:13:13.196477+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.10492v1",
+      "source": "arxiv",
+      "title": "PathRelax: Parallel-Path Relaxed Speculative Jacobi Decoding for Accelerating Auto-Regressive Text-to-Image Generation",
+      "abstract": "The growing need for high-resolution image generation in autoregressive text-to-image models has resulted in extended token sequences, significantly increasing computational costs and inference times. However, existing state-of-the-art methods for accelerating autoregressive text-to-image models rely on chain-structured draft token sequences, leading to inefficient draft token search and limited acceptance lengths. To address this, we propose parallel-path cross-relaxed speculative Jacobi decoding (\\textbf{PathSpec}), a novel framework that enhances efficiency through a multi-sequence draft tree structure. Our parallel-path speculative Jacobi decoding (\\textbf{PathExplore}) expands the token search space, achieving a higher speedup ratio without sacrificing image quality. Additionally, we introduce cross-path relaxed verification (\\textbf{PathRelax}) that exploits semantic similarities across sequences to further boost token acceptance rates. Evaluated on the Parti-Prompts, MSCOCO2017, and T2ICompBench datasets, our method achieves a speedup ratio of 4.14 $\\times$, 3.95$\\times$, and 4.18$\\times$, respectively. Remarkably, PathExplore, without any relaxed sampling, outperforms relaxed sampling methods in the speedup ratio, such as GSD and LANTERN. Moreover, PathRelax's relaxation mechanism can be seamlessly integrated with other relaxation techniques, enabling further acceleration and providing an efficient solution for real-time text-to-image generation. Our code is available at https://github.com/Haodong-Lei-Ray/PathSpec.",
+      "authors": [
+        "Haodong Lei",
+        "Hongsong Wang",
+        "Bingxuan Dai",
+        "Pan Zhou"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-09T07:16:23+00:00",
+      "link": "https://arxiv.org/pdf/2606.10492v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "autoregressive text-to-image acceleration",
+      "llm_evidence_cn": "自回归文本到图像生成加速",
+      "llm_evidence": "自回归文本到图像生成加速",
+      "canonical_evidence": "自回归文本到图像生成加速",
+      "llm_tldr_en": "Proposes parallel-path speculative Jacobi decoding to accelerate autoregressive text-to-image generation via multi-sequence draft tree.",
+      "llm_tldr_cn": "自回归文本到图像模型因长序列推理慢。本文提出路径并行推测雅可比解码（PathSpec），采用多序列草稿树结构扩展搜索空间，显著提升加速比和接受长度。",
+      "llm_tldr": "自回归文本到图像模型因长序列推理慢。本文提出路径并行推测雅可比解码（PathSpec），采用多序列草稿树结构扩展搜索空间，显著提升加速比和接受长度。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.11188v1",
+      "source": "arxiv",
+      "title": "ARM: An AutoRegressive Large Multimodal Model with Unified Discrete Representations",
+      "abstract": "This paper introduces ARM, a discrete representation-based AutoRegressive Model that unifies image understanding, generation, and editing within a next-token prediction framework. ARM is built on three efforts: first, we train a discrete semantic visual tokenizer that maps images into compact token sequences. Our tokenizer is supervised with multiple objectives that jointly promote semantic discriminability, language alignment and faithful reconstruction, thereby supporting diverse tasks in a shared latent space. With this, we train a 7B autoregressive model over large-scale text and image token sequences, seamlessly developing vision-language perception and generation capabilities. Finally, to further improve preference-aligned behavior for text-to-image generation and instruction-guided editing, ARM applies reinforcement learning (RL) to optimize task-level objectives such as visual quality, instruction adherence, and edit consistency. Surprisingly, the results show that RL not only substantially improves performance on the target tasks (e.g., raising WISE overall from 0.50 to 0.56, GEdit-Bench-EN G_O from 5.75 to 6.68), but also induces cross-task synergy between text-to-image generation and editing. Collectively, these findings highlight autoregressive modeling, when paired with strong representations and preference optimization, as a scalable foundation for multimodal intelligence. Code: https://github.com/wdrink/ARM.",
+      "authors": [
+        "Junke Wang",
+        "Xiao Wang",
+        "Jiacheng Pan",
+        "Xuefeng Hu",
+        "Feng Li",
+        "Jingxiang Sun",
+        "Chaorui Deng",
+        "Zilong Chen",
+        "Yunpeng Chen",
+        "Kaibin Tian",
+        "Matthew Gwilliam",
+        "Hao Chen",
+        "Danhui Guan",
+        "Kun Xu",
+        "Weilin Huang",
+        "Zuxuan Wu",
+        "Haoqi Fan",
+        "Yu-Gang Jiang",
+        "Zhenheng Yang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-09T17:59:28+00:00",
+      "link": "https://arxiv.org/pdf/2606.11188v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "autoregressive image generation model",
+      "llm_evidence_cn": "自回归图像生成模型",
+      "llm_evidence": "自回归图像生成模型",
+      "canonical_evidence": "自回归图像生成模型",
+      "llm_tldr_en": "Introduces ARM, a 7B autoregressive model unifying image understanding, generation, and editing via discrete representations.",
+      "llm_tldr_cn": "现有模型需分别训练不同任务。本文提出ARM，使用离散语义视觉分词器，在统一自回归框架下处理图像理解、生成和编辑，7B参数模型在多项任务上达到领先性能。",
+      "llm_tldr": "现有模型需分别训练不同任务。本文提出ARM，使用离散语义视觉分词器，在统一自回归框架下处理图像理解、生成和编辑，7B参数模型在多项任务上达到领先性能。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.06320v1",
+      "source": "arxiv",
+      "title": "Learning What to Forget: Improving LLM Unlearning via Learned Token-Level Importance",
+      "abstract": "Machine unlearning aims to remove targeted knowledge from a trained model while preserving its general capabilities. For autoregressive language models, not all tokens in a forget sample are equally relevant to forgetting. Existing approaches either ignore this heterogeneity or rely on auxiliary models, heuristics, or external annotations to estimate each token's relevance for forgetting. We instead characterize it through the interaction with the retain objective: a token is forget-specific to the extent that minimizing the forget loss on that token does not conflict with retain optimality. We formalize this perspective as a joint optimization problem over the model parameters and the token weights and show that, under a natural separation condition, the resulting objective recovers the oracle forget-specific token support. Motivated by this formulation, we introduce Alternating Token-Weighted Unlearning (ATWU), a lightweight framework that jointly learns token forget-specificity and model parameters during unlearning using a simple linear scorer over the hidden states, without external token level supervision. Across TOFU and RWKU, ATWU achieves state of the art forget-retain trade-offs, outperforming sample-level methods, probability-based token weighting heuristics, and auxiliary-model-based approaches. Moreover, the learned scores align substantially better with ground truth forget-specific spans, indicating that ATWU identifies semantically meaningful token level forgetting signals. Overall, our results suggest that retain conflict provides an effective criterion for identifying what language models should forget, enabling unsupervised learning of token level forget-specificity directly from model representations with minimal computational overhead.",
+      "authors": [
+        "Gizem Yüce",
+        "Giorgos Nikolaou",
+        "Nicolas Flammarion"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-06-04T15:56:32+00:00",
+      "link": "https://arxiv.org/pdf/2606.06320v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "machine unlearning for autoregressive models, learned token-level importance for forgetting",
+      "llm_evidence_cn": "自回归模型的机器遗忘，学习令牌级重要性以增强遗忘",
+      "llm_evidence": "自回归模型的机器遗忘，学习令牌级重要性以增强遗忘",
+      "canonical_evidence": "自回归模型的机器遗忘，学习令牌级重要性以增强遗忘",
+      "llm_tldr_en": "Proposes a learned token-level importance method for LLM unlearning, by characterizing forget-specific tokens via interaction with retain objective.",
+      "llm_tldr_cn": "现有机器遗忘方法往往忽略样本中不同令牌对遗忘的重要性差异，或依赖外部模型。该工作通过保留目标与遗忘目标的交互，自动学习每个令牌的遗忘重要性权重，并提出联合优化框架。在Llama等模型上的实验表明，该方法在有效移除目标知识的同时保持了通用能力，优于基线方法。为自回归模型的精确概念擦除提供了新思路。",
+      "llm_tldr": "现有机器遗忘方法往往忽略样本中不同令牌对遗忘的重要性差异，或依赖外部模型。该工作通过保留目标与遗忘目标的交互，自动学习每个令牌的遗忘重要性权重，并提出联合优化框架。在Llama等模型上的实验表明，该方法在有效移除目标知识的同时保持了通用能力，优于基线方法。为自回归模型的精确概念擦除提供了新思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
