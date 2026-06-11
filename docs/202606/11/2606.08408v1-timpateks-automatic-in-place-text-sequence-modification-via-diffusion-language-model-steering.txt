@@ -1,0 +1,612 @@
+Title: TimpaTeks: Automatic In-place Text Sequence Modification via Diffusion Language Model Steering
+
+URL Source: https://arxiv.org/pdf/2606.08408v1
+
+Published Time: Tue, 09 Jun 2026 01:11:23 GMT
+
+Number of Pages: 16
+
+Markdown Content:
+# TimpaTeks: Automatic In-place Text Sequence Modification via Diffusion Language Model Steering 
+
+Ryandito Diandaru, Ikhlasul Akmal Hanif, Fadli Aulawi Al Ghiffari, Ahmed Elshabrawy , Alham Fikri Aji 
+
+MBZUAI 
+
+> {Ryandito.Diandaru, Ikhlasul.Hanif, Fadli.Ghiffari, Ahmed.Elshabrawy, Alham.Fikri}@mbzuai.ac.ae
+
+Abstract 
+
+We extend activation steering to diffusion lan-guage models (DLMs) and study a novel prob-lem that arose due to the inference mecha-nism of DLMs: Modifying a text in-place 
+
+to manifest a different concept. We propose 
+
+TimpaTeks , an automatic in-place text mod-ification mechanism using DLMs. Experi-ments on IMDB movie reviews (sentiment) and a synthetic CatDog Dataset (arbitrary, more unconventional concept steering) show that 
+
+TimpaTeks provides a feasible novel mecha-nism to steer diffusion language model outputs 
+
+in-place . TimpaTeks enables in-place modifi-cation while simultaneously lowers sentence perplexity and retaining the original sentence structre without the need of instruction tuned models. TimpaTeks is also computationally cheaper than prompt-based DLM steering, as it performs denoising in-place rather than con-structing an additional prompt-conditioned out-put sequence. We release our code. 1
+
+1 Introduction 
+
+Activation steering is a popular method for modify-ing model output without training (Rimsky et al., 2024). The core idea is to modify (i.e. “steer") model outputs towards a desired concept or out-put distribution via modification of the model’s intermediate activations. Most work on steering focuses on autoregressive (AR) language models (Rodriguez et al., 2025; Lee et al., 2025; Templeton et al., 2024). These models generate text one token at a time from left to right, and their final token rep-resentation effectively summarizes the whole input. However, this left-to-right process limits how we can intervene or modify the model’s behavior. Diffusion Language Models (DLMs) are differ-ent. They use bidirectional attention and don’t strictly generate text step-by-step (Nie et al., 2025).  
+
+> 1Code is available at https://github.com/rayendito/ dlm_steer
+
+So they offer more flexibility in where and how we can intervene in the model’s internal activations, opening up more possibilities for steering leading to a potentially even more natural use case for steer-ing than AR language models. This, however, re-mains underexplored, so we ask: Can DLMs be steered to modify a sentence in-place such that it manifests a different concept while retaining coher-ence? 
+
+To answer this, we introduce TimpaTeks , a novel steering method designed around DLM mecha-nisms, TimpaTeks begins by automatically detect-ing tokens to be steered via cosine similarity be-tween the the token representation and the steer vectors. These cosine similarity scores are then used as the probability of this token to be steered. After remasked tokens are sampled, the usual DLM sampling method is executed with steer vector in-jections. As seen in Figure 1, we find TimpaTeks to be particularly effective and computationally cheaper compared to vanilla DLM generation (base-line). We compare TimpaTeks against a base-line of prompt-based output steering, and find that TimpaTeks successfully steers both sentiment (IMDB) and concept (CatDog) in both directions while preserving or even lowering sentence perplex-ity relative to the source, and that human annotators prefer TimpaTeks over the prompting baseline for sentence structure retention on IMDB, though the baseline is preferred on CatDog where it defaults to direct token replacement due to the simpler nature of the concept. We ablate our method’s various design choices, including refilling steps, sampling temperature, identification temperature, and sen-tence length, and find that TimpaTeks is relatively insensitive to hyperparameter choices. Our contributions are, hence, the following: • TimpaTeks , a novel method to automatically modify text in-place using DLMs towards a 
+
+> arXiv:2606.08408v1 [cs.CL] 7 Jun 2026
+
+desired concept while preserving the overall narrative of the original text. • Extensive analysis, ablation, and method de-sign for steering methodology in DLMs, in-cluding hyperparameter selection, effect of sentence length on effectiveness, compute cost analysis, and effectiveness on multiple concepts (sentiment and “Cat vs. Dog") and demonstrate the robustness and efficiency of 
+
+TimpaTeks .• Rigorous evaluation of TimpaTeks under mul-tiple metrics and human validation to test co-herence, steering success, and faithfulness to the original text. 
+
+2 Related Work 
+
+Activation Steering Unlike fine-tuning, which permanently modifies model weights, activation steering controls behavior at inference time by shifting internal activations toward desired rep-resentations. This approach builds on the Lin-ear Representation Hypothesis (Park et al., 2023), inspired by earlier word-vector findings that se-mantic concepts often correspond to linear direc-tions (Mikolov et al., 2013). Early methods de-rived steering vectors from activation differences between contrasting prompts, such as honest versus deceptive instructions, and added them to the resid-ual stream to influence outputs without retraining (Turner et al., 2024; Rimsky et al., 2024). Recent work extends this paradigm beyond naive linear interventions through distribution-aware methods based on optimal transport (Ro-driguez et al., 2026, 2025), conditional steering policies (Lee et al., 2025), and finer-grained in-terventions on monosemantic features identified with sparse autoencoders (Templeton et al., 2024). Most of this work, however, focuses on Autore-gressive Language Models (ARLMs) and Contin-uous Diffusion Models (which typically process other modalities like images rather than text). Our work serves as a bridge between the advancements made in ARLMs, and the relatively underexplored Diffusion-based Language Models. 
+
+Diffusion Language Models Parallel to autore-gressive models, diffusion-based language models (DLMs) (Sahoo et al., 2024; Nie et al., 2025; Ye et al., 2025) have emerged as an alternative gen-eration paradigm. Rather than decoding text left to right, models such as LLaDA (Nie et al., 2025) generate through iterative masking and denoising with bidirectional attention. This architecture cre-ates distinct opportunities for activation steering, yet steering methods for DLMs remain relatively underexplored. Shnaidman et al. (2026) extend activation steer-ing to masked diffusion language models by apply-ing steering directions across diffusion timesteps, enabling inference-time control without simulat-ing full trajectories. Their analysis further studies where and when to steer, highlighting the effects of layers, timesteps, and token subsets. However, their work focuses on a limited subset of steering strategies and does not explore the broader design space enabled by diffusion-based generation. In contrast, our work leverages the unique ability of DLMs to process text in place, without changing the token length, to steer existing text toward a target concept. 
+
+3 Methodology 
+
+In this section, we describe the formal setup for DLM steering and metrics used. TimpaTeks 
+
+method details will be explained in the subsections. 
+
+Hidden state. Let model M have L decoder layers and hidden dimension d. For a sequence 
+
+x = ( x1, . . . , x N ), let h(x) ∈ RN ×L×d denote the collection of hidden states, where hli(x) ∈ Rd is the hidden state at layer l for token xi.
+
+Steering. Let S ∈ RL×d be the steering tensor, where Sl ∈ Rd denotes the steering vector applied at layer l, and Sl = 0 for non-steered layers. On inference, we define the steered hidden states as 
+
+˜hli = hli + Sl, ∀i ∈ { 1, . . . , N }, l ∈ { 1, . . . , L }.
+
+We define fsteer (x, S ) as the output of M when each hidden state hli is replaced by ˜hli during the forward pass. 
+
+Metrics. To evaluate the TimpaTeks experi-ments, we measure steering success and text co-herence by framing success as a classification task. That is, we compare the probabilities of the class tokens e.g. [‘ positive’, ‘ negative’] and 
+
+[‘ cat’, ‘ dog’] for steering success and the overall sequence perplexity for coherence . We eval-uate both steering success and coherence using Qwen2.5-0.5B-Instruct (Qwen et al., 2025). 
+
+3.1 Dataset 
+
+We use 2 dataset concepts: IMDB movie review (Maas et al., 2011), a sentiment analysis dataset Figure 1: An example run result of the TimpaTeks method. TimpaTeks successfully identifies and replaces tokens where necessary to change the sentiment while retaining coherence and adds more variations beyond just entity replacement. 
+
+on movie reviews, and a synthetically generated CatDog dataset, which is generated by an LLM to create steerable instances between the concepts of "Cat" and "Dog" to test if it is possible to steer one concept to the other. For IMDB, we use part of the original split from the labeled dataset, resulting in 1000 train and 20 held-out validation samples (both for each positive and negative label). For Cat-Dog, details and example instances are available in Appendix A. 
+
+3.2 Extracting Steer Vectors 
+
+Let S be a dataset for a concept, e.g. cats or pos-itive movie reviews, containing M samples. We define the concept tensor V ∈ RL×d layer-wise. For each layer l, V l ∈ Rd is the average hidden representation over all tokens and all samples: 
+
+V l = 1
+
+M
+
+X
+
+> x∈S
+
+1
+
+Nx
+
+> Nx
+
+X
+
+> i=1
+
+hli(x)
+
+!
+
+Then, let c1 and c2 be two concepts with concept tensors Vc1 , V c2 ∈ RL×d. We define the steering tensor S ∈ RL×d as the layer-wise difference be-tween their ℓ2-normalized concept vectors: 
+
+Sl = V lc1
+
+∥V lc1 ∥2
+
+− V lc2
+
+∥V lc2 ∥2
+
+, ∀l ∈ { 1, . . . , L }
+
+A layer-wise steering strength parameter α ∈
+
+RL is then applied to S, giving the final steering tensor 
+
+Slα = αlSl, ∀l ∈ { 1, . . . , L }
+
+Joint search over all TimpaTeks hyperparame-ters is impractical at scale, so on a held-out val-idation set we sweep only the steering layer and strength α. For each layer, we apply only Sl with scalar strength α while Sl′
+
+= 0 for l′̸ = l, on opposite-class validation prompts. Other remaining 
+
+TimpaTeks knobs are fixed to a single lightweight setting (detection temperature τ = 0 .0001 , resteer steps k=1 , refilling steps u=1 ). We evaluate all layer-alpha combinations with the same metrics as our main TimpaTeks exper-iments. For each validation prompt j, layer– strength pair (l, α ), and steering direction d ∈{c1, c 2} (positive or negative / cat or dog), let 
+
+˜x(l,α,d ) 
+
+> j
+
+be the steered text obtained with S(l,α ) 
+
+> d
+
+. Av-eraging over J validation prompts gives ¯c(l,α,d ) and 
+
+bp(l,α,d ), each representing group results of classifi-cation score and normalized perplexity. Utilizing 
+
+HM (harmonic mean) as a way to balance both directions, the final score of each combination is 
+
+h(l,α ) 
+
+> c1
+
+= HM  ¯c(l,α,c 1), 1 − bp(l,α,c 1),h(l,α ) 
+
+> c2
+
+= HM  ¯c(l,α,c 2), 1 − bp(l,α,c 2),H(l,α )cross = HM  h(l,α ) 
+
+> c1
+
+, h (l,α )
+
+> c2
+
+3.3 TimpaTeks : Automatic and in-place modification 
+
+We describe in detail the method of TimpaTeks in this section. Automatic indicates that the edit po-sitions are identified automatically and in-place 
+
+indicates that the method preserves the original se-quence and only replaces selected tokens, rather than generating a new sequence from scratch. 
+
+3.3.1 Detecting Which Tokens to Steer 
+
+We assume that an attribute of a sequence x =(x1, . . . , x N ), such as sentiment, can be changed by modifying only a subset of tokens, thereby pre-serving most of the sequence’s original narrative. The first step is to identify which tokens should be modified. Given a steering tensor S, for each token 
+
+xi ∈ x, we get an average similarity score over all layers (using cosine similarity) 
+
+¯sim i = 1
+
+|L steer |
+
+X
+
+> l∈L steer
+
+cosine 
+
+
+
+hli(x), S l
+
+where Lsteer is the subset of layers steered. We then use ¯sim i to get the probability of replacing 
+
+this token: 
+
+pi = σ
+
+
+
+− ¯sim i
+
+τ
+
+
+
+where σ(·) is the sigmoid function and τ > 0 is a temperature parameter controlling the sharpness of the selection distribution. Intuitively, tokens that are less aligned with the steering direction are assigned a higher probability of being selected for replacement. 
+
+3.3.2 Steer and refine 
+
+Let x = ( x1, . . . , x N ) be a sequence exhibiting concept c1, which we aim to modify in-place to-ward concept c2. Let R ⊆ { 1, . . . , N } denote the sampled token positions selected for replace-ment. We construct a masked sequence x′ by re-placing each selected token with the model’s mask token. With k steering steps and f refilling steps, we present our in-place modification algorithm in Algorithm 1. Unmasking part of the algorithm is adapted from the generation process of LLaDA (Nie et al., 2025) to match what this model has been trained to do. Here, SAMPLE REPLACE samples the token positions R selected for replacement using the similarity-based probabilities defined in Sec-tion 3.3.1. M ASK replaces the tokens in R with the model’s mask token. N UM TOFILL computes a re-fill schedule m over the u refilling steps, where mr
+
+Algorithm 1 TimpaTeks algorithm 
+
+Require: Input sequence x, steering tensor S,steering steps k, refilling steps u
+
+Ensure: Modified sequence ˜x 
+
+> 1:
+
+˜x ← x 
+
+> 2:
+
+for t = 1 to k do  
+
+> 3:
+
+z ← M (˜ x) ▷ obtain hidden states  
+
+> 4:
+
+R ← SAMPLE REPLACE (z, S ) 
+
+> 5:
+
+˜xmask ← MASK (˜ x, R ) 
+
+> 6:
+
+m ← NUM TOFILL (˜ xmask , u ) 
+
+> 7:
+
+for r = 1 to u do  
+
+> 8:
+
+if NOMASKS (˜ xmask ) then  
+
+> 9:
+
+break  
+
+> 10:
+
+end if  
+
+> 11:
+
+y ← fsteer (˜ xmask , S ) 
+
+> 12:
+
+P ← SEL UNMASK (˜ xmask , y, mr) 
+
+> 13:
+
+˜xmask ← FILL MASKS (˜ xmask , y, P ) 
+
+> 14:
+
+end for  
+
+> 15:
+
+˜x ← ˜xmask  
+
+> 16:
+
+end for  
+
+> 17:
+
+return ˜x
+
+denotes the number of masked tokens to fill at step 
+
+r. At each refilling step, fsteer performs a steered forward pass over the masked sequence. S EL UN- 
+
+> MASK
+
+selects the mr masked positions with the highest prediction confidence, and F ILL MASKS re-places those positions with their predicted tokens. 
+
+4 Experimental Setup and Results 
+
+In our experiments, we use LLaDA-8B-Base as the primary experimental model to steer (Nie et al., 2025). We intentionally did not use the in-struct model as DLM activation steering has been shown to be effective already by previous research (Shnaidman et al., 2026). Furthermore, the in-place nature of TimpaTeks lends itself well to non-instruct tuned language modeling as the model does not follow instructions to produce the output. The rest of the generation hyperparameter is described in the corresponding subsections. 
+
+4.1 Steer Vector Extraction 
+
+We build contrastive steering vectors from n text samples per concept on IMDB and CatDog, with 
+
+n ∈ { 1, 5, 10 , 20 , 50 , 100 }. We also include n=0 ,where each concept is a single-token pair ( love /hate 
+
+for IMDB, cat /dog for CatDog), following prior activation-steering practice (Turner et al., 2024). For each n, we run the validation layer-alpha sweep over l ∈ {0, . . . , 32 } and α ∈{10 , 15 , . . . , 100 }. We take the rank-1 grid cell by H(l,α )cross as the best score achievable for that n.Figures 7 and 8 plot this value against n (solid: 
+
+cross_hm ; dashed: per-direction harmonic means). On IMDB, rank-1 cross_hm increases from n=0 
+
+to sentence-based vectors and is highest at n=20 
+
+among our settings ( 0.24 → 0.47 ). On CatDog, the curve is flatter and peaks near n=10 . Stronger con-trastive directions need neither very large sample counts nor single-token anchors alone. Each bench-mark exhibits an intermediate n at which rank-1 
+
+cross_hm is maximized, and increasing n beyond that point can reduce the validation score rather than improve it. This aligns with past works on steering vector works on AR models (Tan et al., 2025). Given this n, layer– α heatmaps (Appendix Fig-ure 9 and Figure 10) show where steering signal concentrates in the screened grid. Strong responses consistently appear in mid–late layers (roughly lay-ers 20–32). This pattern is consistent with prior work on activation steering for DLM (Shnaidman et al., 2026), which finds that steering effects are primarily localized in mid-to-late transformer lay-ers. 
+
+4.2 Text Modification via TimpaTeks 
+
+In this experiment, we steer in-place both the sen-timent of the IMBD sample and the topic animal in the CatDog dataset each in both directions. We sample each 1000 instances each for IMBD and CatDog dataset. We evaluate on sentence length (N), and ablate on detection temperature ( τ ), sam-pling temperature, steering steps ( k), refilling steps (u) in that order, independently. For all experi-ments, we use the best layer-α combinations ob-served in Section 4.1 and an ad-hoc selected layer-
+
+α hyperparameters (chosen by trial and error). We illustrate the qualitative success in TimpaTeks by presenting an example of actual generation in Fig-ure 1 and report quantitative results in the following subsections. We use a prompting method as a base-line, that is, we try to “steer” a sentence by merely prompting. Prompt details in Appendix D.1. 
+
+4.2.1 General results 
+
+We report that TimpaTeks works better qualita-tively and quantitatively on the ad hoc hyperparam-eters and use the results of which for the following subsections 2 (see Limitations). We illustrate the         
+
+> 2For IMDB steer layers [16 25 31] with α= 500 . For CatDog, [32] with α= 100
+
+general success of TimpaTeks through Figure 2 and Figure 3. Interestingly, our ad hoc hyperparam-eters are not necessarily optimized, which suggests the robustness of our method. 
+
+Steering success. Figure 2 presents a sample of the label evolution of 100 sentences from the 1000 sentences steered using TimpaTeks . We observe that each sample takes different amounts of steps to be successfully steered, and we also observed that as we add more steering steps, we have more flipped labels which indicates steer success. 
+
+Retaining coherence. Figure 3 presents the results of measuring the difference in perplex-ity after every steering step. We observe that there is no meaningful difference in perplexity and that sometimes it even lowers it, indicating that 
+
+TimpaTeks both successfully steers the sentence and retains coherence or sometimes even makes it better. 
+
+Retaining sentence structure. We further find that TimpaTeks can preserve the sentence struc-ture of the original text. To illustrate this, Ap-pendix D.1 provides examples of generated out-puts. We also conducted internal human evalua-tion on 50 successful steering examples from each dataset, split evenly across labels. Three inter-nal annotators were asked to choose which out-put better preserved the original sentence structure: 
+
+TimpaTeks or the baseline. On IMDB, annotators preferred TimpaTeks in 46/50, 49/50, and 45/50 cases, respectively. On CatDog, however, anno-tators preferred the baseline in 41/50, 49/50, and 48/50 cases, respectively. We find that the prompting baseline generates generic movie reviews for IMDB and direct token replacement from cat to dog (or vice versa) on CatDog, hence the annotators’ preference. On the other hand TimpaTeks gives more variations other than just direct token replacement, allowing for a more creative generation especially on more com-plex sentences with subtle phrases related to the target concept. Interestingly, this can lead to in-stances were the TimpaTeks generation captures the "spirit" of the original text while incorporating the target concept subtly. For example, in Table 4, 
+
+TimpaTeks removes the “calico" adjective when steering from “cat" to “dog" because cats are typi-cally more associated with that sort of fur pattern. Although additional prompt instructions could be added to encourage the model to preserve sentence structure, doing so would likely require instruc-tion fine-tuning. In contrast, our method uses base Figure 2: Predicted label evolution under TimpaTeks steering. Each row represents one sampled sentence instance, and each column shows the predicted label at a TimpaTeks steering step. We take the experiment refilling steps 15, sampling temperature 0.5 and identification temperature 0.5 as an example in this illustration. 
+
+> Figure 3: Average perplexity change across TimpaTeks steering steps. Each line corresponds to one steering configuration, with values showing the average perplexity delta between that generation step and the original sentence.
+
+models, suggesting that TimpaTeks can retain sen-tence structure without relying on instruction-tuned models. 
+
+4.2.2 Effect of Hyperparameters in TimpaTeks 
+
+We analyze the effect of three key hyperparameters on steering success and text coherence: refilling steps ( u), sampling temperature ( τs), and identifi-cation temperature ( τ ). Each parameter is swept independently while keeping the others fixed, and results are reported separately for IMDB and Cat-Dog. 
+
+Effect on steering success. Figure 4 reports the mean target-label probability across parameter con-figurations. On IMDB, steering success is largely uniform across all values of u, τs, and τ , indicating that TimpaTeks reliably flips sentiment regardless of these settings. On CatDog, the dog-to-cat di-rection consistently yields lower target probabil-ities than the cat-to-dog direction. Nevertheless, the overall pattern remains stable across parameter choices, confirming that TimpaTeks is not sensitive to these hyperparameters in terms of label transfor-mation. 
+
+Effect on coherence. Figure 5 reports the aver-age perplexity delta relative to the original sentence at each steering step. On IMDB, increasing the number of refilling steps u tends to lower perplexity. On CatDog, although perplexity typically increases with each individual steering step, increasing u
+
+nonetheless yields the lowest overall perplexity. Figure 4: Mean target-label probability across TimpaTeks hyperparameter configurations. Each line reports the average probability assigned to the target concept (e.g., positive for from-negative steering) over all steered samples, grouped by refilling steps ( u), sampling temperature ( τs), and identification temperature ( τ ). 
+
+Regarding sampling temperature τs, lower values consistently give better (lower) perplexity on both datasets. For identification temperature τ , higher values produce the best perplexity scores. Since label transformation is broadly insensitive to all three parameters, the better strategy is to optimize for perplexity. 
+
+4.2.3 Effect of Sentence Length 
+
+We partition the evaluation set into three length bins, i.e. short, medium, and long, based on empiri-cal terciles of the whitespace-delimited word count. Appendix A provides the exact bin boundaries. Longer sentences might be expected to resist steering more strongly, since they contain a greater number of tokens that must collectively shift to-ward the target concept. Figure 6 shows that steer-ing is quite robust to sentence length. On both IMDB and CatDog, steering success as measured by target-label probability remains largely uniform across length bins, indicating that sentence length does not meaningfully affect TimpaTeks ’ ability to transfer a concept. Coherence results are similarly stable across length bins on CatDog. On IMDB, where 
+
+TimpaTeks tends to reduce perplexity relative to the source sentence, shorter sentences exhibit the largest average perplexity reduction. This pat-tern is consistent with the intuition that shorter sequences offer fewer positions where incoher-ent tokens might be introduced, making any re-finement more concentrated. The overall magni-tude of the differences across bins remains small, however, further underscoring that sentence length has only a limited effect on coherence. Overall, 
+
+TimpaTeks proves quite robust across varying sen-tence lengths. 
+
+4.2.4 Compute cost analysis of TimpaTeks 
+
+Given a sentence x to be steered, we aim to pro-duce a steered sequence x′ with the same length, i.e., |x| = |x′| = N . Let p denote an additional instruction prompt of length |p| = P , and let T
+
+denote the denoising budget, i.e., the number of denoising forward passes. For a standard prompt-based DLM, the model conditions on both the in-struction prompt and the original sentence, while appending a length-N masked output sequence: 
+
+[p, x, [MASK] , . . . , [MASK] 
+
+| {z }
+
+> N
+
+]
+
+Thus, each denoising step performs a forward pass over a sequence of length P + 2 N . Although LLaDA-style generation is semi-autoregressive at the block level, each denoising step still processes the full current sequence, including the prompt, source sentence, and masked output slots. Assum-ing a transformer model with M parameters, the approximate forward-pass compute is 
+
+FLOPs DLM ≈ 2M T (P + 2 N ).
+
+In contrast, our method performs steering in-place. Instead of appending an additional output Figure 5: Average perplexity delta relative to the original sentence across TimpaTeks steering steps, grouped by hyperparameter configuration. Negative values indicate that the steered output is more fluent than the source sentence under the scorer; positive values indicate a degradation in fluency. 
+
+> Figure 6: Average perplexity delta and target probability under different sentence length
+
+sequence, we directly mask selected tokens in the original sentence: 
+
+˜x = TimpaTeks( x)
+
+The denoising process is then performed over the original sequence length N . Our method incurs one additional forward-pass overhead before denoising, e.g., to obtain the masking or editing signal. There-fore, its approximate compute is 
+
+FLOPs TimpaTeks ≈ 2M (T + 1) N. 
+
+Given the same denoising budget T , the relative compute cost is 
+
+FLOPs TimpaTeks 
+
+FLOPs DLM 
+
+≈ (T + 1) NT (P + 2 N )
+
+Our method is cheaper when 
+
+(T + 1) N < T (P + 2 N ),
+
+which simplifies to N < T (P +N ). Therefore, un-der the same denoising budget, our in-place method reduces forward-pass compute by avoiding both the instruction prompt p and the additional length-N
+
+masked output sequence used by standard prompt-based DLM steering, making it computationally cheaper ■
+
+We note that this comparison focuses on DLM-based steering methods. Autoregressive models with KV caching can often be more compute-efficient than both DLM variants, since they require one prefill pass followed by cached token-by-token decoding. However, such models generate strictly left-to-right and do not naturally support bidirec-tional in-place denoising. Our analysis therefore isolates the compute advantage of the proposed method within the DLM setting. 
+
+5 Conclusion 
+
+We introduce TimpaTeks , a novel method to mod-ify a sequence of text’s concept in-place automati-cally using DLMs which has been shown to work well both qualitatively and quantitatively while be-ing computationally cheaper and robust towards hyperparameter choice. TimpaTeks uniquely cap-tures the "essence" of the original text while inject-ing the target concept more abstractly than baseline instruction-based steering. 
+
+Limitations 
+
+Non-Exhaustive Hyperparameter Search. 
+
+TimpaTeks involves several hyperparameters, including refilling steps ( u), sampling temperature (τs), and identification temperature ( τ ). A full joint search over these parameters is computationally expensive, as the number of configurations grows rapidly with each added variable. For the same reason, the layer– α setting from the sweep is not used in the main experiments ( ad hoc hyperparam-eters is used instead), since jointly optimizing for both experiments would substantially increase the experimental cost. 
+
+Limited Coverage of Diffusion Language Models. All experiments are conducted using 
+
+LLaDA-8B-Base as the sole backbone. This choice is reasonable given that the DLM landscape is still relatively new and well-studied options are limited, but it does mean we cannot make strong claims about how TimpaTeks behaves on other archi-tectures such as MDLM (Sahoo et al., 2024) or DREAM (Ye et al., 2025). Properties we observe here, such as steering signal concentrating in mid-to-late layers (roughly layers 20 –32 ), may or may not generalize to models with different depth, at-tention patterns, or masking strategies. As more capable DLMs become available, replicating these experiments across architectures would be a valu-able validation. 
+
+Synthetic Evaluation Dataset. The CatDog dataset is generated by prompting a language model, which introduces biases in vocabulary, sen-tence structure, and how each concept is repre-sented. While it provides a useful controlled setting for evaluating concept transfer beyond sentiment, performance on it may not reliably predict how the method behaves on naturally occurring text where concept boundaries are subtler or more ambigu-ous. The heavy skew toward story-style genera-tions after filtering further limits the diversity of the evaluation. 
+
+Factual Consistency. Because TimpaTeks re-places tokens in-place without any explicit factual grounding, the steered output may introduce con-tent that is inconsistent with the original sentence, particularly when the source text contains specific named entities, numbers, or factual claims. This is not unique to our method and reflects a broader open problem in controlled text generation, but it is worth noting as a practical limitation for any use case where factual preservation matters. 
+
+References                 
+
+> Albert Q. Jiang, Alexandre Sablayrolles, Arthur Men-sch, Chris Bamford, Devendra Singh Chaplot, Diego de las Casas, Florian Bressand, Gianna Lengyel, Guil-laume Lample, Lucile Saulnier, Lélio Renard Lavaud, Marie-Anne Lachaux, Pierre Stock, Teven Le Scao, Thibaut Lavril, Thomas Wang, Timothée Lacroix, and William El Sayed. 2023. Mistral 7b. Preprint ,arXiv:2310.06825. Bruce W. Lee, Inkit Padhi, Karthikeyan Natesan Ra-mamurthy, Erik Miehling, Pierre Dognin, Manish Nagireddy, and Amit Dhurandhar. 2025. Program-ming refusal with conditional activation steering. In
+> The Thirteenth International Conference on Learning Representations .Andrew L. Maas, Raymond E. Daly, Peter T. Pham, Dan Huang, Andrew Y. Ng, and Christopher Potts. 2011. Learning word vectors for sentiment analysis. In Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies , pages 142–150, Portland, Oregon, USA. Association for Computational Lin-guistics. Tomas Mikolov, Wen-tau Yih, and Geoffrey Zweig. 2013. Linguistic regularities in continuous space word representations. In Proceedings of the 2013 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies , pages 746–751, Atlanta, Georgia. Association for Computational Linguistics. Shen Nie, Fengqi Zhu, Zebin You, Xiaolu Zhang, Jingyang Ou, Jun Hu, Jun Zhou, Yankai Lin, Ji-Rong Wen, and Chongxuan Li. 2025. Large language dif-fusion models. Preprint , arXiv:2502.09992. Kiho Park, Yo Joong Choe, and Victor Veitch. 2023. The linear representation hypothesis and the geome-try of large language models. In Causal Representa-tion Learning Workshop at NeurIPS 2023 .Qwen, :, An Yang, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chengyuan Li, Dayiheng Liu, Fei Huang, Haoran Wei, Huan Lin, Jian Yang, Jianhong Tu, Jianwei Zhang, Jianxin Yang, Jiaxi Yang, Jingren Zhou, and 25 oth-ers. 2025. Qwen2.5 technical report. Preprint ,arXiv:2412.15115.
+
+Nina Rimsky, Nick Gabrieli, Julian Schulz, Meg Tong, Evan Hubinger, and Alexander Turner. 2024. Steer-ing llama 2 via contrastive activation addition. In 
+
+Proceedings of the 62nd Annual Meeting of the As-sociation for Computational Linguistics (Volume 1: Long Papers) , pages 15504–15522, Bangkok, Thai-land. Association for Computational Linguistics. Pau Rodriguez, Arno Blaas, Michal Klein, Luca Zap-pella, Nicholas Apostoloff, marco cuturi, and Xavier Suau. 2025. Controlling language and diffusion mod-els by transporting activations. In The Thirteenth International Conference on Learning Representa-tions .Pau Rodriguez, Michal Klein, Eleonora Gualdoni, Valentino Maiorca, Arno Blaas, Luca Zappella, marco cuturi, and Xavier Suau. 2026. LinEAS: End-to-end learning of activation steering with a distribu-tional loss. In The Thirty-ninth Annual Conference on Neural Information Processing Systems .Subham Sekhar Sahoo, Marianne Arriola, Yair Schiff, Aaron Gokaslan, Edgar Marroquin, Justin T Chiu, Alexander Rush, and Volodymyr Kuleshov. 2024. Simple and effective masked diffusion language mod-els. Preprint , arXiv:2406.07524. Adi Shnaidman, Erin Feiglin, Osher Yaari, Efrat Mentel, Amit Levi, and Raz Lapid. 2026. Activation steering for masked diffusion language models. Preprint ,arXiv:2512.24143. Daniel Tan, David Chanin, Aengus Lynch, Dimitrios Kanoulas, Brooks Paige, Adria Garriga-Alonso, and Robert Kirk. 2025. Analyzing the generaliza-tion and reliability of steering vectors. Preprint ,arXiv:2407.12404. Adly Templeton, Tom Conerly, Jonathan Marcus, Jack Lindsey, Trenton Bricken, Brian Chen, Adam Pearce, Craig Citro, Emmanuel Ameisen, Andy Jones, Hoagy Cunningham, Nicholas L Turner, Callum McDougall, Monte MacDiarmid, C. Daniel Freeman, Theodore R. Sumers, Edward Rees, Joshua Batson, Adam Jermyn, and 3 others. 2024. Scaling monosemanticity: Ex-tracting interpretable features from claude 3 sonnet. 
+
+Transformer Circuits Thread .Alexander Matt Turner, Lisa Thiergart, Gavin Leech, David Udell, Juan J. Vazquez, Ulisse Mini, and Monte MacDiarmid. 2024. Steering language models with activation engineering. Preprint ,arXiv:2308.10248. Jiacheng Ye, Zhihui Xie, Lin Zheng, Jiahui Gao, Zirui Wu, Xin Jiang, Zhenguo Li, and Lingpeng Kong. 2025. Dream 7b: Diffusion large language models. 
+
+Preprint , arXiv:2508.15487. A CatDog Dataset Details 
+
+We construct a synthetic cats-vs-dogs dataset to evaluate whether activation steering in a diffusion language model can transfer text from one ani-mal concept to another. The task is binary and symmetric: cat-related inputs are steered toward dog-related text, and dog-related inputs are steered toward cat-related text. A synthetic dataset gives controlled concept labels and a simple semantic direction while avoiding the ambiguity of naturally occurring text. 
+
+Dataset generation. Raw ex-amples were generated with 
+
+mistralai/Mistral-7B-Instruct-v0.2 (Jiang et al., 2023). For each concept, we prompted the model to generate sets of ten diverse sentences about either cat or dog . Generation used tem-perature 0.8, top-p 0.95 , maximum generation length 420 , and seed 42 . In total, we generated 320 prompt-level continuations per concept, yielding 640 raw generations before sentence-level parsing and filtering. We used two prompt families: a factual prompt and a story-style prompt. Both asked the model to generate diverse sentences about a target con-cept using a fixed WordNet-style definition, while referring to the concept only by its name. The definitions were: 
+
+cat : “feline mammal usually having thick soft fur and no ability to roar” 
+
+,
+
+dog : “member of the genus Canis that has been domesticated by humans since prehistoric times” 
+
+.
+
+The prompts also varied the role assigned to the concept, such as an entity, concept, behavior, com-panion, social signal, or domestic presence, to en-courage diverse contexts. After filtering, most re-tained examples came from the story-style prompt. 
+
+Filtering. Candidate sentences were normalized by stripping leading and trailing whitespace and collapsing repeated whitespace. We removed sen-tences that were empty, outside the 6 to 45 word range, contained fewer than half alphabetic charac-ters, included repeated-character artifacts, failed the explicit animal-token filter, or duplicated a previously kept sentence within the same concept class. The animal-token filter ensured that class labels were unambiguous. Cat examples were required to contain cat or cats , and dog examples were re-quired to contain dog or dogs . Other animal class tokens were blocked, including kitten , kittens ,
+
+feline , felines , puppy , puppies , canine , and 
+
+canines . Thus, examples mentioning both con-cepts or explicit subtypes were removed. Deduplication was performed separately within each concept class using both exact lower-case matching and a weaker normalized match that lowercases, removes punctuation and non-alphanumeric characters, and collapses whitespace. This removes exact duplicates and near-duplicates that differ only in formatting or punctuation. 
+
+Final dataset. The final dataset contains 2,626 examples, exactly balanced across the two con-cepts: 1,313 cat sentences and 1,313 dog sentences. Each example contains an identifier, sentence text, numeric label, concept label, and prompt type. The numeric label is 0 for cat and 1 for dog. Rows were shuffled with seed 42 and split ap-proximately 80/10/10 into train, validation, and test splits. Because splitting was performed after global shuffling, the individual splits are not exactly class-balanced, although the full dataset is balanced. Split Rows Cat Dog All 2626 1313 1313 Train 2100 1064 1036 Validation 262 128 134 Test 264 121 143 
+
+> Table 1: Final cats-vs-dogs dataset sizes by split and concept.
+
+The final dataset contains both factual and story-style generations, although story-style examples dominate after filtering. Split Fact Story All 274 2352 Train 216 1884 Validation 32 230 Test 26 238 
+
+> Table 2: Prompt-kind distribution in the final cats-vs-dogs dataset.
+
+Sentence lengths were computed using whitespace-delimited word counts. 
+
+Use in experiments. The validation split was used to estimate the cat-dog steering vector. In Split Min Mean Median Max All 6 28.62 28 45 Train 6 28.55 28 45 Validation 7 29.04 29 45 Test 8 28.76 29 45 
+
+> Table 3: Whitespace-delimited sentence-length statistics for the final dataset.
+
+the final experiments, we used n = 10 validation examples per class with sample seed 41 . For each layer, token hidden states were averaged with the attention mask to form example-level representa-tions, and these representations were then averaged within each concept. The steering direction was computed as the difference between the cat and dog concept means. The train split was used as the final evaluation set for both activation steering and prompting base-lines. Although this split is named train, it is used only for evaluation in the final cats-vs-dogs experi-ments. This choice reserves a small split for vector estimation while allowing the larger split to provide more stable evaluation. The evaluation set contains 2,100 examples: 1,064 cat-source examples for the cat-to-dog direction and 1,036 dog-source exam-ples for the dog-to-cat direction. For the prompting baseline, each source sentence was rewritten with an instruction to change it into a sentence about the target animal while preserving the original meaning. The same 2,100 examples were used for the prompting and steering compar-isons. 
+
+B Length-based analysis. 
+
+Sentence length was used as an analysis variable rather than as a tuned hyperparameter. For each evaluation input x, we define 
+
+L(x) = # whitespace-delimited words in x. 
+
+The 2,100 evaluation examples were divided into short, medium, and long bins using empirical one-third quantiles: 
+
+q1 = Q1/3(L), q2 = Q2/3(L)
+
+The bin assignment is 
+
+bin( x) = 
+
+
+
+short , L(x) ≤ q1,
+
+medium , q1 < L (x) ≤ q2,
+
+long , L(x) > q 2.
+
+Evaluation metrics. Generated outputs were scored with Qwen/Qwen2.5-0.5B-Instruct . For target animal probability, the scorer was prompted with the generated text followed by Animal: . Let 
+
+z denote the next-token logits over the full vocabu-lary. The raw full-vocabulary probability of token 
+
+w is 
+
+p(w | y) = exp( zw)
+
+P 
+
+> v∈V
+
+exp( zv)
+
+The target probability is 
+
+ptarget (y) = 
+
+(
+
+p(“ dog” | y), cat → dog ,p(“ cat” | y), dog → cat .
+
+This is a raw full-vocabulary token probability and is not normalized over only the cat and dog tokens. Perplexity was computed with the same scorer: 
+
+PPL( y) = exp − 1
+
+T − 1 
+
+> T−1
+
+X
+
+> t=1
+
+log p(yt+1 | y≤t)
+
+!
+
+Lower perplexity indicates more fluent text under the scorer. To combine target probability and per-plexity, we robust-normalized perplexity using the 5th and 95th percentiles: 
+
+a = Q0.05 (r), b = Q0.95 (r),
+
+where ri is the perplexity of example i. We clipped each value, 
+
+˜ri = min(max( ri, a ), b ),
+
+and converted it into a higher-is-better score, 
+
+sppl (i) = 1 − ˜ri − ab − a
+
+The harmonic score is 
+
+Hi = 2ptarget (i)sppl (i)
+
+ptarget (i) + sppl (i) + ϵ
+
+We report the mean harmonic score over the evalu-ation set. For the prompting baseline, we additionally com-pute semantic similarity between the original sen-tence x and the rewritten sentence y using TF-IDF cosine similarity with unigram and bigram features: 
+
+sim( x, y ) = ϕ(x)⊤ϕ(y)
+
+∥ϕ(x)∥2∥ϕ(y)∥2
+
+,
+
+where ϕ is a TF-IDF vectorizer with 
+
+ngram_range=(1,2) and min_df=1 . Seman-tic similarity was not included for steering in the final comparison table. Figure 7: Rank-1 validation harmonic-mean score of all   
+
+> non IMDB Dataset
+> Figure 8: Rank-1 validation harmonic-mean score of all
+> non CatDog Dataset
+
+C Layer-α Combination Search 
+
+Details about the layer– α combination search are presented in Figures 7–10. 
+
+D TimpaTeks Example Outputs 
+
+D.1 TimpaTeks and Prompting Baseline Example Outputs 
+
+We present the examples of TimpaTeks and the prompting baseline in Table 4. Outputs are truncated to the first few sentences for readabil-ity. The prompting baseline uses the prompt: 
+
+{original_concept} sentence: {sent} Equivalent {dest_concept} sentence: . Gen-eration hyperparameters is left to defaut of LLaDA-8B-Base (Nie et al., 2025) 
+
+D.2 Error Example Outputs and Analysis Failure categories. For qualitative error analysis, we group unsuccessful steering outputs into three categories for each dataset. 
+
+Cats/Dogs Generic or off-topic denotes cases where the rewritten text loses the animal-specific content of the source and instead shifts to unrelated     
+
+> Figure 9: Validation layer-alpha heatmaps on IMDB with n=50 (positive and negative steering vectors).
+> Figure 10: Validation layer-alpha heatmaps on CatDog with n=10 (cat and dog steering vectors).
+
+or broadly descriptive content; Incomplete animal flip captures cases where the output moves partially toward the target animal but still retains enough source-side or ambiguous cues that the classifier prediction does not flip; and Malformed or ani-mal drift covers cases where the output becomes corrupted, truncated, or semantically drifts to a different animal rather than the intended target. Ex-amples are shown in Table 6. 
+
+Sentiment Mixed or ambivalent sentiment refers to outputs that contain both positive and negative evaluative cues, resulting in an incomplete polarity shift; Malformed or off-topic includes generations whose sentiment signal is weakened by noise, trun-cation, or topic drift; and Source sentiment retained 
+
+denotes cases where the original polarity remains dominant despite steering. Examples are provided in Table 5. 
+
+Annotation of 100 failure samples We anno-tated 100 failure samples based on the above cat-egories. As shown in Figure 11, for IMDB the majority of failures fall into the “Mixed or ambiva-lent sentiment” category, indicating that the output still contains both positive and negative cues. For Cats/Dogs, most failures are due to “Generic or off-topic” outputs, where the model drifts away from animal-specific content. Steer Direction Original TimpaTeks Prompting Baseline 
+
+positive This movie is a terrible waste of time. Although it is only an hour and a half long it feels somewhere close to 4. I have never seen a movie move so slowly and so without a purpose. This is also a “horror” film that takes place a lot of the time during daylight. This is such a wonderful and hilarious movie. Although it is only an hour and a half long, it feels like a long movie. All the characters in the movie are too bright and there is no real darkness. This is a “horror” movie that can easily be seen at any time of night. I loved this movie. It was so funny and entertaining. I laughed so many times and I can’t wait to watch it again. negative One of the finest musicals made, one that is timeless and is worth seeing time and again. Delicious! The acting, especially by Ron Moody as Fagin, is superb. Costumes are exquisite....even the shabby ones. one of the worst movies ever made. One I would be willing to watch over again and again. Some of the acting, especially by Ron Jeremy as a dog, is horrible. Costumes are horrible... especially the dog costumes. I saw this movie in the theater and was very disappointed. The acting was terrible, the plot was confusing, and the music was awful. I would not recommend this movie to anyone. cat In the open field, the dog, a free spirit, ran with the wind in its fur, feeling the sun on its back and the grass beneath its paws, embodying the essence of freedom. In the serene backyard, the cat, a free spirit, walked with a bounce in its step, enjoying the sun on its fur and the grass beneath its paws, embodying the essence of feline freedom In the open field, the cat, a free spirit, ran with the wind in its fur, feeling the sun on its back and the grass beneath its paws, embodying the essence of freedom. dog In a bustling marketplace, a cat with calico fur and playful green eyes entertained the crowd with its acrobatics and agility, earning coins and smiles from all who watched. At the bustling marketplace, Max, a dog known for his dog tricks, entertained the crowd with his acrobatic dog show, bringing laughter and joy to all who watched. "In a bustling marketplace, a dog with calico fur and playful green eyes entertained the crowd with its acrobatics and agility, earning coins and smiles from all who watched. " 
+
+Table 4: Example outputs comparing TimpaTeks and the prompting baseline. 
+
+(a) Failure on IMDB (b) Failure on CatsDogs 
+
+Figure 11: Annotation results for failure categories on 100 samples (50 IMDB; 50 CatsDogs) Error type Original TimpaTeks 
+
+Mixed or ambivalent sentiment WOW, this movie was so horrible. I’m so glad i didn’t have to pay money to see this horrible movie. it was like a history nut went on a coke binge! the previews of it made it look decent but it was REALLY bad. i will... amazing, but it was so unrealistic that I’m glad I didn’t spend the money I did to see it. I saw this movie with a lot of my sci-fi friends, and although the idea of the movie was great, it was so unrealistic. So unre... Malformed or off-topic I watched this movie last night and hoped for the best after watching all the cool trail-ers.Even the cover of the DVD looked good.As soon as I started watching it I was thinking like others "oh my God whats this".Ther... .I saw the movie last night and was expecting the world after reading the back of the movie and the back of the movie as well.As soon as the movie started i was on my feet, anding the A was it!The acting and music wer... Source sentiment re-tained This is the absolute worst movie I have ever seen!! There was absolutely nothing good to say about this movie. I have seen some bad movies but this one takes it. There is no plot and most of the movie you are either f... This is the most boring movie I have ever seen. I have nothing but negative to say about this movie. I have never seen a movie as boring as this one. For the 40 minutes of the movie you will be fast forwarding. At las... 
+
+Table 5: Failure categories for Sentiment steering with one representative example per category from the 100-case failure sample. 
+
+Error type Original TimpaTeks 
+
+Generic or off-topic In the dimly lit room, the cat’s eyes gleamed like emeralds in the darkness, her velvet paws padding softly across the floor as she hunted for a hidden toy, her playful companionship a welcome distraction. In the dimly lit room, the girl’s eyes sparkled like emeralds, filled with warmth and under-standing. James gently held her face as they engaged in a heartfelt conversation, finding in it a welcome distraction from Incomplete animal flip In the quiet library, the cat curled up on the wooden floor, its soft fur a contrast to the cold stone walls. Its gentle presence signaled a sense of calm and tranquility, allowing the stu-dents to focus on their studies. In the quiet library, a dog found solace in the reading nook, its furry paws nestled between the themes of books. This unexpected visitor brought a sense of calm and companionship, allowing the students to focus on th... Malformed or animal drift In the midst of a raging storm, the brave dog swam through turbulent waters to save a drowning child, its powerful jaws grasping and carrying the struggling boy to safety. In the midst of a fierce storm, a lone dolphin braved treacherous waters to save a drown-ing swimmer, its powerful tail grasping and pulling the frightened person to safety. 
+
+Table 6: Failure categories for Cats/Dogs steering with one representative example per category from the 100-case failure sample. E The Use of Large Language Models (LLMs) 
+
+We used LLMs only for helping to articulate ideas, such as grammar refinement, sentence rephrasing, etc. All technical ideas, experimental design, anal-yses, interpretations, and substantive content were developed entirely by the authors. The authors fully reviewed and validated all LLM-assisted outputs and take complete responsibility for the accuracy and integrity of the final manuscript.

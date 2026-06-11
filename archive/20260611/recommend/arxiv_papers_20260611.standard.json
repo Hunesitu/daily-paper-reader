@@ -1,0 +1,227 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-11T21:55:18.790036+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2606.11751v1",
+      "source": "arxiv",
+      "title": "AnchorEdit: Maintaining Temporal Consistency in Multi-turn Image Editing via Causal Memory",
+      "abstract": "Multi-turn image editing is essential for iterative design, yet current models often struggle with identity drift and error accumulation over successive steps. While existing research leverages video priors for consistency, their reliance on bidirectional attention is fundamentally misaligned with the causal, sequential nature of interactive editing. In this paper, we propose AnchorEdit, the first autoregressive (AR) diffusion-based framework designed specifically for high-resolution, long-term multi-turn editing. AnchorEdit bridges the gap between video priors and causal inference through a three-stage training curriculum: identity-preserving sing-turn pretraining, causal AR forcing fine-tuning with a novel self-rollout strategy to mitigate exposure bias, and consistency distillation for efficient 4-step generation. During inference, we introduce a memory mechanism to anchor the initial subject identity and ensure stable extrapolation across extended editing trajectories. To evaluate performance, we provide a new high-resolution multi-turn editing benchmark designed to stress-test long-horizon stability. Extensive experiments demonstrate that AnchorEdit achieves state-of-the-art results, maintaining exceptional subject fidelity and instruction following even over 10+ interaction rounds.",
+      "authors": [
+        "Hang Xu",
+        "Xiaoxiao Ma",
+        "Guohui Zhang",
+        "Yu Hu",
+        "Siming Fu",
+        "Jie Huang",
+        "Lin Song",
+        "Haoyang Huang",
+        "Nan Duan",
+        "Feng Zhao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-06-10T07:26:31+00:00",
+      "link": "https://arxiv.org/pdf/2606.11751v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "autoregressive diffusion framework for image editing, relevant to autoregressive image generation models",
+      "llm_evidence_cn": "自回归扩散框架用于图像编辑，与自回归图像生成模型相关",
+      "llm_evidence": "自回归扩散框架用于图像编辑，与自回归图像生成模型相关",
+      "canonical_evidence": "自回归扩散框架用于图像编辑，与自回归图像生成模型相关",
+      "llm_tldr_en": "AnchorEdit proposes the first autoregressive diffusion framework for multi-turn image editing with a causal memory curriculum to maintain identity and reduce error accumulation.",
+      "llm_tldr_cn": "多轮图像编辑面临身份漂移和错误累积问题。现有方法使用视频先验但双向注意力不适用于因果序列编辑。本文提出AnchorEdit，首个自回归扩散框架，通过三段式训练课程（单轮预训练、因果自回归强制微调、自展开策略）实现高分辨率长期编辑，有效保持身份一致性，减少误差累积。",
+      "llm_tldr": "多轮图像编辑面临身份漂移和错误累积问题。现有方法使用视频先验但双向注意力不适用于因果序列编辑。本文提出AnchorEdit，首个自回归扩散框架，通过三段式训练课程（单轮预训练、因果自回归强制微调、自展开策略）实现高分辨率长期编辑，有效保持身份一致性，减少误差累积。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.04527v1",
+      "source": "arxiv",
+      "title": "Echo-Infinity: Learning Evolving Memory for Real-Time Infinite Video Generation",
+      "abstract": "We present Echo Infinity, an autoregressive (AR) framework towards real-time infinite video generation that employs a learnable evolving memory to dynamically filter, abstract, and compress any-length history at constant cost. Existing methods mainly curate memory with predefined KV-cache schedules, fixed-ratio heuristic compression, or inference-time RoPE adaptation. These designs inevitably lose historical information and amplify compounding errors due to their limited cache window and ignorance of autoregressive generation noise. Inspired by human memory consolidation, Echo-Infinity replaces handcrafted memory curation with learnable Memory Query, which are updated by attention and a gating mechanism when past frames are evicted from the local window. The queries are optimized end-to-end with the video diffusion transformers (DiTs), forming an evolving memory that supports arbitrary compression ratios with constant computation independent of video length. They also act as a generalizable generation prior, improving quality even when only the optimized initial state is used. We further introduce Unified Relative RoPE Recipe, which anchors the sink frames to start from id 0 and lets the newest frame id grow at most to the DiTs' pretrained maximum temporal RoPE id throughout training and inference, freeing the model from the finite RoPE constraint and closing the train-test RoPE extrapolation gap. In long and short video generation, Echo-Infinity achieves state-of-the-art performance, and, to our knowledge, demonstrates promising 24-hour (>1.3 M frames) real-time rollouts for the first time, suggesting a practical path toward infinite video generation.",
+      "authors": [
+        "Yuxuan Bian",
+        "Zeyue Xue",
+        "Songchun Zhang",
+        "Shiyi Zhang",
+        "Weiyang Jin",
+        "Yaowei Li",
+        "Junhao Zhuang",
+        "Haoran Li",
+        "Jie Huang",
+        "Haoyang Huang",
+        "Nan Duan",
+        "Qiang Xu"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM",
+        "cs.CV",
+        "cs.GR"
+      ],
+      "published": "2026-06-03T07:09:01+00:00",
+      "link": "https://arxiv.org/pdf/2606.04527v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "autoregressive framework for real-time infinite video generation",
+      "llm_evidence_cn": "用于实时无限视频生成的自回归框架",
+      "llm_evidence": "用于实时无限视频生成的自回归框架",
+      "canonical_evidence": "用于实时无限视频生成的自回归框架",
+      "llm_tldr_en": "Echo-Infinity is an autoregressive framework with learnable evolving memory for real-time infinite video generation, outperforming heuristic memory management approaches.",
+      "llm_tldr_cn": "现有自回归视频生成方法依赖预定义的KV缓存调度或固定压缩策略，容易丢失历史信息并累积错误。Echo-Infinity受人类记忆巩固机制启发，提出可学习的演化记忆，通过注意力与门控机制动态过滤、抽象和压缩历史，在恒定开销下处理任意长度视频。实验结果证明了该方法在实时无限视频生成中的有效性和稳定性。",
+      "llm_tldr": "现有自回归视频生成方法依赖预定义的KV缓存调度或固定压缩策略，容易丢失历史信息并累积错误。Echo-Infinity受人类记忆巩固机制启发，提出可学习的演化记忆，通过注意力与门控机制动态过滤、抽象和压缩历史，在恒定开销下处理任意长度视频。实验结果证明了该方法在实时无限视频生成中的有效性和稳定性。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.08408v1",
+      "source": "arxiv",
+      "title": "TimpaTeks: Automatic In-place Text Sequence Modification via Diffusion Language Model Steering",
+      "abstract": "We extend activation steering to diffusion language models (DLMs) and study a novel problem that arose due to the inference mechanism of DLMs: Modifying a text in-place to manifest a different concept. We propose TimpaTeks, an automatic in-place text modification mechanism using DLMs. Experiments on IMDB movie reviews (sentiment) and a synthetic Cats and Dogs Dataset (arbitrary, more unconventional concept steering) show that TimpaTeks provides a feasible novel mechanism to steer diffusion language model outputs in-place. TimpaTeks enables in-place modification while simultaneously lowers sentence perplexity and retaining the original sentence structre without the need of instruction tuned models. TimpaTeks is also computationally cheaper than prompt-based DLM steering, as it performs denoising in-place rather than constructing an additional prompt-conditioned output sequence.",
+      "authors": [
+        "Ryandito Diandaru",
+        "Ikhlasul Akmal Hanif",
+        "Fadli Aulawi Al Ghiffari",
+        "Ahmed Elshabrawy",
+        "Alham Fikri Aji"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "published": "2026-06-07T02:13:17+00:00",
+      "link": "https://arxiv.org/pdf/2606.08408v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "concept steering via activation steering in diffusion language models",
+      "llm_evidence_cn": "通过扩散语言模型激活引导进行概念转向",
+      "llm_evidence": "通过扩散语言模型激活引导进行概念转向",
+      "canonical_evidence": "通过扩散语言模型激活引导进行概念转向",
+      "llm_tldr_en": "Proposes TimpaTeks, an in-place text modification method via activation steering in diffusion language models, enabling concept manipulation without retraining.",
+      "llm_tldr_cn": "该论文提出TimpaTeks，一种利用扩散语言模型激活引导实现原地文本修改的自动机制。通过在IMDB情感数据集和猫狗数据集上进行实验，表明该方法可在保持句子结构和降低困惑度的同时，有效实现概念转向。该方法无需指令微调模型，为概念擦除提供了一种可迁移的思路。",
+      "llm_tldr": "该论文提出TimpaTeks，一种利用扩散语言模型激活引导实现原地文本修改的自动机制。通过在IMDB情感数据集和猫狗数据集上进行实验，表明该方法可在保持句子结构和降低困惑度的同时，有效实现概念转向。该方法无需指令微调模型，为概念擦除提供了一种可迁移的思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.10989v1",
+      "source": "arxiv",
+      "title": "Null-Space Constrained Low-Rank Adaptation for Response-Specified Large Language Model Unlearning",
+      "abstract": "Large language model unlearning aims to suppress designated undesirable knowledge while preserving benign capabilities. Many unlearning objectives focus on suppressing undesired answers, while recent target-guided variants specify replacement behavior but still leave update locality largely unconstrained. This paper introduces \\emph{Null-Space Constrained Response-Specified Unlearning} (NSRU), a projection-constrained low-rank framework for controlled LLM unlearning. NSRU uses an explicitly structured safe target response to specify the desired behavior for each forget query, while suppressing the original undesired content. To localize adaptation, NSRU estimates per-module retain subspaces from benign hidden representations and uses an orthogonal-projected low-rank parameterization to confine LoRA updates to the null space of the retain subspace. The resulting objective jointly optimizes safe-target learning, undesired-response suppression, and retention preservation under this constrained parameterization. We provide a local first-order analysis showing that the projected update reduces retain-side perturbations while preserving editable directions for shaping forget-query behavior. Experiments on TOFU show that NSRU effectively suppresses extractable forget-set knowledge while improving retain QA performance, model utility, and safe-target alignment over representative baselines. On WMDP, NSRU keeps hazardous-domain accuracy near the random-choice region while preserving broad and domain-adjacent MMLU utility. Ablation studies support the complementary roles of safe-target supervision, undesired-response suppression, retention loss, and null-space projected updates, while sensitivity and robustness analyses indicate stable behavior across the tested hyperparameter and prompt variations.",
+      "authors": [
+        "Bocheng Ju",
+        "Jianhua Wang",
+        "Chengliang Liu",
+        "Xiaolin Chang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-06-09T15:26:36+00:00",
+      "link": "https://arxiv.org/pdf/2606.10989v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "concept unlearning for LLMs, directly related to concept erasure in machine learning",
+      "llm_evidence_cn": "针对大语言模型的概念遗忘，直接与机器学习中的概念擦除相关",
+      "llm_evidence": "针对大语言模型的概念遗忘，直接与机器学习中的概念擦除相关",
+      "canonical_evidence": "针对大语言模型的概念遗忘，直接与机器学习中的概念擦除相关",
+      "llm_tldr_en": "NSRU provides a projection-constrained low-rank framework for controlled LLM unlearning, suppressing undesired knowledge while preserving benign capabilities.",
+      "llm_tldr_cn": "大语言模型遗忘旨在消除特定知识但保留其他能力。NSRU采用零空间约束低秩适应，为每个遗忘查询指定安全目标响应，并利用保留子空间局部化更新。实验证明该方法在保持模型性能的同时有效擦除目标知识，为可控遗忘提供了新框架。",
+      "llm_tldr": "大语言模型遗忘旨在消除特定知识但保留其他能力。NSRU采用零空间约束低秩适应，为每个遗忘查询指定安全目标响应，并利用保留子空间局部化更新。实验证明该方法在保持模型性能的同时有效擦除目标知识，为可控遗忘提供了新框架。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.12088v1",
+      "source": "arxiv",
+      "title": "Debiasing Without Protected Attributes: Latent Concept Erasure from Textual Profiles",
+      "abstract": "Most fairness research in NLP assumes direct access to protected attributes such as gender, race, or nationality. In practice, however, such information is often unavailable due to privacy constraints, missing metadata, or legal restrictions, even though models may infer it from indirect textual cues. This raises a key question: can debiasing succeed without direct access to sensitive attributes? We propose H-SAL, which performs post-hoc concept and attribute erasure using self-description text as an implicit debiasing signal. To support this setting, we introduce a multi-domain Stack Exchange-based fairness benchmark for helpfulness prediction that includes both explicit and implicit signals, enabling comparison between standard debiasing with protected labels and debiasing without access to sensitive information. Across encoder and decoder-only language models, we find that implicit self-description often matches or outperforms explicit-label-based debiasing. Our results broaden representation-level fairness research and provide a new benchmark for studying debiasing under realistic data constraints.",
+      "authors": [
+        "Shun Shao",
+        "Zheng Zhao",
+        "Anna Korhonen",
+        "Yftah Ziser",
+        "Shay B. Cohen"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-10T13:49:27+00:00",
+      "link": "https://arxiv.org/pdf/2606.12088v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "latent concept erasure from textual profiles for debiasing",
+      "llm_evidence_cn": "从文本画像中进行潜在概念擦除以实现去偏",
+      "llm_evidence": "从文本画像中进行潜在概念擦除以实现去偏",
+      "canonical_evidence": "从文本画像中进行潜在概念擦除以实现去偏",
+      "llm_tldr_en": "H-SAL performs post-hoc concept and attribute erasure from self-description text without accessing protected attributes, enabling effective debiasing in NLP tasks.",
+      "llm_tldr_cn": "大多数公平性研究需要直接访问受保护属性，但实际场景中常不可得。本文提出H-SAL，利用自我描述文本作为隐式信号，在推理后从文本表示中擦除概念和属性，无需显式敏感属性。构建多领域基准验证，表明该方法能有效去偏且保持任务性能。",
+      "llm_tldr": "大多数公平性研究需要直接访问受保护属性，但实际场景中常不可得。本文提出H-SAL，利用自我描述文本作为隐式信号，在推理后从文本表示中擦除概念和属性，无需显式敏感属性。构建多领域基准验证，表明该方法能有效去偏且保持任务性能。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
