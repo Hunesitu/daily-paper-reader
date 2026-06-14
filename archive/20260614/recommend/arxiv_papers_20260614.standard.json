@@ -1,0 +1,99 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-14T20:45:16.148107+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2606.12809v1",
+      "source": "arxiv",
+      "title": "MLUBench: A Benchmark for Lifelong Unlearning Evaluation in MLLMs",
+      "abstract": "Multimodal large language models (MLLMs) are trained on massive multimodal data, making data unlearning increasingly important as data owners may request the removal of specific content. In practice, these requests often arrive sequentially over time, giving rise to the challenging problem of MLLM Lifelong Unlearning. However, most existing benchmarks are limited in scale and scope, failing to capture the complexities of MLLM lifelong unlearning. To fill this gap, we introduce the MLUBench, a large-scale and comprehensive benchmark featuring 127 entities across 9 classes under lifelong unlearning requests. We perform extensive experiments using MLUBench and reveal that existing unlearning methods suffer from severe, cumulative degradation. More critically, we further identify the unique challenge of this problem: unlike in unimodal models, MLLM lifelong unlearning is constrained by the need to preserve multimodal alignment. Continually unlearning from one modality could degrade the entire model. To alleviate this challenge, we propose LUMoE, an effective method. Experiments demonstrate that LUMoE significantly mitigates the degradation problem faced by baselines. The source code and the MLUBench dataset are open-sourced in https://github.com/lihe-maxsize/Lifelong_Unlearning_main.",
+      "authors": [
+        "He Li",
+        "Haoang Chi",
+        "Qizhou Wang",
+        "Yunxin Mao",
+        "Zhiheng Zhang",
+        "Jie Tan",
+        "Tongliang Liu",
+        "Wenjing Yang",
+        "Bo Han"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-06-11T02:09:26+00:00",
+      "link": "https://arxiv.org/pdf/2606.12809v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "benchmark for lifelong unlearning in multimodal LLMs including image data",
+      "llm_evidence_cn": "多模态大模型终身遗忘基准，包含图像数据",
+      "llm_evidence": "多模态大模型终身遗忘基准，包含图像数据",
+      "canonical_evidence": "多模态大模型终身遗忘基准，包含图像数据",
+      "llm_tldr_en": "MLUBench is a large-scale benchmark for lifelong unlearning in multimodal LLMs, revealing severe cumulative degradation in existing unlearning methods.",
+      "llm_tldr_cn": "MLUBench是针对多模态大模型（MLLM）终身遗忘的大规模基准，包含127个实体、9个类别和序列遗忘请求。通过广泛实验，发现现有遗忘方法在连续遗忘任务中遭受严重的累积性能下降。该基准为评估和开发MLLM的遗忘方法提供了标准测试平台。",
+      "llm_tldr": "MLUBench是针对多模态大模型（MLLM）终身遗忘的大规模基准，包含127个实体、9个类别和序列遗忘请求。通过广泛实验，发现现有遗忘方法在连续遗忘任务中遭受严重的累积性能下降。该基准为评估和开发MLLM的遗忘方法提供了标准测试平台。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.13558v1",
+      "source": "arxiv",
+      "title": "Edit the Bits, Diff the Codes: Bitwise Residual Editing for Visual Autoregressive Models",
+      "abstract": "Text-guided image editing with visual autoregressive (VAR) generators requires controlling both what the model samples and where the sampled change is written back into the image code. Existing VAR editors mainly operate on token streams, features, or flat next-token logits, leaving two native structures of bitwise-residual VAR models underused: the per-bit Bernoulli prediction head and the additive multi-scale residual code field from which the image is assembled. We propose BitResEdit, a training-free editor for bitwise-residual VAR generators such as Infinity. BitEdit performs source-negative guidance by tilting the post-CFG per-bit log-odds along a source--target contrast computed on a shared edited prefix, then projects each update into a closed-form Bernoulli-KL trust region around the clean CFG sampler. ResEdit converts the sampled bits into per-scale continuous-code residuals, gates them with a localization mask, and re-injects them through the generator's native sum-of-scales. Together they couple decision-time bit guidance with combination-time code composition, so masked-out latent features are preserved exactly by code arithmetic while localized, scale-aware edits are applied inside the target region. On PIE-Bench with Infinity-2B, BitResEdit attains the strongest text alignment among same-backbone VAR editors, improving CLIP on the edited region by +1.07 over the strongest prior editor while keeping background preservation competitive with it. Ablations show BitEdit and ResEdit play complementary roles in target alignment and background preservation.",
+      "authors": [
+        "Shengqiang Zhang",
+        "Ruotong Liao",
+        "Volker Tresp",
+        "Barbara Plank",
+        "Hinrich Schütze"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.CL"
+      ],
+      "published": "2026-06-11T16:41:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.13558v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "bitwise residual editing for VAR models with source-negative guidance",
+      "llm_evidence_cn": "基于源负向引导的比特级残差编辑",
+      "llm_evidence": "基于源负向引导的比特级残差编辑",
+      "canonical_evidence": "基于源负向引导的比特级残差编辑",
+      "llm_tldr_en": "Proposes BitResEdit, a training-free editor for visual autoregressive models that uses source-negative guidance for text-guided image editing, applicable to concept erasure.",
+      "llm_tldr_cn": "针对视觉自回归模型的文本引导图像编辑问题，该论文提出BitResEdit，一种无需训练的方法，通过源负向引导调整比特级对数几率，实现对生成结果的精细控制。该方法可用于概念擦除，实验表明在保持图像质量的同时有效移除指定概念。",
+      "llm_tldr": "针对视觉自回归模型的文本引导图像编辑问题，该论文提出BitResEdit，一种无需训练的方法，通过源负向引导调整比特级对数几率，实现对生成结果的精细控制。该方法可用于概念擦除，实验表明在保持图像质量的同时有效移除指定概念。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "Concept erasure methods for autoregressive image generation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-14",
+  "date": "2026-06-14",
+  "generated_at": "2026-06-14T20:47:45",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/14/2606.12809v1-mlubench-a-benchmark-for-lifelong-unlearning-evaluation-in-mllms",
+      "section": "deep",
+      "title_en": "MLUBench: A Benchmark for Lifelong Unlearning Evaluation in MLLMs",
+      "authors": "He Li, Haoang Chi, Qizhou Wang, Yunxin Mao, Zhiheng Zhang, Jie Tan, Tongliang Liu, Wenjing Yang, Bo Han",
+      "date": "2026-06-11",
+      "pdf": "https://arxiv.org/pdf/2606.12809v1",
+      "score": "8.0",
+      "evidence": "多模态大模型终身遗忘基准，包含图像数据",
+      "tldr": "多模态大模型（MLLMs）面临数据所有者的连续删除请求，形成终身遗忘难题。现有基准规模小且未覆盖多模态复杂性。本文提出MLUBench，包含127个实体和9类，并揭示现有遗忘方法在终身场景下严重退化。核心挑战是保持多模态对齐，单模态遗忘会破坏整体模型。提出LUMoE方法，通过缓解对齐退化有效减轻性能下降。开源数据集和代码。",
+      "tags": "query:ce",
+      "abstract_en": "Multimodal large language models (MLLMs) are trained on massive multimodal data, making data unlearning increasingly important as data owners may request the removal of specific content. In practice, these requests often arrive sequentially over time, giving rise to the challenging problem of MLLM Lifelong Unlearning. However, most existing benchmarks are limited in scale and scope, failing to capture the complexities of MLLM lifelong unlearning. To fill this gap, we introduce the MLUBench, a large-scale and comprehensive benchmark featuring 127 entities across 9 classes under lifelong unlearning requests. We perform extensive experiments using MLUBench and reveal that existing unlearning methods suffer from severe, cumulative degradation. More critically, we further identify the unique challenge of this problem: unlike in unimodal models, MLLM lifelong unlearning is constrained by the need to preserve multimodal alignment. Continually unlearning from one modality could degrade the entire model. To alleviate this challenge, we propose LUMoE, an effective method. Experiments demonstrate that LUMoE significantly mitigates the degradation problem faced by baselines. The source code and the MLUBench dataset are open-sourced in https://github.com/lihe-maxsize/Lifelong_Unlearning_main.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/14/2606.13558v1-edit-the-bits-diff-the-codes-bitwise-residual-editing-for-visual-autoregressive-models",
+      "section": "deep",
+      "title_en": "Edit the Bits, Diff the Codes: Bitwise Residual Editing for Visual Autoregressive Models",
+      "authors": "Shengqiang Zhang, Ruotong Liao, Volker Tresp, Barbara Plank, Hinrich Schütze",
+      "date": "2026-06-11",
+      "pdf": "https://arxiv.org/pdf/2606.13558v1",
+      "score": "8.0",
+      "evidence": "基于源负向引导的比特级残差编辑",
+      "tldr": "文本引导图像编辑中，现有VAR编辑器未充分利用比特残差VAR模型的原生结构。本文提出无训练编辑器BitResEdit，包含BitEdit（源-目标对比引导后调整比特对数几率）和ResEdit（比特残差掩码注入）。在PIE-Bench上，CLIP编辑区域得分提升+1.07，背景保持竞争力。该方法耦合比特引导与代码组合，实现精确局部编辑。",
+      "tags": "query:ce",
+      "abstract_en": "Text-guided image editing with visual autoregressive (VAR) generators requires controlling both what the model samples and where the sampled change is written back into the image code. Existing VAR editors mainly operate on token streams, features, or flat next-token logits, leaving two native structures of bitwise-residual VAR models underused: the per-bit Bernoulli prediction head and the additive multi-scale residual code field from which the image is assembled. We propose BitResEdit, a training-free editor for bitwise-residual VAR generators such as Infinity. BitEdit performs source-negative guidance by tilting the post-CFG per-bit log-odds along a source--target contrast computed on a shared edited prefix, then projects each update into a closed-form Bernoulli-KL trust region around the clean CFG sampler. ResEdit converts the sampled bits into per-scale continuous-code residuals, gates them with a localization mask, and re-injects them through the generator's native sum-of-scales. Together they couple decision-time bit guidance with combination-time code composition, so masked-out latent features are preserved exactly by code arithmetic while localized, scale-aware edits are applied inside the target region. On PIE-Bench with Infinity-2B, BitResEdit attains the strongest text alignment among same-backbone VAR editors, improving CLIP on the edited region by +1.07 over the strongest prior editor while keeping background preservation competitive with it. Ablations show BitEdit and ResEdit play complementary roles in target alignment and background preservation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
