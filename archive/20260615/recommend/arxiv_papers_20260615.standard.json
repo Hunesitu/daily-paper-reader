@@ -1,0 +1,127 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-15T21:37:01.278177+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2606.14351v1",
+      "source": "arxiv",
+      "title": "ForceForget: Reinforcement Concept Removal for Enhancing Safety in Text-to-Image Models",
+      "abstract": "With the advance of generative AI, the text-to-image (T2I) model has the ability to generate various contents. However, T2I models still can generate unsafe contents. To alleviate this issue, various concept erasing methods are proposed. However, existing methods tend to excessively erase unsafe concepts and suppress benign concepts contained in harmful prompts, which can negatively affect model utility. In this paper, we focus on eliminating unsafe content while maintaining model capability in safe semantic meaning interpretation by optimizing the concept erasing reward (CER) with reinforcement learning. To avoid overly content erasure, we introduce the Safe Adapter to project partial text embedding for efficient concept regulation in cross-attention layers. Extensive experiments conducted on different datasets demonstrate the effectiveness of the proposed method in alleviating unsafe content generation while preserving the high fidelity of benign images compared with existing state-of-the-art (SOTA) concept erasing methods. In terms of robustness, our method outperforms counterparts against red-teaming tools. Moreover, we showcase the proposed approach is more effective in emerging image-to-image (I2I) scenarios compared with others. Lastly, we extend our method to erase general concepts, such as artistic styles and objects. Disclaimer: This paper includes discussions of sexually explicit content that may be offensive to certain readers. All images used in this work are synthesized or from public datasets.",
+      "authors": [
+        "Dong Han",
+        "Yong Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-12T11:12:33+00:00",
+      "link": "https://arxiv.org/pdf/2606.14351v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "concept erasing in text-to-image models using reinforcement learning",
+      "llm_evidence_cn": "使用强化学习在文本到图像模型中进行概念擦除",
+      "llm_evidence": "使用强化学习在文本到图像模型中进行概念擦除",
+      "canonical_evidence": "使用强化学习在文本到图像模型中进行概念擦除",
+      "llm_tldr_en": "ForceForget proposes a reinforcement learning approach for concept erasing in text-to-image models, optimizing a concept erasing reward to remove unsafe content while preserving model utility.",
+      "llm_tldr_cn": "现有文本到图像模型的概念擦除方法往往过度擦除，损害模型效用。本文提出ForceForget，通过强化学习优化概念擦除奖励，并引入安全适配器调节文本嵌入，从而精准擦除不安全概念同时保持对安全语义的理解能力。实验表明该方法在有效移除有害内容的同时，显著减少了良性概念被误删的情况，提升了模型的安全性及实用性。",
+      "llm_tldr": "现有文本到图像模型的概念擦除方法往往过度擦除，损害模型效用。本文提出ForceForget，通过强化学习优化概念擦除奖励，并引入安全适配器调节文本嵌入，从而精准擦除不安全概念同时保持对安全语义的理解能力。实验表明该方法在有效移除有害内容的同时，显著减少了良性概念被误删的情况，提升了模型的安全性及实用性。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.13461v1",
+      "source": "arxiv",
+      "title": "Reinforcement Learning for Neural Model Editing",
+      "abstract": "Editing pretrained neural networks requires specialized algorithms tailored to specific objectives. Designing such algorithms is often time-consuming and demands significant effort. We present an exploratory framework that formulates neural model editing as a reinforcement learning problem, where agents modify models using reward feedback. We introduce two environments: MaskWorld, where agents scale weights multiplicatively, and ShiftWorld, where agents apply additive weight updates. The reward function combines a utility-preservation objective with a task-specific editing objective, enabling agents to learn targeted modifications while maintaining overall model performance. We evaluate the framework on bias mitigation in text classification and machine unlearning in image classification, both of which traditionally rely on specialized algorithms. Our results show that the learned policies reduce forget set accuracy to nearly 0% while preserving over 90% retain set accuracy on the unlearning task. In the bias mitigation setting, the learned policies improve bias-related performance by more than 5% while maintaining general classification utility. Our findings show that neural model editing can be cast as a reinforcement learning problem, allowing editing policies to be learned from reward feedback rather than manually engineered for each task.",
+      "authors": [
+        "Shaivi Malik"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CV"
+      ],
+      "published": "2026-06-11T15:16:42+00:00",
+      "link": "https://arxiv.org/pdf/2606.13461v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "reinforcement learning framework for neural model editing applied to machine unlearning",
+      "llm_evidence_cn": "强化学习框架进行神经模型编辑，应用于机器遗忘",
+      "llm_evidence": "强化学习框架进行神经模型编辑，应用于机器遗忘",
+      "canonical_evidence": "强化学习框架进行神经模型编辑，应用于机器遗忘",
+      "llm_tldr_en": "Formulates neural model editing as RL, with environments for weight scaling/additive updates, applied to bias mitigation and machine unlearning in image classification.",
+      "llm_tldr_cn": "针对神经模型编辑算法设计耗时费力的问题，提出基于强化学习的通用框架，通过奖励信号学习权重修改策略。在MaskWorld和ShiftWorld两个环境中，结合效用保持与任务编辑目标，成功应用于文本分类的偏差缓解和图像分类的机器遗忘，展示了框架的通用性和有效性。",
+      "llm_tldr": "针对神经模型编辑算法设计耗时费力的问题，提出基于强化学习的通用框架，通过奖励信号学习权重修改策略。在MaskWorld和ShiftWorld两个环境中，结合效用保持与任务编辑目标，成功应用于文本分类的偏差缓解和图像分类的机器遗忘，展示了框架的通用性和有效性。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.13873v1",
+      "source": "arxiv",
+      "title": "Natively Unlearnable Large Language Models",
+      "abstract": "Unlearning aims to remove the influence of specific training data sources, but this has proved challenging because the contributions of different sources are entangled within the model. Isolating source contributions to disjoint parameters makes removal easier, though it obstructs joint learning across sources. We propose NULLs (Natively Unlearnable LLMs), a model class that satisfies the two opposing goals of isolating source-specific contributions and learning jointly across sources, by training a set of shared backbone neurons alongside a pool of sparsely activated sinks. During training, information specific to a source naturally concentrates in its sinks while information shared across sources accumulates in the backbone. A source is then unlearned at deployment by disabling its corresponding sinks, with no gradient updates and no access to the retained data. We show that NULLs scales to Wikipedia's ~6M articles, isolating each as an independent source. Unlearning a single article removes knowledge specific to it while preserving facts shared with semantically related articles, closely matching retraining from scratch. We note that unlearning with NULLs is also robust: in a case study of unlearning the Harry Potter books, NULLs resists both adversarial extraction and relearning that reverses post-hoc unlearning. Finally, NULLs preserves general language capabilities, matching a standard transformer on downstream benchmarks. Together, these results suggest that source-level unlearning need not be an afterthought. It can be built natively into LLM training while retaining the benefits of shared representation learning.",
+      "authors": [
+        "Gaurav R. Ghosal",
+        "Pratyush Maini",
+        "Aditi Raghunathan"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CL"
+      ],
+      "published": "2026-06-11T19:56:26+00:00",
+      "link": "https://arxiv.org/pdf/2606.13873v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Natively unlearnable LLMs enable source-specific unlearning via sparse sinks",
+      "llm_evidence_cn": "通过稀疏sinks实现源级遗忘的原生可遗忘LLM",
+      "llm_evidence": "通过稀疏sinks实现源级遗忘的原生可遗忘LLM",
+      "canonical_evidence": "通过稀疏sinks实现源级遗忘的原生可遗忘LLM",
+      "llm_tldr_en": "NULLs introduce a model architecture that isolates source-specific contributions into sparsely activated sinks, enabling unlearning by disabling sinks at deployment. The concept is transferable to concept erasure in image models.",
+      "llm_tldr_cn": "现有模型难以精准移除特定训练数据源的影响，因为各源贡献纠缠在一起。本文提出原生可遗忘的大语言模型(NULLs)，通过共享骨干和稀疏激活的sinks，使源特定信息自然集中在各自sinks中，部署时禁用对应sinks即可实现遗忘。该方法平衡了联合学习与独立遗忘，虽面向LLM，但其架构思想为图像生成中的概念擦除提供了可借鉴的思路。",
+      "llm_tldr": "现有模型难以精准移除特定训练数据源的影响，因为各源贡献纠缠在一起。本文提出原生可遗忘的大语言模型(NULLs)，通过共享骨干和稀疏激活的sinks，使源特定信息自然集中在各自sinks中，部署时禁用对应sinks即可实现遗忘。该方法平衡了联合学习与独立遗忘，虽面向LLM，但其架构思想为图像生成中的概念擦除提供了可借鉴的思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
