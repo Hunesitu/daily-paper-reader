@@ -1,0 +1,91 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-16T21:56:25.485836+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2606.15819v1",
+      "source": "arxiv",
+      "title": "SACE: Concept Erasure at the Semantic Singularity in Visual Autoregressive Models",
+      "abstract": "The rapid progress of visual autoregressive (VAR) models has unlocked a transformative frontier for high-fidelity text-to-image synthesis, while heightening concerns over the safety alignment of generated content. Naive application of existing erasure techniques to VAR models causes catastrophic semantic collapse and visual artifacts, since they are predominantly designed for the homogeneous denoising steps of diffusion models. To address this foundational challenge, we first propose the Semantic Singularity Axiom, which posits that any target semantic concept embedded within a prompt is definitively locked at Scale-0. Then rigorously validate this axiom through our proposed Incremental Semantic Saliency Analysis (ISSA),which also enable the community to transparently inspect the coarse-to-fine semantic injection process. Guided by this insight, we introduce the first scale-aware concept erasure framework (SACE) for VAR models. By strictly confining interventions to the first scale, our approach couples an Entropy-Regularized Erasure Objective to prevent high-entropy sampling degeneration, alongside a restorative preservation loss to safely anchor the integrity of entangled benign priors. Extensive experiments demonstrate that our method achieves surgical concept erasure performance across various domains with minimal training overhead, timely and elegently resolute the critical safety vulnerabilities inherent in emerging VAR architectures. Code is available at: https://github.com/limerenceysy/SACE}{https://github.com/limerenceysy/SACE.",
+      "authors": [
+        "Siya Yang",
+        "Nanxiang Jiang",
+        "Zhaoxin Fan",
+        "Yunfeng Diao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-06-14T13:39:00+00:00",
+      "link": "https://arxiv.org/pdf/2606.15819v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "concept erasure in visual autoregressive models",
+      "llm_evidence_cn": "视觉自回归模型中的概念擦除",
+      "llm_evidence": "视觉自回归模型中的概念擦除",
+      "canonical_evidence": "视觉自回归模型中的概念擦除",
+      "llm_tldr_en": "SACE identifies the semantic singularity in VAR models and proposes concept erasure at that singularity, avoiding catastrophic semantic collapse and visual artifacts.",
+      "llm_tldr_cn": "将现有概念擦除技术直接应用于视觉自回归（VAR）模型会导致语义崩溃和视觉伪影。SACE提出语义奇点公理，认为提示中的目标语义在Scale-0被锁定，并通过增量语义显著性分析（ISSA）验证该公理，从而实现精准的概念擦除。实验证明该方法能有效移除不安全概念，同时保持图像质量和模型实用性，为自回归模型的安全对齐提供了有效方案。",
+      "llm_tldr": "将现有概念擦除技术直接应用于视觉自回归（VAR）模型会导致语义崩溃和视觉伪影。SACE提出语义奇点公理，认为提示中的目标语义在Scale-0被锁定，并通过增量语义显著性分析（ISSA）验证该公理，从而实现精准的概念擦除。实验证明该方法能有效移除不安全概念，同时保持图像质量和模型实用性，为自回归模型的安全对齐提供了有效方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "How to erase concepts in text to image autoregressive models",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.16131v1",
+      "source": "arxiv",
+      "title": "Shift-and-Sum Quantization for Visual Autoregressive Models",
+      "abstract": "Post-training quantization (PTQ) enables efficient deployment of deep networks using a small set of data. Its application to visual autoregressive models (VAR), however, remains relatively unexplored. We identify two key challenges for applying PTQ to VAR: (i) large reconstruction errors in attention-value products, especially at coarse scales where high attention scores occur more frequently; and (ii) a discrepancy between the sampling frequencies of codebook entries and their predicted probabilities due to limited calibration data. To address these challenges, we propose a PTQ framework tailored for VAR. First, we introduce a shift-and-sum quantization method that reduces reconstruction errors by aggregating quantized results from symmetrically shifted duplicates of value tokens. Second, we present a resampling strategy for calibration data that aligns sampling frequencies of codebook entries with their predicted probabilities. Experiments on class-conditional image generation, inpainting, outpainting, and class-conditional editing show consistent improvements across VAR architectures, establishing a new state of the art in PTQ for VAR.",
+      "authors": [
+        "Jaehyeon Moon",
+        "Bumsub Ham"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-06-15T02:46:33+00:00",
+      "link": "https://arxiv.org/pdf/2606.16131v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Post-training quantization for visual autoregressive models",
+      "llm_evidence_cn": "针对视觉自回归模型的后训练量化",
+      "llm_evidence": "针对视觉自回归模型的后训练量化",
+      "canonical_evidence": "针对视觉自回归模型的后训练量化",
+      "llm_tldr_en": "Proposes shift-and-sum quantization for Visual Autoregressive Models (VAR), addressing large reconstruction errors and codebook frequency discrepancy, enabling efficient deployment.",
+      "llm_tldr_cn": "针对视觉自回归模型（VAR）的后训练量化难题，本文指出其存在注意力值乘积重构误差大以及码本采样频率与预测概率不匹配两大挑战。为此提出移位求和量化方法，通过对称重复单元聚合量化结果来减小重构误差，并引入校准数据增强缓解频率偏差。实验表明该方法在多个图像生成基准上显著优于基线，有效降低了模型部署成本。本研究为自回归图像生成模型的高效部署提供了实用方案。",
+      "llm_tldr": "针对视觉自回归模型（VAR）的后训练量化难题，本文指出其存在注意力值乘积重构误差大以及码本采样频率与预测概率不匹配两大挑战。为此提出移位求和量化方法，通过对称重复单元聚合量化结果来减小重构误差，并引入校准数据增强缓解频率偏差。实验表明该方法在多个图像生成基准上显著优于基线，有效降低了模型部署成本。本研究为自回归图像生成模型的高效部署提供了实用方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

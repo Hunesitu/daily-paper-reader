@@ -6,31 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-15
-- 运行时间：2026-06-15 21:39:34 UTC
+- 最新运行日期：2026-06-16
+- 运行时间：2026-06-16 21:58:37 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：1
-- 速读区：2
+- 本次总论文数：2
+- 精读区：2
+- 速读区：0
 
 ### 今日简报（AI）
-今日精读一篇利用强化学习安全移除文本-图像模型概念的高分论文，并速读模型编辑与不可学习语言模型两篇。  
-最值得关注的是《ForceForget》通过强化方法有效删除不安全概念，提升生成安全；此外，大语言模型“天生不可学习”的设计方向也颇具启示。  
-建议普通读者留意生成模型的可控性与安全机制，关注如何从模型层面主动移除不良内容。
-- 详情：[/202606/15/README](/202606/15/README)
+今日聚焦视觉自回归模型的两大核心突破——概念擦除与量化压缩，并精读了两篇高分论文。  
+其中10分论文提出在语义奇异点精准擦除敏感概念，8分论文则通过移位累加量化实现高效压缩，均为该领域关键进展。  
+若关注视觉生成的安全可控性，优先看概念擦除方法；若需模型轻量化部署，可重点研究量化方案。
+- 详情：[/202606/16/README](/202606/16/README)
 
 ### 精读区论文标签
-1. [ForceForget: Reinforcement Concept Removal for Enhancing Safety in Text-to-Image Models](/202606/15/2606.14351v1-forceforget-reinforcement-concept-removal-for-enhancing-safety-in-text-to-image-models)  
-   标签：评分：9.0/10、query:ce
-   evidence：使用强化学习在文本到图像模型中进行概念擦除
+1. [SACE: Concept Erasure at the Semantic Singularity in Visual Autoregressive Models](/202606/16/2606.15819v1-sace-concept-erasure-at-the-semantic-singularity-in-visual-autoregressive-models)  
+   标签：评分：10.0/10、query:ce
+   evidence：视觉自回归模型中的概念擦除
+2. [Shift-and-Sum Quantization for Visual Autoregressive Models](/202606/16/2606.16131v1-shift-and-sum-quantization-for-visual-autoregressive-models)  
+   标签：评分：8.0/10、query:ce
+   evidence：针对视觉自回归模型的后训练量化
 
 ### 速读区论文标签
-1. [Reinforcement Learning for Neural Model Editing](/202606/15/2606.13461v1-reinforcement-learning-for-neural-model-editing)  
-   标签：评分：7.0/10、query:ce
-   evidence：强化学习框架进行神经模型编辑，应用于机器遗忘
-2. [Natively Unlearnable Large Language Models](/202606/15/2606.13873v1-natively-unlearnable-large-language-models)  
-   标签：评分：7.0/10、query:ce
-   evidence：通过稀疏sinks实现源级遗忘的原生可遗忘LLM
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">

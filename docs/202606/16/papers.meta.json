@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-16",
+  "date": "2026-06-16",
+  "generated_at": "2026-06-16T21:58:46",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/16/2606.15819v1-sace-concept-erasure-at-the-semantic-singularity-in-visual-autoregressive-models",
+      "section": "deep",
+      "title_en": "SACE: Concept Erasure at the Semantic Singularity in Visual Autoregressive Models",
+      "authors": "Siya Yang, Nanxiang Jiang, Zhaoxin Fan, Yunfeng Diao",
+      "date": "2026-06-14",
+      "pdf": "https://arxiv.org/pdf/2606.15819v1",
+      "score": "10.0",
+      "evidence": "视觉自回归模型中的概念擦除",
+      "tldr": "视觉自回归（VAR）模型在高质量文本到图像合成中发展迅速，但安全对齐不足。现有概念擦除技术直接应用会导致语义崩溃和视觉伪影，因其针对扩散模型设计。本文提出语义奇点公理，认为目标概念在首尺度（Scale-0）被锁定，并通过增量语义显著性分析（ISSA）验证。基于此，首次提出尺度感知概念擦除框架SACE，仅干预首尺度，结合熵正则化擦除目标与恢复性保留损失，实现精准擦除。实验表明在多个域均达到手术级效果，训练开销极低，有效解决VAR架构的安全漏洞。",
+      "tags": "query:ce",
+      "abstract_en": "The rapid progress of visual autoregressive (VAR) models has unlocked a transformative frontier for high-fidelity text-to-image synthesis, while heightening concerns over the safety alignment of generated content. Naive application of existing erasure techniques to VAR models causes catastrophic semantic collapse and visual artifacts, since they are predominantly designed for the homogeneous denoising steps of diffusion models. To address this foundational challenge, we first propose the Semantic Singularity Axiom, which posits that any target semantic concept embedded within a prompt is definitively locked at Scale-0. Then rigorously validate this axiom through our proposed Incremental Semantic Saliency Analysis (ISSA),which also enable the community to transparently inspect the coarse-to-fine semantic injection process. Guided by this insight, we introduce the first scale-aware concept erasure framework (SACE) for VAR models. By strictly confining interventions to the first scale, our approach couples an Entropy-Regularized Erasure Objective to prevent high-entropy sampling degeneration, alongside a restorative preservation loss to safely anchor the integrity of entangled benign priors. Extensive experiments demonstrate that our method achieves surgical concept erasure performance across various domains with minimal training overhead, timely and elegently resolute the critical safety vulnerabilities inherent in emerging VAR architectures. Code is available at: https://github.com/limerenceysy/SACE}{https://github.com/limerenceysy/SACE.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/16/2606.16131v1-shift-and-sum-quantization-for-visual-autoregressive-models",
+      "section": "deep",
+      "title_en": "Shift-and-Sum Quantization for Visual Autoregressive Models",
+      "authors": "Jaehyeon Moon, Bumsub Ham",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.16131v1",
+      "score": "8.0",
+      "evidence": "针对视觉自回归模型的后训练量化",
+      "tldr": "后训练量化（PTQ）在视觉自回归模型（VAR）中面临两大挑战：注意力值乘积重建误差大，尤其在粗尺度；以及校准数据有限导致码本条目采样频率与预测概率不匹配。为此，提出shift-and-sum量化方法，通过聚合对称移位的值令牌的量化结果来减少误差，同时设计重采样策略对齐采样频率。在类条件图像生成、修复等任务上，该方法一致提升VAR性能，创下PTQ新SOTA。",
+      "tags": "query:ce",
+      "abstract_en": "Post-training quantization (PTQ) enables efficient deployment of deep networks using a small set of data. Its application to visual autoregressive models (VAR), however, remains relatively unexplored. We identify two key challenges for applying PTQ to VAR: (i) large reconstruction errors in attention-value products, especially at coarse scales where high attention scores occur more frequently; and (ii) a discrepancy between the sampling frequencies of codebook entries and their predicted probabilities due to limited calibration data. To address these challenges, we propose a PTQ framework tailored for VAR. First, we introduce a shift-and-sum quantization method that reduces reconstruction errors by aggregating quantized results from symmetrically shifted duplicates of value tokens. Second, we present a resampling strategy for calibration data that aligns sampling frequencies of codebook entries with their predicted probabilities. Experiments on class-conditional image generation, inpainting, outpainting, and class-conditional editing show consistent improvements across VAR architectures, establishing a new state of the art in PTQ for VAR.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
