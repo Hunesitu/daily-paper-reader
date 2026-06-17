@@ -1,0 +1,97 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-17T21:30:57.767150+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2606.17296v1",
+      "source": "arxiv",
+      "title": "Pareto LoRA: Mitigating Modality Imbalance in Unified Multimodal Models via Pareto-Optimal Gradient Integration",
+      "abstract": "Unified multimodal models (UMMs) have recently emerged as a promising paradigm for integrating multimodal understanding and generation within a single autoregressive transformer. However, during multimodal instruction tuning, these models often exhibit pronounced modality imbalance: language gradients dominate optimization, thus leading to lower image generation quality, especially under parameter-efficient fine-tuning such as LoRA. In this work, we systematically analyze modality imbalance in LoRA-based fine-tuning of UMMs for interleaved text-image generation. We show that vision modality performance degrades substantially more than text modality performance when compared to unimodal counterparts, and that modality-specific gradients can differ by orders of magnitude across various tasks and layers. Motivated by this observation, we reformulate the multimodal instruction tuning as a bi-objective optimization problem and propose Pareto LoRA, a Pareto-optimal gradient integration strategy that balances the text and image objectives by modulating the gradient direction and strength. Experiments on the CoMM benchmark with Emu2 demonstrate that Pareto LoRA consistently improves multimodal generation balance, achieving up to 44.9% gains in perceptual image quality over vanilla LoRA while maintaining comparable text performance.",
+      "authors": [
+        "Xiwen Wei",
+        "Mark Nutter",
+        "Madhusudhanan Srinivasan",
+        "Radu Marculescu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-15T21:05:57+00:00",
+      "link": "https://arxiv.org/pdf/2606.17296v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "focuses on unified multimodal autoregressive transformers for text-image generation and addresses modality imbalance via Pareto optimization",
+      "llm_evidence_cn": "针对统一多模态自回归Transformer在文本-图像生成中的模态不平衡问题，提出帕累托最优梯度集成方法",
+      "llm_evidence": "针对统一多模态自回归Transformer在文本-图像生成中的模态不平衡问题，提出帕累托最优梯度集成方法",
+      "canonical_evidence": "针对统一多模态自回归Transformer在文本-图像生成中的模态不平衡问题，提出帕累托最优梯度集成方法",
+      "llm_tldr_en": "Pareto LoRA analyzes modality imbalance in LoRA fine-tuning of autoregressive multimodal models and proposes Pareto-optimal gradient integration to improve image generation quality.",
+      "llm_tldr_cn": "该文系统分析了统一多模态自回归模型在LoRA微调中的模态不平衡问题，发现视觉模态性能严重下降。提出帕累托最优梯度集成策略，平衡语言和视觉梯度，有效提升图像生成质量。实验证明该方法在保持语言性能的同时显著恢复视觉生成能力，为自回归文本到图像模型的参数高效调优提供了有效方案。",
+      "llm_tldr": "该文系统分析了统一多模态自回归模型在LoRA微调中的模态不平衡问题，发现视觉模态性能严重下降。提出帕累托最优梯度集成策略，平衡语言和视觉梯度，有效提升图像生成质量。实验证明该方法在保持语言性能的同时显著恢复视觉生成能力，为自回归文本到图像模型的参数高效调优提供了有效方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.16457v1",
+      "source": "arxiv",
+      "title": "ResEdit: Residual embeddings for precise generative image editing",
+      "abstract": "Conditional diffusion image generators can be repurposed for editing through inversion, without the need for large-scale paired fine-tuning data. However, producing high-quality, targeted edits while maintaining image identity and global consistency remains challenging, as weakly conditioned inversion often embeds conflicting image features into the noise. We demonstrate that incorporating a residual image encoding as additional conditioning enables both improved identity preservation and better editability. We optimize this residual encoding to provide a strong conditioning signal for reconstruction, thereby reducing the reliance on inversion and susceptibility to its aforementioned pitfalls. To ensure this residual does not interfere with desired edits, we incorporate a gradient reversal-based optimization strategy that disentangles the residual from the edited condition. We illustrate our method's ability to produce high-fidelity results across precise intrinsic-based editing and relighting, and show proof-of-concept text-guided manipulation.",
+      "authors": [
+        "Ahmet Canberk Baykal",
+        "Valentin Deschaintre",
+        "Yannick Hold-Geoffroy",
+        "Michael Fischer",
+        "Anna Frühstück",
+        "Cengiz Öztireli",
+        "Iliyan Georgiev"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.GR"
+      ],
+      "published": "2026-06-15T09:30:03+00:00",
+      "link": "https://arxiv.org/pdf/2606.16457v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "generative image editing method that can remove features; relevant to concept erasure",
+      "llm_evidence_cn": "生成图像编辑方法可用于移除特征，与概念擦除相关",
+      "llm_evidence": "生成图像编辑方法可用于移除特征，与概念擦除相关",
+      "canonical_evidence": "生成图像编辑方法可用于移除特征，与概念擦除相关",
+      "llm_tldr_en": "ResEdit proposes residual image encoding for precise editing in diffusion models, enabling targeted modifications that can be leveraged for concept erasure tasks.",
+      "llm_tldr_cn": "该文提出ResEdit方法，通过优化残差图像编码作为额外条件，显著提升扩散模型在图像编辑中的身份保持和可编辑性。实验表明该方法能精确修改图像内容，避免冲突特征嵌入噪声。其编辑能力可迁移至概念擦除任务，为无需大规模配对数据的精确擦除提供了新思路。",
+      "llm_tldr": "该文提出ResEdit方法，通过优化残差图像编码作为额外条件，显著提升扩散模型在图像编辑中的身份保持和可编辑性。实验表明该方法能精确修改图像内容，避免冲突特征嵌入噪声。其编辑能力可迁移至概念擦除任务，为无需大规模配对数据的精确擦除提供了新思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

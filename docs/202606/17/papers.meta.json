@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-17",
+  "date": "2026-06-17",
+  "generated_at": "2026-06-17T21:32:34",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/17/2606.17296v1-pareto-lora-mitigating-modality-imbalance-in-unified-multimodal-models-via-pareto-optimal-gradient-integration",
+      "section": "quick",
+      "title_en": "Pareto LoRA: Mitigating Modality Imbalance in Unified Multimodal Models via Pareto-Optimal Gradient Integration",
+      "authors": "Xiwen Wei, Mark Nutter, Madhusudhanan Srinivasan, Radu Marculescu",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.17296v1",
+      "score": "7.0",
+      "evidence": "针对统一多模态自回归Transformer在文本-图像生成中的模态不平衡问题，提出帕累托最优梯度集成方法",
+      "tldr": "统一多模态模型在LoRA微调时，语言梯度主导优化导致模态不平衡，严重损害图像生成质量。针对此问题，本文提出Pareto LoRA，将多模态指令微调重构为双目标优化，通过帕累托最优梯度整合策略平衡文本与图像目标。在CoMM基准与Emu2上，该方法使图像感知质量提升高达44.9%，同时文本性能保持不变。该工作有效缓解了模态不平衡，为多模态参数高效微调提供了新思路。",
+      "tags": "query:ce",
+      "abstract_en": "Unified multimodal models (UMMs) have recently emerged as a promising paradigm for integrating multimodal understanding and generation within a single autoregressive transformer. However, during multimodal instruction tuning, these models often exhibit pronounced modality imbalance: language gradients dominate optimization, thus leading to lower image generation quality, especially under parameter-efficient fine-tuning such as LoRA. In this work, we systematically analyze modality imbalance in LoRA-based fine-tuning of UMMs for interleaved text-image generation. We show that vision modality performance degrades substantially more than text modality performance when compared to unimodal counterparts, and that modality-specific gradients can differ by orders of magnitude across various tasks and layers. Motivated by this observation, we reformulate the multimodal instruction tuning as a bi-objective optimization problem and propose Pareto LoRA, a Pareto-optimal gradient integration strategy that balances the text and image objectives by modulating the gradient direction and strength. Experiments on the CoMM benchmark with Emu2 demonstrate that Pareto LoRA consistently improves multimodal generation balance, achieving up to 44.9% gains in perceptual image quality over vanilla LoRA while maintaining comparable text performance.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/17/2606.16457v1-resedit-residual-embeddings-for-precise-generative-image-editing",
+      "section": "quick",
+      "title_en": "ResEdit: Residual embeddings for precise generative image editing",
+      "authors": "Ahmet Canberk Baykal, Valentin Deschaintre, Yannick Hold-Geoffroy, Michael Fischer, Anna Frühstück, Cengiz Öztireli, Iliyan Georgiev",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.16457v1",
+      "score": "6.0",
+      "evidence": "生成图像编辑方法可用于移除特征，与概念擦除相关",
+      "tldr": "条件扩散模型通过反演编辑图像无需配对数据，但弱条件反演易将冲突特征嵌入噪声，影响身份保留和可编辑性。ResEdit引入残差图像编码作为额外条件，优化其提供强重建信号，减少反演依赖；采用梯度反转解耦残差与编辑条件。在内在属性编辑和重照明任务中实现高保真编辑，支持文本引导。该方法无需微调即可精确编辑，平衡了身份一致性与编辑自由度。",
+      "tags": "query:ce",
+      "abstract_en": "Conditional diffusion image generators can be repurposed for editing through inversion, without the need for large-scale paired fine-tuning data. However, producing high-quality, targeted edits while maintaining image identity and global consistency remains challenging, as weakly conditioned inversion often embeds conflicting image features into the noise. We demonstrate that incorporating a residual image encoding as additional conditioning enables both improved identity preservation and better editability. We optimize this residual encoding to provide a strong conditioning signal for reconstruction, thereby reducing the reliance on inversion and susceptibility to its aforementioned pitfalls. To ensure this residual does not interfere with desired edits, we incorporate a gradient reversal-based optimization strategy that disentangles the residual from the edited condition. We illustrate our method's ability to produce high-fidelity results across precise intrinsic-based editing and relighting, and show proof-of-concept text-guided manipulation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

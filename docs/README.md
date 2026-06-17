@@ -6,29 +6,27 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-16
-- 运行时间：2026-06-16 21:58:37 UTC
+- 最新运行日期：2026-06-17
+- 运行时间：2026-06-17 21:32:29 UTC
 - 运行状态：成功
 - 本次总论文数：2
-- 精读区：2
-- 速读区：0
+- 精读区：0
+- 速读区：2
 
 ### 今日简报（AI）
-今日聚焦视觉自回归模型的两大核心突破——概念擦除与量化压缩，并精读了两篇高分论文。  
-其中10分论文提出在语义奇异点精准擦除敏感概念，8分论文则通过移位累加量化实现高效压缩，均为该领域关键进展。  
-若关注视觉生成的安全可控性，优先看概念擦除方法；若需模型轻量化部署，可重点研究量化方案。
-- 详情：[/202606/16/README](/202606/16/README)
+今日速读两篇论文，聚焦多模态模型优化与图像编辑。值得关注的是7.0分的《Pareto LoRA》提出帕累托最优梯度融合缓解模态不平衡。普通读者可优先了解LoRA在多模态场景下的改进思路。
+- 详情：[/202606/17/README](/202606/17/README)
 
 ### 精读区论文标签
-1. [SACE: Concept Erasure at the Semantic Singularity in Visual Autoregressive Models](/202606/16/2606.15819v1-sace-concept-erasure-at-the-semantic-singularity-in-visual-autoregressive-models)  
-   标签：评分：10.0/10、query:ce
-   evidence：视觉自回归模型中的概念擦除
-2. [Shift-and-Sum Quantization for Visual Autoregressive Models](/202606/16/2606.16131v1-shift-and-sum-quantization-for-visual-autoregressive-models)  
-   标签：评分：8.0/10、query:ce
-   evidence：针对视觉自回归模型的后训练量化
+- 本次无精读推荐。
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Pareto LoRA: Mitigating Modality Imbalance in Unified Multimodal Models via Pareto-Optimal Gradient Integration](/202606/17/2606.17296v1-pareto-lora-mitigating-modality-imbalance-in-unified-multimodal-models-via-pareto-optimal-gradient-integration)  
+   标签：评分：7.0/10、query:ce
+   evidence：针对统一多模态自回归Transformer在文本-图像生成中的模态不平衡问题，提出帕累托最优梯度集成方法
+2. [ResEdit: Residual embeddings for precise generative image editing](/202606/17/2606.16457v1-resedit-residual-embeddings-for-precise-generative-image-editing)  
+   标签：评分：6.0/10、query:ce
+   evidence：生成图像编辑方法可用于移除特征，与概念擦除相关
 
 
 <div class="dpr-home-promo-card">
