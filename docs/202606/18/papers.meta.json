@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-18",
+  "date": "2026-06-18",
+  "generated_at": "2026-06-18T22:04:14",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/18/2606.18249v1-unified-multimodal-autoregressive-modeling-with-shared-context-visual-tokenizer-is-key-to-unification",
+      "section": "deep",
+      "title_en": "Unified Multimodal Autoregressive Modeling with Shared Context-Visual Tokenizer is Key to Unification",
+      "authors": "Wujian Peng, Lingchen Meng, Yuxuan Cai, Xianwei Zhuang, Yuhuan Yang, Rongyao Fang, Chenfei Wu, Junyang Lin, Zuxuan Wu, Shuai Bai",
+      "date": "2026-06-16",
+      "pdf": "https://arxiv.org/pdf/2606.18249v1",
+      "score": "8.0",
+      "evidence": "统一的图像生成自回归模型",
+      "tldr": "统一多模态建模中，现有方法通常使用两个不同视觉分词器，导致表示空间割裂。UniAR提出以单个离散视觉分词器作为理解与生成的共享上下文桥梁，通过多级特征融合和无查找比特量化扩展词汇表，并行逐位预测显著缩短视觉序列长度并加速生成，扩散解码器还原高保真图像。大规模预训练后经监督微调和强化学习，在图像生成和编辑上达到最先进水平，并在理解基准上具有竞争力。该工作证明共享视觉分词器是实现真正统一多模态模型的关键。",
+      "tags": "query:ce",
+      "abstract_en": "Unified Multimodal Modeling aims to integrate visual understanding and generation within a single system. However, existing approaches typically rely on two disparate visual tokenizers, which splits the representation space and hinders truly unified modeling. We propose UniAR, a unified autoregressive framework where a single discrete visual tokenizer serves as the key bridge between understanding and generation, enabling a shared context in which the model can directly interpret its own generated visual tokens without additional re-encoding. UniAR adapts a pretrained vision encoder with multi-level feature fusion and a lookup-free bitwise quantization scheme, preserving both high-level semantics and low-level details while scaling the effective visual vocabulary at minimal cost. Building on this, the unified autoregressive model adopts parallel-bitwise-prediction to jointly predict spatially grouped, multi-level visual codes, substantially reducing visual sequence length and accelerating generation. Finally, a diffusion-based visual decoder operates on discrete visual tokens to decode high-fidelity images. Through large-scale pre-training, followed by supervised fine-tuning and reinforcement learning, UniAR achieves state-of-the-art performance on image generation and image editing while remaining competitive on multimodal understanding benchmarks. The project page is available at https://sharelab-sii.github.io/uniar-web.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/18/2606.17168v1-repselect-robust-llm-unlearning-via-representation-selectivity",
+      "section": "quick",
+      "title_en": "RepSelect: Robust LLM Unlearning via Representation Selectivity",
+      "authors": "Filip Sondej, Yushi Yang, Adam Mahdi",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.17168v1",
+      "score": "7.0",
+      "evidence": "通过表示选择性实现大语言模型的鲁棒遗忘",
+      "tldr": "现有LLM遗忘方法易被微调或少样本提示逆转，原因是它们针对遗忘集与保留集共享的表示进行修改，导致遗忘浅层且损害通用能力。RepSelect提出在每次更新前坍塌权重梯度的主成分，从而隔离遗忘集特有的表示，保留通用能力并限制攻击者的恢复。实验表明，在生物危害知识等任务上，RepSelect使后重新学习准确率降低4-50倍，且对少样本提示几乎完全鲁棒。该方法为实现深层鲁棒的LLM遗忘迈出重要一步。",
+      "tags": "query:ce",
+      "abstract_en": "Making large language models (LLMs) deeply forget specific knowledge and values without sacrificing general capabilities remains a central challenge in unlearning. However, current methods are easily reversed by fine-tuning or few-shot prompting, suggesting their forgetting is only shallow. We identify the root cause. Existing methods target representations shared with both the retain set and the subspace recovered by a fine-tuning attacker, making unlearning both disruptive to general capabilities and easy to reverse. We propose RepSelect (Representation Selectivity), isolates forget-set-specific representations by collapsing top principal components of weight gradients before each update, leaving general capabilities intact while limiting what fine-tuning can recover. We evaluate across two forget categories, biohazardous knowledge and abusive tendencies, and four model families spanning dense and Mixture-of-Experts architectures (Llama 3, Qwen 3.5, Gemma 4 E4B, DeepSeek V2 Lite). Compared to five popular baselines (GradDiff, NPO, SimNPO, RMU, UNDIAL), RepSelect achieves a 4-50x larger reduction in post-relearning answer accuracy than the strongest baseline, and is near-perfectly robust to few-shot prompting attacks. Targeting selective representations is thus an important step towards deep and robust LLM forgetting.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/18/2606.17034v1-kveraser-learning-to-steer-kv-cache-for-efficient-localized-context-erasing",
+      "section": "quick",
+      "title_en": "KVEraser: Learning to Steer KV Cache for Efficient Localized Context Erasing",
+      "authors": "Mufei Li, Shikun Liu, Dongqi Fu, Haoyu Wang, Yinglong Xia, Hong Li, Hong Yan, Pan Li",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.17034v1",
+      "score": "6.0",
+      "evidence": "通过KV缓存编辑实现大语言模型中的上下文擦除",
+      "tldr": "大语言模型长上下文应用中，局部内容擦除后其影响会传播到后续所有词元的缓存状态，精确擦除需重算后续全部词元，计算成本高。本文提出KVEraser，通过学习替换擦除区间的键值状态为引导状态，保留其余缓存不变，并采用两阶段训练实现可迁移擦除能力。实验表明，在长上下文任务上擦除性能几乎无损，延迟仅增百分之二十四，而完全重算延迟增十七点六倍，在长文档问答任务上速度提升三至四倍。该方法实现了高效局部上下文编辑。",
+      "tags": "query:ce",
+      "abstract_en": "Post-hoc context erasing over the KV cache is challenging because a local edit has a global consequence: once a span has been processed, its influence propagates into the cached states of all subsequent tokens. This issue arises naturally in long-context LLM applications, where stale retrieved facts, incorrect tool observations, retracted user preferences, or harmful prompt injections may be identified only after prefill. Exact erasing must then recompute all tokens after the deleted span, making its computational cost depend on suffix length rather than erased-span length. We introduce KVEraser, a learned KV-cache editing method for efficient localized context erasing. Given a processed context and a span to remove, KVEraser replaces only the KV states of the erased interval with learned steering states while reusing the remaining cache unchanged. To learn a transferable erasing mechanism, we build a two-stage training pipeline: generic span-neighbor pre-training teaches the eraser to suppress the influence of the erased span, while task-specific fine-tuning adapts this capability to downstream scenarios. Experiments show that KVEraser nearly matches full recomputation in post-erasure performance on in-domain tasks across 1K--32K context lengths, while its latency increases by only 24% compared with a 17.6x increase for full recomputation. KVEraser also generalizes to unseen long-document QA tasks with harmful factual distractors, achieving the best performance among approximate baselines with a 3--4x speedup over full recomputation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
