@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-19",
+  "date": "2026-06-19",
+  "generated_at": "2026-06-19T20:35:42",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/19/2606.20543v1-ssd-spatially-speculative-decoding-accelerates-autoregressive-image-generation",
+      "section": "deep",
+      "title_en": "SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation",
+      "authors": "Shilong Xiang, Zirui Zhang, Lijun Yu, Chengzhi Mao",
+      "date": "2026-06-18",
+      "pdf": "https://arxiv.org/pdf/2606.20543v1",
+      "score": "9.0",
+      "evidence": "通过空间推测解码加速自回归图像生成",
+      "tldr": "自回归模型在视觉生成中通过将图像展平为1D序列，忽略了2D空间局部性，导致推理计算瓶颈。本文提出空间推测解码（SSD）框架，通过同时预测水平相邻和下方的token来利用2D空间相关性，打破视觉推理中的内存墙。该方法在DPG-Bench和GenEval上实现了最高13.3倍的加速，同时保持高保真度。结果表明，尊重视觉的底层几何结构可以释放巨大的计算效率，为实时高分辨率自回归生成模型铺平道路。",
+      "tags": "query:ce",
+      "abstract_en": "Autoregressive models excel in visual generation by treating images as 1D sequences of discrete tokens, mirroring language modeling. However, this flattening discards the intrinsic 2D spatial locality of visual signals, creating severe computational bottlenecks during inference. We introduce Spatially Speculative Decoding (SSD), a framework that aligns the predictive objective with the natural geometry of images. Rather than predicting only the immediate next token in a 1D sequence, our model simultaneously predicts the adjacent horizontal token and the token directly below it. By capitalizing on this 2D spatial correlation, spatially speculative decoding overcomes the memory wall in visual inference. Our approach accelerates autoregressive image generation by up to 13.3x while maintaining high fidelity on DPG-Bench and GenEval. Our results suggest that respecting the underlying geometry of vision unlocks massive computational efficiencies, paving the way for real-time, high-resolution autoregressive generative models.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/19/2606.18249v2-unified-multimodal-autoregressive-modeling-with-shared-context-visual-tokenizer-is-key-to-unification",
+      "section": "quick",
+      "title_en": "Unified Multimodal Autoregressive Modeling with Shared Context-Visual Tokenizer is Key to Unification",
+      "authors": "Wujian Peng, Lingchen Meng, Yuxuan Cai, Xianwei Zhuang, Yuhuan Yang, Rongyao Fang, Chenfei Wu, Junyang Lin, Zuxuan Wu, Shuai Bai",
+      "date": "2026-06-16",
+      "pdf": "https://arxiv.org/pdf/2606.18249v2",
+      "score": "7.0",
+      "evidence": "统一视觉理解与生成的自回归框架",
+      "tldr": "针对现有统一多模态模型因使用分离的视觉分词器导致表示空间分裂的问题，提出UniAR框架。采用共享的单一离散视觉分词器作为理解与生成的桥梁，使模型能直接解读自身生成的视觉token。通过多级特征融合与无查找比特量化扩展视觉词汇，并行位预测分组预测多级视觉码以缩短序列长度，扩散解码器从离散token重建高保真图像。大规模预训练后经监督微调与强化学习，在图像生成和编辑上达到最优，同时保持理解任务竞争力，验证了共享分词器对统一建模的关键作用。",
+      "tags": "query:ce",
+      "abstract_en": "Unified Multimodal Modeling aims to integrate visual understanding and generation within a single system. However, existing approaches typically rely on two disparate visual tokenizers, which splits the representation space and hinders truly unified modeling. We propose UniAR, a unified autoregressive framework where a single discrete visual tokenizer serves as the key bridge between understanding and generation, enabling a shared context in which the model can directly interpret its own generated visual tokens without additional re-encoding. UniAR adapts a pretrained vision encoder with multi-level feature fusion and a lookup-free bitwise quantization scheme, preserving both high-level semantics and low-level details while scaling the effective visual vocabulary at minimal cost. Building on this, the unified autoregressive model adopts parallel-bitwise-prediction to jointly predict spatially grouped, multi-level visual codes, substantially reducing visual sequence length and accelerating generation. Finally, a diffusion-based visual decoder operates on discrete visual tokens to decode high-fidelity images. Through large-scale pre-training, followed by supervised fine-tuning and reinforcement learning, UniAR achieves state-of-the-art performance on image generation and image editing while remaining competitive on multimodal understanding benchmarks. The project page is available at https://sharelab-sii.github.io/uniar-web.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
