@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-22",
+  "date": "2026-06-22",
+  "generated_at": "2026-06-22T21:37:40",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/22/2606.18767v1-output-vector-editing-for-memorization-mitigation-in-large-language-models",
+      "section": "deep",
+      "title_en": "Output Vector Editing for Memorization Mitigation in Large Language Models",
+      "authors": "Ahmad Dawar Hakimi, Kaiwei Lei, Isabelle Augenstein, Hinrich Schütze",
+      "date": "2026-06-17",
+      "pdf": "https://arxiv.org/pdf/2606.18767v1",
+      "score": "9.0",
+      "evidence": "输出向量编辑移除记忆内容，直接适用于概念擦除",
+      "tldr": "大型语言模型会记忆训练数据中的序列，引发隐私、版权和安全风险。现有的神经编辑方法简单地将编辑等同于归零神经元激活，但激活仅控制神经元是否参与，而输出向量才是写入残差流并编码多特征的关键。本文提出输出向量编辑（OVE），通过约束优化定位少量MLP神经元，最小化修改其输出向量以在词汇空间引入干扰，从而重定向残差流贡献而不改变激活。在四个模型（360M到7B参数）上评估，以OLMo-7B为主挖掘6831个记忆序列，最高抑制率达87.9%，比零消融高出2.7倍。四种编辑模式覆盖96.5%的记忆序列，推荐单模式达81.5%且无灾难性局部失败。同时发现约14%序列仅靠MLP编辑不可达，但消融贡献最大的注意力头可恢复60-64%，表明注意力可作为互补机制。编辑模式排序和成功-局部性权衡跨模型迁移，成功率随模型规模增大。",
+      "tags": "query:ce",
+      "abstract_en": "Large language models memorize and reproduce sequences from their training data, creating privacy, copyright, and security risks. Existing neuron-level mitigation methods equate editing with zeroing out neuron activations, but the activation only controls whether a neuron engages; the output vector is what writes to the residual stream and, through superposition, encodes multiple features. We propose output vector editing, a constrained-optimization weight edit that locates a small set of MLP neurons responsible for a memorized continuation and minimally modifies their output vectors to introduce a distractor in vocabulary space, redirecting their residual-stream contributions while leaving activations unchanged. Evaluating on four models from 360M to 7B parameters (SmolLM-360M, OLMo-1B, OLMo-7B, Llama2-7B), we center on OLMo-7B (whose open weights and pretraining corpus enable systematic mining) and mine 6831 memorized sequences, achieving up to 87.9% suppression. The 2.7$\\times$ gap over zero ablation on the same located neurons shows the suppression comes from the output-vector edit, not localization alone. Four edit modes span a spectrum from aggressive suppression to minimal redirection; in ensemble they cover 96.5% of memorized sequences, while our recommended single-mode configuration reaches 81.5% with no catastrophic locality failures. We further identify a mechanistic boundary at ${\\sim}14%$ of sequences unreachable by MLP-only editing; while these failures are not attention-driven overall, ablating the top contributing attention heads recovers 60--64% of them, with stronger recovery on continuations that copy tokens from the prefix, positioning attention as a complementary fallback rather than a primary mechanism. Edit mode ordering and the success-locality trade-off transfer across all four models, with success rates scaling with model size rather than family.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/22/2606.20419v1-spectral-query-key-product-weight-steering-for-training-free-vlm-hallucination-mitigation",
+      "section": "quick",
+      "title_en": "Spectral Query-Key Product Weight Steering for Training-Free VLM Hallucination Mitigation",
+      "authors": "Karn Tiwari, Varnith Chordia, Prathosh A P",
+      "date": "2026-06-18",
+      "pdf": "https://arxiv.org/pdf/2606.20419v1",
+      "score": "7.0",
+      "evidence": "通过权重编辑抑制不需要的输出，类似于概念擦除",
+      "tldr": "视觉语言模型常生成图像中不存在的对象描述（对象幻觉）。本文提出QK Product Steering，一种无数据、无训练、零推理成本的权重编辑方法，通过抑制注意力logits中少数主导奇异模式来减少幻觉，并保证与分组查询注意力兼容。在三个GQA-based VLM上平均CHAIRs降低4.0%，且保留多模态能力。该方法无需解码时干预，零推理开销。",
+      "tags": "query:ce",
+      "abstract_en": "Vision-language models (VLMs) often generate fluent but visually unsupported descriptions, especially by mentioning objects absent from the image. We propose QK Product Steering, a data-free, training-free, and zero-inference-cost weight edit for reducing object hallucination. The method directly edits the per-head query-key product, the operator that produces pre-softmax attention logits, by suppressing a small number of dominant singular modes in selected middle layers. The edited product is then mapped back to the query weights through a closed-form query-only update while keeping shared key weights fixed, making the edit compatible with grouped-query attention. We further decompose the QK product into symmetric and antisymmetric components to distinguish mutual content-similarity patterns from directional attention patterns. Across three GQA-based VLMs, QK Product Steering achieves an average relative CHAIR$_s$ reduction of $4.0\\%$, while matched random-mode controls show negligible change. Interpretability ablations show that the hallucination signal is specific to dominant QK modes and is primarily localized to the symmetric mutual-attention channel. Overall, QK Product Steering offers a simple alternative to decoding-time mitigation, requiring no additional data, fine-tuning, or inference-time overhead while largely preserving general multimodal capability.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,92 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-22T21:34:35.625273+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.18767v1",
+      "source": "arxiv",
+      "title": "Output Vector Editing for Memorization Mitigation in Large Language Models",
+      "abstract": "Large language models memorize and reproduce sequences from their training data, creating privacy, copyright, and security risks. Existing neuron-level mitigation methods equate editing with zeroing out neuron activations, but the activation only controls whether a neuron engages; the output vector is what writes to the residual stream and, through superposition, encodes multiple features. We propose output vector editing, a constrained-optimization weight edit that locates a small set of MLP neurons responsible for a memorized continuation and minimally modifies their output vectors to introduce a distractor in vocabulary space, redirecting their residual-stream contributions while leaving activations unchanged. Evaluating on four models from 360M to 7B parameters (SmolLM-360M, OLMo-1B, OLMo-7B, Llama2-7B), we center on OLMo-7B (whose open weights and pretraining corpus enable systematic mining) and mine 6831 memorized sequences, achieving up to 87.9% suppression. The 2.7$\\times$ gap over zero ablation on the same located neurons shows the suppression comes from the output-vector edit, not localization alone. Four edit modes span a spectrum from aggressive suppression to minimal redirection; in ensemble they cover 96.5% of memorized sequences, while our recommended single-mode configuration reaches 81.5% with no catastrophic locality failures. We further identify a mechanistic boundary at ${\\sim}14%$ of sequences unreachable by MLP-only editing; while these failures are not attention-driven overall, ablating the top contributing attention heads recovers 60--64% of them, with stronger recovery on continuations that copy tokens from the prefix, positioning attention as a complementary fallback rather than a primary mechanism. Edit mode ordering and the success-locality trade-off transfer across all four models, with success rates scaling with model size rather than family.",
+      "authors": [
+        "Ahmad Dawar Hakimi",
+        "Kaiwei Lei",
+        "Isabelle Augenstein",
+        "Hinrich Schütze"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-17T07:29:18+00:00",
+      "link": "https://arxiv.org/pdf/2606.18767v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "output vector editing to remove memorized content, directly applicable to concept erasure",
+      "llm_evidence_cn": "输出向量编辑移除记忆内容，直接适用于概念擦除",
+      "llm_evidence": "输出向量编辑移除记忆内容，直接适用于概念擦除",
+      "canonical_evidence": "输出向量编辑移除记忆内容，直接适用于概念擦除",
+      "llm_tldr_en": "Proposes output vector editing, a constrained weight edit that minimally modifies MLP neuron output vectors to introduce distractors, mitigating memorization in LLMs. Directly related to concept erasure.",
+      "llm_tldr_cn": "该论文针对大型语言模型记忆训练数据带来的隐私风险，提出输出向量编辑方法：通过约束优化定位负责记忆的少数MLP神经元，最小化修改其输出向量以在词汇空间引入干扰项，从而重定向残差流贡献而不改变激活值。在多个模型上验证有效，该方法可视为一种精确的概念擦除技术。",
+      "llm_tldr": "该论文针对大型语言模型记忆训练数据带来的隐私风险，提出输出向量编辑方法：通过约束优化定位负责记忆的少数MLP神经元，最小化修改其输出向量以在词汇空间引入干扰项，从而重定向残差流贡献而不改变激活值。在多个模型上验证有效，该方法可视为一种精确的概念擦除技术。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.20419v1",
+      "source": "arxiv",
+      "title": "Spectral Query-Key Product Weight Steering for Training-Free VLM Hallucination Mitigation",
+      "abstract": "Vision-language models (VLMs) often generate fluent but visually unsupported descriptions, especially by mentioning objects absent from the image. We propose QK Product Steering, a data-free, training-free, and zero-inference-cost weight edit for reducing object hallucination. The method directly edits the per-head query-key product, the operator that produces pre-softmax attention logits, by suppressing a small number of dominant singular modes in selected middle layers. The edited product is then mapped back to the query weights through a closed-form query-only update while keeping shared key weights fixed, making the edit compatible with grouped-query attention. We further decompose the QK product into symmetric and antisymmetric components to distinguish mutual content-similarity patterns from directional attention patterns. Across three GQA-based VLMs, QK Product Steering achieves an average relative CHAIR$_s$ reduction of $4.0\\%$, while matched random-mode controls show negligible change. Interpretability ablations show that the hallucination signal is specific to dominant QK modes and is primarily localized to the symmetric mutual-attention channel. Overall, QK Product Steering offers a simple alternative to decoding-time mitigation, requiring no additional data, fine-tuning, or inference-time overhead while largely preserving general multimodal capability.",
+      "authors": [
+        "Karn Tiwari",
+        "Varnith Chordia",
+        "Prathosh A P"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-18T16:03:26+00:00",
+      "link": "https://arxiv.org/pdf/2606.20419v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "weight editing to suppress unwanted outputs similar to concept erasure",
+      "llm_evidence_cn": "通过权重编辑抑制不需要的输出，类似于概念擦除",
+      "llm_evidence": "通过权重编辑抑制不需要的输出，类似于概念擦除",
+      "canonical_evidence": "通过权重编辑抑制不需要的输出，类似于概念擦除",
+      "llm_tldr_en": "Proposes QK Product Steering, a training-free weight edit that suppresses dominant singular modes in VLM attention to reduce object hallucination. Method is transferable to concept erasure tasks.",
+      "llm_tldr_cn": "该论文提出QK乘积引导方法，通过编辑视觉语言模型注意力头的查询-键乘积的奇异模式来抑制物体幻觉，无需训练或数据。该方法本质上是一种模型编辑技术，可迁移至概念擦除任务，通过类似操作移除特定概念在输出中的影响。",
+      "llm_tldr": "该论文提出QK乘积引导方法，通过编辑视觉语言模型注意力头的查询-键乘积的奇异模式来抑制物体幻觉，无需训练或数据。该方法本质上是一种模型编辑技术，可迁移至概念擦除任务，通过类似操作移除特定概念在输出中的影响。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
