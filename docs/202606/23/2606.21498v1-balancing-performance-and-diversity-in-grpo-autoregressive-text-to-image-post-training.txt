@@ -1,0 +1,542 @@
+Title: Balancing Performance and Diversity in GRPO Autoregressive Text-to-Image Post-Training
+
+URL Source: https://arxiv.org/pdf/2606.21498v1
+
+Published Time: Tue, 23 Jun 2026 01:13:19 GMT
+
+Number of Pages: 12
+
+Markdown Content:
+# Balancing Performance and Diversity in GRPO Autoregressive Text-to-Image Post-Training 
+
+Yuanhao Chiang 1, Hongbo Duan 1, Chunru Yang 1, Jiahua Pei 1, Yi Liu 1, Xueqian Wang 1B 
+
+> 1
+
+Shenzhen International Graduate School, Tsinghua University 
+
+jiang-yh24@mails.tsinghua.edu.cn; wang.xq@sz.tsinghua.edu.cn 
+
+## Abstract 
+
+Autoregressive text-to-image (T2I) generation has recently advanced rapidly, yet aligning generated images with human preferences remains challenging. GRPO-style online reinforcement learning provides an effective framework; however, existing methods typically treat reference-policy divergence as fixed, despite its direct impact on policy optimization. We study this overlooked factor within a unified f-divergence framework, encompassing forward KL, reverse KL, and JS divergence, for GRPO-style autoregressive T2I alignment. Our systematic the-oretical analysis reveals that different divergences reshape token-level updates in distinct ways. In particular, under the sampled-token shaping form used, JS regularization achieves a favorable trade-off by mitigating uniform bias relative to the reference policy while still discouraging large deviations. Extensive ex-periments on LlamaGen and Janus-7B show that JS divergence achieves the strongest or highly competitive optimization performance on most evaluation metrics while maintaining favorable generation diversity. The code is available at 
+
+https://github.com/tuoyou-hao/BPD-GRPO .
+
+## 1 Introduction 
+
+Autoregressive text-to-image (T2I) generation has emerged as a promising alternative to diffusion-based methods, representing images as sequences of discrete visual tokens conditioned on text prompts. Leveraging large-scale multimodal pretraining [ 26 ] and powerful autoregressive backbones, these models generate visually rich images while inheriting the next-token prediction paradigm proven effective in language modeling. However, strong generative capability alone does not guarantee preference-aligned generation. In practical T2I systems, generated images should not only align with the input prompt but also reflect human preferences. Prior work has investigated various post-training approaches for diffusion models [ 5 ; 37 ; 45 ; 15 ; 14 ], including positive-signal, consistency-aware, and entropy-aware preference alignment for T2I generation [ 31 ; 30 ; 2]. For visual generation [ 48 ; 47 ], online GRPO-style optimization [ 25 ; 49 ; 6; 28 ] is particularly appealing, as it provides a natural framework for group-wise sampling, relative reward comparison, and token-level credit assignment over discrete image tokens. Nevertheless, although recent studies have extended pref-erence optimization and GRPO-style reinforcement post-training to broader alignment and visual generation settings [ 27 ; 20 ; 19 ; 18 ; 32 ], existing autoregressive T2I formulations still largely regard the reference-policy divergence as a fixed design choice, specifically adopting the KL penalty without exploring alternative divergence formulations. 
+
+> Preprint.
+> arXiv:2606.21498v1 [cs.AI] 19 Jun 2026
+
+## 2 Related Work 
+
+2.1 Policy Optimization for Text-to-Image Generation 
+
+Policy optimization aims to adapt generative models toward human preferences beyond standard likelihood or reconstruction objectives. Early methods [ 5] commonly rely on reward models and reinforcement learning [ 43 ; 33 ; 46 ] to improve text-image matching, aesthetic quality, and human preference scores. More recent diffusion-based methods formulate alignment as direct preference optimization or preference-aware denoising, avoiding explicit online RL while still improving reward-model evaluation and consistency with human preferences [ 37 ; 45 ; 15 ; 14 ]. Subsequent studies further improve T2I preference alignment from positive-signal utilization, preference consistency, and entropy-aware diversity perspectives [ 31 ; 30 ; 2]. These methods primarily focus on diffusion backbones and differ in preference data construction, denoising-step weighting, or offline objective design. In contrast, our study investigates reinforcement learning for autoregressive T2I models, where image generation is performed by discrete visual-token prediction. 
+
+2.2 Online RLHF and GRPO-Style Optimization 
+
+Online RLHF typically optimizes the policy against a reward signal while constraining its devia-tion from the reference policy. PPO [ 23 ] and related trust-region methods are widely utilized for language-model alignment as they balance reward maximization and policy stability [ 21 ]. GRPO-style objectives further simplify online alignment by using group-wise relative comparison instead of a separate value model, making them suitable for scalable policy optimization [ 25 ]. For autoregressive image generation, GCPO[ 49 ] extends this paradigm to discrete visual tokens by assigning group-wise critical-token rewards and applying token-level updates. Our study builds on this line of work, but focuses on an overlooked component: the divergence regularization used to constrain the aligned policy. Rather than treating it as a default KL penalty, we examine how different divergence forms affect the optimization dynamics of autoregressive T2I alignment. 
+
+2.3 f -Divergence Regularization 
+
+The f -divergence family [ 4; 12 ; 16 ] provides a unified view of many distributional discrepancy measures, including forward KL, reverse KL, JS divergence, and so on. Divergence choice is known to affect mode-seeking and mode-covering behavior in generative modeling and preference optimization [ 9; 8; 38 ; 27 ]. Recent work has also introduced f -divergence perspectives into T2I post-training, showing that alternative divergences can improve the performance-diversity trade-off in offline diffusion alignment [ 29 ]. Our work differs by investigating divergence regularization as an online trust-region component for autoregressive T2I alignment. We connect the divergence form to token-level gradient shaping under GRPO-style optimization and empirically compare the performance of forward KL, reverse KL, and JS divergence under the same training and evaluation settings. 
+
+## 3 Method 
+
+We study policy optimization for autoregressive T2I models in a GRPO-style online optimization framework. Given a prompt, the policy samples a group of candidate image-token sequences, computes relative advantages from reward scores, and updates token probabilities with a reference-policy regularization. 
+
+3.1 Preliminaries 
+
+We first introduce the standard f -divergence formulation. Let p and q denote two distributions over the same action space. The f -divergence between q and p is defined as: 
+
+Df (p∥q) = Ea∼q
+
+
+
+f
+
+ p(a)
+
+q(a)
+
+ 
+
+, (1) satisfying f (1) = 0 and f ′′ (x) > 0. Thus, for discrete action space A, we have: 2Figure 1: Qualitative comparison of Janus-7B variants trained with RKL divergence, FKL divergence and JS divergence. Columns share the same prompt and rows correspond to divergence variants. 
+
+Df (p∥q) = X
+
+> a∈A
+
+q(a)f
+
+ p(a)
+
+q(a)
+
+
+
+. (2) In our settings, p corresponds to the current policy πθ , while q corresponds to the frozen reference policy πref ; the RKL variant corresponds to the standard GRPO-style reference-policy regularization baseline, while FKL and JS are obtained by replacing only the divergence-induced shaping term. Under this convention, f (t) = t log t corresponds to KL( πθ ∥πref ), which we refer to as reverse KL, while f (t) = − log t corresponds to KL( πref ∥πθ ), which we refer to as forward KL. We compare a total of three representative choices from the f -divergence family: Reverse KL: fRKL (t) = t log t, f ′
+
+> RKL
+
+(t) = log t + 1 
+
+Forward KL: fFKL (t) = − log t, f ′
+
+> FKL
+
+(t) = − 1
+
+> t
+
+Jensen-Shannon: fJS (t) = t log 2t 
+
+> 1+ t
+
++ log 21+ t , f ′
+
+> JS
+
+(t) = log 2t
+
+> 1+ t
+
+Then, we formalize the autoregressive T2I alignment setting. For a given prompt x, the current policy 
+
+πθ generates a group of G image-token sequences: 
+
+Y(x) = {y(g)}Gg=1 , y(g) ∼ πθ (·| x). (3) These samples are evaluated by a reward model, based on which group-wise relative advantages are computed to facilitate token-level policy updates. To mitigate policy drift, a frozen reference policy πref is employed for regularization. We maintain a consistent sampling strategy, advantage computation, and all other optimization schedules across all divergence variants. 3Figure 2: Qualitative comparison of LlamaGen variants trained with RKL divergence, FKL divergence, and JS divergence. Columns share the same prompt and rows correspond to divergence variants. Finally, for a token y(g) 
+
+> t
+
+, we define the token-level importance ratio as w(g) 
+
+> t
+
+=
+
+πθ (y(g) 
+
+> t
+
+|x, y (g) 
+
+> <t
+
+)/π ref (y(g) 
+
+> t
+
+|x, y (g) 
+
+> <t
+
+), which quantifies the policy deviation from the reference model at each autoregressive generation step. Let A(g) 
+
+> t
+
+denote the token-level advantage. In our implementa-tion, we broadcast the sequence-level group-relative reward to each valid image token: 
+
+A(g) 
+
+> t
+
+= m(g) 
+
+> t
+
+· R(g) − mean j R(j)
+
+std j R(j) + ϵ , (4) where m(g) 
+
+> t
+
+represents the visual-token mask. We can formulate the objective as: 
+
+J (θ) = Ex, y ∼πθ (·| x)
+
+"
+
+R(x, y ) − η
+
+> T
+
+X
+
+> t=1
+
+Df
+
+ πθ (·| x, y <t )∥πref (·| x, y <t )#
+
+, (5) where x denotes the text prompt, y represents the generated image-token sequence of length T ,
+
+R(x, y ) is the sequence-level reward, and η serves as the hyperparameter controlling the strength of the f -divergence regularization. In this formulation, the reward signal is converted into group-wise relative advantages, while the divergence term penalizes policy drift from πref .
+
+3.2 Gradient Analysis 
+
+In this section, we further analyze how the choice of f -divergence affects token-level policy updates. The gradient of Equation (5) can be decomposed as: 
+
+∇θ J = ∇θ Ex, y ∼πθ (·| x) [R(x, y )] − η · ∇ θ ExTX
+
+> t=1
+
+Df
+
+ πθ (·| x, y <t )∥πref (·| x, y <t ). (6) 4Firstly, we introduce Lemma 1, showing formulation of policy gradient [35; 36]. 
+
+Lemma 1 (Policy Gradient Theorem) . For autoregressive generation, the policy gradient can be formulated as: 
+
+∇θ Ex, y ∼πθ (·| x) [R(x, y )] = Ex, y ∼πθ (·| x)
+
+" TX
+
+> t=1
+
+∇θ log πθ (yt|x, y <t )At
+
+#
+
+. (7) Furthermore, let’s consider the latter part of Equation (6). Since the GRPO paradigm is formulated under the trust-region and on-policy framework, the state visitation distribution change is negligible within each update. Thus, 
+
+∇θ ExTX
+
+> t=1
+
+Df
+
+ πθ (·| x, y <t )∥πref (·| x, y <t )
+
+=ExTX
+
+> t=1
+
+∇θ Df
+
+ πθ (·| x, y <t )∥πref (·| x, y <t ).
+
+(8) For a fixed prefix y<t , we have that: 
+
+∇θ Df
+
+ πθ (·| x, y <t )∥πref (·| x, y <t )
+
+= X
+
+> v∈V
+
+πref (v|x, y <t )f ′
+
+ πθ (v|x, y <t )
+
+πref (v|x, y <t )
+
+
+
+· ∇ θ
+
+πθ (v|x, y <t )
+
+πref (v|x, y <t )= X
+
+> v∈V
+
+f ′
+
+ πθ (v|x, y <t )
+
+πref (v|x, y <t )
+
+
+
+· ∇ θ πθ (v|x, y <t )= X
+
+> v∈V
+
+f ′
+
+ πθ (v|x, y <t )
+
+πref (v|x, y <t )
+
+
+
+· πθ (v|x, y <t )∇θ log πθ (v|x, y <t )=Ev∼πθ
+
+
+
+f ′
+
+ πθ (v|x, y <t )
+
+πref (v|x, y <t )
+
+
+
+· ∇ θ log πθ (v|x, y <t )
+
+
+
+.
+
+(9) Further combine Equation (7) and Equation (9), we obtain: 
+
+∇θ J = Ex, y ∼πθ (·| x)
+
+" TX
+
+> t=1
+
+∇θ log πθ (yt|x, y <t ) ·
+
+
+
+At − ηf ′
+
+ πθ (yt|x, y <t )
+
+πref (yt|x, y <t )
+
+ | {z }
+
+> ˆAt
+
+#
+
+. (10) Specializing this objective to autoregressive image-token generation gives: 
+
+∇θ J (θ) = E
+
+" GX
+
+> g=1
+
+X
+
+> t
+
+∇θ log πθ (y(g) 
+
+> t
+
+|x, y (g) 
+
+> <t
+
+) ·
+
+
+
+A(g) 
+
+> t
+
+− ηf ′(w(g) 
+
+> t
+
+)
+
+#
+
+. (11) Hence, the divergence term modulates the token-level update via a merged advantage: 
+
+ˆA(g) 
+
+> t
+
+= A(g) 
+
+> t
+
+− ηf ′(w(g) 
+
+> t
+
+). (12) Equation (12) reveals the key insight of our method: identical GRPO-style group sampling and reward design, different divergences induce distinct optimization dynamics solely through the form of f ′(w). The three divergences therefore lead to different gradient-shaping effects. Specifically, we have that: 
+
+f ′
+
+> RKL
+
+(1) = 1 , f ′
+
+> FKL
+
+(1) = −1, f ′
+
+> JS
+
+(1) = 0 . (13) Therefore, under the sampled-token shaping formulation utilized in our implementation, JS introduces no constant offset at wt = 1 , whereas the uncentered RKL generator retains a positive offset. This 5makes JS more balanced around the reference policy while still suppressing overly aggressive updates when wt > 1. Under this formulation, forward KL satisfies f ′
+
+> FKL
+
+(x) = −1/x < 0 for all x > 0,while reverse KL satisfies f ′
+
+> RKL
+
+(x) = log x + 1 . Moreover, the following proposition derives comparative inequalities of f ′(x) under the three divergences. 
+
+Proposition 1. For all x > 0, we have 
+
+− 1
+
+x < log 2x
+
+1 + x < log x + 1 . (14) 
+
+Proof. Firstly, we consider left part of this inequality. Define g(x) := log 2x 
+
+> 1+ x
+
++ 1 
+
+> x
+
+for x > 0. The derivative of g(x) can be expressed as: 
+
+g′(x) = 
+
+ 1
+
+x − 11 + x
+
+
+
+− 1
+
+x2 = − 1
+
+x2(1 + x) < 0. (15) Hence, g(x) is strictly decreasing. Furthermore, we have that: 
+
+lim  
+
+> x→∞
+
+g(x) = lim 
+
+> x→∞
+
+
+
+log 2x
+
+1 + x + 1
+
+x
+
+
+
+= log 2 > 0. (16) Therefore, for all x > 0, we have g(x) > 0, which means that: 
+
+log 2x
+
+1 + x > − 1
+
+x . (17) Next, consider the right part of this inequality. Since x > 0, we have x > 2 
+
+> e
+
+− 1, implying that 
+
+2 < e (x + 1) , and thus we have 2x/ (1 + x) < ex . By applying the logarithm to both sides, we can obtain that: 
+
+log 2x
+
+1 + x < log x + 1 . (18) Combining Equation (17) and Equation (18), we readily obtain Equation (14), which completes the proof. Therefore, reverse KL divergence yields the largest derivative for over-represented tokens with x > 1,followed by JS divergence, while forward KL divergence satisfies f ′
+
+> FKL
+
+(x) < 0 for all x > 0. Within the sampled-token shaping form, this implies that forward KL divergence contributes a positive offset 
+
+η/x to the merged advantage, i.e., ˆA = A + η/x , and thus behaves as an overly weak trust-region regularizer for sampled tokens. In contrast, reverse KL divergence subtracts η · (log x + 1) from the advantage, leading to an excessively strong suppression when the current policy assigns substantially higher probability than the reference policy. The JS divergence lies between these two extremes: for 
+
+x > 1, f ′
+
+> JS
+
+(x) > 0, resulting in suppressed updates; for x < 1, f ′
+
+> JS
+
+(x) < 0, leading to amplified updates. Moreover, f ′
+
+> JS
+
+(1) = 0 , implying that JS divergence introduces no constant offset at the reference point under the sampled-token gradient shaping formulation. Therefore, JS divergence provides a more balanced regularization effect between policy improvement and reference-policy preservation. 
+
+3.3 Practical JS Divergence Computation 
+
+In implementation, rather than explicitly computing the full-vocabulary JS divergence value, we instantiate JS regularization by modifying the shaping term in the merged advantage. Specifically, for the JS divergence, the merged advantage is given by: 
+
+ˆAJS  
+
+> t
+
+= At − η · f ′
+
+> JS
+
+(wt). (19) To ensure numerical stability, we perform all computations of log-ratio ∆t with: 
+
+∆t = log πθ (yt|x, y <t ) − log πref (yt|x, y <t ). (20) Consequently, the JS-specific shaping term f ′
+
+> JS
+
+(wt) is formulated as: 
+
+f ′
+
+> JS
+
+(wt) = log 2 + ∆ t − log(1 + exp(∆ t)) . (21) 6Table 1: Quantitative results on performance of Janus-7B and LlamaGen variants.                                                                                  
+
+> Benchmark Model CLIPScore ↑HPS-v2.1 ↑ImageReward ↑VQAScore ↑
+> DPG-Bench Janus-7B-RKL 0.3923 0.2737 0.8152 0.8859 Janus-7B-FKL 0.3923 0.2748 0.8333 0.8849 Janus-7B-JS 0.3930 0.2748 0.8371 0.8881
+> GenAI Janus-7B-RKL 0.3697 0.2828 1.0569 0.7325
+> Janus-7B-FKL 0.3694 0.2827 1.0407 0.7289 Janus-7B-JS 0.3706 0.2834 1.0713 0.7308 GenEval Janus-7B-RKL 0.3838 0.2872 1.1237 0.8579 Janus-7B-FKL 0.3817 0.2875 1.1281 0.8548 Janus-7B-JS 0.3836 0.2881 1.1272 0.8582
+> DPG-Bench LlamaGen-RKL 0.2725 0.2209 -0.8221 0.6203 LlamaGen-FKL 0.2686 0.2099 -0.9455 0.6257 LlamaGen-JS 0.2739 0.2214 -0.8037 0.6312
+> GenAI LlamaGen-RKL 0.3338 0.2737 0.4788 0.6302
+> LlamaGen-FKL 0.3320 0.2725 0.4538 0.6295 LlamaGen-JS 0.3301 0.2735 0.4749 0.6245 GenEval LlamaGen-RKL 0.3315 0.2712 0.1360 0.6582 LlamaGen-FKL 0.3294 0.2704 0.1487 0.6619 LlamaGen-JS 0.3268 0.2719 0.1580 0.6692
+
+Figure 3: Training reward dynamics under varying divergence regularization, showing HPS-v2 reward trajectories of Janus-7B over 1600 steps. During mixed-precision training, ∆t is clipped when necessary before evaluating the log-ratio term. All other components of the GRPO pipeline, including sampling strategy, advantage computation, and optimization schedules, are kept consistent, so that comparison primarily reflects the effect of divergence choice. 
+
+## 4 Experiments 
+
+4.1 Experimental Setup 
+
+We train three full-parameter RL variants of LlamaGen [ 34 ] and Janus-7B [ 40 ], differing only in the reference-policy regularizer: reverse KL, forward KL, and JS divergence. All variants use HPS-v2.1 [ 41 ] as the online reward model and are trained on four NVIDIA A100 80GB GPUs. Janus is trained for 1,600 steps with a learning rate of 1 × 10 −6, batch size 2, and a linear schedule; LlamaGen 7Table 2: Quantitative results on generative diversity of Janus-7B and LlamaGen variants. Benchmark Model 1D Ent. ↑ 2D Ent. ↑ FSIM ↓ I-I CLIP ↓ LPIPS ↑ RMSE ↑ PSNR ↓ SSIM ↓                                                                                                                                                
+
+> DPG-Bench Janus-7B-RKL 7.3708 13.6531 0.3301 0.9015 0.4751 0.0171 35.62 0.8065 Janus-7B-JS 7.3867 13.6849 0.3313 0.9031 0.4724 0.0170 35.63 0.8075 Janus-7B-FKL 7.3805 13.6670 0.3306 0.9039 0.4760 0.0171 35.61 0.8064
+> LlamaGen-RKL 7.4510 14.0465 0.3108 0.7782 0.5594 0.0216 33.42 0.7303
+> LlamaGen-JS 7.4617 14.0582 0.3160 0.7906 0.5443 0.0211 33.59 0.7412 LlamaGen-FKL 7.3035 13.6840 0.3154 0.7833 0.5275 0.0206 33.82 0.7458 GenAI Janus-7B-RKL 7.5014 13.6044 0.3566 0.9074 0.4173 0.0146 37.05 0.8517 Janus-7B-JS 7.5081 13.6332 0.3569 0.9078 0.4195 0.0147 36.95 0.8498
+> Janus-7B-FKL 7.5067 13.6063 0.3571 0.9066 0.4185 0.0146 37.00 0.8505 LlamaGen-RKL 7.3466 13.6565 0.3018 0.8438 0.5683 0.0214 33.45 0.7341 LlamaGen-JS 7.3404 12.7302 0.3045 0.8418 0.5601 0.0211 33.63 0.7430 LlamaGen-FKL 7.2720 13.4068 0.3031 0.8417 0.5584 0.0211 33.50 0.7332
+> GenEval Janus-7B-RKL 6.9902 12.1728 0.3238 0.9154 0.4178 0.0167 35.92 0.8226
+> Janus-7B-JS 6.9868 12.1632 0.3260 0.9192 0.4130 0.0166 35.99 0.8258 Janus-7B-FKL 6.9967 12.1868 0.3272 0.9179 0.4093 0.0167 36.02 0.8248 LlamaGen-RKL 6.9604 12.7253 0.2849 0.8175 0.5623 0.0232 32.87 0.7235 LlamaGen-JS 6.9595 12.7302 0.2864 0.8254 0.5509 0.0228 32.99 0.7313 LlamaGen-FKL 6.6873 12.1256 0.2840 0.8160 0.5522 0.0236 32.70 0.7198
+
+is trained for 900 steps with a learning rate of 1 × 10 −5, batch size 32, and a cosine schedule. We evaluate on DPG-Bench [10], GenAI-Bench [13], and GenEval [7]. For performance evaluation, we report CLIPScore [ 22 ], HPS-v2.1 [ 42 ], ImageReward [ 44 ], and VQAScore [ 17 ], where higher values indicate better optimization performance. For diversity analysis, we follow the generation diversity evaluation protocol in work [ 29 ], reporting Image–Image CLIP [ 22 ], 1D Entropy [ 24 ], 2D Entropy [ 1 ], LPIPS [ 51 ], RMSE [ 3 ], PSNR [ 11 ], SSIM [ 39 ], and FSIM [ 50 ]. These complementary metrics jointly characterize the trade-off between optimization performance and generation diversity. Table 2 summarizes the averaged diversity metrics, where arrows indicate the direction favoring greater diversity. These metrics reveal a pronounced trade-off across divergences. RKL is skewed heavily toward extreme pairwise discrepancy: the lowest FSIM and Image–Image CLIP on DPG-Bench and GenEval Janus-7B are achieved by RKL, indicating the strongest feature-level and semantic variation; meanwhile, the highest LPIPS coupled with the lowest PSNR and SSIM are recorded by RKL on DPG-Bench of LlamaGen, reflecting the most pronounced perceptual and structural deviation. FKL yields an uneven profile, topping 1D and 2D Entropy on GenEval of Janus while collapsing to the lowest entropy and the poorest pairwise-difference performance on DPG-Bench of LlamaGen. JS demonstrates a more balanced advantage, achieving the highest 1D or 2D Entropy in seven of the twelve entropy entries and ranking second in two others. Rather than pushing any single sample-difference metric to an extreme, JS maintains well-rounded scores across all dimensions. Coupled with the best average HPS, ImageReward, and VQAScore in Table 1, JS therefore realizes a balanced performance-diversity trade-off: optimization performance is improved without collapsing into either excessive variation-seeking or undue conservatism, preserving broad visual-distribution coverage and non-trivial spatial complexity. 
+
+4.2 Training Dynamics 
+
+As illustrated in Figure 3, the training reward profiles show that JS achieves strong and competitive optimization performance, maintaining a slight reward advantage on Janus-7B in the later stage of training. RKL follows a steadier conservative path, while FKL underperforms. These empirical trends are consistent with our gradient analysis, which indicates that distinct f ′(w) terms effectively modulate token-level advantages, thereby dictating divergent optimization paths. 
+
+## 5 Conclusion 
+
+In this work, we revisit GRPO-style online reinforcement learning for autoregressive text-to-image alignment through a unified f -divergence perspective. Our analysis shows that the choice of diver-gence is not merely a regularization detail, but a key factor that fundamentally shapes token-level optimization dynamics. Within the sampled-token shaping formulation, JS divergence emerges as a particularly effective choice. Empirical results on LlamaGen and Janus-7B support our analysis, 8demonstrating that JS divergence regularization consistently delivers strong or competitive optimiza-tion performance across metrics while preserving generation diversity. These findings also highlight the importance of carefully selecting divergence objectives for effective optimization in autoregressive T2I generation. 
+
+## References 
+
+[1] Ahmed S Abutaleb. Automatic thresholding of gray-level pictures using two-dimensional entropy. Computer vision, graphics, and image processing , 47(1):22–32, 1989. [2] Hannan Bai, Haoyuan Sun, and Yuncheng Du. Entropy-aware preference alignment for diffusion-based text-to-image generation. In Chinese Conference on Pattern Recognition and Computer Vision (PRCV) , pages 373–387. Springer, 2025. [3] Tianfeng Chai and Roland R Draxler. Root mean square error (rmse) or mean absolute error (mae)?–arguments against avoiding rmse in the literature. Geoscientific model development , 7 (3):1247–1250, 2014. [4] Imre Csiszár. On information-type measure of difference of probability distributions and indirect observations. Studia Sci. Math. Hungar. , 2:299–318, 1967. [5] Ying Fan, Olivia Watkins, Yuqing Du, Hao Liu, Moonkyung Ryu, Craig Boutilier, Pieter Abbeel, Mohammad Ghavamzadeh, Kangwook Lee, and Kimin Lee. Dpok: Reinforcement learning for fine-tuning text-to-image diffusion models. Advances in Neural Information Processing Systems , 36:79858–79885, 2023. [6] Bo Fang, Yuxin Song, Haoyuan Sun, Xinyao Zhang, Qiangqiang Wu, Wenhao Wu, and Antoni B Chan. Viss-r1: Self-supervised reinforcement video reasoning. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 11190–11200, 2026. [7] Dhruba Ghosh, Hannaneh Hajishirzi, and Ludwig Schmidt. Geneval: An object-focused framework for evaluating text-to-image alignment. Advances in Neural Information Processing Systems , 36:52132–52152, 2023. [8] Dongyoung Go, Tomasz Korbak, Germán Kruszewski, Jos Rozen, Nahyeon Ryu, and Marc Dymetman. Aligning language models with preferences through f-divergence minimization. 
+
+arXiv preprint arXiv:2302.08215 , 2023. [9] Ian J Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio. Generative adversarial nets. Advances in neural information processing systems , 27, 2014. [10] Xiwei Hu, Rui Wang, Yixiao Fang, Bin Fu, Pei Cheng, and Gang Yu. Ella: Equip diffusion models with llm for enhanced semantic alignment. arXiv preprint arXiv:2403.05135 , 2024. [11] Quan Huynh-Thu and Mohammed Ghanbari. Scope of validity of psnr in image/video quality assessment. Electronics letters , 44(13):800–801, 2008. [12] Solomon Kullback and Richard A Leibler. On information and sufficiency. The annals of mathematical statistics , 22(1):79–86, 1951. [13] Baiqi Li, Zhiqiu Lin, Deepak Pathak, Jiayao Li, Yixin Fei, Kewen Wu, Tiffany Ling, Xide Xia, Pengchuan Zhang, Graham Neubig, et al. Genai-bench: Evaluating and improving compositional text-to-visual generation. arXiv preprint arXiv:2406.13743 , 2024. [14] Shufan Li, Konstantinos Kallidromitis, Akash Gokul, Yusuke Kato, and Kazuki Kozuka. Align-ing diffusion models by optimizing human utility. Advances in Neural Information Processing Systems , 37:24897–24925, 2024. [15] Zhanhao Liang, Yuhui Yuan, Shuyang Gu, Bohan Chen, Tiankai Hang, Ji Li, and Liang Zheng. Step-aware preference optimization: Aligning preference with denoising performance at each step. arXiv preprint arXiv:2406.04314 , 2(5):7, 2024. 9[16] Jianhua Lin. Divergence measures based on the shannon entropy. IEEE Transactions on Information theory , 37(1):145–151, 1991. [17] Zhiqiu Lin, Deepak Pathak, Baiqi Li, Jiayao Li, Xide Xia, Graham Neubig, Pengchuan Zhang, and Deva Ramanan. Evaluating text-to-visual generation with image-to-text generation. In 
+
+European Conference on Computer Vision , pages 366–384. Springer, 2024. [18] Yifu Luo, Penghui Du, Bo Li, Sinan Du, Tiantian Zhang, Yongzhe Chang, Kai Wu, Kun Gai, and Xueqian Wang. Sample by step, optimize by chunk: Chunk-level grpo for text-to-image generation. arXiv preprint arXiv:2510.21583 , 2025. [19] Yifu Luo, Xinhao Hu, Keyu Fan, Haoyuan Sun, Zeyu Chen, Bo Xia, Tiantian Zhang, Yongzhe Chang, and Xueqian Wang. Reinforcement learning meets masked generative models: Mask-grpo for text-to-image generation. Advances in Neural Information Processing Systems , 38: 108460–108485, 2026. [20] Xufei Lv, Kehai Chen, Haoyuan Sun, Xuefeng Bai, Min Zhang, and Houde Liu. The hidden link between rlhf and contrastive learning. arXiv preprint arXiv:2506.22578 , 2025. [21] Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida, Carroll Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, et al. Training language models to follow instructions with human feedback. Advances in neural information processing systems ,35:27730–27744, 2022. [22] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learning transferable visual models from natural language supervision. In International conference on machine learning ,pages 8748–8763. PmLR, 2021. [23] John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347 , 2017. [24] Claude Elwood Shannon. A mathematical theory of communication. The Bell system technical journal , 27(3):379–423, 1948. [25] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, Yang Wu, et al. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 , 2024. [26] Yuxin Song, Yu Lu, Haoyuan Sun, Huanjin Yao, Fanglong Liu, Yifan Sun, Haocheng Feng, Hang Zhou, and Jingdong Wang. Cologen: Progressive learning of concept-localization duality for unified image generation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 14724–14734, 2026. [27] Haoyuan Sun, Yuxin Zheng, Yifei Zhao, Yongzhe Chang, and Xueqian Wang. Generalizing offline alignment theoretical paradigm with diverse divergence constraints. In ICML 2024 Workshop on Models of Human Feedback for AI Alignment , 2024. [28] Haoyuan Sun, Jiaqi Wu, Bo Xia, Yifu Luo, Yifei Zhao, Kai Qin, Xufei Lv, Tiantian Zhang, Yongzhe Chang, and Xueqian Wang. Reinforcement fine-tuning powers reasoning capability of multimodal large language models. arXiv preprint arXiv:2505.18536 , 2025. [29] Haoyuan Sun, Bo Xia, Yongzhe Chang, and Xueqian Wang. Generalizing alignment paradigm of text-to-image generation with preferences through f-divergence minimization. In Proceedings of the AAAI Conference on Artificial Intelligence , volume 39, pages 27644–27652, 2025. [30] Haoyuan Sun, Bo Xia, Yifei Zhao, Yongzhe Chang, and Xueqian Wang. Identical human prefer-ence alignment paradigm for text-to-image models. In ICASSP 2025-2025 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 2025. [31] Haoyuan Sun, Bo Xia, Yifei Zhao, Yongzhe Chang, and Xueqian Wang. Positive enhanced preference alignment for text-to-image models. In ICASSP 2025-2025 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 2025. 10 [32] Haoyuan Sun, Jing Wang, Yuxin Song, Yu Lu, Bo Fang, Yifu Luo, Jun Yin, Pengyu Zeng, Miao Zhang, Tiantian Zhang, et al. Power reinforcement post-training of text-to-image models with super-linear advantage shaping. arXiv preprint arXiv:2605.10937 , 2026. [33] Haoyuan Sun, Bo Xia, Yifu Luo, Tiantian Zhang, and Xueqian Wang. Calibration enhanced decision maker: Towards trustworthy sequential decision-making with large sequence models. 
+
+Transactions on Machine Learning Research , 2026. [34] Peize Sun, Yi Jiang, Shoufa Chen, Shilong Zhang, Bingyue Peng, Ping Luo, and Zehuan Yuan. Autoregressive model beats diffusion: Llama for scalable image generation. arXiv preprint arXiv:2406.06525 , 2024. [35] Richard S Sutton, David McAllester, Satinder Singh, and Yishay Mansour. Policy gradient meth-ods for reinforcement learning with function approximation. Advances in neural information processing systems , 12, 1999. [36] Philip S Thomas and Emma Brunskill. Policy gradient methods for reinforcement learning with function approximation and action-dependent baselines. arXiv preprint arXiv:1706.06643 ,2017. [37] Bram Wallace, Meihua Dang, Rafael Rafailov, Linqi Zhou, Aaron Lou, Senthil Purushwalkam, Stefano Ermon, Caiming Xiong, Shafiq Joty, and Nikhil Naik. Diffusion model alignment using direct preference optimization. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 8228–8238, 2024. [38] Chaoqi Wang, Yibo Jiang, Chenghao Yang, Han Liu, and Yuxin Chen. Beyond reverse kl: Generalizing direct preference optimization with diverse divergence constraints. In International Conference on Learning Representations , volume 2024, pages 10450–10480, 2024. [39] Zhou Wang, Alan C Bovik, Hamid R Sheikh, and Eero P Simoncelli. Image quality assessment: from error visibility to structural similarity. IEEE transactions on image processing , 13(4): 600–612, 2004. [40] Chengyue Wu, Xiaokang Chen, Zhiyu Wu, Yiyang Ma, Xingchao Liu, Zizheng Pan, Wen Liu, Zhenda Xie, Xingkai Yu, Chong Ruan, et al. Janus: Decoupling visual encoding for unified multimodal understanding and generation. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 12966–12977, 2025. [41] Xiaoshi Wu, Yiming Hao, Keqiang Sun, Yixiong Chen, Feng Zhu, Rui Zhao, and Hongsheng Li. Human preference score v2: A solid benchmark for evaluating human preferences of text-to-image synthesis. arXiv preprint arXiv:2306.09341 , 2023. [42] Xiaoshi Wu, Keqiang Sun, Feng Zhu, Rui Zhao, and Hongsheng Li. Human preference score: Better aligning text-to-image models with human preference. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 2096–2105, 2023. [43] Bo Xia, Haoyuan Sun, Bo Yuan, Zhiheng Li, Bin Liang, and Xueqian Wang. A delay-robust method for enhanced real-time reinforcement learning. Neural Networks , 181:106769, 2025. [44] Jiazheng Xu, Xiao Liu, Yuchen Wu, Yuxuan Tong, Qinkai Li, Ming Ding, Jie Tang, and Yuxiao Dong. Imagereward: Learning and evaluating human preferences for text-to-image generation. 
+
+Advances in Neural Information Processing Systems , 36:15903–15935, 2023. [45] Kai Yang, Jian Tao, Jiafei Lyu, Chunjiang Ge, Jiaxin Chen, Weihan Shen, Xiaolong Zhu, and Xiu Li. Using human feedback to fine-tune diffusion models without any reward model. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 8941–8951, 2024. [46] Jun Yin, Pengyu Zeng, Haoyuan Sun, Yuqin Dai, Han Zheng, Miao Zhang, Yachao Zhang, and Shuai Lu. Floorplan-llama: Aligning architects’ feedback and domain knowledge in architectural floor plan generation. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 6640–6662, 2025. 11 [47] Jun Yin, Pengyu Zeng, Yujian Huang, Haoyuan Sun, Tianze Hao, Shuai Lu, et al. Ai-empowered prediction of office building energy use from single-view conceptual images for early-stage design. Applied Energy , 406:127289, 2026. [48] Pengyu Zeng, Jun Yin, Haoyuan Sun, Yuqin Dai, Maowei Jiang, Miao Zhang, and Shuai Lu. Mred-14: A benchmark for low-energy residential floor plan generation with 14 flexible inputs. In Proceedings of the 33rd ACM International Conference on Multimedia , pages 11298–11307, 2025. [49] Guohui Zhang, Hu Yu, Xiaoxiao Ma, JingHao Zhang, Yaning Pan, Mingde Yao, Jie Xiao, Linjiang Huang, and Feng Zhao. Group critical-token policy optimization for autoregressive image generation. arXiv preprint arXiv:2509.22485 , 2025. [50] Lin Zhang, Lei Zhang, Xuanqin Mou, and David Zhang. Fsim: A feature similarity index for image quality assessment. IEEE transactions on Image Processing , 20(8):2378–2386, 2011. [51] Richard Zhang, Phillip Isola, Alexei A Efros, Eli Shechtman, and Oliver Wang. The unrea-sonable effectiveness of deep features as a perceptual metric. In Proceedings of the IEEE conference on computer vision and pattern recognition , pages 586–595, 2018. 12

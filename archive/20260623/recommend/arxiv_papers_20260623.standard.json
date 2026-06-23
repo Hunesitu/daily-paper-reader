@@ -1,0 +1,209 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-23T22:05:10.936552+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2606.17168v2",
+      "source": "arxiv",
+      "title": "RepSelect: Robust LLM Unlearning via Representation Selectivity",
+      "abstract": "Making large language models (LLMs) deeply forget specific knowledge and values without sacrificing general capabilities remains a central challenge in unlearning. Current methods are easily reversed by fine-tuning or few-shot prompting, suggesting their forgetting is only shallow. We identify the root cause. Existing methods target representations shared with both the retain set and the subspace recovered by a fine-tuning attacker, making unlearning both disruptive to general capabilities and easy to reverse. We propose RepSelect (Representation Selectivity), which isolates forget-set-specific representations by collapsing top principal components of weight gradients before each update, leaving general capabilities intact while limiting what fine-tuning can recover. We evaluate across two forget categories, biohazardous knowledge and abusive tendencies, and four model families spanning dense and Mixture-of-Experts architectures (Llama 3, Qwen 3.5, Gemma 4 E4B, DeepSeek V2 Lite). Compared to five popular baselines (GradDiff, NPO, SimNPO, RMU, UNDIAL), RepSelect achieves a 4-50x larger reduction in post-relearning answer accuracy than the strongest baseline, and is near-perfectly robust to few-shot prompting attacks. Targeting selective representations is thus an important step towards deep and robust LLM forgetting.",
+      "authors": [
+        "Filip Sondej",
+        "Yushi Yang",
+        "Adam Mahdi"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-15T18:06:59+00:00",
+      "link": "https://arxiv.org/pdf/2606.17168v2",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "LLM unlearning via representation selectivity",
+      "llm_evidence_cn": "通过表示选择性实现大语言模型遗忘",
+      "llm_evidence": "通过表示选择性实现大语言模型遗忘",
+      "canonical_evidence": "通过表示选择性实现大语言模型遗忘",
+      "llm_tldr_en": "RepSelect robustly unlearns specific knowledge from LLMs by isolating forget-set representations via principal component collapse, resisting reversal attacks while preserving general capabilities.",
+      "llm_tldr_cn": "当前大语言模型遗忘方法容易被微调或提示攻击逆转，因为遗忘目标表示与保留集共享。RepSelect提出在每次更新前坍缩权重梯度的主成分，隔离仅属于遗忘集的表示，从而实现深层遗忘。实验表明该方法在保持通用能力的同时，有效抵抗微调攻击，实现了鲁棒的概念擦除。该工作为机器学习模型中的概念擦除提供了可迁移的表示级解决方案。",
+      "llm_tldr": "当前大语言模型遗忘方法容易被微调或提示攻击逆转，因为遗忘目标表示与保留集共享。RepSelect提出在每次更新前坍缩权重梯度的主成分，隔离仅属于遗忘集的表示，从而实现深层遗忘。实验表明该方法在保持通用能力的同时，有效抵抗微调攻击，实现了鲁棒的概念擦除。该工作为机器学习模型中的概念擦除提供了可迁移的表示级解决方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.21498v1",
+      "source": "arxiv",
+      "title": "Balancing Performance and Diversity in GRPO Autoregressive Text-to-Image Post-Training",
+      "abstract": "Autoregressive text-to-image (T2I) generation has recently advanced rapidly, yet aligning generated images with human preferences remains challenging. GRPO-style online reinforcement learning provides an effective framework; however, existing methods typically treat reference-policy divergence as fixed, despite its direct impact on policy optimization. We study this overlooked factor within a unified f-divergence framework, encompassing forward KL, reverse KL, and JS divergence, for GRPO-style autoregressive T2I alignment. Our systematic theoretical analysis reveals that different divergences reshape token-level updates in distinct ways. In particular, under the sampled-token shaping form used, JS regularization achieves a favorable trade-off by mitigating uniform bias relative to the reference policy while still discouraging large deviations. Extensive experiments on LlamaGen and Janus-7B show that JS divergence achieves the strongest or highly competitive optimization performance on most evaluation metrics while maintaining favorable generation diversity. The code is available at https://github.com/tuoyou-hao/BPD-GRPO.",
+      "authors": [
+        "Yuanhao Chiang",
+        "Hongbo Duan",
+        "Chunru Yang",
+        "Jiahua Pei",
+        "Yi Liu",
+        "Xueqian Wang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-06-19T14:50:22+00:00",
+      "link": "https://arxiv.org/pdf/2606.21498v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Autoregressive text-to-image generation with GRPO post-training",
+      "llm_evidence_cn": "自回归文本到图像生成的后训练优化",
+      "llm_evidence": "自回归文本到图像生成的后训练优化",
+      "canonical_evidence": "自回归文本到图像生成的后训练优化",
+      "llm_tldr_en": "This paper studies divergence regularization in GRPO for autoregressive text-to-image alignment, showing JS divergence achieves favorable trade-off between performance and diversity.",
+      "llm_tldr_cn": "自回归文本到图像生成虽发展迅速，但生成结果与人类偏好对齐仍具挑战。本文在GRPO风格的在线强化学习框架下，系统研究正向KL、反向KL和JS散度等正则化项对token级别更新的影响。理论分析和实验表明，JS散度能在保持生成质量的同时提升多样性，实现性能与多样性的更好平衡。该工作为自回归T2I模型的对齐训练提供了理论指导。",
+      "llm_tldr": "自回归文本到图像生成虽发展迅速，但生成结果与人类偏好对齐仍具挑战。本文在GRPO风格的在线强化学习框架下，系统研究正向KL、反向KL和JS散度等正则化项对token级别更新的影响。理论分析和实验表明，JS散度能在保持生成质量的同时提升多样性，实现性能与多样性的更好平衡。该工作为自回归T2I模型的对齐训练提供了理论指导。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.23267v1",
+      "source": "arxiv",
+      "title": "Safe Few-Step Generation via Velocity Editing",
+      "abstract": "Flow matching has recently emerged as a strong paradigm for state-of-the-art text-to-image (T2I) generation, enabling high-quality generation with a small number of sampling steps. As these models are increasingly integrated into real-world applications, ensuring safe and non-sensitive content generation has become a critical requirement. However, adapting safety and concept removal methods to this new generation framework remains an open challenge. Specifically, prior methods largely rely on iterative trajectory steering across a number of denoising steps or on CLIP-centric prompt embedding manipulation. These design assumptions pose fundamental bottlenecks for safety in flow matching-based T2I generation, where limited sampling steps constrain iterative correction and modern context-aware text encoders diminish the effectiveness of embedding-level interventions. In this paper, we propose VESFlow, a training-free safety method tailored to flow matching with extremely few sampling steps. Leveraging the fact that flow matching models learn the marginal velocity, we directly edit the velocity field via a safe-conditional posterior. VESFlow steers the trajectory toward safe outputs while leaving the conditioning prompt unchanged. Building on the observation that VESFlow leaves outputs unchanged under benign prompts, we further introduce a risk score-based filtering that bypasses velocity editing to reduce computational cost while preserving benign prompt generation. Based on this filtering, we propose VESFlow+, a stronger variant of VESFlow that not only edits the velocity toward the safe direction, but also pushes it away from the unsafe direction. Experimental results show that VESFlow+ removes the target concept, reducing the attack success rate by NudeNet to 6.3% on Ring-A-Bell and 6.8% on MMA-Diffusion on the 4-step MeanFlow model, while preserving fidelity on benign prompts.",
+      "authors": [
+        "Yujin Choi",
+        "Jaehong Yoon"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.CY"
+      ],
+      "published": "2026-06-22T12:47:57+00:00",
+      "link": "https://arxiv.org/pdf/2606.23267v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "velocity editing for concept removal in text-to-image generation",
+      "llm_evidence_cn": "通过速度编辑实现文本到图像生成中的概念移除",
+      "llm_evidence": "通过速度编辑实现文本到图像生成中的概念移除",
+      "canonical_evidence": "通过速度编辑实现文本到图像生成中的概念移除",
+      "llm_tldr_en": "Proposes Velocity Editing to directly modify the velocity field of flow matching models for safe few-step generation, enabling concept removal without iterative correction.",
+      "llm_tldr_cn": "针对流匹配文本到图像模型在少步生成中的安全性需求，本文提出速度编辑（Velocity Editing）方法，在采样过程中直接编辑模型的速度场以实现概念移除，避免依赖多步迭代。实验证明该方法有效移除不安全内容，同时保持生成质量，为快速安全生成提供了新思路。",
+      "llm_tldr": "针对流匹配文本到图像模型在少步生成中的安全性需求，本文提出速度编辑（Velocity Editing）方法，在采样过程中直接编辑模型的速度场以实现概念移除，避免依赖多步迭代。实验证明该方法有效移除不安全内容，同时保持生成质量，为快速安全生成提供了新思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.21806v1",
+      "source": "arxiv",
+      "title": "Causal Variational Deep Embedding: A Family of Interventional Generators for Confounded Images",
+      "abstract": "Deep generative models reproduce the observational distribution of their training data, inheriting any spurious associations it contains. A common source is an unobserved confounder that shapes both an attribute the user wants to control at sampling time and an attribute expected to vary in response. Existing causal generative approaches resolve the resulting ambiguity by imposing structural assumptions strong enough to single out one interventional distribution; in image domains, such assumptions are rarely warranted, and the data is generally consistent with a set of distinct causal mechanisms -- a feasible region of interventional distributions. We propose CauVaDE (Causal Variational Deep Embedding), built on a canonical augmented SCM in which the unobserved confounder collapses, without loss of generality, into a discrete latent cluster of bounded support while continuous variation is absorbed into independent noises. We prove that this canonical class is dense, in both observational and interventional Wasserstein distance, in the class of augmented SCMs compatible with a given causal diagram, and instantiate it as a mixture variational autoencoder whose cluster variable plays the role of the canonical confounder. An entropy regularizer with weight $γ$ on the cluster posterior then traces a family of candidate causal effects that fit the observational data to comparable likelihood while spanning the feasible region. Experiments on image data benchmarks show that CauVaDE produces diverse interventional samples and improves FID against an unconfounded reference.",
+      "authors": [
+        "Jingyuan Chen",
+        "Kangrui Ruan",
+        "Junzhe Zhang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-19T23:59:14+00:00",
+      "link": "https://arxiv.org/pdf/2606.21806v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "causal method to remove spurious associations in generative models",
+      "llm_evidence_cn": "因果方法去除生成模型中的虚假关联",
+      "llm_evidence": "因果方法去除生成模型中的虚假关联",
+      "canonical_evidence": "因果方法去除生成模型中的虚假关联",
+      "llm_tldr_en": "Proposes CauVaDE, a family of interventional generators that resolve confounding in image generation by learning a feasible region of interventional distributions, enabling controlled concept removal.",
+      "llm_tldr_cn": "生成模型常继承训练数据中的虚假关联，源于未观测混杂变量。现有因果方法强制单一干预分布，在图像域不合理。本文提出CauVaDE，通过变分自编码器扩展学习一组可行的干预分布，从而在无强假设下生成去混杂的图像。实验表明该方法能有效去除特定属性间的虚假关联，为概念擦除提供了新思路。",
+      "llm_tldr": "生成模型常继承训练数据中的虚假关联，源于未观测混杂变量。现有因果方法强制单一干预分布，在图像域不合理。本文提出CauVaDE，通过变分自编码器扩展学习一组可行的干预分布，从而在无强假设下生成去混杂的图像。实验表明该方法能有效去除特定属性间的虚假关联，为概念擦除提供了新思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.22550v1",
+      "source": "arxiv",
+      "title": "Training-Free Semantic Correction for Autoregressive Visual Models",
+      "abstract": "Autoregressive visual models (AVMs) based on next-scale prediction have emerged as a prominent paradigm for image and video synthesis. However, decomposing the generation process into discrete scales with varying granularities in AVM makes semantic errors difficult to identify and correct, thereby undermining the quality of the final output. Prior efforts to enhance AVM can be categorized into training-based and training-free approaches. Although training-based efforts to enhance AVM generation quality come at substantial computational cost, existing training-free methods neglect intermediate generation states, leaving semantic errors undiagnosed and allowing them to accumulate into the final output. In this paper, we focus on training-free paradigms and propose Gazer, a framework that integrates multimodal large language model feedback into the AVM sampling loop for in-generation semantic correction. Concretely, Gazer operates via two cooperating stages: the Reflective Diagnosis stage diagnoses semantic errors from intermediate states, while the Semantic Correction stage rewinds and rectifies the generation trajectory to realign with the target prompt. Experiments on compositional image and video benchmarks demonstrate that Gazer improves semantic alignment and compositional accuracy across multiple AVMs without additional training.",
+      "authors": [
+        "Junhao Chen",
+        "Chanyu Zhu",
+        "Zheqi Lv",
+        "Keting Yin",
+        "Shengyu Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL",
+        "cs.MM"
+      ],
+      "published": "2026-06-21T15:10:32+00:00",
+      "link": "https://arxiv.org/pdf/2606.22550v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "training-free semantic correction for autoregressive visual models",
+      "llm_evidence_cn": "面向自回归视觉模型的无训练语义纠正",
+      "llm_evidence": "面向自回归视觉模型的无训练语义纠正",
+      "canonical_evidence": "面向自回归视觉模型的无训练语义纠正",
+      "llm_tldr_en": "Proposes a training-free method to detect and correct semantic errors in autoregressive visual models (AVMs) by analyzing intermediate generation states, improving output quality without retraining.",
+      "llm_tldr_cn": "自回归视觉模型（AVM）在多尺度预测中易积累语义错误。现有无训练方法忽略中间状态。本文提出一种无训练框架，通过诊断中间生成状态中的语义错误并动态修正，有效提升AVM的生成质量。实验表明该方法在图像和视频合成上均优于现有基线，且无需额外训练成本。",
+      "llm_tldr": "自回归视觉模型（AVM）在多尺度预测中易积累语义错误。现有无训练方法忽略中间状态。本文提出一种无训练框架，通过诊断中间生成状态中的语义错误并动态修正，有效提升AVM的生成质量。实验表明该方法在图像和视频合成上均优于现有基线，且无需额外训练成本。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
