@@ -1,0 +1,145 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-24T20:52:05.253274+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.24192v1",
+      "source": "arxiv",
+      "title": "Co-occurring associated retained concepts in Diffusion Unlearning",
+      "abstract": "Unlearning has emerged as a key technique to mitigate harmful content generation in diffusion models. However, existing methods often remove not only the target concept, but also benign co-occurring concepts. As illustrated in Fig.1, unlearning nudity can unintentionally suppress the concept of person, preventing a model from generating images with person. We define these undesirably suppressed co-occurring concepts that must be preserved CARE (Co-occurring Associated REtained concepts). Then, we introduce the CARE score, a general metric that directly quantifies their preservation across unlearning tasks. With this foundation, we propose ReCARE (Robust erasure for CARE), a framework that explicitly safeguards CARE while erasing only the target concept. ReCARE automatically constructs the CARE-set, a curated vocabulary of benign co-occurring tokens extracted from target images, and leverages this vocabulary during training for stable unlearning. Extensive experiments across various target concepts (Nudity, Van Gogh style, and Tench object) demonstrate that ReCARE achieves overall state-of-the-art performance in balancing robust concept erasure, overall utility, and CARE preservation.",
+      "authors": [
+        "Miso Kim",
+        "Georu Lee",
+        "Yunji Kim",
+        "Hoki Kim",
+        "Jinseong Park",
+        "Woojin Lee"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-06-23T06:22:00+00:00",
+      "link": "https://arxiv.org/pdf/2606.24192v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "addresses concept unlearning in diffusion models, preserving co-occurring concepts",
+      "llm_evidence_cn": "解决扩散模型中的概念删除问题，保留共现概念",
+      "llm_evidence": "解决扩散模型中的概念删除问题，保留共现概念",
+      "canonical_evidence": "解决扩散模型中的概念删除问题，保留共现概念",
+      "llm_tldr_en": "Identifies the problem of unintentionally removing co-occurring benign concepts during unlearning, proposes a metric CARE and a framework ReCARE to preserve them while erasing target concepts.",
+      "llm_tldr_cn": "该论文发现扩散模型概念删除时常误删共现的良性概念。定义了需要保留的共现关联概念(CARE)，并提出CARE评分量化保留程度。进一步提出ReCARE框架，在擦除目标概念的同时明确保护CARE概念，实验证明能有效减少误删，提升模型可用性。",
+      "llm_tldr": "该论文发现扩散模型概念删除时常误删共现的良性概念。定义了需要保留的共现关联概念(CARE)，并提出CARE评分量化保留程度。进一步提出ReCARE框架，在擦除目标概念的同时明确保护CARE概念，实验证明能有效减少误删，提升模型可用性。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.24849v1",
+      "source": "arxiv",
+      "title": "IV-CoT: Implicit Visual Chain-of-Thought for Structure-Aware Text-to-Image Generation",
+      "abstract": "Unified multi-modal large language models (MLLMs) have achieved strong text-to-image generation quality, but still struggle with structure-aware prompt following, where object counts, spatial relations, attribute bindings, and coarse layouts must be preserved. We attribute this limitation in part to the entanglement of structural planning and appearance rendering within a single conditioning stream. To address this issue, we propose Implicit Visual Chain-of-Thought (IV-CoT), a latent visual reasoning framework for query-conditioned image generation. IV-CoT decomposes the visual conditioning queries into a structural-to-semantic cascade, where structural queries first form a latent visual plan and semantic queries then render appearance conditioned on this plan. To guide the structural queries, we introduce training-only sketch supervision, which encourages them to capture structure from sketches without requiring sketch extraction or intermediate decoding at inference time. IV-CoT performs implicit CoT reasoning in a single forward pass and achieves superior results on GenEval and T2I-CompBench. Visualizations and analyses demonstrate that the learned structural and semantic queries play complementary roles in structure-aware generation.",
+      "authors": [
+        "Zixuan Li",
+        "Haokun Lin",
+        "Yicheng Xiao",
+        "Zhiwei Li",
+        "Xinyang Song",
+        "Zelong Zheng",
+        "Yong He",
+        "Heng Yao",
+        "Ke Ding",
+        "Chao Yu",
+        "Chuan Yuan",
+        "Qi Li",
+        "Zhenan Sun"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-06-23T17:28:00+00:00",
+      "link": "https://arxiv.org/pdf/2606.24849v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Proposes IV-CoT for structure-aware text-to-image generation with autoregressive MLLMs",
+      "llm_evidence_cn": "提出隐式视觉思维链方法，用于自回归多模态大模型的文本到图像生成",
+      "llm_evidence": "提出隐式视觉思维链方法，用于自回归多模态大模型的文本到图像生成",
+      "canonical_evidence": "提出隐式视觉思维链方法，用于自回归多模态大模型的文本到图像生成",
+      "llm_tldr_en": "IV-CoT decomposes visual conditioning into structural and semantic cascades for improved text-to-image generation in autoregressive MLLMs.",
+      "llm_tldr_cn": "统一多模态大模型在文本到图像生成中仍面临结构感知提示遵循的挑战，如物体计数和空间关系。本文提出隐式视觉思维链（IV-CoT）框架，将视觉条件查询分解为结构到语义的级联，先形成潜在视觉规划再渲染外观。在多个基准上，IV-CoT显著提升了布局和属性绑定的准确性。这项工作推进了自回归图像生成的结构可控性。",
+      "llm_tldr": "统一多模态大模型在文本到图像生成中仍面临结构感知提示遵循的挑战，如物体计数和空间关系。本文提出隐式视觉思维链（IV-CoT）框架，将视觉条件查询分解为结构到语义的级联，先形成潜在视觉规划再渲染外观。在多个基准上，IV-CoT显著提升了布局和属性绑定的准确性。这项工作推进了自回归图像生成的结构可控性。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.19882v1",
+      "source": "arxiv",
+      "title": "Multimodal Concept Bottleneck Models",
+      "abstract": "Concept Bottleneck Models (CBMs) enhance the interpretability of deep learning networks by aligning the features extracted from images with natural concepts. However, existing CBMs are constrained in their ability to generalize beyond a fixed set of predefined classes and the risk of non-concept information leakage, where predictive signals outside the intended concepts are inadvertently exploited. In this paper, we propose Multimodal Concept Bottleneck Model (MM-CBM) to address these issues and extend CBMs into CLIP. MM-CBM utilizes dual Concept Bottleneck Layers (CBLs) to align both the image and text embeddings into interpretable features. This allows us to perform new vision tasks like zero-shot classification or image retrieval in an interpretable way. Compared to existing methods, MM-CBM achieves up to 51.26% accuracy improvement on average across four standard benchmarks. Our method maintains high accuracy, staying within ~5% of black-box performance while offering greater interpretability.",
+      "authors": [
+        "Tongqing Shi",
+        "Ge Yan",
+        "Tuomas Oikarinen",
+        "Tsui-Wei Weng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-06-18T07:41:50+00:00",
+      "link": "https://arxiv.org/pdf/2606.19882v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multimodal concept bottleneck model enabling concept-level control suitable for erasure",
+      "llm_evidence_cn": "多模态概念瓶颈模型支持概念级控制，可适配概念擦除",
+      "llm_evidence": "多模态概念瓶颈模型支持概念级控制，可适配概念擦除",
+      "canonical_evidence": "多模态概念瓶颈模型支持概念级控制，可适配概念擦除",
+      "llm_tldr_en": "Proposes Multimodal Concept Bottleneck Model (MM-CBM) extending CBMs to CLIP with dual concept bottleneck layers, enabling interpretable zero-shot classification and image retrieval via concept-level manipulation, which can be adapted for concept erasure.",
+      "llm_tldr_cn": "现有概念瓶颈模型无法扩展到多模态且存在概念泄露风险。本文提出多模态概念瓶颈模型MM-CBM，利用双重概念瓶颈层对齐图像和文本嵌入，实现可解释的零样本分类与图像检索。实验表明MM-CBM在保持可解释性的同时提升了泛化能力，其概念级控制机制可迁移至概念擦除任务，为模型安全提供了新思路。",
+      "llm_tldr": "现有概念瓶颈模型无法扩展到多模态且存在概念泄露风险。本文提出多模态概念瓶颈模型MM-CBM，利用双重概念瓶颈层对齐图像和文本嵌入，实现可解释的零样本分类与图像检索。实验表明MM-CBM在保持可解释性的同时提升了泛化能力，其概念级控制机制可迁移至概念擦除任务，为模型安全提供了新思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

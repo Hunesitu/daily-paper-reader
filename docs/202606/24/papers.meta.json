@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-24",
+  "date": "2026-06-24",
+  "generated_at": "2026-06-24T20:55:56",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/24/2606.24192v1-co-occurring-associated-retained-concepts-in-diffusion-unlearning",
+      "section": "deep",
+      "title_en": "Co-occurring associated retained concepts in Diffusion Unlearning",
+      "authors": "Miso Kim, Georu Lee, Yunji Kim, Hoki Kim, Jinseong Park, Woojin Lee",
+      "date": "2026-06-23",
+      "pdf": "https://arxiv.org/pdf/2606.24192v1",
+      "score": "9.0",
+      "evidence": "解决扩散模型中的概念删除问题，保留共现概念",
+      "tldr": "扩散模型遗忘技术常误删与目标概念共现的良性概念（如删除裸体时误删人物）。本文定义此类需保留的概念为CARE并提出CARE Score度量。为解决此问题，提出ReCARE框架，自动从目标图像中提取良性共现词构建CARE-set，并在训练中利用该词表实现稳定遗忘。在裸体、梵高风格、丁鱥对象等任务上，ReCARE在鲁棒擦除、整体可用性和CARE保护间取得最佳平衡。",
+      "tags": "query:ce",
+      "abstract_en": "Unlearning has emerged as a key technique to mitigate harmful content generation in diffusion models. However, existing methods often remove not only the target concept, but also benign co-occurring concepts. As illustrated in Fig.1, unlearning nudity can unintentionally suppress the concept of person, preventing a model from generating images with person. We define these undesirably suppressed co-occurring concepts that must be preserved CARE (Co-occurring Associated REtained concepts). Then, we introduce the CARE score, a general metric that directly quantifies their preservation across unlearning tasks. With this foundation, we propose ReCARE (Robust erasure for CARE), a framework that explicitly safeguards CARE while erasing only the target concept. ReCARE automatically constructs the CARE-set, a curated vocabulary of benign co-occurring tokens extracted from target images, and leverages this vocabulary during training for stable unlearning. Extensive experiments across various target concepts (Nudity, Van Gogh style, and Tench object) demonstrate that ReCARE achieves overall state-of-the-art performance in balancing robust concept erasure, overall utility, and CARE preservation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/24/2606.24849v1-iv-cot-implicit-visual-chain-of-thought-for-structure-aware-text-to-image-generation",
+      "section": "deep",
+      "title_en": "IV-CoT: Implicit Visual Chain-of-Thought for Structure-Aware Text-to-Image Generation",
+      "authors": "Zixuan Li, Haokun Lin, Yicheng Xiao, Zhiwei Li, Xinyang Song, Zelong Zheng, Yong He, Heng Yao, Ke Ding, Chao Yu, Chuan Yuan, Qi Li, Zhenan Sun",
+      "date": "2026-06-23",
+      "pdf": "https://arxiv.org/pdf/2606.24849v1",
+      "score": "8.0",
+      "evidence": "提出隐式视觉思维链方法，用于自回归多模态大模型的文本到图像生成",
+      "tldr": "现有统一多模态大语言模型在文本到图像生成中，由于结构规划与外观渲染纠缠于单个条件流，难以精确遵循对象计数、空间关系等结构提示。为此提出隐式视觉链式推理框架（IV-CoT），将视觉查询分解为结构→语义级联：结构查询先形成隐式视觉计划，语义查询再基于该计划渲染外观。通过训练时草图监督引导结构查询捕捉结构信息，无需推理时中间解码。在GenEval和T2I-CompBench上取得领先性能，可视化证明结构与语义查询互补。该方法单次前向推理实现隐式推理，显著提升了结构感知生成质量。",
+      "tags": "query:ce",
+      "abstract_en": "Unified multi-modal large language models (MLLMs) have achieved strong text-to-image generation quality, but still struggle with structure-aware prompt following, where object counts, spatial relations, attribute bindings, and coarse layouts must be preserved. We attribute this limitation in part to the entanglement of structural planning and appearance rendering within a single conditioning stream. To address this issue, we propose Implicit Visual Chain-of-Thought (IV-CoT), a latent visual reasoning framework for query-conditioned image generation. IV-CoT decomposes the visual conditioning queries into a structural-to-semantic cascade, where structural queries first form a latent visual plan and semantic queries then render appearance conditioned on this plan. To guide the structural queries, we introduce training-only sketch supervision, which encourages them to capture structure from sketches without requiring sketch extraction or intermediate decoding at inference time. IV-CoT performs implicit CoT reasoning in a single forward pass and achieves superior results on GenEval and T2I-CompBench. Visualizations and analyses demonstrate that the learned structural and semantic queries play complementary roles in structure-aware generation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/24/2606.19882v1-multimodal-concept-bottleneck-models",
+      "section": "quick",
+      "title_en": "Multimodal Concept Bottleneck Models",
+      "authors": "Tongqing Shi, Ge Yan, Tuomas Oikarinen, Tsui-Wei Weng",
+      "date": "2026-06-18",
+      "pdf": "https://arxiv.org/pdf/2606.19882v1",
+      "score": "6.0",
+      "evidence": "多模态概念瓶颈模型支持概念级控制，可适配概念擦除",
+      "tldr": "现有概念瓶颈模型（CBM）受限于固定类别集合且存在非概念信息泄露风险，无法泛化到新任务。本文提出多模态概念瓶颈模型（MM-CBM），将其扩展至CLIP，利用双概念瓶颈层将图像和文本嵌入同时对齐到可解释的自然概念，从而有效避免信息泄露。在四个标准基准上，MM-CBM相比现有CBM方法平均准确率提升高达51.26%，且与无解释的黑盒模型精度差距仅约5%。该方法在保持高精度的同时大幅增强了可解释性，支持零样本分类和图像检索等新任务，显著提升了模型的泛化能力与实用性。",
+      "tags": "query:ce",
+      "abstract_en": "Concept Bottleneck Models (CBMs) enhance the interpretability of deep learning networks by aligning the features extracted from images with natural concepts. However, existing CBMs are constrained in their ability to generalize beyond a fixed set of predefined classes and the risk of non-concept information leakage, where predictive signals outside the intended concepts are inadvertently exploited. In this paper, we propose Multimodal Concept Bottleneck Model (MM-CBM) to address these issues and extend CBMs into CLIP. MM-CBM utilizes dual Concept Bottleneck Layers (CBLs) to align both the image and text embeddings into interpretable features. This allows us to perform new vision tasks like zero-shot classification or image retrieval in an interpretable way. Compared to existing methods, MM-CBM achieves up to 51.26% accuracy improvement on average across four standard benchmarks. Our method maintains high accuracy, staying within ~5% of black-box performance while offering greater interpretability.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
