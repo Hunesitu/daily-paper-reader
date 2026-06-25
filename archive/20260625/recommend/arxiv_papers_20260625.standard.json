@@ -1,0 +1,131 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-25T20:35:35.203224+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.25548v1",
+      "source": "arxiv",
+      "title": "Concept Removal for Frontier Image Generative Models",
+      "abstract": "Image generative models are trained on massive, largely uncurated internet-scale datasets that contain undesirable visual concepts. Efficiently removing such concepts from the model generations without degrading the quality of output images remains challenging. We introduce a novel concept removal method for frontier diffusion and image autoregressive models, such as SD3.5, Flux, and Infinity. Our intervention replaces the internal bottleneck layer present in all these modern models with a transcoder that is trained to replicate the original layer while structuring it into distinct activation features. This in-place substitution creates an integrated filter through which concept-specific signals can be selectively disabled while preserving the rest of the model's behavior. Since the intervention modifies the model backbone rather than attaching an external component, it remains persistent under white-box access. Empirically, the approach achieves state-of-the-art concept removal performance across modern diffusion and autoregressive models, maintains visual generation quality, provides robustness against adversarial prompts, and supports sequential removal of diverse concepts. This positions our method as a practical approach for concept removal in frontier image generative models.",
+      "authors": [
+        "Aditya Kumar",
+        "Pierre Joly",
+        "Adam Dziedzic",
+        "Franziska Boenisch"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-06-24T08:25:30+00:00",
+      "link": "https://arxiv.org/pdf/2606.25548v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "concept removal method for frontier diffusion and image autoregressive models",
+      "llm_evidence_cn": "针对前沿扩散和图像自回归模型的概念移除方法",
+      "llm_evidence": "针对前沿扩散和图像自回归模型的概念移除方法",
+      "canonical_evidence": "针对前沿扩散和图像自回归模型的概念移除方法",
+      "llm_tldr_en": "Proposes a transcoder-based concept removal method for frontier image generative models including autoregressive ones, selectively disabling concept-specific signals through integrated filter.",
+      "llm_tldr_cn": "针对前沿图像生成模型（包括扩散和自回归模型）中存在的有害概念移除问题，本文提出了一种基于转码器（transcoder）的概念移除方法。该方法将模型内部的瓶颈层替换为一个可训练的转码器，通过结构化激活特征实现概念特定信号的选择性禁用，同时保持模型其余行为不变。实验证明该方法在SD3.5、Flux和Infinity等模型上有效移除概念而不显著降低生成质量。该工作为自回归图像模型的概念擦除提供了直接有效的技术方案。",
+      "llm_tldr": "针对前沿图像生成模型（包括扩散和自回归模型）中存在的有害概念移除问题，本文提出了一种基于转码器（transcoder）的概念移除方法。该方法将模型内部的瓶颈层替换为一个可训练的转码器，通过结构化激活特征实现概念特定信号的选择性禁用，同时保持模型其余行为不变。实验证明该方法在SD3.5、Flux和Infinity等模型上有效移除概念而不显著降低生成质量。该工作为自回归图像模型的概念擦除提供了直接有效的技术方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "Concept erasure methods for autoregressive image generation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.25657v1",
+      "source": "arxiv",
+      "title": "Steering Vision-Language Models with Joint Sparse Autoencoders",
+      "abstract": "Sparse Autoencoders (SAEs) have shown promise for analyzing language models, but applying them to vision-language models (VLMs) often yields representations that are difficult to use as controllable cross-modal steering directions. We introduce the Joint Sparse Autoencoder (JSAE), which uses an explicit alignment constraint to jointly factorize sequence-pooled vision and language activations into shared, interpretable image/caption-level features. Applied to LLaVA, JSAE recovers cross-modal features for recognizable concepts (e.g., food and animals). Through bidirectional interventions (additive steering and suppression), we observe a layer-dependent asymmetry under our protocol: additive steering peaks at mid-to-late (pre-output) layers and weakens at both ends, whereas suppression scores remain within a comparable range across all probed layers within statistical noise. Experiments on three VLMs, namely LLaVA-v1.6-Mistral-7B, Llama3-LLaVA-8B, and the MoE-based Qwen3-VL-30B, show related layer-localized effects across architectures. Together, these results suggest that explicitly aligned sparse representations support more controllable intervention-based analysis of multimodal features, within an identifiable layer range, than the unconstrained alternatives tested here.",
+      "authors": [
+        "Huizhen Shu",
+        "Xuying Li",
+        "Hongxu Lin",
+        "Wenjie Sun",
+        "Hui Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-06-24T10:11:04+00:00",
+      "link": "https://arxiv.org/pdf/2606.25657v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "concept suppression in VLMs via joint SAEs",
+      "llm_evidence_cn": "通过联合稀疏自编码器在视觉语言模型中实现概念抑制",
+      "llm_evidence": "通过联合稀疏自编码器在视觉语言模型中实现概念抑制",
+      "canonical_evidence": "通过联合稀疏自编码器在视觉语言模型中实现概念抑制",
+      "llm_tldr_en": "Introduces Joint Sparse Autoencoder (JSAE) for shared cross-modal features in VLMs, enabling controllable concept suppression via bidirectional interventions.",
+      "llm_tldr_cn": "视觉语言模型中的概念控制缺乏可解释的跨模态引导方向。本文提出联合稀疏自编码器（JSAE），通过显式对齐视觉和语言激活，提取共享的可解释概念特征。在LLaVA上应用双向干预（加性引导和抑制），发现层依赖的不对称性。JSAE为VLM中的概念移除和可控生成提供了新的工具。",
+      "llm_tldr": "视觉语言模型中的概念控制缺乏可解释的跨模态引导方向。本文提出联合稀疏自编码器（JSAE），通过显式对齐视觉和语言激活，提取共享的可解释概念特征。在LLaVA上应用双向干预（加性引导和抑制），发现层依赖的不对称性。JSAE为VLM中的概念移除和可控生成提供了新的工具。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.25410v1",
+      "source": "arxiv",
+      "title": "DFMU: Data-Frugal Machine Unlearning",
+      "abstract": "Machine unlearning is an emerging domain that ensures the safe removal of elements (includes concepts, attributes, entity and class) from the trained model along with least drop in model performance. The domain of machine unlearning brings its own indigenous challenges since the removal of pre-trained elements from model will always degrade the model performance on remaining elements. The existing methods basically rely on retraining for removal of elements from the pre-trained model, which is compute extensive. In this work, we propose a machine unlearning method which helps to reduce the computational requirement for faster retain-dataset accuracy convergence which also does not require extensive retraining of the pre-trained model. The proposed method, Data-Frugal Machine Unlearning (DFMU) requires only a single forward and backward pass for computing the importance score of various computational blocks of a model. The importance score computation is based on knowledge preserving pruning which helps to converge faster and requires far less data as compared to the existing methods. Experimentally, it achieves 40% more retain-accuracy with just 13% of data samples in comparison with SOTA method on various public datasets and also averages 88% faster processing time for forgetting a given class.",
+      "authors": [
+        "Sajith U",
+        "Prateek Keserwani"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-24T05:15:42+00:00",
+      "link": "https://arxiv.org/pdf/2606.25410v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Data-Frugal Machine Unlearning proposes a method to remove concepts from trained models with reduced compute, relevant to machine unlearning for image generation",
+      "llm_evidence_cn": "数据节俭机器遗忘提出一种从已训练模型中移除概念的方法，减少计算量，与图像生成中的机器遗忘相关",
+      "llm_evidence": "数据节俭机器遗忘提出一种从已训练模型中移除概念的方法，减少计算量，与图像生成中的机器遗忘相关",
+      "canonical_evidence": "数据节俭机器遗忘提出一种从已训练模型中移除概念的方法，减少计算量，与图像生成中的机器遗忘相关",
+      "llm_tldr_en": "Introduces Data-Frugal Machine Unlearning, a method that efficiently removes concepts/attributes from trained models without extensive retraining, achieving faster convergence to retain-dataset accuracy with reduced computation.",
+      "llm_tldr_cn": "现有机器遗忘方法大多依赖完整重训练来移除模型中的概念，计算开销巨大。本文提出数据节俭机器遗忘方法（DFMU），通过优化保留数据集精度收敛过程，无需大量重训练即可有效擦除目标元素。实验显示其在保持模型性能的同时大幅降低计算需求。该工作为高效、可扩展的机器遗忘提供了新思路，尤其适用于资源受限场景和需要频繁更新的部署环境。",
+      "llm_tldr": "现有机器遗忘方法大多依赖完整重训练来移除模型中的概念，计算开销巨大。本文提出数据节俭机器遗忘方法（DFMU），通过优化保留数据集精度收敛过程，无需大量重训练即可有效擦除目标元素。实验显示其在保持模型性能的同时大幅降低计算需求。该工作为高效、可扩展的机器遗忘提供了新思路，尤其适用于资源受限场景和需要频繁更新的部署环境。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

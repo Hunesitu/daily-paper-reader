@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-25",
+  "date": "2026-06-25",
+  "generated_at": "2026-06-25T20:38:12",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/25/2606.25548v1-concept-removal-for-frontier-image-generative-models",
+      "section": "deep",
+      "title_en": "Concept Removal for Frontier Image Generative Models",
+      "authors": "Aditya Kumar, Pierre Joly, Adam Dziedzic, Franziska Boenisch",
+      "date": "2026-06-24",
+      "pdf": "https://arxiv.org/pdf/2606.25548v1",
+      "score": "10.0",
+      "evidence": "针对前沿扩散和图像自回归模型的概念移除方法",
+      "tldr": "图像生成模型在互联网数据集上训练，常包含不良概念。现有移除方法效果不佳或降低生成质量。本文提出将模型内部瓶颈层替换为结构化transcoder，通过原位修改实现对概念信号的选择性过滤。该方法在SD3.5、Flux等前沿模型上达到最先进概念移除性能，保持生成质量，并支持顺序移除多个概念。其白盒访问下的持久性使其成为实用的概念移除方案。",
+      "tags": "query:ce",
+      "abstract_en": "Image generative models are trained on massive, largely uncurated internet-scale datasets that contain undesirable visual concepts. Efficiently removing such concepts from the model generations without degrading the quality of output images remains challenging. We introduce a novel concept removal method for frontier diffusion and image autoregressive models, such as SD3.5, Flux, and Infinity. Our intervention replaces the internal bottleneck layer present in all these modern models with a transcoder that is trained to replicate the original layer while structuring it into distinct activation features. This in-place substitution creates an integrated filter through which concept-specific signals can be selectively disabled while preserving the rest of the model's behavior. Since the intervention modifies the model backbone rather than attaching an external component, it remains persistent under white-box access. Empirically, the approach achieves state-of-the-art concept removal performance across modern diffusion and autoregressive models, maintains visual generation quality, provides robustness against adversarial prompts, and supports sequential removal of diverse concepts. This positions our method as a practical approach for concept removal in frontier image generative models.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/25/2606.25657v1-steering-vision-language-models-with-joint-sparse-autoencoders",
+      "section": "deep",
+      "title_en": "Steering Vision-Language Models with Joint Sparse Autoencoders",
+      "authors": "Huizhen Shu, Xuying Li, Hongxu Lin, Wenjie Sun, Hui Li",
+      "date": "2026-06-24",
+      "pdf": "https://arxiv.org/pdf/2606.25657v1",
+      "score": "8.0",
+      "evidence": "通过联合稀疏自编码器在视觉语言模型中实现概念抑制",
+      "tldr": "针对现有稀疏自编码器在视觉-语言模型中难以获得可控跨模态特征的问题，本文提出联合稀疏自编码器(JSAE)，通过显式对齐约束联合分解视觉和语言激活，得到共享的可解释特征。在LLaVA上，JSAE恢复了食物、动物等概念，双向干预表明加性干预在中后期层最强，抑制效果在各层相近。在三个VLM上验证了层局部效应，表明显式对齐的稀疏表示支持更可控的多模态特征干预分析。",
+      "tags": "query:ce",
+      "abstract_en": "Sparse Autoencoders (SAEs) have shown promise for analyzing language models, but applying them to vision-language models (VLMs) often yields representations that are difficult to use as controllable cross-modal steering directions. We introduce the Joint Sparse Autoencoder (JSAE), which uses an explicit alignment constraint to jointly factorize sequence-pooled vision and language activations into shared, interpretable image/caption-level features. Applied to LLaVA, JSAE recovers cross-modal features for recognizable concepts (e.g., food and animals). Through bidirectional interventions (additive steering and suppression), we observe a layer-dependent asymmetry under our protocol: additive steering peaks at mid-to-late (pre-output) layers and weakens at both ends, whereas suppression scores remain within a comparable range across all probed layers within statistical noise. Experiments on three VLMs, namely LLaVA-v1.6-Mistral-7B, Llama3-LLaVA-8B, and the MoE-based Qwen3-VL-30B, show related layer-localized effects across architectures. Together, these results suggest that explicitly aligned sparse representations support more controllable intervention-based analysis of multimodal features, within an identifiable layer range, than the unconstrained alternatives tested here.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/25/2606.25410v1-dfmu-data-frugal-machine-unlearning",
+      "section": "quick",
+      "title_en": "DFMU: Data-Frugal Machine Unlearning",
+      "authors": "Sajith U, Prateek Keserwani",
+      "date": "2026-06-24",
+      "pdf": "https://arxiv.org/pdf/2606.25410v1",
+      "score": "7.0",
+      "evidence": "数据节俭机器遗忘提出一种从已训练模型中移除概念的方法，减少计算量，与图像生成中的机器遗忘相关",
+      "tldr": "机器遗忘（Machine Unlearning）旨在安全移除模型中的特定元素（概念、属性、实体或类别）同时最小化性能损失。现有方法依赖重训练，计算开销大。本文提出数据高效的机器遗忘方法DFMU（Data-Frugal Machine Unlearning），仅需一次前向和反向传播计算模型中各计算模块的重要性分数，基于知识保持剪枝加速保留集准确率收敛，所需数据量远低于现有方法。实验表明，在多个公开数据集上，DFMU仅用13%的数据样本即可比SOTA方法提升40%的保留准确率，遗忘单个类别的处理时间平均加快88%。该方法显著降低了计算需求，实现了高效、经济的机器遗忘。",
+      "tags": "query:ce",
+      "abstract_en": "Machine unlearning is an emerging domain that ensures the safe removal of elements (includes concepts, attributes, entity and class) from the trained model along with least drop in model performance. The domain of machine unlearning brings its own indigenous challenges since the removal of pre-trained elements from model will always degrade the model performance on remaining elements. The existing methods basically rely on retraining for removal of elements from the pre-trained model, which is compute extensive. In this work, we propose a machine unlearning method which helps to reduce the computational requirement for faster retain-dataset accuracy convergence which also does not require extensive retraining of the pre-trained model. The proposed method, Data-Frugal Machine Unlearning (DFMU) requires only a single forward and backward pass for computing the importance score of various computational blocks of a model. The importance score computation is based on knowledge preserving pruning which helps to converge faster and requires far less data as compared to the existing methods. Experimentally, it achieves 40% more retain-accuracy with just 13% of data samples in comparison with SOTA method on various public datasets and also averages 88% faster processing time for forgetting a given class.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

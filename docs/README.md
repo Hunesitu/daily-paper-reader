@@ -6,29 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-24
-- 运行时间：2026-06-24 20:55:50 UTC
+- 最新运行日期：2026-06-25
+- 运行时间：2026-06-25 20:38:06 UTC
 - 运行状态：成功
 - 本次总论文数：3
 - 精读区：2
 - 速读区：1
 
 ### 今日简报（AI）
-今日推荐3篇论文，其中精读2篇、速读1篇，最高分9.0/10。最值得关注的是《Co-occurring associated retained concepts in Diffusion Unlearning》（扩散模型去学习）和《IV-CoT》（结构感知文生图）。建议优先阅读9分论文，深入理解扩散模型中的概念移除方法。
-- 详情：[/202606/24/README](/202606/24/README)
+今日聚焦前沿图像生成模型的概念移除与视觉语言模型的可控性研究，精读两篇高评分工作。最值得关注“概念移除”对前沿生成模型伦理突破，以及“联合稀疏自编码器”如何高效引导视觉语言模型行为。建议追踪可解释性与AI安全方向，为模型应用构建基础。
+- 详情：[/202606/25/README](/202606/25/README)
 
 ### 精读区论文标签
-1. [Co-occurring associated retained concepts in Diffusion Unlearning](/202606/24/2606.24192v1-co-occurring-associated-retained-concepts-in-diffusion-unlearning)  
-   标签：评分：9.0/10、query:ce
-   evidence：解决扩散模型中的概念删除问题，保留共现概念
-2. [IV-CoT: Implicit Visual Chain-of-Thought for Structure-Aware Text-to-Image Generation](/202606/24/2606.24849v1-iv-cot-implicit-visual-chain-of-thought-for-structure-aware-text-to-image-generation)  
+1. [Concept Removal for Frontier Image Generative Models](/202606/25/2606.25548v1-concept-removal-for-frontier-image-generative-models)  
+   标签：评分：10.0/10、query:ce
+   evidence：针对前沿扩散和图像自回归模型的概念移除方法
+2. [Steering Vision-Language Models with Joint Sparse Autoencoders](/202606/25/2606.25657v1-steering-vision-language-models-with-joint-sparse-autoencoders)  
    标签：评分：8.0/10、query:ce
-   evidence：提出隐式视觉思维链方法，用于自回归多模态大模型的文本到图像生成
+   evidence：通过联合稀疏自编码器在视觉语言模型中实现概念抑制
 
 ### 速读区论文标签
-1. [Multimodal Concept Bottleneck Models](/202606/24/2606.19882v1-multimodal-concept-bottleneck-models)  
-   标签：评分：6.0/10、query:ce
-   evidence：多模态概念瓶颈模型支持概念级控制，可适配概念擦除
+1. [DFMU: Data-Frugal Machine Unlearning](/202606/25/2606.25410v1-dfmu-data-frugal-machine-unlearning)  
+   标签：评分：7.0/10、query:ce
+   evidence：数据节俭机器遗忘提出一种从已训练模型中移除概念的方法，减少计算量，与图像生成中的机器遗忘相关
 
 
 <div class="dpr-home-promo-card">

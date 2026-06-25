@@ -1,0 +1,193 @@
+Title: DFMU: Data-Frugal Machine Unlearning
+
+URL Source: https://arxiv.org/pdf/2606.25410v1
+
+Published Time: Thu, 25 Jun 2026 00:35:04 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# DFMU: DATA-FRUGAL MACHINE UNLEARNING 
+
+# Sajith U, Prateek Keserwani 
+
+# Samsung R&D Institute India-Bangalore, India 
+
+# {sajith.u, k.prateek }@samsung.com 
+
+ABSTRACT 
+
+Machine unlearning is an emerging domain that ensures the safe removal of elements (includes concepts, attributes, en-tity and class) from the trained model along with least drop in model performance. The domain of machine unlearning brings its own indigenous challenges since the removal of pre-trained elements from model will always degrade the model performance on remaining elements. The existing methods basically rely on retraining for removal of elements from the pre-trained model, which is compute extensive. In this work, we propose a machine unlearning method which helps to re-duce the computational requirement for faster retain-dataset accuracy convergence which also does not require extensive retraining of the pre-trained model. The proposed method, Data-Frugal Machine Unlearning (DFMU) requires only a single forward and backward pass for computing the impor-tance score of various computational blocks of a model. The importance score computation is based on knowledge pre-serving pruning which helps to converge faster and requires far less data as compared to the existing methods. Experi-mentally, it achieves 40% more retain-accuracy with just 13% of data samples in comparison with SOTA method on various public datasets and also averages 88% faster processing time for forgetting a given class. 
+
+Index Terms — Machine unlearning, Data-Frugal 
+
+1. INTRODUCTION 
+
+In recent years, machine learning has experienced a surge in popularity, driven by technological advancements, the in-creasing availability of data, and its transformative influence across numerous industries. As its applications continue to expand into a wide array of areas in everyday life, the regula-tory requirements associated with it are also growing. These regulations often mandate the removal of specific types of data, tasks, categories, or concepts (e.g., private, sensitive, or harmful information) from trained models to ensure com-pliance. In the light of conforming to compliance norms, forgetting or removal of the information contained in a ma-chine learning model becomes an important topic of discus-sion. The ability of a model to remove certain identified data points (forget set) and its influences from a trained model 
+
+Fig. 1 . Illustration of Data-Frugal Machine Unlearning along with retain rest data points intact (retain set) is termed as Machine Unlearning [1] The existing training-based unlearning solutions are based on first-order gradients to identify the potential neurons that can be targeted to utilize for removal of concepts, tasks, or categories. These methods needs the entire dataset to be pre-served which may not be practical every time. To counter this challenge, retraining-free methods has introduced which de-pends on finding the Fisher Information Matrix [2]. It makes algorithm of machine unlearning computationally expensive. In order to eliminate the drawback of above mentioned priors, we have taken inspiration from the zero-cost proxies of neural architecture search [3, 4]. In this work, we propose a data-frugal machine unlearning algorithm (DFMU) designed to preserve the knowledge of the retain set which at the same time remove elements from forget set efficiently. To achieve this, we have utilized the knowledge preserving pruning al-gorithm [5]. It measures the knowledge present in each layer of a trained model prior to computing the importance scores based on the forget and complete dataset. Further, using the importance scores as a guide, the model weights are rescaled such that the forget information is removed and the remain-ing data information is kept intact in the model which don’t requires retraining. The proposed idea is depicted in Fig. 1. 
+
+2. RELATED WORK 
+
+Machine unlearning methods are composed of identification of the target parameters and followed by modifying/nullifying the target parameters. These two tasks work together to generate a model which has unlearned the targeted informa-
+
+> arXiv:2606.25410v1 [cs.LG] 24 Jun 2026
+
+tion. Machine unlearning works are broadly categorized as retraining-based [6, 7] and retraining-free machine unlearn-ing [8, 9, 10, 11]. In [6], a teacher-student framework is used with competent and incompetent teachers and the student unlearned model is obtained via selective knowledge transfer. In [7] two deep regression unlearning methods are introduced namely Blindspot learning and Gaussian Amnesiac learning for regression tasks. In comparison, the proposed work is restricted to retraining-free machine unlearning. Retraining-free methods attempts to achieve machine un-learning without having to retrain or with less training on re-tained data. In [8], a subset of parameters is picked based on conditional independence coefficient to unlearn and removes the need to modify the whole parameters of model. It helps to reduce the training cost. In [9] a post-hoc retrain-free method is introduced. It uses fisher information matrix of training and forget set to identify parameters that are more important for forget set. These parameters are proportionally dampened so that the model’s dependency on forget data is reduced. This work is extended by [10] by introducing a method that is retraining-free as well as label-free. It uses approximation based on model output sensitivity rather than Fisher informa-tion. In [11] the concept of pruning is used to approximate machine unlearning. It first sparsify the model via pruning so that the update to remove influence are cheaper and eas-ier. While pruning and unlearnig requires some fine-tuning but reduces the number of parameters. Compared with the above mentioned retraining-free methods, we have adopted the zero-cost proxies [3] approach used in Neural Architec-ture Search to further reduce the computational cost. It helps to converge fast. 
+
+3. PROPOSED METHOD 
+
+The proposed approach calculates the importance score of computing blocks of a model with respect to the forget-dataset (Df ) and the complete-dataset ( Do = Df + Dr ). These im-portance scores are utilized to rescale the weights of selected layers, by which the model’s knowledge about the forget-dataset is removed and the remaining knowledge remains in-tact for the retain set ( Dr ), where ( Do = Df + Dr ). 
+
+3.1. Importance Score Calculation 
+
+The primary step for forgetting is the identification of salient computing blocks of the model, i.e. to identify those param-eters which contribute to the learning of the forget-dataset and the complete-dataset. The importance score computation is inspired from the zero-cost proxies in neural architecture search [3]. The single forward pass and backward pass for each data point with respect to the KL Divergence of pre-dicted and ground truth is used to compute the importance score of computing block. This can be done for both forget set Df and complete dataset Do. The importance scores Sf
+
+Algorithm 1: Importance Scores Computation 
+
+Input : Forget Dataset ( Df ), pretrained model ( M )
+
+Output: Importance Score ( s) for Df 
+
+> 1
+
+ˆY ← M (Df ) 
+
+> 2
+
+L ← DfKL (Y ∥ ˆY ) 
+
+> 3
+
+Backpropagation wrt L 
+
+> 4
+
+foreach layer l in N do  
+
+> 5
+
+f ← get features(l)  
+
+> 6
+
+w ← get weight(l)  
+
+> 7
+
+s ← P(f 2) ×  
+
+> P
+> i=1 nw 2
+> n
+> 8
+
+return s
+
+Algorithm 2: Weight Rescaling 
+
+Input : Importance scores ( Sf ) for Df , pretrained model M , scaling const α, perturb const λ
+
+Output: Model with unlearned weights ( MU L ) 
+
+> 1
+
+foreach layer l in M do  
+
+> 2
+
+ω ← S0α/S f 
+
+> 3
+
+m ← Zeros (size (ω)) // mask init  
+
+> 4
+
+m ←
+
+(
+
+1 if ω < 10 otherwise  
+
+> 5
+
+WU L [l] ← WP T [l] × (mωλ )/α  
+
+> 6
+
+return MU L 
+
+and So are computed by following the steps of Algorithm 1. The importance score is computed by using the knowledge preserving pruning method [5]. These knowledge preserving pruning score is utilized to setup a ground to identify the com-puting block sensitivity for retain and forget set. 
+
+3.2. Weight Rescaling 
+
+Once the importance scores are calculated, the next step is to apply weight scaling to the pre-trained model M , so that the intended class information will be removed, and the remain-ing knowledge of the model is retained. The importance score for forget set Sf and complete set So is used to rescale the ini-tial model weights WP T and produce the unlearned weights 
+
+WU L . The detailed steps are described in Algorithm 2. 
+
+4. EXPERIMENTS 4.1. Experimental Setup 
+
+The proposed method is implemented on top of PyTorch [12]. Effectiveness of this approach is evaluated using Vision Transformer (ViT) [13]. All the experimental runs were done on NVIDIA A100 GPU with 40 GB RAM, and the results are averaged over multiple iterations. Table 1 . Accuracy comparison of DFMU against SSD[9] for 
+
+facc and racc for CIFAR-100 dataset.                                                    
+
+> Class Base SSD DFMU Accuracy(%) Accuracy(%) Accuracy(%)
+> facc racc facc racc facc racc
+> Rocket 93.70 92.66 0.00 0.72 0.00 79.35 Mushroom 99.22 92.59 0.00 41.11 0.00 86.75 Lamp 97.66 92.61 0.00 1.29 0.78 82.95 Apple 98.44 92.60 0.00 87.93 0.00 83.71 Baby 87.50 92.75 0.00 0.99 0.00 85.89 Sea 87.51 92.67 0.00 0.74 2.34 79.90 Mountain 95.31 92.64 0.00 1.42 0.00 80.75
+
+Table 2 . Accuracy comparison of DFMU against SSD[9] for 
+
+facc and racc for CIFAR-20 dataset.                                        
+
+> Class Base SSD DFMU Accuracy(%) Accuracy(%) Accuracy(%)
+> facc racc facc racc facc racc
+> Elec Dev 96.78 95.84 0.00 6.99 0.39 84.25 Vehicle2 95.42 95.92 0.00 5.29 0.20 81.29 Veg 97.76 95.79 0.00 18.57 7.81 91.56 People 97.42 95.81 0.00 4.88 0.39 87.86 Nat Scen 88.64 96.27 0.00 5.26 4.84 85.12
+
+Fig. 2 . Average time taken for running the respective algo-rithm per class 
+
+4.2. Dataset 
+
+In this work, we have used two dataset namely CIFAR-100 and CIFAR-20. CIFAR-100 is an image classification dataset comprising 60 , 000 colour images, each 32 × 32 pixels, span-ning 100 classes. Each class includes 600 images, with 500 
+
+for training and 100 for testing. The dataset is organized into 20 super classes, sometimes called as CIFAR20 (for-mally known as CIFAR-100 coarse labels). For the machine unlearning experimets, we have constructed a forget set by randomly selecting 7 and 5 classes from CIFAR100 and CI-FAR20 dataset respectively. For CIFAR100, 7 forget classes are ‘Rocket’, ‘Mushroom’, ‘Lamp’, ‘Apple’, ‘Baby’, ‘Sea’, 
+
+and ‘Mountain’ . For CIFAR20 the forget classes are ‘Electri-cal devices’, ‘Vehicles-2’, ‘Vegetables’, ‘People’ and ‘Natural Scenes’ .
+
+4.3. Evaluation Metrics 
+
+Accuracy on the forget set ( facc ) and retain set ( racc ) is used to validate forgetting while retaining overall model perfor-mance. In a classification setting as here, if a model makes 
+
+N predictions and correctly classifies C of them, then accu-racy is given by: 
+
+Accuracy = CN × 100% (1) 
+
+4.4. Results 
+
+4.4.1. Classification Performance 
+
+For a fair comparison we are comparing the proposed method with SSD [9]. The results of the proposed method along with their comparison with the SSD [9] are summarized in Table 1 and Table 2. Base accuracy is the accuracy of ViT model when trained on CIFAR-100 and CIFAR-20 datasets. The DFMU accuracy and SSD accuracy are the accuracies after applying the concept of machine unlearning. It is observed from Table 1 that, for CIFAR-100, DFMU has better retain accuracy compared to SSD and at the same time have compet-itive forget accuracy. Similarly, from Table 2, it is observed that for CIFAR-20 dataset, DFMU obtain better retain accu-racy and have competitive forget accuracy. Additionally, the time comparison between SSD and pro-posed method is shown in Fig. 2. It is evident that the average time taken for DFMU to process a single class is just 44 s as compared to 381 s in case of SSD. 
+
+4.4.2. Impact of data cardinality 
+
+The amount of data samples available for calculating the im-portance scores is observed to have significant effect in retain-dataset accuracy of DFMU. When compared with SSD with the same number of data samples, DFMU outperforms SSD, starting from the beginning itself. Results of a set of exper-iments conducted on DFMU using different data samples is portrayed in Fig. 3, Fig. 4, Fig. 5, and Fig. 6. For CIFAR-100 dataset, we observed from Fig. 3 that the retain accu-racy of DFMU increases for all categories but SSD conver-gence is comparatively slow. SSD only shows good conver-gence for category ”Apple” which shows similar behaviour as DFMU. SSD struggles for convergence for most of the classes (4 out of 7), even after training of 10240 samples, ”Mushroom”, ”Rocket” and ”Apple” classes’ retain accuracy is less than DFMU. Additionally, from Fig. 4, it can be ob-served that the forget accuracy of SSD is always ”0”. But, at the same time the retain accuracy of SSD is compromised, whereas our proposed method (DFMU) is achieving good re-tain accuracy with nominal rise in forget accuracy than 0% in three classes (”Sea”, ”Lmap”, and ”Mushroom”). Hence, our method shows better tradeoff between retain and forget accu-racy compared to SSD method. Empirically it is analyzed that Fig. 3 . CIFAR-100 retain-dataset accuracy comparison of DFMU against SSD measured on different data cardinality 
+
+Fig. 4 . CIFAR-100 forget-dataset accuracy comparison of DFMU against SSD measured on different data cardinality 
+
+Fig. 5 . CIFAR-20 retain-dataset accuracy comparison of DFMU against SSD measured on different data cardinality DFMU achieves 40% more retain-accuracy with just 13% of data samples as compared to SSD. As the required number of data samples are far less, DFMU reduces computational complexities and storage requirements considerably. Similarly, CIFAR-20 dataset shows better tradeoff be-tween retain and forget accuracy. From Fig. 5 and Fig. 6it seems clearly that the proposed method’s retain accuracy convergence is much better than SSD and the forget accuracy is competative. 
+
+4.5. Ablation Study 
+
+For the ablation study, we conduct experiments to observe the impact of hyperparameters (scaling constant ( α) and perturb constant ( λ)) on CIFAR-100 dataset. For the ablation, ex-periments are conducted on a series of values for α and λ.Results of these experiments are given in Fig. 7. The best re-sults are given by a combination of α = 1 and λ = 0.95, since this values are giving good tradeoff between retain and forget accuracy of various classes. 
+
+Fig. 6 . CIFAR-20 forget-dataset accuracy comparison of DFMU against SSD measured on different data cardinality 
+
+Fig. 7 . Impact of hyperparameter α and λ on (a) Forget Ac-curacy and (b) Retain Accuracy for CIFAR-100 dataset 
+
+5. CONCLUSION 
+
+In this work, Data-Frugal Machine Unlearning, a retraining-free approach is proposed for the task of machine unlearning that has a faster convergence rate for retain-dataset accuracy. The core of the proposed approach lies in the knowledge mea-surement of layers and the generation of importance scores signifying the saliency of neurons involved in the model’s knowledge about the forget-dataset and the complete-dataset. It is observed empirically that DFMU achieves more than 
+
+40% more retain-accuracy with just 13% of data samples in comparison with competitor method (SSD) on CIFAR-100 dataset. Further, DFMU also averages 88% faster processing time against SSD for forgetting a given class. 6. REFERENCES 
+
+[1] Na Li, Chunyi Zhou, Yansong Gao, Hui Chen, Zhi Zhang, Boyu Kuang, and Anmin Fu, “Machine unlearn-ing: Taxonomy, metrics, applications, challenges, and prospects,” IEEE Transactions on Neural Networks and Learning Systems , 2025. [2] Chuan Guo, Tom Goldstein, Awni Hannun, and Laurens Van Der Maaten, “Certified data removal from machine learning models,” arXiv preprint arXiv:1911.03030 ,2019. [3] Mohamed S Abdelfattah, Abhinav Mehrotra, Lukasz Dudziak, and Nicholas D Lane, “Zero-cost proxies for lightweight nas,” arXiv preprint arXiv:2101.08134 ,2021. [4] Prateek Keserwani, Srinivas Soumitri Miriyala, Vikram N Rajendiran, and Pradeep N Shivamurthappa, “Receptive field reliant zero-cost proxies for neural architecture search,” in ICASSP 2023-2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 2023, pp. 1–5. [5] Seungcheol Park, Hojun Choi, and U Kang, “Accurate retraining-free pruning for pretrained encoder-based language models,” arXiv preprint arXiv:2308.03449 ,2023. [6] Vikram S Chundawat, Ayush K Tarun, Murari Mandal, and Mohan Kankanhalli, “Can bad teaching induce for-getting? unlearning in deep networks using an incom-petent teacher,” in Proceedings of the AAAI Conference on Artificial Intelligence , 2023, vol. 37, pp. 7210–7217. [7] Ayush Kumar Tarun, Vikram Singh Chundawat, Mu-rari Mandal, and Mohan Kankanhalli, “Deep regression unlearning,” in International Conference on Machine Learning . PMLR, 2023, pp. 33921–33939. [8] Ronak Mehta, Sourav Pal, Vikas Singh, and Sathya N Ravi, “Deep unlearning via randomized conditionally independent hessians,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recogni-tion , 2022, pp. 10422–10431. [9] Jack Foster, Stefan Schoepf, and Alexandra Brintrup, “Fast machine unlearning without retraining through se-lective synaptic dampening,” in Proceedings of the AAAI conference on artificial intelligence , 2024, vol. 38, pp. 12043–12051. [10] Jack Foster, Stefan Schoepf, and Alexandra Brin-trup, “Loss-free machine unlearning,” arXiv preprint arXiv:2402.19308 , 2024. [11] Jinghan Jia, Jiancheng Liu, Parikshit Ram, Yuguang Yao, Gaowen Liu, Yang Liu, Pranay Sharma, and Si-jia Liu, “Model sparsity can simplify machine unlearn-ing,” Advances in Neural Information Processing Sys-tems , vol. 36, pp. 51584–51605, 2023. [12] Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, et al., “Pytorch: An imperative style, high-performance deep learning library,” Advances in neural information processing systems , vol. 32, 2019. [13] A Kolesnikov, A Dosovitskiy, D Weissenborn, G Heigold, J Uszkoreit, L Beyer, M Minderer, M De-hghani, N Houlsby, S Gelly, et al., “An image is worth 16 × 16 words: Transformers for image recognition at scale. arxiv 2021,” arXiv preprint arXiv:2010.11929 .
