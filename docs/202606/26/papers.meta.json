@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-26",
+  "date": "2026-06-26",
+  "generated_at": "2026-06-26T20:59:46",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/26/2606.27147v1-safe-autoregressive-image-generation-with-iterative-self-improving-codebooks",
+      "section": "deep",
+      "title_en": "Safe Autoregressive Image Generation with Iterative Self-Improving Codebooks",
+      "authors": "Yunqi Xue, Zhijiang Li, Philip Torr, Jindong Gu",
+      "date": "2026-06-25",
+      "pdf": "https://arxiv.org/pdf/2606.27147v1",
+      "score": "9.0",
+      "evidence": "通过迭代自改进码本移除不安全概念的安全自回归生成",
+      "tldr": "自回归统一多模态模型通过离散视觉token生成图像，但码本存在安全隐患。本文提出迭代自我改进码本方法，利用模型自身识别不安全生成，构建有害空间并更新码本消除有害映射，再在无害空间微调以保证质量。重复迭代直至收敛，无需外部反馈，有效提升安全性。",
+      "tags": "query:ce",
+      "abstract_en": "Unlike diffusion-based models that operate in continuous latent spaces, autoregressive unified multimodal models produce images by sequentially predicting discretized visual tokens. These tokens are derived from a codebook that maps embeddings to quantized visual patterns. The language-like architecture enables unified multimodal models to effectively capture text conditional information for generation, making them promising for text-to-image tasks. This also raises an interesting question: how safe are the images generated in such an autoregressive way? In this work, we propose iterative self-improving codebooks for safe autoregressive generation. We leverage the understanding and judgment capabilities of the unified multimodal model itself to identify unsafe generated images without human annotation. Subsequently, the inherent representations in the codebook are fixed to eliminate harmful mappings. Our method comprises two steps: first, we use the unified model to identify unsafe generations and construct corresponding harmful and safe image-text pairs. These pairs are used to construct the Harmful Space and guide updates to the codebook, thereby eliminating harmful outputs. Second, we perform adaptive fine-tuning on the codebook within the harmless space using safe image-text pairs to ensure the quality of generated images. These two steps are repeated until no further improvement is observed, producing a safety-enhanced model codebook. Without additional external feedback, the safety of models is improved iteratively.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/26/2606.20084v1-residual-space-evolutionary-optimization-via-flow-based-generative-models",
+      "section": "quick",
+      "title_en": "Residual-Space Evolutionary Optimization via Flow-based Generative Models",
+      "authors": "Zhuo Cao, Lena Krieger, Fernanda Nader, Xuan Zhao, Hanno Scharr, Ira Assent",
+      "date": "2026-06-18",
+      "pdf": "https://arxiv.org/pdf/2606.20084v1",
+      "score": "6.0",
+      "evidence": "基于流的生成编辑框架可应用于概念擦除",
+      "tldr": "针对流式生成模型中编辑需可微目标和梯度搜索的局限，提出残差空间进化优化框架，利用条件流匹配分离条件控制因素与实例特异性残差。通过自授粉（局部利用）和异花授粉（全局探索）两种机制，平衡目标对齐、实例保持与多样性。在MorphoMNIST反事实生成和晶体数据上验证有效性，为科学领域提供模型无关的优化方法。",
+      "tags": "query:ce",
+      "abstract_en": "Data editing with generative methods typically requires differentiable objectives and gradient-based search. However, these assumptions break down in flow-based settings, where edits are performed through forward and backward integration and often involve non-differentiable or black-box objectives. We introduce residual-space evolutionary optimization, a model-agnostic framework that addresses this gap by combining flow-based generative editing with evolutionary algorithms. Building on the observation that conditional flow matching (CFM) can disentangle condition-controlled factors from instance-specific residuals, our framework directly operates in residual space and separates two complementary search regimes: self-pollination performs local exploitation through feature-preserving residual refinement, and cross-pollination promotes broader exploration by recombining residuals across heterogeneous samples. As a proof of concept, we validate on MorphoMNIST, a benchmark dataset for counterfactual generation, and on crystal data, demonstrating that this exploration--exploitation decomposition provides a useful mechanism for balancing target alignment, instance preservation, and diversity, and extends beyond images to real-world scientific domains.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
