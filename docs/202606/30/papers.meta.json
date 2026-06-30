@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-30",
+  "date": "2026-06-30",
+  "generated_at": "2026-06-30T21:13:13",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/30/2606.28643v1-obliviate-erasing-concepts-from-autoregressive-image-generation-models",
+      "section": "deep",
+      "title_en": "Obliviate: Erasing Concepts from Autoregressive Image Generation Models",
+      "authors": "Hossein Shakibania, Jonas Henry Grebe, Tobias Braun, Ege Aktemur, Saleh Aslani, Mehmet Görkem Yiğit, Marcus Rohrbach",
+      "date": "2026-06-26",
+      "pdf": "https://arxiv.org/pdf/2606.28643v1",
+      "score": "10.0",
+      "evidence": "针对自回归图像生成的概念擦除方法",
+      "tldr": "自回归图像生成模型日益普及，但概念擦除研究不足，存在生成不安全内容风险。提出Obliviate方法，基于引导，采用KL监督、轨迹级更新和对齐视觉前缀。在三个自回归模型上，针对露骨、暴力、品牌内容，显著降低有害生成，裸体率从91.58降至3.15。首次针对自回归图像生成模型的概念擦除，保持模型效用，推动安全部署。",
+      "tags": "query:ce",
+      "abstract_en": "The widespread adoption of generative AI models has intensified concerns about misuse, including the creation of unsafe or disturbing imagery. To mitigate such issues, several concept erasure approaches have been proposed to remove harmful content from multimodal generative models. Yet concept erasure for autoregressive image generation remains largely unexplored, despite the growing relevance of these models in recent trends toward unified multimodal architectures. In this work, we fill this gap by introducing Obliviate, a guidance-based concept erasure method for autoregressive image generation. Our method builds on three key design choices: KL-based supervision over visual token distributions, trajectory-level updates over full autoregressive rollouts, and aligned visual prefixes for stable target construction. We evaluate Obliviate on three state-of-the-art autoregressive text-to-image models, Liquid, Emu3-Gen, and Janus-Pro, covering the erasure of explicit content, graphic violence, and branded imagery. Obliviate consistently outperforms current alternatives, reducing nudity on the defensive RAB benchmark from 91.58 to 3.15 while preserving overall model utility.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/30/2606.29282v1-scaleerasure-inference-time-minimal-intervention-for-precise-concept-erasure-in-next-scale-autoregressive-image-generation",
+      "section": "deep",
+      "title_en": "ScaleErasure: Inference-Time Minimal Intervention for Precise Concept Erasure in Next-Scale Autoregressive Image Generation",
+      "authors": "Cong Wang, Haiyu Wu, Zhiwei Jiang, Zifeng Cheng, Fei Shen, Yafeng Yin, Qing Gu",
+      "date": "2026-06-28",
+      "pdf": "https://arxiv.org/pdf/2606.29282v1",
+      "score": "10.0",
+      "evidence": "直接针对自回归图像生成中的概念擦除，提出ScaleErasure方法",
+      "tldr": "下一尺度自回归图像生成中语义在早期尺度高度压缩，导致概念擦除困难。ScaleErasure通过在推理时进行两次额外前向传递，在尺度、token、比特通道三个维度精确选择并引导与不安全概念相关的logits，实现最小干预。实验表明该方法在保持生成能力的同时，比现有基线更精确地擦除不安全概念。该工作为自回归图像生成范式下的概念安全提供了有效方案。",
+      "tags": "query:ce",
+      "abstract_en": "Concept erasure aims to prevent image generative models from producing unsafe content while preserving their general generative capability. Meanwhile, next-scale autoregressive (AR) image generation has recently emerged as a new generative paradigm characterized by next-scale prediction, for which concept erasure remains largely unexplored. In this paradigm, semantic information is highly compressed at early scales, leading to severe entanglement between unsafe and unrelated semantics. In this paper, we propose ScaleErasure, an inference-time concept erasure method that performs minimal intervention. ScaleErasure precisely selects and guides predicted logits that are most relevant to the unsafe concept, thereby enabling effective erasure under severe semantic entanglement. Specifically, ScaleErasure performs two additional forward passes conditioned on the unsafe concept and the corresponding safe concept, and leverages their outputs to guide the target logits away from unsafe concepts toward safe concepts. To enable precise and minimal intervention, logits selection and guidance are conducted across three dimensions: scales, tokens, and bit channels. Experiments demonstrate that ScaleErasure outperforms adapted baselines in the next-scale AR paradigm, achieving more precise concept erasure while largely preserving general generative capability. The code is available at https://github.com/coziiizz/ScaleErasure.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/30/2606.29801v1-concept-removal-guidance-evidence-calibrated-negative-guidance-for-safe-diffusion-sampling",
+      "section": "deep",
+      "title_en": "Concept Removal Guidance: Evidence-Calibrated Negative Guidance for Safe Diffusion Sampling",
+      "authors": "Yoonseok Choi, Chaeyoung Oh, Hyunjun Choi, Seokin Seo, Kee-Eung Kim",
+      "date": "2026-06-29",
+      "pdf": "https://arxiv.org/pdf/2606.29801v1",
+      "score": "9.0",
+      "evidence": "通过负向引导在扩散模型中进行概念移除",
+      "tldr": "文本到图像扩散模型易受对抗提示生成违规内容。现有负引导方法陷入安全-保真度权衡，动态变体脆弱且轻量相似度方法忽略演化证据。本文提出无需训练的概念移除引导（CRG），从噪声预测估计不想要概念的存在，通过闭环约束更新自适应调整负引导强度。在红队基准上，CRG显著降低攻击成功率同时保持良性生成质量，并能拓展至艺术风格、暴力等抑制目标。",
+      "tags": "query:ce",
+      "abstract_en": "Text-to-image diffusion models remain vulnerable to adversarial prompts that elicit disallowed content, motivating reliable inference-time controls. A popular approach is negative guidance, which subtracts a negative prompt direction with a fixed weight. However, it often forces a safety-fidelity trade-off, causing artifacts or prompt drift when over-applied and failing under attacks when under-applied. Dynamic variants reweight guidance using posterior-odds signals, which can be brittle for open-vocabulary compositional prompts, while lightweight similarity-based methods ignore the evolving image evidence along the denoising trajectory. We introduce Concept Removal Guidance (CRG), a training-free method that estimates unwanted-concept presence at each diffusion step from the model's noise predictions, and adaptively calibrates negative guidance via a closed-form constrained update enforcing a target presence threshold while minimally perturbing the conditional trajectory. Across red-teaming benchmarks, CRG reduces attack success rates while preserving benign fidelity, and extends to additional suppression targets such as artist style and violence without fine-tuning or external classifiers.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

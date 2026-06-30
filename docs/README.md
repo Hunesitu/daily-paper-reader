@@ -6,28 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-29
-- 运行时间：2026-06-29 20:41:35 UTC
+- 最新运行日期：2026-06-30
+- 运行时间：2026-06-30 21:13:05 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：1
-- 速读区：1
+- 本次总论文数：3
+- 精读区：3
+- 速读区：0
 
 ### 今日简报（AI）
-今日聚焦两篇高效图像生成论文，精读高分研究《并行展开近似》推动像素空间自回归生成速度突破。  
-最值得关注的是自回归图像生成加速方向，尤其是并行展开与内容感知推测解码两大技术路线。  
-普通读者可重点关注如何将这类加速方法应用于实际图像生成工具，提升创作效率。
-- 详情：[/202606/29/README](/202606/29/README)
+今天精读了两篇满分论文，聚焦从自回归图像生成模型中擦除特定概念。  
+最值得关注的是显式擦除（Obliviate）与推理时最小干预（ScaleErasure）两种精准概念消除方法，均用于提升图像生成安全性。  
+建议你后续关注概念擦除技术向视频或文本生成领域的扩展应用。
+- 详情：[/202606/30/README](/202606/30/README)
 
 ### 精读区论文标签
-1. [Parallel Rollout Approximation for Pixel-Space Autoregressive Image Generation](/202606/29/2606.27978v1-parallel-rollout-approximation-for-pixel-space-autoregressive-image-generation)  
+1. [Obliviate: Erasing Concepts from Autoregressive Image Generation Models](/202606/30/2606.28643v1-obliviate-erasing-concepts-from-autoregressive-image-generation-models)  
+   标签：评分：10.0/10、query:ce
+   evidence：针对自回归图像生成的概念擦除方法
+2. [ScaleErasure: Inference-Time Minimal Intervention for Precise Concept Erasure in Next-Scale Autoregressive Image Generation](/202606/30/2606.29282v1-scaleerasure-inference-time-minimal-intervention-for-precise-concept-erasure-in-next-scale-autoregressive-image-generation)  
+   标签：评分：10.0/10、query:ce
+   evidence：直接针对自回归图像生成中的概念擦除，提出ScaleErasure方法
+3. [Concept Removal Guidance: Evidence-Calibrated Negative Guidance for Safe Diffusion Sampling](/202606/30/2606.29801v1-concept-removal-guidance-evidence-calibrated-negative-guidance-for-safe-diffusion-sampling)  
    标签：评分：9.0/10、query:ce
-   evidence：自回归图像生成模型 - 像素空间自回归生成方法
+   evidence：通过负向引导在扩散模型中进行概念移除
 
 ### 速读区论文标签
-1. [CSD: Content-aware Speculative Decoding for Efficient Image Generation](/202606/29/2606.27829v1-csd-content-aware-speculative-decoding-for-efficient-image-generation)  
-   标签：评分：7.0/10、query:ce
-   evidence：针对自回归图像生成的内容感知推测解码
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">

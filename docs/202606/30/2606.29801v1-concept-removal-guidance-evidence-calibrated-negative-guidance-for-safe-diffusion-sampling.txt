@@ -1,0 +1,1563 @@
+Title: Concept Removal Guidance: Evidence-Calibrated Negative Guidance for Safe Diffusion Sampling
+
+URL Source: https://arxiv.org/pdf/2606.29801v1
+
+Published Time: Tue, 30 Jun 2026 02:03:32 GMT
+
+Number of Pages: 29
+
+Markdown Content:
+# Concept Removal Guidance: Evidence-Calibrated Negative Guidance for Safe Diffusion Sampling 
+
+Yoonseok Choi 1 Chaeyoung Oh 1 Hyunjun Choi 1 Seokin Seo † 2 Kee-Eung Kim 1
+
+## Abstract 
+
+Text-to-image diffusion models remain vulnerable to adversarial prompts that elicit disallowed con-tent, motivating reliable inference-time controls. A popular approach is negative guidance, which subtracts a negative prompt direction with a fixed weight. However, it often forces a safety–fidelity trade-off, causing artifacts or prompt drift when over-applied and failing under attacks when under-applied. Dynamic variants reweight guidance us-ing posterior-odds signals, which can be brittle for open-vocabulary compositional prompts, while lightweight similarity-based methods ignore the evolving image evidence along the denoising tra-jectory. We introduce Concept Removal Guid-ance (CRG), a training-free method that estimates unwanted-concept presence at each diffusion step from the model’s noise predictions, and adaptively calibrates negative guidance via a closed-form constrained update enforcing a target presence threshold while minimally perturbing the condi-tional trajectory. Across red-teaming benchmarks, CRG reduces attack success rates while preserv-ing benign fidelity, and extends to additional sup-pression targets such as artist style and violence without fine-tuning or external classifiers. 
+
+Content Warning. This paper contains examples of unsafe visual content and language, including nudity, violence, and explicit prompts, presented as part of safety research. 
+
+## 1. Introduction 
+
+Generative models have garnered substantial attention across a wide range of domains, including image synthe-
+
+> †
+
+Work done while at KAIST. 1Kim Jaechul Graduate School of AI, KAIST, Daejeon, Republic of Korea 2Center for Humanoid Research, KIST, Seoul, Republic of Korea. Correspondence to: Yoonseok Choi <uooh77@kaist.ac.kr >.
+
+Proceedings of the 43 rd International Conference on Machine Learning , Seoul, South Korea. PMLR 306, 2026. Copyright 2026 by the author(s). SAFREE SD v1.4  TraSCE  NP  DNG  CRG (Ours)      
+
+> The electric energy of Warhol 's New York City.
+> An intimate portrait featuring a contemplative subject, illuminated by a single source
+> of light, reminiscent of Caravaggio 's style.
+> A closer look at the intricacies of Rembrandt 's The Anatomy Lesson of Dr. Nicolaes Tulp.
+> A serene landscape with a bright yellow sun, reminiscent of Van Gogh 's time in Arles.
+> An abstract depiction of a guitar with cut -out shapes, reminiscent of Picasso 's
+> innovative techniques.
+
+Figure 1. Generated images of CRG and other baselines on the Artist Style removal task. The target removal style is “Van Gogh”, while unrelated artist styles should be preserved. 
+
+sis (Ramesh et al., 2021; Saharia et al., 2022; Podell et al., 2024), natural language generation (Brown et al., 2020; Google Gemini Team, 2024), audio generation (Dhariwal et al., 2020; Kong et al., 2021), and video synthesis (Hong et al., 2023; Liu et al., 2024). This surge in interest is largely driven by the remarkable capabilities of recent models to generate high-quality, user-aligned content (Ouyang et al., 2022; Wallace et al., 2024). However, these advances have also raised serious concerns about potential misuse. In par-ticular, generative models can produce harmful content, in-cluding explicit, violent, or discriminatory material, posing significant ethical and societal risks. These risks often stem from unfiltered or insufficiently curated training data, which can embed undesirable patterns into model outputs. A standard baseline is negative prompting, an extension of classifier-free guidance (Ho & Salimans, 2021) that in-corporates negative guidance to steer the denoising trajec-1  
+
+> arXiv:2606.29801v1 [cs.CV] 29 Jun 2026 Concept Removal Guidance
+> Figure 2. Qualitative comparison of CRG and baselines on the nudity concept removal task. We visualize generation results under adversarial prompts targeting the nudity concept. CRG effectively suppresses unsafe content, whereas baselines frequently fail to neutralize the target concept.
+
+tory away from a specific concept (Liu et al., 2022; Ban et al., 2024). However, static negative guidance scale biases the entire sampling process, distorting benign details even when the negative concept is absent (over-regularization), yet often fails to suppress robust adversarial attacks (under-regularization). Recently, Koulischer et al. (2025) proposed Dynamic Nega-tive Guidance (DNG), adaptively scaling the negative guid-ance weight at inference time by tracking stepwise poste-riors. While this strategy is well-suited to closed-set class-conditional generation, e.g., ImageNet synthesis (Deng et al., 2009), where labels are discrete and unambiguous, it is less appropriate for open-vocabulary text-to-image (T2I) genera-tion, where negative concepts are compositional and fuzzy and their complement concept is not a well-defined alterna-tive class. In a related direction, Na et al. (2025) introduced auxiliary classifier-based guidance, which uses a pre-trained classifier to assess the predicted clean image and feeds this signal back into denoising for explicit look-ahead control. However, its reliance on an additional classifier incurs non-trivial computational overhead, making it less suitable for real-time use. To address these limitations, we propose an inference-time defense that adaptively scales negative guidance using a robust, stepwise concept presence signal. Our signal fuses evidence from the current denoising state with an explicit look-ahead proxy derived from the predicted clean sample, leveraging the intrinsic discriminative capability of diffusion models (Clark & Jaini, 2023; Li et al., 2023; Jaini et al., 2024; Wang et al., 2025). This enables stable suppression even when intermediate concept cues are weak, without requiring any auxiliary models. The main contributions are as follows: • Training-free concept presence estimation. We de-rive an inference-time estimator of undesirable concept presence that aggregates signals from the current noisy sample and the model’s one-step prediction of the clean image. • Inference-time Concept Removal Guidance (CRG). 
+
+Building on this estimator, we introduce CRG, a plug-and-play guidance rule that adaptively calibrates the negative guidance scale at each denoising step to ro-bustly suppress unwanted concepts while preserving prompt fidelity. • Robust safety–fidelity trade-off. Extensive red-teaming experiments show that CRG consistently blocks unwanted concept generations and maintains benign visual quality, without requiring additional data, fine-tuning, or auxiliary classifiers. 
+
+Conflict of Interest Disclosure. The authors received Google Cloud credits from the Google.org GCP Program for accessing the Gemini model, which is used in this paper for evaluation. 
+
+## 2. Preliminaries and Related Work 
+
+2.1. Diffusion Models 
+
+Diffusion models are a class of generative models that learn to synthesize data through two stochastic processes: forward noising process and reverse denoising process. The forward process is a Markov chain characterized by a predefined Gaussian transition, where data x0 is iteratively corrupted according to a fixed variance schedule: 
+
+q(xt|xt−1) := N (xt; p1 − βtxt−1, β tI),
+
+2Concept Removal Guidance 
+
+for t ∈ 1, . . . , T and 0 < β t < 1. The schedule βt is typically chosen such that q(xT ) approximately follows 
+
+N (0 , I ). The reverse process is another Markov chain with a learned Gaussian transition, used to define the sampling distribution pθ (x0):
+
+pθ (xt−1|xt) := N (xt−1; μθ (xt, t ), Σt),
+
+where μθ (xt, t ) is parameterized by a neural network. While these models can be trained via variational lower bound, Ho et al. (2020) propose a simplified objective. By reparame-terizing the reverse process to predict the noise ϵ, the loss function becomes: 
+
+LDiffusion (θ) = Et,x 0,ϵ 
+
+∥ϵ − ϵθt (xt)∥22
+
+ , (1) where xt := √αtx0 + √1 − αtϵ and αt := Qti=1 (1 − βi).For conditional generation tasks, such as T2I, the network is also provided with a condition c (e.g., an embedding of a text prompt representing the target concept), yielding 
+
+ϵθt (xt, c ). Training a conditional diffusion model typically amounts to learning a noise predictor by minimizing 
+
+LDiffusion (θ) = Et,x 0∼p0(x0|c),ϵ 
+
+h
+
+ϵ − ϵθt (xt, c ) 22
+
+i
+
+,
+
+where x0 denotes the image paired with the conditioning prompt c.
+
+2.2. Negative Guidance 
+
+Negative guidance is commonly employed to steer the sam-pling trajectory away from negative concepts defined by the negative prompt c− (e.g., nudity, violence, or self-harm). 
+
+ϵθt,λ (xt, c, c −) ≜ ϵθt (xt, c ) − λ  ϵθt (xt, c −) − ϵθt (xt)| {z }
+
+> =:∆ ϵt
+
+.
+
+(2) Here, ∆ϵt represents the negative guidance , a vector cap-turing the direction pointing towards the negative concept relative to the unconditional baseline. By subtracting this vector scaled by λ, the model suppresses the manifestation of c−. In this paper, we refer to the use of a fixed negative guidance scale λ across all timesteps as Negative Prompting .
+
+2.3. Dynamic Negative Guidance 
+
+Recently, Koulischer et al. (2025) introduced Dynamic Neg-ative Guidance (DNG), a strategy that adaptively modulates the guidance magnitude based on the estimated posterior probability pt(c − | xt, c ). In the conditional generation set-ting aiming to preserve c while removing c−, DNG employs dynamic scaling of the guidance: 
+
+ϵDNG (xt, c, c −)= ϵθt (xt, c ) − λ0ωDNG 
+
+
+
+ϵθt (xt, c, c −) − ϵθt (xt, c )
+
+
+
+,
+
+(3) where 
+
+ωDNG = pt(c − | xt, c )1 − pt(c − | xt, c ) .
+
+Here, the posterior term is approximated via a likelihood ratio between the conditional path distribution and its com-positional counterpart: 
+
+pt(c − | xt, c ) = p(c − | c) pt:T (xt:T |c, c −)
+
+pt:T (xt:T |c) . (4) However, the posterior-odds form of ωDNG makes the guid-ance weight extremely sensitive when pt is near 1, amplify-ing the estimation error. This is why practical implementa-tions clamp the posterior for numerical stability. This issue is exacerbated in open-vocabulary T2I genera-tion, where the concept c− is a compositional text concept for which the event ¬c− is not a single coherent alterna-tive class. Any posterior pt(c − | xt, c ) therefore inherits an unavoidable normalization ambiguity. This makes the esti-mation difficult, often remaining in a moderate-confidence regime and failing to provide a stable, actionable signal for adaptive suppression. One may tune hyperparameters to amplify the effect, but this typically increases the risk of unstable odds near the boundary and collateral degrada-tion of benign content. We provide a detailed analysis in Appendix A.2. 
+
+2.4. Other Related Work 
+
+Fine-tuning methods erase concepts by modifying model parameters. CA (Kumari et al., 2023) overwrites undesired knowledge via distribution matching, aligning the target concept’s distribution with a generic anchor. For data-free scenarios, ESD (Gandikota et al., 2023) fine-tunes weights using negative guidance to steer generation away from the undesired target. Addressing scalability, MACE (Lu et al., 2024) combines closed-form cross-attention refinement with LoRA (Hu et al., 2022) to efficiently handle mass concept erasure. While robust, these methods typically incur high computational costs compared to inference-time interven-tions. Weight editing methods, such as UCE (Gandikota et al., 2024) and RECE (Gong et al., 2024), directly edit the key and value projection matrices in cross-attention layers us-ing closed-form solutions to avoid full fine-tuning. While UCE performs a simultaneous closed-form update by jointly optimizing for multiple concepts, RECE iteratively derives and erases target embeddings to address incomplete erasure. Despite their use of regularization to preserve model capa-bilities, Amara et al. (2025) reported that these methods can still lead to degradation in image quality. Inference-time strategies provide a flexible alternative to retraining, allowing for trajectory steering without modify-ing the model. While standard negative prompting (Eq. 2) 3Concept Removal Guidance 
+
+serves as a baseline, recent advancements have focused on dynamic guidance mechanisms. TraSCE (Jain et al., 2024) employs localized gradient-based guidance, while STG (Na et al., 2025) utilizes a pre-trained classifier to measure con-cept presence at inference-time. However, both methods incur additional computational overhead. SAFREE (Yoon et al., 2025) further applies filtering in pixel space via an adaptive latent re-attention mechanism, but this comes with additional computational overhead. 
+
+## 3. Methodology 
+
+Moving beyond prior methods, we propose a concept pres-ence estimator that operates robustly in open-vocabulary settings. While conventional methods for concept detection rely on auxiliary image classifiers (Na et al., 2025), recent research demonstrates that diffusion models inherently ac-quire rich semantic representations during training (Yang & Wang, 2023; Yu et al., 2025). Leveraging these intrinsic ca-pabilities, we estimate concept presence directly through the generative dynamics of the pre-trained model, eliminating the need for external supervision. 
+
+3.1. Concept Presence Estimation 
+
+We define the concept presence (CP) as the expected log-likelihood of a negative concept c− manifesting in images generated conditioned on the prompt c:
+
+CP (c − | c) ≜ Epθ (x0|c)
+
+ log p(c − | x0)
+
+=
+
+Z
+
+pθ (x0 | c) log p(c − | x0)dx 0
+
+= log p(c−) + 
+
+Z
+
+pθ (x0 | c) log p(x0|c−)
+
+p(x0) dx 0
+
+= log p(c−) + 
+
+Z
+
+pθ (x0 | c) log p(x0|c)
+
+p(x0) dx 0
+
+−
+
+Z
+
+pθ (x0 | c) log p(x0|c)
+
+p(x0|c−) dx 0,
+
+(5) 
+
+where x0 is an image sampled from the pre-trained diffusion model given the user prompt c. To circumvent the require-ment for auxiliary classifiers, we reformulate log p(c− | x0)
+
+via Bayes’ rule. We omit the prior term log p(c−) as it is independent of the prompt c.Then the concept presence can be decomposed into the difference of two KL divergences: 
+
+CP (c − | c) ≈ Epθ (x0|c)
+
+
+
+log pθ (x0|c)
+
+pθ (x0)
+
+| {z }
+
+> DKL
+
+ pθ (x0|c) ∥ pθ (x0)
+
+
+
+− Epθ (x0|c)
+
+
+
+log pθ (x0|c)
+
+pθ (x0|c−)
+
+| {z }
+
+> DKL
+
+ pθ (x0|c) ∥ pθ (x0|c−)
+
+
+
+,
+
+(6) where we have replaced the true likelihood with the gen-erative likelihood of a diffusion model. Eq. (6) shows that the proposed concept presence score CP (c − | c) can be interpreted as a difference between two distributional dis-crepancies. The first term measures how strongly the condi-tional model pθ (x0|c) deviates from the unconditional prior 
+
+pθ (x0); in other words, it quantifies how much the prompt 
+
+c “controls” or informs the generated sample. The second term measures how distinguishable the c conditioned distri-bution is from the negative concept distribution pθ (x0|c−).Therefore, CP (c − | c) becomes large when the prompt c in-duces informative, structured generations that deviate from the unconditional distribution, while remaining close to the distribution associated with the unwanted concept c−. This aligns with our goal of identifying trajectories where the negative concept c− is implicitly realized under the prompt 
+
+c.Following Kong et al. (2024) and Wang et al. (2025), we estimate the first conditional–unconditional divergence by expressing it as an expected discrepancy between condi-tional and unconditional noise predictions: 
+
+Epθ (x0|c)
+
+ log pθ (x0|c) − log pθ (x0)
+
+= Epθ (x0|c), t, ϵ ∼N (0 ,I )
+
+h
+
+κt ϵθt (xt, c ) − ϵθt (xt) 2 i
+
+, (7) 
+
+where κt = βtT  
+
+> 2αt(1 −¯αt)
+
+.
+
+Applying the same approximation used for the first KL term, we express the second KL term as the expected difference between the conditional noise predictions: 
+
+Epθ (x0|c)
+
+ log pθ (x0|c) − log pθ (x0|c−)
+
+= Epθ (x0|c), t, ϵ ∼N (0 ,I )
+
+h
+
+κt ϵθt (xt, c ) − ϵθt (xt, c −) 2 i
+
+. (8) 
+
+Combining the two KL divergence terms, we derive the final expression for concept presence. 
+
+CP (c − | c) = Ex0,t,ϵ κt
+
+h
+
+ϵθt (xt, c ) − ϵθt (xt) 2
+
+− ϵθt (xt, c ) − ϵθt (xt, c −) 2i
+
+= Ex0,t,ϵ κt
+
+h
+
+2 ϵθt (xt, c )⊤ ϵθt (xt, c −) − ϵθt (xt)
+
++
+
+
+
+ϵθt (xt) 2 − ϵθt (xt, c −) 2i 
+
+= Ex0,t,ϵ κt
+
+2 ϵθt (xt, c )⊤∆ϵt + bt
+
+.
+
+(9) 
+
+The final form admits a simple geometric interpretation: the inner-product term ϵθt (xt, c )⊤∆ϵt quantifies the alignment between the prompt-conditioned noise prediction and the negative-guidance direction defined in Eq. (2). The remain-ing term bt := ∥ϵθt (xt)∥2 − ∥ ϵθt (xt, c −)∥2 is independent of c and thus acts as a prompt-agnostic offset. 4Concept Removal Guidance 
+
+3.2. Point-Wise Concept Presence Estimation 
+
+Moving beyond prompt-level concept presence CP (c − | c),this work targets sample-level, point-wise concept presence 
+
+CP (c − | x0). For practical purposes, point-wise concept presence is calculated based on the single sampling trajec-tory of x0 given c:
+
+CP (c − | x0) ≈ 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+κt
+
+h
+
+2ϵθt (xt, c )⊤∆ϵt + bt
+
+i
+
+, (10) where xt denotes the corresponding intermediate state at timestep t. Intuitively, this expression accumulates the align-ment between the sampling trajectory and the negative-guidance direction ∆ϵt across denoising steps. Directly estimating the concept presence in the final gener-ated image at timestep t necessitates unrolling the remaining denoising steps ( s < t ), a process that is computationally prohibitive. To circumvent this, we analyze the posterior distribution p(x0|xt) rather than the remaining full trajec-tory x0: t. While the true posterior is generally intractable, we can recover its mean using Tweedie’s formula (Efron, 2011): 
+
+ˆxθ
+
+> 0
+
+(xt, ·) = Epθ (x0|xt,·)[x0] = 1
+
+√¯αt
+
+
+
+xt − √1 − ¯αt ϵθt (xt, ·)
+
+
+
+.
+
+(11) 
+
+Following standard practices in diffusion-based inverse problems (Ho et al., 2022; Song et al., 2023; Zhu et al., 2023; Peng et al., 2024), we approximate the posterior as a Gaussian. Under this assumption, the point-wise concept presence simplifies to: 
+
+CP k
+
+ c − | ˆxθ
+
+> 0
+
+(xt, c ) ≈
+
+ 12rt2
+
+1 − ¯αt
+
+¯αt
+
+h 
+
+2ϵθt (xt, c )⊤∆ϵt + bt
+
+i
+
++ 1
+
+T
+
+> T
+
+X
+
+> t′=t+1
+
+κt′
+
+h
+
+2ϵθt′ (xt′ , c )⊤∆ϵt′ + bt′
+
+i
+
+,
+
+(12) 
+
+where rt2 denotes the posterior variance. Following Zhu et al. (2023), we set 
+
+r2 
+
+> t
+
+= 1
+
+k
+
+1 − ¯αt
+
+¯αt
+
+,
+
+treating k as a hyperparameter. Intuitively, k controls the relative strength of the Tweedie-based look-ahead term in our concept presence estimate. We further analyze the sensi-tivity to this variance scaling in Appendix C.1.1. 
+
+3.3. Inference-Time Concept Removal Guidance 
+
+Building on Eq. (12), we propose Concept Removal Guid-ance (CRG), an inference-time technique that suppresses specific concepts below a threshold τ while preserving prompt fidelity. We formulate this as a constrained optimiza-tion task, seeking to minimize deviation from the original guidance while satisfying the concept presence constraint: 
+
+min 
+
+> ϵ∗
+> t
+
+12 ∥ϵ∗ 
+
+> t
+
+− ϵθt (xt, c )∥22
+
+s.t. CP k
+
+ c − | ˆx∗
+
+> 0
+
+(xt) ≤ τ, 
+
+(13) where 
+
+ˆx∗
+
+> 0
+
+(xt) = 1
+
+√¯αt
+
+ xt − √1 − ¯αt ϵ∗
+
+> t
+
+ .
+
+Crucially, the constraint is affine with respect to ϵ∗ 
+
+> t
+
+, and thus corresponds to a half-space: 
+
+CP k
+
+ c − | ˆx∗ 
+
+> 0
+
+(xt) = k
+
+2
+
+
+
+2ϵ∗
+
+> t
+> ⊤
+
+∆ϵt + bt
+
+
+
++ 1
+
+T
+
+> T
+
+X
+
+> t′=t+1
+
+κt′
+
+h
+
+2ϵ⊤ 
+
+> t′
+
+∆ϵt′ + bt′
+
+i
+
+.
+
+(14) 
+
+Notably, because the actual sampling trajectory diverges from the conditional distribution c, we replace the condi-tional guidance term ϵθt′ (xt′ , c ) in Eq. (12) with the realized guidance ϵt′ for all preceding timesteps t′ > t .The optimization objective defined in Eq. (13) yields a straightforward analytical solution. Since the constraint is 
+
+affine in the decision variable ϵ∗ 
+
+> t
+
+, it defines a half-space 
+
+in the ϵ-space. Consequently, CRG admits a closed-form update that can be interpreted as the Euclidean projection 
+
+of the original conditional score onto this half-space, with the correction magnitude determined by the concept surplus 
+
+(CP k(·) − τ ).
+
+ϵ∗ 
+
+> t
+
+=
+
+(ϵθt (xt, c ), if CP k
+
+ c − | ˆxθ
+
+> 0
+
+(xt, c ) ≤ τ, ϵθt (xt, c ) − ωCRG ∆ϵt, otherwise ,
+
+(15) 
+
+where 
+
+ωCRG = CP k(·) − τk∥∆ϵt∥2 . (16) Empirically, we find that applying a scaling factor λ0 > 1
+
+to ωCRG strengthens the robustness of the concept removal process: 
+
+ϵ∗ 
+
+> t
+
+= ϵθt (xt, c ) − λ0 ωCRG ∆ϵt. (17) Crucially, because the weight λ0 is gated by the concept presence threshold, this amplification strictly intensifies sup-pression only when the target concept dominates. In summary, Eq. (16) explicates our method’s mechanism: at each step, the guidance weight ωCRG is linearly scaled by the estimated concept surplus. This fundamentally differs from the weighting scheme in DNG. As discussed earlier, DNG’s odds-based modulation is highly sensitive to posterior esti-mation error and typically requires numerical clamping in practice. In contrast, our CP score is an evidence measure that avoids normalization against an ill-posed complement 5Concept Removal Guidance 
+
+Table 1. Quantitative evaluation of nudity concept removal on Stable Diffusion v1.4. We report the Attack Success Rate (ASR) across adversarial prompt suites( Ring-A-Bell , P4D , UnlearnAtk , and MMA-Diff ) alongside generation quality metrics on the benign COCO set (CLIP, FID). ( Bold : Best, Underline: Second best)                                                                                                                                       
+
+> Ring-A-Bell 16 Ring-A-Bell 38 Ring-A-Bell 77 P4D UnlearnAtk MMA-Diff COCO Method ASR ( ↓)ASR ( ↓)ASR ( ↓)ASR ( ↓)ASR ( ↓)ASR ( ↓)CLIP ( ↑)FID ( ↓)SD v1.4 0.926 0.926 0.895 0.854 0.655 0.949 31.10 -ESD 0.021 0.053 0.042 0.152 0.296 0.242 31.39 53.39 CA 0.600 0.684 0.653 0.636 0.415 0.568 31.60 56.19 MACE 0.137 0.179 0.147 0.159 0.155 0.127 29.15 67.49 UCE 0.158 0.116 0.158 0.298 0.120 0.364 30.14 63.30 RECE 0.084 0.095 0.042 0.377 0.155 0.695 30.87 58.40 SLD Medium 0.956 0.936 0.926 0.907 0.683 0.945 30.83 57.09 SLD Strong 0.926 0.926 0.853 0.914 0.585 0.913 30.11 58.49 SLD Max 0.789 0.800 0.685 0.788 0.507 0.885 29.31 62.59 SAFREE 0.505 0.526 0.368 0.529 0.275 0.611 31.11 55.79 TraSCE 0.168 0.221 0.158 0.291 0.134 0.490 30.67 57.11 STG 0.326 0.305 0.274 0.331 0.317 0.584 29.53 65.37 NP 0.211 0.211 0.168 0.338 0.183 0.453 30.49 51.74 DNG 0.221 0.200 0.200 0.225 0.183 0.139 30.79 55.97 CRG (ours) 0.011 0.021 0.021 0.026 0.059 0.164 30.85 36.05
+
+and preserves the scale needed for control. By formulat-ing concept removal as a minimum-perturbation projection subject to a CP constraint, we obtain a stable closed-form up-date whose magnitude is proportional to the surplus concept evidence and whose direction is aligned with the available negative guidance vector. 
+
+## 4. Experiments 
+
+4.1. Removing Nudity Concept 
+
+4.1.1. E XPERIMENTAL SETUP 
+
+We use Stable Diffusion v1.4 (Rombach et al., 2022) as the backbone model, utilizing a DDPM sampler with 50 infer-ence steps. We instantiate the negative prompt c− as a set of terms that characterize the nudity concept: “Sexual Fan-tasy, Nudity, Pornography, Erotic Art, Nude, Naked, Sexual Acts” . The procedure for selecting these terms is detailed in Appendix E. Following prior work (Gandikota et al., 2023; Gong et al., 2024; Jain et al., 2024; Yoon et al., 2025), we evaluate our framework on established adversarial prompt benchmarks. Specifically, we utilize Ring-A-Bell (Tsai et al., 2024), which leverages genetic algorithms for prompt generation; 
+
+P4D (Chin et al., 2024), which identifies adversarial prompts by analyzing discrepancies between constrained and un-constrained predictions; UnlearnAtk (Zhang et al., 2024), which synthesizes adversarial prompts utilizing the model’s own classification capabilities; and MMA-Diff (Yang et al., 2024), which employs multimodal adversarial attacks to bypass safety filters. 4.1.2. B ASELINES AND EVALUATION METRICS 
+
+Our comparative analysis includes a comprehensive suite of state-of-the-art defenses. We compare CRG against weight-editing methods such as UCE (Gandikota et al., 2024) and RECE (Gong et al., 2024), as well as inference-time interventions including SLD (Schramowski et al., 2023), 
+
+SAFREE (Yoon et al., 2025), TraSCE (Jain et al., 2024), 
+
+STG (Na et al., 2025), Negative Prompting (NP) , and 
+
+DNG (Koulischer et al., 2025). For completeness, we also report results from fine-tuning approaches: ESD (Gandikota et al., 2023), CA (Kumari et al., 2023), and MACE (Lu et al., 2024). For evaluation, we report the attack success rate (ASR) across the adversarial prompt benchmarks. ASR is com-puted as the proportion of generated images classified as un-safe by the NudeNet 1 classifier, where an image is deemed unsafe if its classification score exceeds 0.6. To assess the impact on general generation quality, we report the Fr ´echet Inception Distance (FID) (Heusel et al., 2017) relative to the images generated by the original SD v1.4 backbone, along with the CLIP score calculated on 1,000 samples from the COCO-30K (Lin et al., 2014) dataset. 4.1.3. E XPERIMENTAL RESULTS 
+
+As shown in Table 1, CRG delivers the strongest overall defense, achieving the lowest ASR on five of the six adver-sarial prompt benchmarks and remaining highly competitive on the remaining one. This consistent ranking across diverse adversarial prompt suites indicates that CRG is not tuned to a particular attack distribution, but instead provides robust 
+
+> 1
+
+https://github.com/notAI-tech/NudeNet 
+
+6Concept Removal Guidance 
+
+Figure 3. Visual fidelity on benign prompts. While baselines like STG and DNG introduce artifacts or style shifts, CRG (far right) generates images nearly identical to the SD v1.4 baseline. This confirms that CRG minimizes interference, preserving the original composition and style. 
+
+suppression under varied prompt structures and concept-circumvention strategies. Compared to the strongest prior baselines, including training-based approaches that require additional data and optimization, CRG yields substantially larger safety gains, reducing ASR by 48%, 60%, and 50% on the Ring-A-Bell suite, 83% on P4D, and 51% on Un-learnAtk. Importantly, these improvements do not come from overly conservative generation. CRG simultaneously attains markedly lower FID than competing methods, sug-gesting that it removes the target concept while preserving the natural image manifold and avoiding excessive distor-tion of benign content. In other words, CRG suppresses the unwanted concept selectively rather than through blanket degradation of the output distribution. This safety–fidelity advantage is further supported by qualitative comparisons in Figure 2 and Figure 3, where CRG more reliably removes the target attribute while maintaining overall composition, subject identity, and contextual details. 4.1.4. S AFETY –F IDELITY PARETO ANALYSIS 
+
+We further analyze hyperparameter sensitivity and the re-sulting safety–fidelity trade-off across methods. As shown in Figure 4, CRG achieves a consistently better balance be-tween CLIP score and ASR, suggesting that its safety gains do not come from simply sacrificing benign fidelity. Static negative prompting (NP) reduces ASR mainly by applying uniformly strong negative guidance, which often degrades semantic alignment and visual quality. DNG improves over NP by adapting its guidance, but remains less robust and does not match CRG across the explored hyperparameter range. Overall, CRG dominates the Pareto frontier, retain-ing higher CLIP score at the same ASR (and lower ASR at the same CLIP score), via stepwise concept presence estimation that modulates guidance in a targeted manner along the reverse trajectory. Further guidelines for setting hyperparameters are provided in Appendix C.1. 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 
+
+> 1-ASR
+> 28.5
+> 29.0
+> 29.5
+> 30.0
+> 30.5
+> 31.0
+> CLIP score
+> OURS
+> DNG
+> NP
+> SLD
+> TraSCE
+> SAFREE
+> SD v1.4
+
+(a) Effect of Threshold τ on CRG 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0 
+
+> 1-ASR
+> 28.5
+> 29.0
+> 29.5
+> 30.0
+> 30.5
+> 31.0
+> CLIP score
+> OURS
+> DNG
+> NP
+> SLD
+> TraSCE
+> SAFREE
+> SD v1.4
+
+(b) Effect of Scale λ0 on CRG 
+
+Figure 4. Impact of hyperparameters on the CLIP–ASR trade-off. We visualize the effect of varying (a) the threshold τ and (b) the scale λ0. Reported ASR is averaged across the P4D, UnlearnAtk, and MMA-Diff benchmarks. 
+
+4.1.5. E XTENSION TO ADVANCED MODELS 
+
+To demonstrate architectural generalizability, we evaluate our framework on two representative modern backbones, SDXL (Podell et al., 2024) and SD v3 (Esser et al., 2024), which differ substantially in both model scale and design choices. For a fair and controlled comparison, we adopt the DDPM sampler for SDXL and the stochastic sampler for SD v3, ensuring that performance differences stem from the guidance mechanism rather than choice of the sampler. As 7Concept Removal Guidance 
+
+Table 2. Cross-model generalization on SDXL and SD v3. We assess the scalability of our framework for nudity concept removal across advanced backbones.                                                           
+
+> P4D UnlearnAtk MMA-Diff COCO Method ASR ( ↓)ASR ( ↓)ASR ( ↓)CLIP ( ↑)FID ( ↓)SDXL 0.748 0.493 0.440 32.13 -SAFREE 0.437 0.232 0.179 31.77 55.12 NP 0.205 0.141 0.064 31.71 44.81 DNG 0.146 0.099 0.029 31.52 50.34 CRG (ours) 0.060 0.077 0.016 32.07 44.77
+> SD v3 0.675 0.542 0.486 31.90 -SAFREE 0.245 0.317 0.131 32.05 37.13 NP 0.139 0.204 0.090 31.72 35.83 DNG 0.132 0.183 0.024 31.78 34.06
+> CRG (ours) 0.060 0.085 0.024 31.78 35.46
+
+shown in Table 2, CRG consistently achieves strong nudity concept removal across adversarial prompts while preserv-ing benign generation quality, yielding image fidelity that remains competitive with (and in many cases close to) the corresponding backbone models. These results indicate that our inference-time guidance is not tied to a specific model family or training recipe, but instead transfers reliably to newer, higher-capacity architectures. Overall, the evaluation confirms that CRG provides a practical safety enhancement for state-of-the-art T2I systems, enabling safer image gener-ation without any additional training, external datasets, or auxiliary classifiers. 4.1.6. E FFECT OF SAMPLER 
+
+Table 3. Quantitative comparison of nudity concept removal on Stable Diffusion v1.4 using the deterministic sampler (DPM-Solver++). P4D UnlearnAtk MMA-Diff COCO Method ASR ( ↓) ASR ( ↓) ASR ( ↓) CLIP ( ↑) FID ( ↓)SD v1.4 0.960 0.697 0.972 31.40 -SAFREE 0.377 0.225 0.591 31.10 43.31 TraSCE 0.139 0.042 0.554 30.62 51.24 NP 0.298 0.141 0.598 30.85 45.54 CRG (ours) 0.020 0.049 0.099 31.30 17.57 
+
+As presented in Table 3, CRG demonstrates superior efficacy under the deterministic DPM-Solver++ (Lu et al., 2025), achieving the best results across the majority of adversarial benchmarks and dominating in generation quality metrics (CLIP, FID). While TraSCE shows a marginally lower ASR on UnlearnAtk, it suffers from severe degradation in visual fidelity compared to our method. These findings validate that CRG performs consistently across deterministic samplers. 
+
+4.2. Removing Violence Concept 
+
+4.2.1. E XPERIMENTAL SETUP 
+
+To assess robustness in violence-related generation, we eval-uated CRG against inference-time methods across three Ring-A-Bell configurations. Across all settings, we used SD v1.4 with 50-step DDPM sampling and a common negative 
+
+Table 4. Quantitative evaluation of violence concept removal on Stable Diffusion v1.4. We report the attack success rate (ASR) across three Ring-A-Bell configurations to assess the robustness of each mitigation strategy.                                       
+
+> Ring-A-Bell 5-77 Ring-A-Bell 5.5-38 Ring-A-Bell 5.5-77 COCO Method ASR ( ↓)ASR ( ↓)ASR ( ↓)CLIP ( ↑)FID ( ↓)SD v1.4 0.992 0.964 0.972 31.10 -SAFREE 0.740 0.612 0.696 30.42 50.76 TraSCE 0.632 0.540 0.680 30.49 56.94 NP 0.760 0.628 0.744 30.41 50.76 DNG 0.392 0.352 0.400 30.68 56.08 CRG 0.296 0.252 0.280 30.84 37.63
+
+prompt, “Bleeding, Blood, Gun, Weapon, Wounded” . The presence of violent content was assessed using the Q16 de-tector (Schramowski et al., 2022), and we report the attack success rate (ASR), where lower values indicate stronger suppression. Fidelity is evaluated using the same metrics as in the nudity removal task. 4.2.2. E XPERIMENTAL RESULTS 
+
+As shown in Table 4, SD v1.4 exhibits high ASR across all three Ring-A-Bell configurations, indicating that the adver-sarial prompts reliably induce violent content. Among the mitigation methods, CRG achieves the lowest ASR in all set-tings, reducing ASR to 0.296, 0.252, and 0.280, respectively. Compared with the strongest baseline, DNG, CRG further reduces ASR by a substantial margin while also preserving generation quality. In particular, CRG attains the highest CLIP score and the lowest FID on the COCO dataset, sug-gesting that it suppresses violent concepts more effectively without sacrificing benign image quality. 
+
+4.3. Removing Artist Style 
+
+4.3.1. E XPERIMENTAL SETUP 
+
+We evaluate whether CRG can selectively suppress a target artist style while preserving unrelated styles. Following prior work (Jain et al., 2024; Yoon et al., 2025) on artist style erasure, we consider two test cases: (1) removing the “Van Gogh” style while retaining the styles of “Pablo Picasso”, “Andy Warhol”, “Caravaggio”, and “Rembrandt”; and (2) removing the “Kelly McKernan” style while preserving the styles of “Tyler Edlin”, “Thomas Kinkade”, “Kilian Eng”, and “Ajin: Demi-Human”. For each case, we use a set of 100 prompts and generate samples with SD v1.4 using a DDPM sampler (following the same configuration as in our main experiments). For artist style removal, we use GPT-4o (OpenAI, 2024) for evaluation. 4.3.2. E VALUATION METRICS AND EXPERIMENTAL 
+
+RESULTS 
+
+In Table 5, Acc e denotes the classification accuracy of the erased style (lower is better), while Acc u measures accuracy for the unrelated styles (higher is better). This metric pair 8Concept Removal Guidance                                    
+
+> Table 5. Quantitative comparison of artist style removal on Stable Diffusion v1.4. We use GPT-4o to classify the generated images and report the classification accuracy on the target style (Acc e, lower is better) and unrelated styles ( Acc u, higher is better).
+> Remove “Van Gogh” Remove “Kelly McKernan” Method Acc e(↓)Acc u(↑)Acc e(↓)Acc u(↑)SD v1.4 0.80 0.90 0.80 0.64 SAFREE 0.40 0.74 0.20 0.64 TraSCE 0.40 0.70 0.10 0.64 NP 0.40 0.74 0.20 0.65 DNG 0.15 0.70 0.15 0.61 CRG (ours) 0.10 0.78 0.05 0.68
+
+jointly captures the key challenge of artist style erasure: suppressing the targeted stylistic signature without inadver-tently degrading the model’s ability to render other styles. As shown in Table 5 and Figure 1, our method achieves a lower Acc e than competing approaches, indicating stronger removal of the target artist style. At the same time, it main-tains a higher Acc u, suggesting that the suppression is selec-tive rather than indiscriminate, and that non-target stylistic capabilities remain largely intact. These results highlight that our guidance operates with high precision, avoiding the common failure mode of over-erasure. Additional evalua-tions using Gemini 2.5 Flash (Google Gemini Team, 2025) and Qwen3-VL (Bai et al., 2025), reported in Appendix F.1, further support that CRG achieves strong target style sup-pression while preserving non-target styles, though the pre-cise ranking varies across VLM evaluators. 4.3.3. H UMAN EVALUATION 
+
+We additionally conducted a human evaluation on the artist style removal task with 30 participants, each evaluating 100 images per method, using the same protocol as the GPT-4o-based assessment. Participants were shown images generated by each method and asked to identify the artist style from five options: “Pablo Picasso”, “Van Gogh”, “Rem-brandt”, “Andy Warhol”, and “Caravaggio”.                      
+
+> Table 6. Human evaluation results for artist-style removal on Stable Diffusion v1.4. Lower is better for Acc eand higher is better for Acc u.
+> Remove “Van Gogh” Method Acc e(↓)Acc u(↑)SD v1.4 0.837 0.803 SAFREE 0.418 0.814 TraSCE 0.434 0.815 NP 0.376 0.816 DNG 0.304 0.724 CRG (ours) 0.259 0.820
+
+As shown in Table 6, our method yields the lowest erased-style accuracy (0.259) together with the highest non-target accuracy (0.820). This human evaluation is aligned with the GPT-4o-based assessment, indicating that the same selectiv-ity trend is also reflected in human judgments. Detailed set-tings for the human evaluation are provided in Appendix G. 
+
+4.4. Generalization and Robustness Analyses 
+
+To further assess the generalizability and robustness of CRG, we provide additional analyses in Appendix F along four complementary axes: robustness to negative prompt selection, applicability to identity removal, generalization across broader prompt distributions, and scalability to multi-concept removal. 
+
+## 5. Limitations 
+
+While CRG demonstrates strong empirical performance, several limitations remain. First, as an inference-time de-fense, CRG serves as a complementary safety layer and may remain vulnerable to subtle or adaptive adversarial prompts. Second, its effectiveness depends on user-specified negative prompts, which can be difficult to design in open-vocabulary settings, motivating future work on automated or adaptive negative-prompt construction. Finally, the concept presence score is derived under modeling approximations and re-flects the presence of the user-specified concept. It should therefore be interpreted as a surrogate signal rather than a definitive indicator of content harmfulness. 
+
+## 6. Conclusion 
+
+We introduced Concept Removal Guidance (CRG), a training-free, plug-and-play inference-time defense for T2I diffusion models that adaptively calibrates negative guid-ance via a stepwise concept presence signal. Our estimator fuses evidence from the current denoising state with an ex-plicit look-ahead proxy from the model’s predicted clean sample, enabling stable suppression even when intermediate cues are weak. It requires no additional data, fine-tuning, or auxiliary classifiers. Across red-teaming evaluations, CRG achieves strong concept removal while preserving fidelity on benign prompts, yielding a favorable safety–fidelity trade-off. Future work includes building on the multi-concept removal results in Appendix F.5 toward more robust han-dling of such scenarios, and extending concept presence estimation to other generative domains, such as video or 3D diffusion models. 
+
+## Acknowledgements 
+
+This work was supported by Institute for Information & Communications Technology Planning & Evaluation (IITP) grant funded by the Korea government(MSIT) (No.RS-2024-00343989, Enhancing the Ethics of Data Characteristics and Generation AI Models for Social and Ethical Learning; 9Concept Removal Guidance 
+
+No.RS-2024-00397310, Development of an AI Simulator for Creating Transparent Compounds that Can Be Altered for Tactile Sensation; No.RS-2024-00457882, AI Research Hub Project; No.RS-2020-II200940, Foundations of Safe Reinforcement Learning and Its Applications to Natural Lan-guage Processing; No.RS-2019-II190075, Artificial Intelli-gence Graduate School Program (KAIST); No. RS-2022-II220311, Development of Goal-Oriented Reinforcement Learning Techniques for Contact-Rich Robotic Manipula-tion of Everyday Objects). We additionally acknowledge Google Cloud credits provided through the Google.org GCP Program, which were used for accessing the Gemini model in this work. 
+
+## Impact Statement 
+
+This work presents Concept Removal Guidance (CRG) to advance the safety of text-to-image generation by effec-tively suppressing target concepts and protecting benign content at inference time. While CRG demonstrates robust performance across various benchmarks and architectures, it is not without limitations. As a defense relying on the model’s internal representations, it may still be susceptible to highly implicit adversarial prompts or adaptive attacks that bypass standard concept detection. Furthermore, while our method mitigates specific visual risks, it does not ad-dress the fundamental biases and stereotypes inherited from the training data of foundational models. We emphasize that safeguarding generative AI is an evolving challenge; thus, our method should be viewed as a complementary layer of defense rather than a standalone solution, necessitating ongoing research into fairness, data curation, and robust alignment strategies. 
+
+## References 
+
+Amara, I., Humayun, A. I., Kajic, I., Parekh, Z., Harris, N., Young, S., Nagpal, C., Kim, N., He, J., Vasconcelos, C. N., Ramachandran, D., Farnadi, G., Heller, K., Havaei, M., and Rostamzadeh, N. EraseBench: Understanding The Ripple Effects of Concept Erasure Techniques. arXiv preprint arXiv:2501.09833 , 2025. Bai, S., Cai, Y., Chen, R., et al. Qwen3-VL Technical Report. 
+
+arXiv preprint arXiv:2511.21631 , 2025. Ban, Y., Wang, R., Zhou, T., Cheng, M., Gong, B., and Hsieh, C.-J. Understanding the Impact of Negative Prompts: When and How Do They Take Effect? In Euro-pean Conference on Computer Vision (ECCV) , 2024. Brown, T., Mann, B., Ryder, N., Subbiah, M., Kaplan, J. D., Dhariwal, P., Neelakantan, A., Shyam, P., Sastry, G., Askell, A., Agarwal, S., Herbert-Voss, A., Krueger, G., Henighan, T., Child, R., Ramesh, A., Ziegler, D., Wu, J., Winter, C., Hesse, C., Chen, M., Sigler, E., Litwin, M., Gray, S., Chess, B., Clark, J., Berner, C., McCandlish, S., Radford, A., Sutskever, I., and Amodei, D. Language Models are Few-Shot Learners. In Advances in Neural Information Processing Systems 33 (NeurIPS) , 2020. Chin, Z.-Y., Jiang, C. M., Huang, C.-C., Chen, P.-Y., and Chiu, W.-C. Prompting4Debugging: Red-Teaming Text-to-Image Diffusion Models by Finding Problematic Prompts. In Proceedings of the 41st International Con-ference on Machine Learning (ICML) , 2024. Clark, K. and Jaini, P. Text-to-Image Diffusion Models are Zero Shot Classifiers. In Advances in Neural Information Processing Systems 36 (NeurIPS) , 2023. Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., and Fei-Fei, L. ImageNet: A large-scale hierarchical image database. In Proceedings of the IEEE/CVF Conference on Com-puter Vision and Pattern Recognition (CVPR) , 2009. Dhariwal, P., Jun, H., Payne, C., Kim, J. W., Radford, A., and Sutskever, I. Jukebox: A Generative Model for Music. 
+
+arXiv preprint arXiv:2005.00341 , 2020. Efron, B. Tweedie’s Formula and Selection Bias. Journal of the American Statistical Association , 2011. Esser, P., Kulal, S., Blattmann, A., Entezari, R., M ¨uller, J., Saini, H., Levi, Y., Lorenz, D., Sauer, A., Boesel, F., et al. Scaling Rectified Flow Transformers for High-resolution Image Synthesis. In Proceedings of the 41st International Conference on Machine Learning (ICML) , 2024. Gandikota, R., Materzy ´nska, J., Fiotto-Kaufman, J., and Bau, D. Erasing Concepts from Diffusion Models. In 
+
+Proceedings of the 2023 IEEE International Conference on Computer Vision (ICCV) , 2023. Gandikota, R., Orgad, H., Belinkov, Y., Materzynska, J., and Bau, D. Unified Concept Editing in Diffusion Mod-els. In IEEE/CVF Winter Conference on Applications of Computer Vision (WACV) , 2024. Gong, C., Chen, K., Wei, Z., Chen, J., and Jiang, Y.-G. Reliable and Efficient Concept Erasure of Text-to-Image Diffusion Models. In European Conference on Computer Vision (ECCV) , 2024. Google Gemini Team. Gemini 1.5: Unlocking Multimodal Understanding Across Millions of Tokens of Context. 
+
+arXiv preprint arXiv:2403.05530 , 2024. Google Gemini Team. Gemini 2.5: Pushing the frontier with advanced reasoning, multimodality, long context, and next generation agentic capabilities. arXiv preprint arXiv:2507.06261 , 2025. 10 Concept Removal Guidance 
+
+Heusel, M., Ramsauer, H., Unterthiner, T., Nessler, B., and Hochreiter, S. GANs Trained by a Two Time-Scale Up-date Rule Converge to a Local Nash Equilibrium. In 
+
+Advances in Neural Information Processing Systems 30 (NIPS) , 2017. Ho, J. and Salimans, T. Classifier-Free Diffusion Guidance. In Neural Information Processing Systems (NeurIPS) 2021 Workshop on “Deep Generative Models and Down-stream Applications” , 2021. Ho, J., Jain, A., and Abbeel, P. Denoising Diffusion Prob-abilistic Models. In Advances in Neural Information Processing Systems 33 (NeurIPS) , 2020. Ho, J., Salimans, T., Gritsenko, A. A., Chan, W., Norouzi, M., and Fleet, D. J. Video Diffusion Models. In Advances in Neural Information Processing Systems 35 (NeurIPS) ,2022. Hong, W., Ding, M., Zheng, W., Liu, X., and Tang, J. CogVideo: Large-scale Pretraining for Text-to-Video Generation via Transformers. In International Confer-ence on Learning Representations (ICLR) , 2023. Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Wang, L., and Chen, W. LoRA: Low-Rank Adaptation of Large Language Models. In International Conference on Learning Representations (ICLR) , 2022. Jain, A., Kobayashi, Y., Shibuya, T., Takida, Y., Memon, N., Togelius, J., and Mitsufuji, Y. TraSCE: Trajec-tory Steering for Concept Erasure. arXiv preprint arXiv:2412.07658 , 2024. Jaini, P., Clark, K., and Geirhos, R. Intriguing Properties of Generative Classifiers. In International Conference on Learning Representations (ICLR) , 2024. Kong, X., Liu, O., Li, H., Yogatama, D., and Steeg, G. V. Interpretable Diffusion via Information Decomposition. In International Conference on Learning Representations (ICLR) , 2024. Kong, Z., Ping, W., Huang, J., Zhao, K., and Catanzaro, B. DiffWave: A Versatile Diffusion Model for Audio Synthesis. In International Conference on Learning Rep-resentations (ICLR) , 2021. Koulischer, F., Deleu, J., Raya, G., Demeester, T., and Am-brogioni, L. Dynamic Negative Guidance of Diffusion Models. In International Conference on Learning Repre-sentations (ICLR) , 2025. Kumari, N., Zhang, B., Wang, S.-Y., Shechtman, E., Zhang, R., and Zhu, J.-Y. Ablating Concepts in Text-to-Image Diffusion Models. In Proceedings of the IEEE/CVF Inter-national Conference on Computer Vision (ICCV) , 2023. Li, A. C., Prabhudesai, M., Duggal, S., Brown, E., and Pathak, D. Your Diffusion Model is Secretly a Zero-Shot Classifier. In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , 2023. Lin, T.-Y., Maire, M., Belongie, S., Hays, J., Perona, P., Ra-manan, D., Doll ´ar, P., and Zitnick, C. L. Microsoft COCO: Common objects in context. In European Conference on Computer Vision (ECCV) , 2014. Liu, N., Li, S., Du, Y., Torralba, A., and Tenenbaum, J. B. Compositional visual generation with composable dif-fusion models. In European Conference on Computer Vision (ECCV) , 2022. Liu, Y., Zhang, K., Li, Y., Yan, Z., Gao, C., Chen, R., Yuan, Z., Huang, Y., Sun, H., Gao, J., He, L., and Sun, L. Sora :A Review on Background, Technology, Limitations, and Opportunities of Large Vision Models. arXiv preprint arXiv:2402.17177 , 2024. Lu, C., Zhou, Y., Bao, F., Chen, J., Li, C., and Zhu, J. DPM-Solver++: Fast Solver for Guided Sampling of Diffusion Probabilistic Models. Machine Intelligence Research , 22 (4):730–751, 2025. doi: 10.1007/s11633-025-1562-4. Lu, S., Wang, Z., Li, L., Liu, Y., and Kong, A. W.-K. MACE: Mass Concept Erasure in Diffusion Models. In Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2024. Na, B., Kang, M., Kwak, J., Park, M., Shin, J., Jun, S., Lee, G., Kim, J.-H., and Moon, I.-C. Training-Free Safe Text Embedding Guidance for Text-to-Image Diffusion Models. In Advances in Neural Information Processing Systems 38 (NeurIPS) , 2025. OpenAI. Hello GPT-4o. https://openai.com/ index/hello-gpt-4o/ , May 2024. Ouyang, L., Wu, J., Jiang, X., Almeida, D., Wainwright, C., Mishkin, P., Zhang, C., Agarwal, S., Slama, K., Ray, A., Schulman, J., Hilton, J., Kelton, F., Miller, L., Simens, M., Askell, A., Welinder, P., Christiano, P. F., Leike, J., and Lowe, R. Training Language Models to Follow In-structions with Human Feedback. In Advances in Neural Information Processing Systems 35 (NeurIPS) , 2022. Peng, X., Zheng, Z., Dai, W., Xiao, N., Li, C., Zou, J., and Xiong, H. Improving Diffusion Models for Inverse Problems Using Optimal Posterior Covariance. In Pro-ceedings of the 41st International Conference on Machine Learning (ICML) , 2024. Podell, D., English, Z., Lacey, K., Blattmann, A., Dockhorn, T., M ¨uller, J., Penna, J., and Rombach, R. SDXL: Improv-ing Latent Diffusion Models for High-Resolution Image Synthesis. In International Conference on Learning Rep-resentations (ICLR) , 2024. 11 Concept Removal Guidance 
+
+Ramesh, A., Pavlov, M., Goh, G., Gray, S., Voss, C., Rad-ford, A., Chen, M., and Sutskever, I. Zero-Shot Text-to-Image Generation. In Proceedings of the 38th Interna-tional Conference on Machine Learning (ICML) , 2021. Rombach, R., Blattmann, A., Lorenz, D., Esser, P., and Ommer, B. High-Resolution Image Synthesis with La-tent Diffusion Models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2022. Saharia, C., Chan, W., Saxena, S., Li, L., Whang, J., Denton, E. L., Ghasemipour, K., Gontijo Lopes, R., Karagol Ayan, B., Salimans, T., Ho, J., Fleet, D. J., and Norouzi, M. Photorealistic Text-to-Image Diffusion Models with Deep Language Understanding. In Advances in Neural Infor-mation Processing Systems 35 (NeurIPS) , 2022. Schramowski, P., Tauchmann, C., and Kersting, K. Can Machines Help Us Answering Question 16 in Datasheets, and In Turn Reflecting on Inappropriate Content? In 
+
+Proceedings of the 2022 ACM Conference on Fairness, Accountability, and Transparency (FAccT) , 2022. Schramowski, P., Brack, M., Deiseroth, B., and Kersting, K. Safe Latent Diffusion: Mitigating Inappropriate De-generation in Diffusion Models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2023. Song, J., Vahdat, A., Mardani, M., and Kautz, J. Pseudoinverse-Guided Diffusion Models for Inverse Prob-lems. In International Conference on Learning Represen-tations (ICLR) , 2023. Tsai, Y.-L., Hsu, C.-Y., Xie, C., Lin, C.-H., Chen, J. Y., Li, B., Chen, P.-Y., Yu, C.-M., and Huang, C.-Y. Ring-A-Bell! How Reliable are Concept Removal Methods For Diffusion Models? In International Conference on Learning Representations (ICLR) , 2024. Wallace, B., Dang, M., Rafailov, R., Zhou, L., Lou, A., Purushwalkam, S., Ermon, S., Xiong, C., Joty, S., and Naik, N. Diffusion Model Alignment Using Direct Pref-erence Optimization. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2024. Wang, C., Franzese, G., Finamore, A., Gallo, M., and Michiardi, P. Information Theoretic Text-to-Image Align-ment. In International Conference on Learning Repre-sentations (ICLR) , 2025. Yang, X. and Wang, X. Diffusion Model as Representation Learner. In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , 2023. Yang, Y., Gao, R., Wang, X., Ho, T.-Y., Xu, N., and Xu, Q. MMA-Diffusion: MultiModal Attack on Diffusion Models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2024. Yoon, J., Yu, S., Patil, V., Yao, H., and Bansal, M. SAFREE: Training-Free and Adaptive Guard for Safe Text-to-Image And Video Generation. In International Conference on Learning Representations (ICLR) , 2025. Yu, J., Xu, Y., Koh, J. Y., Luong, T., Baid, G., Wang, Z., Vasudevan, V., Ku, A., Yang, Y., Ayan, B. K., Hutchinson, B., Han, W., Parekh, Z., Li, X., Zhang, H., Baldridge, J., and Wu, Y. Scaling Autoregressive Models for Content-Rich Text-to-Image Generation. Transactions on Machine Learning Research (TMLR) , 2022. Yu, S., Kwak, S., Jang, H., Jeong, J., Huang, J., Shin, J., and Xie, S. Representation Alignment for Generation: Train-ing Diffusion Transformers Is Easier Than You Think. In 
+
+International Conference on Learning Representations (ICLR) , 2025. Zhang, Y., Jia, J., Chen, X., Chen, A., Zhang, Y., Liu, J., Ding, K., and Liu, S. To Generate or Not? Safety-driven Unlearned Diffusion Models Are Still Easy to Generate Unsafe Images... For Now. In European Conference on Computer Vision (ECCV) , 2024. Zhu, Y., Zhang, K., Liang, J., Cao, J., Wen, B., Timofte, R., and Van Gool, L. Denoising Diffusion Models for Plug-and-Play Image Restoration. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (NTIRE) , 2023. 12 Concept Removal Guidance 
+
+## A. Dynamic Negative Guidance 
+
+A.1. Implementation Details of Dynamic Negative Guidance 
+
+For conditional generation, Dynamic Negative Guidance (DNG) (Koulischer et al., 2025) aims to sample from the following target distribution: 
+
+π(x0 | c+, ¬c−) = p0(x0 | c+)  1 − p(c− | x0)
+
+Z , (18) where Z is the normalizing constant (partition function). The corresponding forward-noised marginal at timestep t is 
+
+πt(xt | c+, ¬c−) = 
+
+Z
+
+q(xt | x0) π(x0 | c+, ¬c−) dx 0
+
+= 1
+
+Z
+
+Z
+
+q(xt | x0)p0(x0 | c+)  1 − p(c− | x0) dx 0
+
+= 1
+
+Z
+
+" Z
+
+q(xt | x0)p0(x0 | c+) dx 0 −
+
+Z
+
+q(xt | x0)p0(x0 | c+) p(c− | x0) dx 0
+
+#
+
+= 1
+
+Z
+
+"
+
+pt(xt | c+) − pt(xt | c+) 
+
+Z q(xt | x0)p0(x0 | c+) 
+
+pt(xt | c+) p(c− | x0) dx 0
+
+#
+
+= pt(xt | c+) 
+
+Z
+
+"
+
+1 −
+
+Z
+
+q(x0 | xt, c +) p(c− | x0) dx 0
+
+#
+
+= pt(xt | c+) 
+
+Z
+
+ 1 − p(c− | xt, c +) .
+
+(19) Consequently, the score function of πt decomposes as 
+
+∇xt log πt(xt | c+, ¬c−) = ∇xt log pt(xt | c+) + ∇xt log  1 − p(c− | xt, c +) . (20) Using the same manipulation as in the unconditional DNG derivation, Eq. (20) yields 
+
+∇xt log πt(xt |c+, ¬c−)= ∇xt log pt(xt | c+) − pt(c− | xt, c +) 1 − pt(c− | xt, c +) 
+
+
+
+∇xt log pt(xt | c+, c −) − ∇ xt log pt(xt | c+) 
+
+
+
+= ∇xt log pt(xt | c+) 
+
+− p(c− | c+) pt(xt | c+, c −)
+
+pt(xt | c+) − p(c− | c+) pt(xt | c+, c −)
+
+
+
+∇xt log pt(xt | c+, c −) − ∇ xt log pt(xt | c+) 
+
+
+
+.
+
+(21) In the conditional-generation setting, Koulischer et al. (2025) approximate the above by 
+
+∇xt log πt(xt | c+, ¬c−) ≈ ∇ xt log pt(xt | c+) 
+
+− p(c− | c+) pt(xt | c−)
+
+pt(xt | c+) − p(c− | c+) pt(xt | c−)
+
+
+
+∇xt log pt(xt | c−) − ∇ xt log pt(xt | c+) 
+
+
+
+,
+
+(22) which corresponds to approximating the joint conditional pt(xt | c+, c −) by the marginal pt(xt | c−). In practice, however, we observe that the resulting guidance brings limited gains in our experiments, which we attribute to the discrepancy introduced by replacing the joint conditional with its marginal. A simple and effective alternative is to approximate the joint score by an additive composition of marginal scores (Liu et al., 2022): 
+
+∇xt log pt(xt | c+, c −) ≈ ∇ xt log pt(xt | c+) + ∇xt log pt(xt | c−) − ∇ xt log pt(xt). (23) This “score composition” form is widely adopted in diffusion-based compositional generation, where the goal is to enforce conjunctions such as (c + ∧c−). Accordingly, we re-implement DNG by adopting this approximation for the joint score. 13 Concept Removal Guidance 
+
+A.2. Hyperparameter Choice for DNG          
+
+> Table 7. Sensitivity analysis of the temperature τtemp and λ0.We evaluate the performance trade-off by varying the temperature τand
+> λ0for DNG.
+
+DNG Attack Success Rate (ASR) ↓ Benign Quality 
+
+τtemp λ0 P4D UnlearnAtk MMA-Diff CLIP ↑ FID ↓
+
+0.5 1.0 0.517 0.437 0.728 31.27 53.55 0.5 10.0 0.642 0.521 0.876 31.38 52.94 
+
+1.0 1.0 0.331 0.296 0.256 31.01 54.74 1.5 1.0 0.225 0.183 0.139 30.79 55.97 2.0 1.0 0.126 0.070 0.079 30.53 57.25 Unlike CRG, DNG fails to achieve meaningful concept removal even when increasing the guidance scale λ0. In contrast to fixed-class settings with well-defined discrete labels, the inherent semantic ambiguity in open-vocabulary T2I generation hinders the posterior pt(c− | xt, c ) from approaching 1. Consequently, the associated weight remains negligible ( ωt ≈ 0), rendering DNG ineffective unless the temperature parameter τtemp is adjusted. However, as shown in Table 7, this adjustment gains removal performance at the cost of benign image quality, evidencing decreased CLIP scores and degraded FID. For the remaining parameters, we set pprior = 0 .1 and δoffset = 0 .004 .
+
+A.3. Additional Stabilization Technique for DNG           
+
+> Figure 5. Visual comparison of stabilization techniques for Dynamic Negative Guidance (DNG) when using high τtemp = 1 .5.From left to right: (a) SD v1.4 , output of backbone model; (b-d) DNG with clipping at thresholds of 100, 75, and 50, respectively. While clipping mitigates the instability of DNG, it struggles to match the quality of our proposed CRG method; (e) CRG (ours), showing high-fidelity results.
+
+As illustrated in Figure 5, employing a high temperature value in DNG disrupts the generation of benign images, frequently resulting in saturation or blurring. While clipping the maximum guidance scale appears to be a viable strategy for stabilizing DNG, Figure 5 and Table 8 demonstrate that this approach compromises safety; specifically, it leads to a significant reduction in concept removal capability. 
+
+## B. Details of Concept Presence Estimation 
+
+B.1. Transition From the Likelihood-Based Definition (Eq. (5) –(6) ) to the Noise-Prediction Formulation (Eq. (7) –(9) )
+
+Assuming a perfectly trained diffusion model, the model-induced trajectory distributions coincide with the true forward trajectory distributions in both the conditional and unconditional cases: 
+
+pθ (x0: T | c) = q(x0: T | c), pθ (x0: T ) = q(x0: T ).
+
+14 Concept Removal Guidance 
+
+Table 8. Quantitative comparison between CRG (ours) and DNG with guidance scale clipping method. Bold indicates the best performance. 
+
+P4D UnlearnAtk MMA-Diff COCO Method ASR ( ↓) ASR ( ↓) ASR ( ↓) CLIP ( ↑) FID ( ↓)
+
+CRG (ours) 0.026 0.059 0.164 30.85 36.05 
+
+DNG ( τtemp = 1 .5)
+
++ Clip 100.0 0.225 0.183 0.139 30.79 55.97 + Clip 75.0 0.192 0.155 0.264 31.04 54.60 + Clip 50.0 0.265 0.275 0.391 31.24 53.70 Marginalizing over the intermediate variables x1: T then gives 
+
+pθ (x0 | c) = q(x0 | c), pθ (x0) = q(x0),
+
+and therefore the first KL term of Eq. (6) can be rewritten as 
+
+DKL 
+
+ pθ (x0 | c) ∥ pθ (x0) = DKL 
+
+ q(x0 | c) ∥ q(x0).
+
+Moreover, this marginal KL can be lifted to the full diffusion trajectory by the chain rule. Since the forward noising process depends only on x0 and is independent of c, we have 
+
+q(x0: T | c) = q(x0 | c)q(x1: T | x0), q(x0: T ) = q(x0)q(x1: T | x0).
+
+Hence, 
+
+DKL 
+
+ q(x0: T | c) ∥ q(x0: T ) = Eq(x0: T |c)
+
+
+
+log q(x0 | c)q(x1: T | x0)
+
+q(x0)q(x1: T | x0)
+
+
+
+= DKL 
+
+ q(x0 | c) ∥ q(x0),
+
+where the common forward-process term q(x1: T | x0) cancels. Combining this with the equalities above yields 
+
+DKL 
+
+ pθ (x0 | c) ∥ pθ (x0) = DKL 
+
+ pθ (x0: T | c) ∥ pθ (x0: T ).
+
+Using the standard reverse-process factorization, the trajectory-level KL decomposes into a sum of per-step KL terms: 
+
+DKL 
+
+ pθ (x0: T | c) ∥ pθ (x0: T ) =
+
+> T
+
+X
+
+> t=1
+
+Epθ (xt|c)
+
+DKL 
+
+ pθ (xt−1 | xt, c ) ∥ pθ (xt−1 | xt) . (24) Since both reverse transitions are Gaussian with the same covariance βtI, each per-step KL reduces to a scaled squared ℓ2
+
+distance between the corresponding reverse means. Substituting the standard DDPM parameterization of the reverse mean in terms of ϵθ , we obtain 
+
+DKL 
+
+ pθ (x0 | c) ∥ pθ (x0) = Et,x,ϵ 
+
+h
+
+κt ϵθt (xt, c ) − ϵθt (xt) 2i
+
+, κt = βtT
+
+2αt(1 − ¯αt) .
+
+The second KL term in Eq. (6) admits the same derivation, with the unconditional distribution replaced by the negative concept-conditioned distribution pθ (x0 | c−) (and correspondingly pθ (x0: T | c−) at the trajectory level). 
+
+DKL 
+
+ pθ (x0 | c) ∥ pθ (x0 | c−) = Et,x,ϵ 
+
+h
+
+κt ϵθt (xt, c ) − ϵθt (xt, c −) 2i
+
+, κt = βtT
+
+2αt(1 − ¯αt) .
+
+B.2. Concept Presence Estimation 
+
+Building on the trajectory-level decomposition derived in Appendix B.1, we re-express the two distribution-level KL divergences in Eq. (6) as expectations over sample-level forward trajectories. Marginalizing each per-step expectation over 15 Concept Removal Guidance 
+
+x0 ∼ pθ (x0|c) via pθ (xt|c) = R pθ (x0|c)q(xt|x0)dx 0 (which holds under optimal training and the condition-independent forward process) gives: 
+
+DKL 
+
+ pθ (x0 | c) ∥ pθ (x0) = Epθ (x0|c)
+
+> T
+
+X
+
+> t=1
+
+Eq(xt|x0)
+
+DKL 
+
+ pθ (xt−1 | xt, c ) ∥ pθ (xt−1 | xt) .DKL 
+
+ pθ (x0 | c) ∥ pθ (x0 | c−) = Epθ (x0|c)
+
+> T
+
+X
+
+> t=1
+
+Eq(xt|x0)
+
+DKL 
+
+ pθ (xt−1 | xt, c ) ∥ pθ (xt−1 | xt, c −) .
+
+(25) Subtracting the second identity from the first—and omitting the data-independent term log p(c−) as in Section 3.1—yields the trajectory-level decomposition of the concept presence: 
+
+CP (c − | c) = Epθ (x0|c)
+
+
+
+log pθ (x0|c−)
+
+pθ (x0)
+
+
+
+= DKL 
+
+ pθ (x0 | c) ∥ pθ (x0) − DKL 
+
+ pθ (x0 | c) ∥ pθ (x0 | c−)
+
+= Epθ (x0|c)
+
+> T
+
+X
+
+> t=1
+
+Eq(xt|x0)
+
+DKL 
+
+ pθ (xt−1 | xt, c ) ∥ pθ (xt−1 | xt) − DKL 
+
+ pθ (xt−1 | xt, c ) ∥ pθ (xt−1 | xt, c −) (26) Accordingly, we define the sample-level, point-wise concept presence as 
+
+CP (c − | x0) = 
+
+> T
+
+X
+
+> t=1
+
+Eq(xt|x0)
+
+DKL 
+
+ pθ (xt−1 | xt, c ) ∥ pθ (xt−1 | xt) − DKL 
+
+ pθ (xt−1 | xt, c ) ∥ pθ (xt−1 | xt, c −) ,
+
+which by construction satisfies 
+
+CP (c − | c) = Epθ (x0|c) [CP (c − | x0)] .
+
+Thus, CP (c − | x0) matches log pθ (x0|c−)  
+
+> pθ(x0)
+
+in expectation under x0 ∼ pθ (x0 | c), and we use it as a sample-level surrogate signal for the presence of c− in x0.For practical evaluation, we approximate the inner expectation Eq(xt|x0)[·] by a single realized sample from the reverse trajectory x0: T , yielding the trajectory-level estimator: 
+
+CP (c − | x0) ≈
+
+> T
+
+X
+
+> t=1
+
+DKL 
+
+ pθ (xt−1 | xt, c ) ∥ pθ (xt−1 | xt) − DKL 
+
+ pθ (xt−1 | xt, c ) ∥ pθ (xt−1 | xt, c −) .
+
+We empirically validate the effectiveness of this trajectory-level estimator in Appendix D. To evaluate concept presence at an intermediate timestep t during sampling, we further consider the marginal posterior distributions pθ (x0|xt), pθ (x0|xt, c ), and pθ (x0|xt, c −). By the chain rule of KL divergence applied to the joint (x0, x t),the decomposition above admits an equivalent form parameterized by t:
+
+CP (c − | c) = Epθ (x0|c)
+
+
+
+log pθ (x0|c−)
+
+pθ (x0)
+
+
+
+= Epθ (xt|c)
+
+> T
+
+X
+
+> t′=t+1
+
+Eq(xt′ |xt)
+
+DKL 
+
+ pθ (xt′−1|xt′ , c ) ∥ pθ (xt′−1|xt′ ) − DKL 
+
+ pθ (xt′−1|xt′ , c ) ∥ pθ (xt′−1|xt′ , c −) 
+
++ Epθ (xt|c)
+
+DKL 
+
+ pθ (x0 | xt, c ) ∥ pθ (x0 | xt) − DKL 
+
+ pθ (x0 | xt, c ) ∥ pθ (x0 | xt, c −) 
+
+(27) Accordingly, we define the intermediate concept presence at timestep t as 
+
+CP (c − | xt) = 
+
+> T
+
+X
+
+> t′=t+1
+
+Eq(xt′ |xt)
+
+DKL 
+
+ pθ (xt′−1|xt′ , c ) ∥ pθ (xt′−1|xt′ ) − DKL 
+
+ pθ (xt′−1|xt′ , c ) ∥ pθ (xt′−1|xt′ , c −) 
+
++ DKL 
+
+ pθ (x0 | xt, c ) ∥ pθ (x0 | xt) − DKL 
+
+ pθ (x0 | xt, c ) ∥ pθ (x0 | xt, c −)
+
+(28) 16 Concept Removal Guidance 
+
+which satisfies 
+
+CP (c − | c) = Epθ (xt|c) [CP (c − | xt)] .
+
+We use CP (c − | xt) as the intermediate-step concept presence signal during sampling. However, the marginal posterior 
+
+pθ (x0 | xt, ·) is generally intractable, even under the optimal-training assumption, so the boundary KL terms cannot be evaluated in closed form. Following standard practice in diffusion-based inverse problems (Ho et al., 2022; Song et al., 2023; Zhu et al., 2023; Peng et al., 2024), we approximate each posterior as a Gaussian with shared variance: 
+
+˜pθ (x0|xt, c ) = N  x0; ˆ xθ
+
+> 0
+
+(xt, c ), r 2 
+
+> t
+
+I
+
+˜pθ (x0|xt) = N  x0; ˆ xθ
+
+> 0
+
+(xt), r 2 
+
+> t
+
+I
+
+˜pθ (x0|xt, c −) = N  x0; ˆ xθ
+
+> 0
+
+(xt, c −), r 2 
+
+> t
+
+I,
+
+(29) where the posterior mean is given by Tweedie’s formula (Efron, 2011): 
+
+ˆxθ
+
+> 0
+
+(xt, ·) = Epθ (x0|xt,·)[x0] = 1
+
+√¯αt
+
+ xt − √1 − ¯αt ϵθt (xt, ·) ,
+
+and the shared variance is determined by the noise schedule up to a hyperparameter k > 0:
+
+r2 
+
+> t
+
+= 1
+
+k
+
+1 − ¯αt
+
+¯αt
+
+.
+
+Substituting these Gaussian approximations, the boundary KL reduces to a scaled squared ℓ2 distance in noise-prediction space, yielding the closed-form estimator: 
+
+CP k
+
+ c − | ˆxθ
+
+> 0
+
+(xt, c )
+
+=
+
+> T
+
+X
+
+> t′=t+1
+
+Eq(xt′ |xt)
+
+DKL 
+
+ pθ (xt′−1|xt′ , c ) ∥ pθ (xt′−1|xt′ ) − DKL 
+
+ pθ (xt′−1|xt′ , c ) ∥ pθ (xt′−1|xt′ , c −) 
+
++ DKL 
+
+ ˜pθ (x0 | xt, c ) ∥ ˜pθ (x0 | xt) − DKL 
+
+ ˜pθ (x0 | xt, c ) ∥ ˜pθ (x0 | xt, c −)
+
+=
+
+> T
+
+X
+
+> t′=t+1
+
+Eq(xt′ |xt)
+
+DKL 
+
+ pθ (xt′−1|xt′ , c ) ∥ pθ (xt′−1|xt′ ) − DKL 
+
+ pθ (xt′−1|xt′ , c ) ∥ pθ (xt′−1|xt′ , c −) 
+
++ k
+
+2 ϵθt (xt, c ) − ϵθt (xt) 2 − k
+
+2 ϵθt (xt, c ) − ϵθt (xt, c −) 2
+
+(30) As before, we approximate the inner expectation Eq(xt ′|xt)[·] along a single realized sampling trajectory xt:T , giving the trajectory-level estimate at intermediate timestep t:
+
+CP k
+
+ c − | ˆxθ
+
+> 0
+
+(xt, c )
+
+≈
+
+> T
+
+X
+
+> t′=t+1
+
+DKL 
+
+ pθ (xt′−1|xt′ , c ) ∥ pθ (xt′−1|xt′ ) − DKL 
+
+ pθ (xt′−1|xt′ , c ) ∥ pθ (xt′−1|xt′ , c −) 
+
++ k
+
+2 ϵθt (xt, c ) − ϵθt (xt) 2 − k
+
+2 ϵθt (xt, c ) − ϵθt (xt, c −) 2
+
+(31) 
+
+## C. Concept Removal Guidance 
+
+C.1. Hyperparameter Choice for CRG 
+
+To evaluate hyperparameter sensitivity, we employ the SD v1.4 backbone with a DDPM sampler (50 steps). Classifier-Free Guidance (CFG) is applied for conditional generation. Our evaluation specifically focuses on the effect of hyperparameters within the context of sexual concept removal. The hyperparameter settings used for the nudity concept removal task are reported in Table 9. 17 Concept Removal Guidance 
+
+Algorithm 1 Concept Removal Guidance 
+
+Input: Pre-Trained Diffusion Model, λ0, Threshold τ , User Prompt c, Negative Prompt c−.
+
+xT ∼ N (0 , I ) 
+
+> 1:
+
+for t = T to 1 do  
+
+> 2:
+
+Compute ϵθt (xt), ϵθt (xt, c −) and ϵθt (xt, c ). 
+
+> 3:
+
+Estimate the concept presence CP (c − | ˆxθ
+
+> 0
+
+(xt, c )) of the sample at timestep t by Eq. (14)  
+
+> 4:
+
+if CP (·) > τ then  
+
+> 5:
+
+Compute wCRG according to Eq. (16)  
+
+> 6:
+
+else  
+
+> 7:
+
+wCRG = 0  
+
+> 8:
+
+end if  
+
+> 9:
+
+Plug wCRG and λ0 in Eq. (17) to obtain optimal guidance  
+
+> 10:
+
+Compute xt−1 based on optimal guidance  
+
+> 11:
+
+end for  
+
+> 12:
+
+Return x0 
+
+> Table 9. Hyperparameter settings for nudity concept removal.
+
+Model k τ λ0
+
+SD v1.4 16 30.0 1.8 SDXL 16 75.0 1.7 SD v3 1024 0 2.0 C.1.1. P OSTERIOR VARIANCE SCALING FACTOR (k)The hyperparameter k acts as an inverse scaling factor for the posterior variance r2 
+
+> t
+
+, controlling the assumed uncertainty in the approximate posterior p(x0 | xt). As shown in Eq. (12), k linearly scales the posterior-divergence term, and thus directly determines the importance of forward looking information. To isolate the effect of k during ablations, we scale the threshold τ proportionally with k, keeping the ratio τ /k fixed. Table 10 shows that overly small k leads to insufficient suppression, whereas k ≥ 16 yields consistently strong removal. These results highlight the importance of incorporating forward-looking information. Balancing concept removal performance and image fidelity, we use k = 16 for all Stable Diffusion v1.4 experiments. We further observe that k = 16 also performs well on SDXL, which we attribute to the similarity of their noise schedules. Conversely, SD v3 necessitates a significantly higher value of k = 1024 for optimal performance, a requirement likely attributable to its distinct noise schedule.        
+
+> Table 10. Sensitivity analysis of the posterior variance scaling factor k.We evaluate performance variation when scaling kwhile maintaining a constant ratio τ /k on the Sexual Concept Erasure task using SD v1.4.
+
+λ0 = 1 .8 Attack Success Rate (ASR) ↓ Benign Quality 
+
+k τ P4D UnlearnAtk MMA-Diff CLIP ↑ FID ↓
+
+2 3.75 0.126 0.169 0.390 30.95 35.56 
+
+4 7.50 0.079 0.099 0.283 30.93 35.83 16 30.0 0.026 0.059 0.164 30.85 36.05 32 60.0 0.053 0.070 0.173 30.84 36.12 64 120.0 0.026 0.077 0.149 30.81 36.22 C.1.2. C ONCEPT PRESENCE THRESHOLD (τ )We further ablate the target threshold τ , which specifies the tolerated concept presence before suppression is activated. With 
+
+k = 16 and λ0 = 1 .8 fixed, reducing τ generally lowers ASR, indicating stronger and more frequent suppression via the surplus term  CP k(·) − τ . However, this increased aggressiveness also propagates to benign generations: as τ decreases, the benign COCO FID degrades sharply (e.g., 31.16 → 52.05 from τ = 45 to τ = 0 ), showing that the same suppression 18 Concept Removal Guidance            
+
+> Figure 6. Effect of the threshold τin CRG. Qualitative ablation over τ∈ { 0,15 ,30 ,45 }. Increasing τrelaxes the suppression criterion, generally improving prompt fidelity on benign content (top row) while changing the level of intervention on a sensitive prompt (bottom row). The rightmost column shows the original SD v1.4 generations for reference.
+
+mechanism can substantially perturb non-adversarial samples. Conversely, increasing τ improves benign fidelity and CLIP alignment by limiting how often suppression is triggered, but comes at the cost of weaker robustness, most clearly for MMA-Diff, whose ASR rises monotonically as τ increases.             
+
+> Table 11. Sensitivity analysis of the concept presence threshold τ.We evaluate the performance trade-off by varying τwhile keeping the guidance scale λ0= 1 .8and scaling factor k= 16 fixed.
+
+k = 16 Attack Success Rate (ASR) ↓ Benign Quality 
+
+τ λ0 P4D UnlearnAtk MMA-Diff CLIP ↑ FID ↓
+
+0.0 1.8 0.021 0.013 0.079 30.42 52.05 15.0 1.8 0.049 0.026 0.134 30.67 42.48 30.0 1.8 0.026 0.059 0.164 30.85 36.05 45.0 1.8 0.063 0.046 0.214 30.99 31.16 
+
+C.1.3. S CALING FACTOR (λ0 )Table 12 presents the sensitivity analysis of the guidance scale λ0 with a fixed threshold τ = 30 .0. Increasing λ0 enhances safety by lowering ASR but leads to a trade-off in benign quality. Notably, compared to the τ ablation, the fluctuation in FID scores is less severe. This stability can be attributed to the gating mechanism of the threshold τ . Since τ is fixed at a sufficient level to distinguish malicious concepts, it effectively prevents the suppression term from activating on benign inputs. Consequently, λ0 primarily scales the suppression strength on detected adversarial content without aggressively degrading the quality of benign generation.           
+
+> Table 12. Sensitivity analysis of the guidance scale λ0.We evaluate the performance trade-off by varying the guidance scale λ0while keeping the threshold fixed at τ= 30 .0(with k= 16 ). The results indicate tradeoff between ASR and Benign Quality.
+
+k = 16 Attack Success Rate (ASR) ↓ Benign Quality 
+
+λ0 τ P4D UnlearnAtk MMA-Diff CLIP ↑ FID ↓
+
+2.2 30.0 0.028 0.026 0.083 30.49 40.43 1.8 30.0 0.026 0.059 0.164 30.85 36.05 1.4 30.0 0.141 0.119 0.417 31.04 32.47 
+
+19 Concept Removal Guidance 
+
+C.2. Computation Cost 
+
+Both DNG and CRG incur additional computational cost because they require one extra diffusion-model noise prediction relative to the backbone. Nevertheless, they are still more efficient than gradient-based approaches such as TraSCE. 
+
+Table 13. Inference time per sample (in seconds) measured on an L40S GPU. 
+
+Model Base SAFREE TraSCE NP DNG CRG (ours) SD v1.4 3.20 4.67 11.59 3.20 4.82 4.80 SDXL 6.01 8.48 25.12 6.01 8.69 8.68 SD v3 5.52 7.32 23.23 5.52 7.46 7.47 
+
+## D. Validity of Concept Presence 
+
+To validate the effectiveness of our metric, we compare the proposed Concept Presence (CP) estimation against a pre-trained NudeNet classifier. Specifically, we employ the sample-level estimator defined in Eq. (10): 
+
+CP (c− | x0) ≈ 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+κt
+
+h
+
+2ϵθt (xt, c )⊤∆ϵt + bt
+
+i
+
+,
+
+where x0 represents images generated by SD v1.4 using adversarial prompts c from the P4D and MMA-Diff benchmarks. Here, c− denotes the pre-defined negative prompt. The generation process utilizes the DPM-Solver++ (50 steps). In Figure 7, the x-axis represents the classification probability from NudeNet, while the y-axis corresponds to the calculated CP (c − | x0).The strong positive correlation indicates that our metric reliably tracks the strength of the target concept, supporting its use as a valid estimator of concept presence. 0.0 0.2 0.4 0.6 0.8 1.0 
+
+> Nudenet Classifier
+> 50
+> 0
+> 50
+> 100
+> 150
+> Estimated Concept Presence
+
+Figure 7. Validation of Sample-Level Concept Presence Estimation. The scatter plot compares our estimated concept presence ( y-axis) against the scores obtained from the NudeNet classifier ( x-axis). Red and orange dots indicate images generated from MMA-Diff and P4D prompts, respectively, while green dots represent images generated from benign COCO prompts. 
+
+## E. Selection of Negative Prompts via Concept Presence 
+
+To construct an optimal negative prompt set for sexual concept removal, we utilized our Concept Presence (CP) metric (Eq. 10) to filter candidate terms. 
+
+1. Candidate Pool Generation We first aggregated a comprehensive pool of candidate terms from prior safety literature, specifically SAFREE (Yoon et al., 2025) and TraSCE (Jain et al., 2024): • SAFREE Candidates: Sexual Acts , Content Meant to Arouse Sexual Excitement , Nudity ,
+
+Pornography , Erotic Art , Lustful , Seductive , Orgasmic , Libido , Kinky , Sexual 
+
+20 Concept Removal Guidance 
+
+Orientation , Sexual Attraction , Sexual Intercourse , Sexual Pleasure , Sexual Fantasy , Carnal Desires , Sexual Gratification 
+
+• TraSCE Candidates: naked , nude , bare , exposed , Stripped , topless , male genitalia , penis ,
+
+buttocks 
+
+2. Metric-Based Filtering We evaluated the efficacy of each candidate word ( cword ) by measuring its Concept Presence, 
+
+CP (cword |x0), against images generated from highly adversarial prompt sets ( P4D and MMA-Diff ). Our hypothesis posits that a higher Concept Presence score indicates a stronger alignment between the negative prompt and the latent features of the unsafe adversarial content, thereby predicting greater suppression utility. 
+
+3. Analysis and Selection Our analysis revealed distinct activation patterns across benchmarks: • For MMA-Diff , terms such as Sexual Intercourse , Pornography , and Sexual Pleasure exhibited the highest concept presence. • For P4D , high presence scores were observed for Erotic Art , Nudity , Sexual Fantasy , Lustful , Nude ,
+
+Naked , Carnal Desires , and Pornography .• Specifically, for male-related adversarial prompts in P4D , the most effective terms included Sexual Fantasy ,
+
+Nudity , Sexual Gratification , Carnal Desires , Sexual Acts , and Penis .Based on these high-activation clusters, we synthesized the final negative prompt set used for our sexual concept removal experiments: Sexual Fantasy , Nudity , Pornography , Erotic Art , Nude , Naked , Sexual Acts .When the resulting CP-selected prompts are applied to baselines such as SAFREE and TraSCE, they yield better removal performance than the original prompts used in those methods, as shown in Table 14.   
+
+> Table 14. Comparison on P4D, UnlearnAtk, MMA-Diff, and COCO metrics. Lower is better for P4D, UnlearnAtk, MMA-Diff, and FID, while higher is better for CLIP.
+
+P4D UnlearnAtk MMA-Diff COCO Method ASR ( ↓) ASR ( ↓) ASR ( ↓) CLIP ( ↑) FID ( ↓)SAFREE 0.529 0.275 0.611 31.11 55.79 
+
+SAFREE + CRG Prompt 0.423 0.232 0.570 30.94 56.59 TraSCE 0.291 0.134 0.490 30.67 57.11 
+
+TraSCE + CRG Prompt 0.278 0.113 0.431 30.69 58.10 
+
+## F. Generalization and Robustness Analyses 
+
+F.1. Additional Evaluations for Artist Style Removal Task 
+
+We further evaluate Artist Style Removal performance of each inference-time method using Gemini 2.5 Flash and Qwen3-VL-235B-A22B-Instruct. Following the same protocol as in our main experiments, each model classifies the artistic style of generated images, and we report the target-style accuracy ( Acc e, lower is better) and the unrelated-style accuracy ( Acc u,higher is better). As shown in Table 15, CRG achieves the lowest or tied-lowest Acc e in three out of four settings, remains competitive in the remaining case, while keeping Acc u broadly comparable to the baselines. 
+
+F.2. Impact of LLM-generated Negative Prompt 
+
+To examine the robustness of CRG to negative prompt selection, we conducted an additional experiment using LLM-generated negative prompts. Specifically, we prompted Grok to generate eight keywords most closely related to nudity and sexuality, and used them as negative prompt. As shown in Table 16, CRG remains competitive under automatically 21 Concept Removal Guidance                                                                       
+
+> Table 15. Quantitative comparison of artist style removal on Stable Diffusion v1.4. We report the classification accuracy on the target style (Acc e, lower is better) and unrelated styles (Acc u, higher is better).
+> Gemini 2.5 Flash Qwen3-VL-235B-A22B-Instruct Remove “Van Gogh” Remove “Kelly McKernan” Remove “Van Gogh” Remove “Kelly McKernan” Method Acc e(↓)Acc u(↑)Acc e(↓)Acc u(↑)Acc e(↓)Acc u(↑)Acc e(↓)Acc u(↑)SD v1.4 0.95 0.95 0.75 0.90 0.85 0.99 0.75 0.73 SAFREE 0.25 0.83 0.30 0.93 0.85 0.83 0.40 0.69 TraSCE 0.35 0.78 0.15 0.90 0.25 0.80 0.35 0.69 NP 0.35 0.85 0.35 0.89 0.20 0.80 0.25 0.68 DNG 0.05 0.69 0.10 0.86 0.05 0.71 0.15 0.70
+> CRG (ours) 0.15 0.90 0.10 0.94 0.00 0.79 0.15 0.66
+
+generated negative prompts, outperforming baselines on P4D and UnlearnAtk while maintaining favorable fidelity, although DNG achieves a lower ASR on MMA-Diff in this setting.   
+
+> Table 16. Results with handcrafted and Grok-generated negative prompt. Lower is better for ASR and FID, while higher is better for CLIP.
+
+P4D UnlearnAtk MMA-Diff COCO Negative Prompt Method ASR ( ↓) ASR ( ↓) ASR ( ↓) CLIP ( ↑) FID ( ↓)- SD v1.4 0.854 0.655 0.949 31.10 -Handcrafted SAFREE 0.529 0.275 0.611 31.11 55.79 Handcrafted TraSCE 0.291 0.134 0.490 30.67 57.11 Handcrafted NP 0.338 0.183 0.453 30.49 51.74 Handcrafted DNG 0.225 0.183 0.139 30.79 55.97 Handcrafted CRG (OURS) 0.026 0.059 0.164 30.85 36.05 
+
+Grok SAFREE 0.384 0.190 0.596 30.81 56.09 Grok TraSCE 0.265 0.120 0.508 30.60 57.91 Grok NP 0.331 0.176 0.423 30.35 51.79 Grok DNG 0.245 0.218 0.229 30.76 56.36 Grok CRG (OURS) 0.053 0.049 0.271 30.87 40.17 
+
+Grok 8 keywords. Nudity, Naked, Erotic, Sensual, Explicit, Sexual, Lewd, NSFW. 
+
+F.3. Identity Removal Task 
+
+To further validate the generality of CRG, we performed an identity removal task using SDXL with 50-step DDPM sampling. We report two classifier-based metrics using GPT-4o-mini and Qwen3-VL-235B-A22B-Instruct. The erasure accuracy ( Acc e)measures the detection of a targeted identity, and the unrelated accuracy ( Acc u) assesses the preservation of unrelated, non-targeted identities. Our evaluation covers five identities—Brad Pitt, Leonardo DiCaprio, Keanu Reeves, Robert Downey Jr., and Tom Cruise—with Brad Pitt and Leonardo DiCaprio designated as the removal targets. We constructed 20 actor-specific prompts for each identity, yielding a total of 100 prompts for evaluation. 
+
+F.4. Generalization to Broader Prompt Distributions 
+
+We further report experimental results on PartiPrompts (Yu et al., 2022), a comprehensive benchmark consisting of 1,632 prompts that span diverse categories and varying levels of complexity, from simple descriptions to compositionally challenging queries. The effect of nudity removal observed on the PartiPrompts benchmark is consistent with the trends seen on COCO-1k. 22 Concept Removal Guidance 
+
+Table 17. Quantitative comparison of identity removal in SDXL. We report the classification accuracy on the target identity ( Acc e,lower is better) and unrelated identities (Acc u, higher is better). 
+
+GPT-4o-mini Qwen3-VL-235B-A22B-Instruct Remove “Brad Pitt” Remove “Leonardo DiCaprio” Remove “Brad Pitt” Remove “Leonardo DiCaprio” Method Acc e (↓) Acc u (↑) Acc e (↓) Acc u (↑) Acc e (↓) Acc u (↑) Acc e (↓) Acc u (↑)SDXL 0.90 0.93 0.95 0.91 0.95 1.00 1.00 0.99 SAFREE 0.00 0.71 0.15 0.73 0.40 0.93 0.35 0.95 NP 0.60 0.75 0.50 0.75 0.70 0.96 0.75 0.96 
+
+DNG 0.50 0.74 0.55 0.73 0.55 0.93 0.70 0.94 CRG (ours) 0.00 0.76 0.10 0.74 0.25 0.96 0.25 0.88 
+
+Table 18. Impact of Nudity Removal on PartiPrompts benchmark. We report the generation quality metrics on the benign PartiPrompts 
+
+set (CLIP, FID) 
+
+PartiPrompts Method CLIP ( ↑) FID ( ↓)SD v1.4 31.44 -SAFREE 31.62 49.34 TraSCE 31.12 49.14 NP 30.81 40.93 DNG 31.08 49.40 CRG (ours) 31.29 25.08 F.5. Multi-Concept Removal 
+
+We further evaluate a multi-concept removal setting, where CRG-Multi suppresses both violence and nudity via sequential projection using CP k(c1− | ˆx0) and CP k(c2− | ˆx0). This extension is effective on both violence and nudity benchmarks, demonstrating that CRG is not limited to single-target removal, while introducing only a modest computational overhead and a moderate quality trade-off. 
+
+Table 19. Quantitative comparison of single-concept and multi-concept removal. Lower is better for ASR and FID, while higher is better for CLIP score. Violence Nudity Quality Efficiency                                                     
+
+> Ring-A-Bell 5-77 Ring-A-Bell 5.5-38 Ring-A-Bell 5.5-77 P4D UnlearnAtk MMA-Diff COCO -
+> Method ASR ( ↓)ASR ( ↓)ASR ( ↓)ASR ( ↓)ASR ( ↓)ASR ( ↓)CLIP ( ↑)FID ( ↓)Time (s/sample) SD v1.4 0.992 0.964 0.972 0.854 0.655 0.949 31.10 –3.20 CRG-Violence 0.296 0.252 0.280 0.834 0.592 0.938 30.84 37.63 4.80 CRG-Nudity 0.872 0.912 0.884 0.026 0.059 0.164 30.85 36.05 4.80 CRG-Multi 0.256 0.216 0.252 0.046 0.070 0.205 30.66 43.15 6.42
+
+## G. Details of Human Evaluation for Artist Style Removal Task 
+
+We describe the experimental setup of the human evaluation introduced in Section 4.3.3 in detail. We recruited 30 participants and designed the evaluation as a five-way classification task. As illustrated in Figure 8 (a), participants were first provided with a set of reference artworks for each of the five candidate artists—Pablo Picasso, Van Gogh, Rembrandt, Andy Warhol, and Caravaggio—to familiarize themselves with the corresponding styles, and were allowed to revisit these references throughout the task. Participants were then shown the same set of generated artworks in randomized order, with all method labels hidden, as shown in Figure 8 (b). For each item, they were asked to identify the most likely artist based solely on stylistic cues. We also measured inter-annotator agreement to assess the reliability of the human evaluation. As shown in Table 20, the average pairwise agreement across methods was 68.2%, and the average Fleiss’ κ was 0.592, suggesting reasonable 23 Concept Removal Guidance 
+
+agreement among participants for this five-way artist-style classification task. 
+
+(a) Reference images shown to participants. For each of the five candidate artists, a set of representative artworks is provided so that participants can become familiar with the artist’s style before answering. 
+
+(b) An example question. Given an artwork, the partici-pant is asked to select the most likely artist among the five candidates (Pablo Picasso, Van Gogh, Rembrandt, Andy Warhol, Caravaggio). 
+
+Figure 8. Human evaluation interface. (a) Instruction page providing reference images for each artist. (b) An example question presented to the participants. 
+
+Table 20. Inter-annotator agreement in the human evaluation. We report overall pairwise agreement and Fleiss’ κ for each method. 
+
+Method Pairwise Agreement (%) Fleiss’ κ
+
+SD v1.4 70.9 0.639 SAFREE 68.2 0.593 TraSCE 68.8 0.601 NP 68.1 0.589 DNG 64.0 0.533 CRG (ours) 69.0 0.598 Average 68.2 0.592 
+
+## H. Qualitative Examples of Removing Nudity Concept 
+
+24 Concept Removal Guidance 
+
+Figure 9. Qualitative comparison of nudity removal on Stable Diffusion v1.4. We visualize generation results under adversarial prompts targeting explicit concepts (e.g., sexual fantasy, nudity, pornography). CRG effectively suppresses unsafe content, whereas baselines frequently fail to neutralize the target concept. 
+
+25 Concept Removal Guidance 
+
+Figure 10. Qualitative comparison of nudity removal on Stable Diffusion XL. We visualize generation results under adversarial prompts targeting explicit concepts (e.g., sexual fantasy, nudity, pornography). CRG effectively suppresses unsafe content, whereas baselines frequently fail to neutralize the target concept. 
+
+26 Concept Removal Guidance 
+
+Figure 11. Qualitative comparison of nudity removal on Stable Diffusion v3. We visualize generation results under adversarial prompts targeting explicit concepts (e.g., sexual fantasy, nudity, pornography). CRG effectively suppresses unsafe content, whereas baselines frequently fail to neutralize the target concept. 
+
+27 Concept Removal Guidance 
+
+## I. Qualitative Examples of Removing Violence Concept 
+
+Figure 12. Qualitative comparison of violence removal on Stable Diffusion v1.4. We visualize generation results under adversarial prompts targeting explicit concepts (e.g., blood, weapon, wounded). CRG effectively suppresses unsafe content, whereas baselines frequently fail to neutralize the target concept. 
+
+28 Concept Removal Guidance 
+
+## J. Qualitative Examples of Removing Artist Styles NP SD v1.4  SAFREE  TraSCE  CRG (Ours) 
+
+> Andy Warhol Caravaggio Picasso Rembrandt Van Gogh
+
+Warhol 's commentary on celebrity culture through his art. 
+
+A figure illuminated by a single source of light, with stark contrasts between light 
+
+and shadow, reminiscent of Caravaggio 's chiaroscuro technique. 
+
+A surreal landscape with unexpected juxtapositions, reminiscent of Picasso 's artistic 
+
+vision. 
+
+A contemplative moment in Rembrandt 's studio. 
+
+A still life of a bouquet with a mix of flowers, painted in Van Gogh 's signature style. 
+
+Figure 13. Qualitative comparison of artist style removal on Stable Diffusion v1.4. We visualize generation results of CRG and other baselines on the Artist Style removal task. The target style for removal is “Van Gogh” (Red); for these cases, the generated images should not exhibit the artistic style. In contrast, the styles of “Andy Warhol”, “Caravaggio”, “Picasso”, and “Rembrandt” are intended to be preserved (Blue). Each row presents images generated using prompts corresponding to the artist labeled on the left. 
+
+29

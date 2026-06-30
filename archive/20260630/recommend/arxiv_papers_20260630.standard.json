@@ -1,0 +1,135 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-30T21:10:02.373541+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2606.28643v1",
+      "source": "arxiv",
+      "title": "Obliviate: Erasing Concepts from Autoregressive Image Generation Models",
+      "abstract": "The widespread adoption of generative AI models has intensified concerns about misuse, including the creation of unsafe or disturbing imagery. To mitigate such issues, several concept erasure approaches have been proposed to remove harmful content from multimodal generative models. Yet concept erasure for autoregressive image generation remains largely unexplored, despite the growing relevance of these models in recent trends toward unified multimodal architectures. In this work, we fill this gap by introducing Obliviate, a guidance-based concept erasure method for autoregressive image generation. Our method builds on three key design choices: KL-based supervision over visual token distributions, trajectory-level updates over full autoregressive rollouts, and aligned visual prefixes for stable target construction. We evaluate Obliviate on three state-of-the-art autoregressive text-to-image models, Liquid, Emu3-Gen, and Janus-Pro, covering the erasure of explicit content, graphic violence, and branded imagery. Obliviate consistently outperforms current alternatives, reducing nudity on the defensive RAB benchmark from 91.58 to 3.15 while preserving overall model utility.",
+      "authors": [
+        "Hossein Shakibania",
+        "Jonas Henry Grebe",
+        "Tobias Braun",
+        "Ege Aktemur",
+        "Saleh Aslani",
+        "Mehmet Görkem Yiğit",
+        "Marcus Rohrbach"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-26T22:56:54+00:00",
+      "link": "https://arxiv.org/pdf/2606.28643v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "concept erasure method for autoregressive image generation",
+      "llm_evidence_cn": "针对自回归图像生成的概念擦除方法",
+      "llm_evidence": "针对自回归图像生成的概念擦除方法",
+      "canonical_evidence": "针对自回归图像生成的概念擦除方法",
+      "llm_tldr_en": "Obliviate proposes a guidance-based concept erasure method for autoregressive image generation models, using KL supervision on visual tokens and trajectory-level updates to remove harmful concepts without retraining.",
+      "llm_tldr_cn": "当前的生成式AI模型存在被滥用的风险，而针对自回归图像生成模型的概念擦除方法仍处于空白。本文提出Obliviate，一种基于引导的概念擦除方法，通过KL散度监督视觉令牌分布和轨迹级更新，在不重新训练的情况下有效移除有害概念。实验表明该方法能精确擦除指定概念，同时保持生成质量。该工作填补了自回归图像生成概念擦除的空白。",
+      "llm_tldr": "当前的生成式AI模型存在被滥用的风险，而针对自回归图像生成模型的概念擦除方法仍处于空白。本文提出Obliviate，一种基于引导的概念擦除方法，通过KL散度监督视觉令牌分布和轨迹级更新，在不重新训练的情况下有效移除有害概念。实验表明该方法能精确擦除指定概念，同时保持生成质量。该工作填补了自回归图像生成概念擦除的空白。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "How to erase concepts in text to image autoregressive models",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.29282v1",
+      "source": "arxiv",
+      "title": "ScaleErasure: Inference-Time Minimal Intervention for Precise Concept Erasure in Next-Scale Autoregressive Image Generation",
+      "abstract": "Concept erasure aims to prevent image generative models from producing unsafe content while preserving their general generative capability. Meanwhile, next-scale autoregressive (AR) image generation has recently emerged as a new generative paradigm characterized by next-scale prediction, for which concept erasure remains largely unexplored. In this paradigm, semantic information is highly compressed at early scales, leading to severe entanglement between unsafe and unrelated semantics. In this paper, we propose ScaleErasure, an inference-time concept erasure method that performs minimal intervention. ScaleErasure precisely selects and guides predicted logits that are most relevant to the unsafe concept, thereby enabling effective erasure under severe semantic entanglement. Specifically, ScaleErasure performs two additional forward passes conditioned on the unsafe concept and the corresponding safe concept, and leverages their outputs to guide the target logits away from unsafe concepts toward safe concepts. To enable precise and minimal intervention, logits selection and guidance are conducted across three dimensions: scales, tokens, and bit channels. Experiments demonstrate that ScaleErasure outperforms adapted baselines in the next-scale AR paradigm, achieving more precise concept erasure while largely preserving general generative capability. The code is available at https://github.com/coziiizz/ScaleErasure.",
+      "authors": [
+        "Cong Wang",
+        "Haiyu Wu",
+        "Zhiwei Jiang",
+        "Zifeng Cheng",
+        "Fei Shen",
+        "Yafeng Yin",
+        "Qing Gu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-28T09:03:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.29282v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "directly addresses concept erasure in autoregressive image generation with ScaleErasure",
+      "llm_evidence_cn": "直接针对自回归图像生成中的概念擦除，提出ScaleErasure方法",
+      "llm_evidence": "直接针对自回归图像生成中的概念擦除，提出ScaleErasure方法",
+      "canonical_evidence": "直接针对自回归图像生成中的概念擦除，提出ScaleErasure方法",
+      "llm_tldr_en": "ScaleErasure achieves precise concept erasure in next-scale autoregressive image generation at inference time with minimal intervention, preserving generative quality.",
+      "llm_tldr_cn": "下一尺度自回归图像生成中语义高度压缩导致不安全概念纠缠。本文提出推理时概念擦除方法ScaleErasure，通过精准选择并引导与不安全概念最相关的logits，实现最小干预下的概念移除，在消除有害内容的同时保持图像生成质量。",
+      "llm_tldr": "下一尺度自回归图像生成中语义高度压缩导致不安全概念纠缠。本文提出推理时概念擦除方法ScaleErasure，通过精准选择并引导与不安全概念最相关的logits，实现最小干预下的概念移除，在消除有害内容的同时保持图像生成质量。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "Concept erasure methods for autoregressive image generation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.29801v1",
+      "source": "arxiv",
+      "title": "Concept Removal Guidance: Evidence-Calibrated Negative Guidance for Safe Diffusion Sampling",
+      "abstract": "Text-to-image diffusion models remain vulnerable to adversarial prompts that elicit disallowed content, motivating reliable inference-time controls. A popular approach is negative guidance, which subtracts a negative prompt direction with a fixed weight. However, it often forces a safety-fidelity trade-off, causing artifacts or prompt drift when over-applied and failing under attacks when under-applied. Dynamic variants reweight guidance using posterior-odds signals, which can be brittle for open-vocabulary compositional prompts, while lightweight similarity-based methods ignore the evolving image evidence along the denoising trajectory. We introduce Concept Removal Guidance (CRG), a training-free method that estimates unwanted-concept presence at each diffusion step from the model's noise predictions, and adaptively calibrates negative guidance via a closed-form constrained update enforcing a target presence threshold while minimally perturbing the conditional trajectory. Across red-teaming benchmarks, CRG reduces attack success rates while preserving benign fidelity, and extends to additional suppression targets such as artist style and violence without fine-tuning or external classifiers.",
+      "authors": [
+        "Yoonseok Choi",
+        "Chaeyoung Oh",
+        "Hyunjun Choi",
+        "Seokin Seo",
+        "Kee-Eung Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-29T05:28:34+00:00",
+      "link": "https://arxiv.org/pdf/2606.29801v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "concept removal in diffusion models via negative guidance",
+      "llm_evidence_cn": "通过负向引导在扩散模型中进行概念移除",
+      "llm_evidence": "通过负向引导在扩散模型中进行概念移除",
+      "canonical_evidence": "通过负向引导在扩散模型中进行概念移除",
+      "llm_tldr_en": "Proposes Concept Removal Guidance (CRG), a training-free method that calibrates negative guidance using image evidence to block unwanted concepts in text-to-image diffusion models while maintaining generation fidelity.",
+      "llm_tldr_cn": "本文针对文本到图像扩散模型中的安全生成问题，提出概念移除引导（CRG）方法。该方法是一种免训练推理时技术，通过沿去噪轨迹估计图像证据来校准负向引导权重，从而精确移除不想要的概念，同时避免伪影和提示漂移。实验表明CRG在多种攻击下有效提高了安全性并保持了图像质量。这项工作为扩散模型的安全采样提供了新的思路。",
+      "llm_tldr": "本文针对文本到图像扩散模型中的安全生成问题，提出概念移除引导（CRG）方法。该方法是一种免训练推理时技术，通过沿去噪轨迹估计图像证据来校准负向引导权重，从而精确移除不想要的概念，同时避免伪影和提示漂移。实验表明CRG在多种攻击下有效提高了安全性并保持了图像质量。这项工作为扩散模型的安全采样提供了新的思路。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
