@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-01",
+  "date": "2026-07-01",
+  "generated_at": "2026-07-01T20:31:31",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/01/2606.31699v1-look-but-dont-touch-with-sparse-autoencoders-for-unlearning-in-diffusion-models",
+      "section": "deep",
+      "title_en": "Look But Don't Touch with Sparse Autoencoders for Unlearning in Diffusion Models",
+      "authors": "Enrico Cassano, Riccardo Renzulli, Rayyan Ahmed, Marco Grangetto, Stephan Alaniz",
+      "date": "2026-06-30",
+      "pdf": "https://arxiv.org/pdf/2606.31699v1",
+      "score": "9.0",
+      "evidence": "利用稀疏自编码器进行扩散模型中的概念擦除",
+      "tldr": "稀疏自编码器（SAE）最近被提出用于扩散模型的概念级操控，但本文发现直接干预其潜在空间会导致激活分布偏移和严重视觉伪影。为此，作者将SAE仅用作语义检测器定位目标对象区域，然后替换为不含目标的patch嵌入，从而避免分布偏移。实验表明，这种检测+替换方法比直接潜在引导产生更干净的擦除效果。该工作揭示了概念检测与概念干预之间的根本差距，表明稀疏特征不适合作为直接控制旋钮。",
+      "tags": "query:ce",
+      "abstract_en": "Sparse autoencoders (SAEs) have recently been proposed as interpretable tools for concept-level manipulation, under the assumption that isolated features can serve as controllable intervention points. In this work, we systematically evaluate this assumption in the context of object erasure and steering in diffusion models. We show that while SAEs reliably detect and localize semantic concepts within diffusion model activations, direct intervention in their latent space frequently induces out-of-distribution activations, resulting in severe visual artifacts. To disentangle detection from intervention, we use SAE activations purely as semantic detectors to identify image regions containing the target object, and replace those patch embeddings with the ones that do not contain it. This detection-based replacement preserves the diffusion model's activation statistics and produces significantly cleaner erasure results than latent steering. Our findings reveal a fundamental gap between concept detection and concept intervention in diffusion models: monosemantic or sparse features are not inherently suitable as control knobs for steering. These results position SAEs as powerful interpretability tools for analyzing generative models, but highlight important limitations when used for direct manipulation, such as unlearning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/01/2606.32039v1-gear-guided-end-to-end-autoregression-for-image-synthesis",
+      "section": "deep",
+      "title_en": "GEAR: Guided End-to-End AutoRegression for Image Synthesis",
+      "authors": "Bin Lin, Zheyuan Liu, Chenguo Lin, Sixiang Chen, Yunyang Ge, Yunlong Lin, Jianwei Zhang, Miles Yang, Zhao Zhong, Liefeng Bo, Li Yuan",
+      "date": "2026-06-30",
+      "pdf": "https://arxiv.org/pdf/2606.32039v1",
+      "score": "8.0",
+      "evidence": "自回归图像生成模型",
+      "tldr": "现有图像生成模型分两阶段训练，tokenizer与生成器解耦导致tokenizer不了解生成器需求。本文提出GEAR，通过双读取机制联合训练向量量化tokenizer和自回归生成器：硬分支进行下一索引预测，软分支传递表示对齐损失指导tokenizer优化。该方法使tokenizer输出更易预测的索引分布，加速ImageNet gFID收敛达10倍，提升patch级特征质量，并泛化至多种量化器与文本生成任务。",
+      "tags": "query:ce",
+      "abstract_en": "Visual generative models are typically trained in two stages. A tokenizer is first trained for reconstruction and then frozen, after which a generator is trained on its discrete indices or continuous latents. This decoupling leaves the tokenizer unaware of what the generator finds easy to model. We present GEAR (Guided End-to-end AutoRegression), which trains a vector-quantized (VQ) tokenizer and an autoregressive (AR) generator jointly and end-to-end, guided by representation alignment. The key obstacle is that the VQ index fed to the AR model is non-differentiable, so gradients cannot reach the tokenizer, and a straight-through estimator collapses. GEAR resolves this with a dual read-out of the codebook assignment. A hard, one-hot branch trains the AR with next-token prediction, while a differentiable soft branch carries a representation-alignment loss that flows back to guide only the tokenizer. The AR model thereby steers its tokenizer toward an index distribution it can predict more easily. This shifts the alignment burden from the tokenizer to the AR: the tokenizer's own features become less DINOv2-like while the AR's become more so, the opposite of diffusion-side recipes that make the latent itself semantic. GEAR speeds up ImageNet gFID convergence by up to 10x relative to the strong LlamaGen-REPA baseline, learns markedly better patch-level and spatially-coherent features, and generalizes across quantizers (VQVAE, LFQ, IBQ) and to text-to-image generation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

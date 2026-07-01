@@ -1,0 +1,100 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-01T20:29:20.569605+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2606.31699v1",
+      "source": "arxiv",
+      "title": "Look But Don't Touch with Sparse Autoencoders for Unlearning in Diffusion Models",
+      "abstract": "Sparse autoencoders (SAEs) have recently been proposed as interpretable tools for concept-level manipulation, under the assumption that isolated features can serve as controllable intervention points. In this work, we systematically evaluate this assumption in the context of object erasure and steering in diffusion models. We show that while SAEs reliably detect and localize semantic concepts within diffusion model activations, direct intervention in their latent space frequently induces out-of-distribution activations, resulting in severe visual artifacts. To disentangle detection from intervention, we use SAE activations purely as semantic detectors to identify image regions containing the target object, and replace those patch embeddings with the ones that do not contain it. This detection-based replacement preserves the diffusion model's activation statistics and produces significantly cleaner erasure results than latent steering. Our findings reveal a fundamental gap between concept detection and concept intervention in diffusion models: monosemantic or sparse features are not inherently suitable as control knobs for steering. These results position SAEs as powerful interpretability tools for analyzing generative models, but highlight important limitations when used for direct manipulation, such as unlearning.",
+      "authors": [
+        "Enrico Cassano",
+        "Riccardo Renzulli",
+        "Rayyan Ahmed",
+        "Marco Grangetto",
+        "Stephan Alaniz"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-06-30T14:09:28+00:00",
+      "link": "https://arxiv.org/pdf/2606.31699v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "sparse autoencoders for unlearning in diffusion models",
+      "llm_evidence_cn": "利用稀疏自编码器进行扩散模型中的概念擦除",
+      "llm_evidence": "利用稀疏自编码器进行扩散模型中的概念擦除",
+      "canonical_evidence": "利用稀疏自编码器进行扩散模型中的概念擦除",
+      "llm_tldr_en": "Proposes using sparse autoencoders as detectors for concept localization in diffusion models, then replacing patch embeddings instead of direct latent intervention to achieve effective object erasure without artifacts.",
+      "llm_tldr_cn": "针对扩散模型中的概念擦除，本文提出将稀疏自编码器仅作为语义检测器，定位目标对象区域后通过替换patch嵌入而非直接在潜在空间干预，从而避免视觉伪影。实验表明该方法能有效擦除对象，同时保持图像质量，为扩散模型中的可控擦除提供了新范式。",
+      "llm_tldr": "针对扩散模型中的概念擦除，本文提出将稀疏自编码器仅作为语义检测器，定位目标对象区域后通过替换patch嵌入而非直接在潜在空间干预，从而避免视觉伪影。实验表明该方法能有效擦除对象，同时保持图像质量，为扩散模型中的可控擦除提供了新范式。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.32039v1",
+      "source": "arxiv",
+      "title": "GEAR: Guided End-to-End AutoRegression for Image Synthesis",
+      "abstract": "Visual generative models are typically trained in two stages. A tokenizer is first trained for reconstruction and then frozen, after which a generator is trained on its discrete indices or continuous latents. This decoupling leaves the tokenizer unaware of what the generator finds easy to model. We present GEAR (Guided End-to-end AutoRegression), which trains a vector-quantized (VQ) tokenizer and an autoregressive (AR) generator jointly and end-to-end, guided by representation alignment. The key obstacle is that the VQ index fed to the AR model is non-differentiable, so gradients cannot reach the tokenizer, and a straight-through estimator collapses. GEAR resolves this with a dual read-out of the codebook assignment. A hard, one-hot branch trains the AR with next-token prediction, while a differentiable soft branch carries a representation-alignment loss that flows back to guide only the tokenizer. The AR model thereby steers its tokenizer toward an index distribution it can predict more easily. This shifts the alignment burden from the tokenizer to the AR: the tokenizer's own features become less DINOv2-like while the AR's become more so, the opposite of diffusion-side recipes that make the latent itself semantic. GEAR speeds up ImageNet gFID convergence by up to 10x relative to the strong LlamaGen-REPA baseline, learns markedly better patch-level and spatially-coherent features, and generalizes across quantizers (VQVAE, LFQ, IBQ) and to text-to-image generation.",
+      "authors": [
+        "Bin Lin",
+        "Zheyuan Liu",
+        "Chenguo Lin",
+        "Sixiang Chen",
+        "Yunyang Ge",
+        "Yunlong Lin",
+        "Jianwei Zhang",
+        "Miles Yang",
+        "Zhao Zhong",
+        "Liefeng Bo",
+        "Li Yuan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-30T17:59:57+00:00",
+      "link": "https://arxiv.org/pdf/2606.32039v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "autoregressive image generation model",
+      "llm_evidence_cn": "自回归图像生成模型",
+      "llm_evidence": "自回归图像生成模型",
+      "canonical_evidence": "自回归图像生成模型",
+      "llm_tldr_en": "Proposes GEAR for joint end-to-end training of VQ tokenizer and autoregressive generator for image synthesis, addressing gradient non-differentiability with dual read-out.",
+      "llm_tldr_cn": "针对视觉生成模型中分词器与生成器解耦导致的问题，提出GEAR方法，联合端到端训练VQ分词器和自回归生成器。通过双读出头解决非可微梯度问题，使分词器感知生成器偏好。实验表明该方法在图像合成质量上显著提升，为自回归图像生成提供了新范式。",
+      "llm_tldr": "针对视觉生成模型中分词器与生成器解耦导致的问题，提出GEAR方法，联合端到端训练VQ分词器和自回归生成器。通过双读出头解决非可微梯度问题，使分词器感知生成器偏好。实验表明该方法在图像合成质量上显著提升，为自回归图像生成提供了新范式。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

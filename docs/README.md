@@ -6,29 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-30
-- 运行时间：2026-06-30 21:13:05 UTC
+- 最新运行日期：2026-07-01
+- 运行时间：2026-07-01 20:31:22 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：3
+- 本次总论文数：2
+- 精读区：2
 - 速读区：0
 
 ### 今日简报（AI）
-今天精读了两篇满分论文，聚焦从自回归图像生成模型中擦除特定概念。  
-最值得关注的是显式擦除（Obliviate）与推理时最小干预（ScaleErasure）两种精准概念消除方法，均用于提升图像生成安全性。  
-建议你后续关注概念擦除技术向视频或文本生成领域的扩展应用。
-- 详情：[/202606/30/README](/202606/30/README)
+1) 今日精读两篇前沿论文：扩散模型“稀疏自编码器”实现安全卸载，图像自回归生成提出端到端新框架。  
+2) 最值得关注方向：①利用稀疏自编码器在扩散模型中删除特定概念（如版权内容）而不影响生成质量；②GEAR框架实现引导式自回归图像合成，提升生成可控性。  
+3) 普通读者可优先关注自回归生成在图像合成中的落地潜力，以及大模型安全卸载的实用方法。
+- 详情：[/202607/01/README](/202607/01/README)
 
 ### 精读区论文标签
-1. [Obliviate: Erasing Concepts from Autoregressive Image Generation Models](/202606/30/2606.28643v1-obliviate-erasing-concepts-from-autoregressive-image-generation-models)  
-   标签：评分：10.0/10、query:ce
-   evidence：针对自回归图像生成的概念擦除方法
-2. [ScaleErasure: Inference-Time Minimal Intervention for Precise Concept Erasure in Next-Scale Autoregressive Image Generation](/202606/30/2606.29282v1-scaleerasure-inference-time-minimal-intervention-for-precise-concept-erasure-in-next-scale-autoregressive-image-generation)  
-   标签：评分：10.0/10、query:ce
-   evidence：直接针对自回归图像生成中的概念擦除，提出ScaleErasure方法
-3. [Concept Removal Guidance: Evidence-Calibrated Negative Guidance for Safe Diffusion Sampling](/202606/30/2606.29801v1-concept-removal-guidance-evidence-calibrated-negative-guidance-for-safe-diffusion-sampling)  
+1. [Look But Don't Touch with Sparse Autoencoders for Unlearning in Diffusion Models](/202607/01/2606.31699v1-look-but-dont-touch-with-sparse-autoencoders-for-unlearning-in-diffusion-models)  
    标签：评分：9.0/10、query:ce
-   evidence：通过负向引导在扩散模型中进行概念移除
+   evidence：利用稀疏自编码器进行扩散模型中的概念擦除
+2. [GEAR: Guided End-to-End AutoRegression for Image Synthesis](/202607/01/2606.32039v1-gear-guided-end-to-end-autoregression-for-image-synthesis)  
+   标签：评分：8.0/10、query:ce
+   evidence：自回归图像生成模型
 
 ### 速读区论文标签
 - 本次无速读推荐。
