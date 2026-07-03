@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-03",
+  "date": "2026-07-03",
+  "generated_at": "2026-07-03T21:40:31",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/03/2606.31699v2-look-but-dont-touch-with-sparse-autoencoders-for-unlearning-in-diffusion-models",
+      "section": "deep",
+      "title_en": "Look But Don't Touch with Sparse Autoencoders for Unlearning in Diffusion Models",
+      "authors": "Enrico Cassano, Riccardo Renzulli, Rayyan Ahmed, Marco Grangetto, Stephan Alaniz",
+      "date": "2026-06-30",
+      "pdf": "https://arxiv.org/pdf/2606.31699v2",
+      "score": "9.0",
+      "evidence": "使用稀疏自编码器在扩散模型中进行对象擦除",
+      "tldr": "稀疏自编码器（SAE）在扩散模型中能可靠检测语义概念，但直接干预其潜空间易导致分布外激活和严重视觉伪影。本文提出检测与干预分离：利用SAE作为语义检测器定位目标对象区域，再替换该区域patch embedding为不含对象的嵌入。该方法保留激活统计特性，生成结果显著优于潜空间引导。研究表明SAE是强大可解释性工具，但在直接操控（如遗忘学习）中存在根本局限。",
+      "tags": "query:ce",
+      "abstract_en": "Sparse autoencoders (SAEs) have recently been proposed as interpretable tools for concept-level manipulation, under the assumption that isolated features can serve as controllable intervention points. In this work, we systematically evaluate this assumption in the context of object erasure and steering in diffusion models. We show that while SAEs reliably detect and localize semantic concepts within diffusion model activations, direct intervention in their latent space frequently induces out-of-distribution activations, resulting in severe visual artifacts. To disentangle detection from intervention, we use SAE activations purely as semantic detectors to identify image regions containing the target object, and replace those patch embeddings with the ones that do not contain it. This detection-based replacement preserves the diffusion model's activation statistics and produces significantly cleaner erasure results than latent steering. Our findings reveal a fundamental gap between concept detection and concept intervention in diffusion models: monosemantic or sparse features are not inherently suitable as control knobs for steering. These results position SAEs as powerful interpretability tools for analyzing generative models, but highlight important limitations when used for direct manipulation, such as unlearning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/03/2606.30262v1-intermediate-text-representation-guided-text-to-image-generation-for-enhancing-one-and-only-alignment",
+      "section": "quick",
+      "title_en": "Intermediate Text Representation Guided Text-to-Image Generation for Enhancing One-and-Only Alignment",
+      "authors": "Soyoun Won, Aryan Yazdan Parast, Basim Azam, Jean Honorio, Naveed Akhtar",
+      "date": "2026-06-29",
+      "pdf": "https://arxiv.org/pdf/2606.30262v1",
+      "score": "7.0",
+      "evidence": "解决文本到图像模型中的概念关联偏见，与概念擦除相关",
+      "tldr": "文本到图像扩散模型在渲染唯一性对象时存在概念关联偏差，导致生成结果偏向视觉先验而非文本描述。信息论分析表明最终文本嵌入丢失了中间层的概念级信息，降低了与去噪过程的互信息。为此提出中间文本表示引导扩散，通过注入编码器中间隐藏状态恢复被抑制的概念，无需额外训练。在四个基准测试上，该方法将VQAScore提升最高19.1个百分点，同时保持生成质量，有效增强文本与生成图像的对齐。",
+      "tags": "query:ce",
+      "abstract_en": "Text-to-image (T2I) diffusion models often fail to faithfully render explicit textual descriptions, instead defaulting to strongly learned visual priors due to a phenomenon referred to as concept association bias. We show that such bias is particularly strong for one-and-only (OAO) objects, entities that exist in a single canonical form, such as celestial bodies, landmarks, and artworks. The deeply ingrained visual identity for these concepts often resists modification through prompting alone. Addressing this challenge, we first identify through an information-theoretic analysis that the final text embedding discards concept-level information present in the intermediate-layer text representations, reducing the mutual information available to the subsequent denoising process. We then propose Intermediate Text Representation (IR)-guided diffusion, which injects intermediate hidden states of the text encoder into the conditioning signal during early denoising steps, recovering suppressed concepts without any additional training, optimization, or external models. To systematically evaluate the challenging task of aligning generative outputs with unusual prompts for OAO objects, we introduce OAO-AttackBench, a benchmark comprising counterfactual prompts that directly conflict with the core visual identity of OAO objects. Experiments on four benchmarks, including OAO-AttackBench, show that our method achieves up to a 19.1 percentage-point improvement in VQAScore while preserving generation fidelity and human preference. Project page: https://soyoun-won.github.io/one-and-only-ir-guidance/.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
