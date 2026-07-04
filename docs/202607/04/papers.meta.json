@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-04",
+  "date": "2026-07-04",
+  "generated_at": "2026-07-04T20:06:05",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/04/2607.00712v1-towards-memory-efficient-autoregressive-video-generation-via-instance-specific-parametric-absorption",
+      "section": "quick",
+      "title_en": "Towards Memory-Efficient Autoregressive Video Generation via Instance-Specific Parametric Absorption",
+      "authors": "Xiaomeng Fu, Jia Li, Yiming Hu, Yong Wang, Hayden Kwok-Hay So, Jiao Dai, Xiangxiang Chu, Jizhong Han",
+      "date": "2026-07-01",
+      "pdf": "https://arxiv.org/pdf/2607.00712v1",
+      "score": "6.0",
+      "evidence": "自回归生成内存压缩方法可适用于图像模型",
+      "tldr": "自回归视频生成面临KV缓存线性增长的内存瓶颈。现有丢弃法破坏长程依赖，导致时序闪烁和身份丢失。本文提出ISPA，通过实例特定参数吸收将部分注意力层转为局部注意力，并利用封闭最小二乘解补偿历史信息。实验表明可移除50%缓存且视觉质量近乎无损，为流式模型提供参数化记忆管理新视角。",
+      "tags": "query:ce",
+      "abstract_en": "Autoregressive (AR) streaming models have emerged as a powerful paradigm for long video generation. However, the linearly growing Key-Value (KV) cache poses a significant bottleneck, leading to memory overload and degraded inference throughput. A common compression method is to drop redundant KV tokens, which often breaks long-range dependencies, resulting in temporal flickering and identity loss. In this paper, we propose Instance-Specific Parametric Absorption (ISPA), a novel framework that shifts the KV cache compression from discarding to distilling. The core idea is to transit a subset of layers from Full-Attention (F-Layers) to memory-efficient Local-Attention (L-Layers) by \"absorbing\" historical context into the model's weights. Specifically, during a brief warmup phase, ISPA monitors the output discrepancy between global and local attention. At the transition point, we solve a closed-form least-squares problem to compute an instance-specific weight modulation that compensates for the missing history. Experiments across architectures (1.3B to 14B) demonstrate that ISPA can remove up to 50\\% of the KV cache with near-lossless visual quality. We hope this perspective encourages future work to explore parametric memory consolidation beyond external token-level cache management for streaming generative models.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

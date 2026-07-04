@@ -1,0 +1,60 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-04T20:05:11.827387+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.00712v1",
+      "source": "arxiv",
+      "title": "Towards Memory-Efficient Autoregressive Video Generation via Instance-Specific Parametric Absorption",
+      "abstract": "Autoregressive (AR) streaming models have emerged as a powerful paradigm for long video generation. However, the linearly growing Key-Value (KV) cache poses a significant bottleneck, leading to memory overload and degraded inference throughput. A common compression method is to drop redundant KV tokens, which often breaks long-range dependencies, resulting in temporal flickering and identity loss. In this paper, we propose Instance-Specific Parametric Absorption (ISPA), a novel framework that shifts the KV cache compression from discarding to distilling. The core idea is to transit a subset of layers from Full-Attention (F-Layers) to memory-efficient Local-Attention (L-Layers) by \"absorbing\" historical context into the model's weights. Specifically, during a brief warmup phase, ISPA monitors the output discrepancy between global and local attention. At the transition point, we solve a closed-form least-squares problem to compute an instance-specific weight modulation that compensates for the missing history. Experiments across architectures (1.3B to 14B) demonstrate that ISPA can remove up to 50\\% of the KV cache with near-lossless visual quality. We hope this perspective encourages future work to explore parametric memory consolidation beyond external token-level cache management for streaming generative models.",
+      "authors": [
+        "Xiaomeng Fu",
+        "Jia Li",
+        "Yiming Hu",
+        "Yong Wang",
+        "Hayden Kwok-Hay So",
+        "Jiao Dai",
+        "Xiangxiang Chu",
+        "Jizhong Han"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.MM"
+      ],
+      "published": "2026-07-01T09:59:28+00:00",
+      "link": "https://arxiv.org/pdf/2607.00712v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "autoregressive generation memory compression applicable to image models",
+      "llm_evidence_cn": "自回归生成内存压缩方法可适用于图像模型",
+      "llm_evidence": "自回归生成内存压缩方法可适用于图像模型",
+      "canonical_evidence": "自回归生成内存压缩方法可适用于图像模型",
+      "llm_tldr_en": "Proposes ISPA to compress KV cache in autoregressive video generation by distilling historical context into model parameters, achieving memory efficiency without sacrificing quality. The method is applicable to autoregressive image generation models as well.",
+      "llm_tldr_cn": "自回归视频生成模型面临KV缓存线性增长导致的内存瓶颈。本文提出实例特定参数吸收（ISPA），将部分注意力层的全注意力转换为局部注意力，通过将历史上下文吸收到模型参数来压缩缓存，避免了传统丢弃方法破坏长程依赖的问题。实验表明该方法显著降低内存占用并保持生成质量。作为通用的自回归模型缓存压缩方法，对自回归图像生成也有借鉴意义。",
+      "llm_tldr": "自回归视频生成模型面临KV缓存线性增长导致的内存瓶颈。本文提出实例特定参数吸收（ISPA），将部分注意力层的全注意力转换为局部注意力，通过将历史上下文吸收到模型参数来压缩缓存，避免了传统丢弃方法破坏长程依赖的问题。实验表明该方法显著降低内存占用并保持生成质量。作为通用的自回归模型缓存压缩方法，对自回归图像生成也有借鉴意义。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
