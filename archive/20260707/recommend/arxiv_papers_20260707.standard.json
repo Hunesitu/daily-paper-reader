@@ -1,0 +1,167 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-07T21:49:39.817364+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.03973v1",
+      "source": "arxiv",
+      "title": "MANCE: Manifold Aware Concept Erasure",
+      "abstract": "Concept erasure aims to remove a target concept from a representation while preserving the other information encoded in it. This is difficult because representations encode many concepts that are often correlated with the erasure target, so removing the target risks damaging them. We propose the Manifold Constraint Hypothesis (MCH): if natural representations concentrate on a structured, lower-dimensional manifold, then interventions should be constrained to that manifold and better preserve other information encoded in the representation during interventions. We instantiate MCH in a new concept erasure method: MANifold aware Concept Erasure (MANCE). MANCE performs iterative updates to the representations using signals from a classifier that predicts a target concept. We estimate the manifold using representations obtained from natural inputs, and then we project the concept removal update to the estimated manifold. We perform extensive evaluation on 119 settings spanning text and vision, including 13 language models, three NLP concepts, and 40 CelebA-CLIP attributes. Employing MANCE on top of previous methods shows consistent improved leakage results. We also introduce MANCE+ and MANCE++, which prepend a closed-form erasure algorithm before employing MANCE, achieving better leakage--surgicality tradeoffs relative to matched full-space updates. MANCE++, our best method, achieves state-of-the-art results on nonlinear concept erasure. These results support MCH in the erasure setting: interventions should be constrained to the natural representation manifold.",
+      "authors": [
+        "Matan Avitan",
+        "Yoav Goldberg",
+        "Yanai Elazar"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-07-04T18:11:16+00:00",
+      "link": "https://arxiv.org/pdf/2607.03973v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Directly proposes concept erasure method MANCE with manifold constraint",
+      "llm_evidence_cn": "直接提出基于流形约束的概念擦除方法MANCE",
+      "llm_evidence": "直接提出基于流形约束的概念擦除方法MANCE",
+      "canonical_evidence": "直接提出基于流形约束的概念擦除方法MANCE",
+      "llm_tldr_en": "MANCE proposes the Manifold Constraint Hypothesis for concept erasure, using iterative representation updates constrained to a learned manifold to preserve other information. It outperforms prior methods on benchmark tasks.",
+      "llm_tldr_cn": "现有概念擦除方法在擦除目标概念时容易破坏相关表示，因为表示分布在高维流形上。本文提出流形约束假设，并实例化为MANCE方法，通过迭代更新表示并约束在估计流形上。实验表明MANCE在多个基准上优于先前方法，能更好保留非目标信息。该工作为概念擦除提供了新的几何视角。",
+      "llm_tldr": "现有概念擦除方法在擦除目标概念时容易破坏相关表示，因为表示分布在高维流形上。本文提出流形约束假设，并实例化为MANCE方法，通过迭代更新表示并约束在估计流形上。实验表明MANCE在多个基准上优于先前方法，能更好保留非目标信息。该工作为概念擦除提供了新的几何视角。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.05274v1",
+      "source": "arxiv",
+      "title": "Erasing Without Collateral Damage: Precise Concept Removal in Diffusion Models",
+      "abstract": "Training-free concept erasure is an attractive mechanism for controlling text-to-image diffusion models, but precise erasure often comes at the cost of damaging semantically related non-target concepts. Existing value-space methods remove the component of each cross-attention value along the target concept direction, implicitly treating target identity and shared visual structure as the same signal. We argue that this is the source of much of the collateral damage in prior preservation. We introduce CARE, a closed-form concept erasure operator that replaces the raw target direction with a kept-subspace-aware direction computed from a small bank of retained concept anchors. The resulting edit is applied directly in cross-attention value space, requires no model fine-tuning, and adds only a negligible offline computation. A single shrinkage parameter controls the erase-preserve trade-off. We further show that the operator admits a minimum-disturbance interpretation and, in its projection form, leaves the kept subspace invariant. Experiments under the standard concept-erasure protocol show that our method preserves non-target concepts more faithfully while maintaining competitive erasure across instance, style, and celebrity concepts. Code: https://github.com/parthupman/care",
+      "authors": [
+        "Parth Upman",
+        "Nishita Jain",
+        "Shreyank N Gowda"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-06T16:21:09+00:00",
+      "link": "https://arxiv.org/pdf/2607.05274v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "precise concept removal in diffusion models",
+      "llm_evidence_cn": "扩散模型中的精确概念移除",
+      "llm_evidence": "扩散模型中的精确概念移除",
+      "canonical_evidence": "扩散模型中的精确概念移除",
+      "llm_tldr_en": "Introduces CARE, a closed-form concept erasure operator that preserves non-target concepts by using kept-subspace-aware direction.",
+      "llm_tldr_cn": "针对扩散模型精确概念擦除中附带损害的问题，本文提出CARE算子，通过保留子空间感知方向替换原始目标方向，在交叉注意力值空间中直接应用编辑。该方法避免了传统方法对非目标概念的损伤，实现了无附带损害的精确概念移除，实验验证了其在多种扩散模型中的有效性。",
+      "llm_tldr": "针对扩散模型精确概念擦除中附带损害的问题，本文提出CARE算子，通过保留子空间感知方向替换原始目标方向，在交叉注意力值空间中直接应用编辑。该方法避免了传统方法对非目标概念的损伤，实现了无附带损害的精确概念移除，实验验证了其在多种扩散模型中的有效性。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.03397v1",
+      "source": "arxiv",
+      "title": "Efficient bias mitigation in T2I diffusion models using Concept Graphs",
+      "abstract": "Text-to-Image diffusion models often propagate harmful bias inherited from the training data. Existing bias mitigation techniques typically intervene only at the text encoder or provide inference-time guidance, often leading to generations that collapse into semantically incoherent outputs. To address these limitations, we introduce CO-ALIGN (Concept Ontology Alignment), a novel bias mitigation approach based on concept-graph alignment that operates on the model's internal concept ontology. By aligning concepts within the text encoder and denoiser, CO-ALIGN achieves substantial bias reduction while preserving generative integrity. We demonstrate the effectiveness of concept-graph alignment across three paradigms: text-encoders, denoisers and joint text-denoiser ontology alignment. CO-ALIGN outperforms the state of the art, improving fairness by $30\\%$, $ΔFID=11.4$ in image quality, $2.8\\%$ in image fidelity, all while reducing semantically incoherent outputs by $88\\%$. Beyond bias mitigation, we show that CO-ALIGN benefits other downstream tasks as well. In particular, our experiments demonstrate that better-aligned internal ontologies enhance concept unlearning robustness across multiple unlearning techniques.",
+      "authors": [
+        "Mansi",
+        "Avinash Kori",
+        "Francesco Leofante"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.CV"
+      ],
+      "published": "2026-07-03T14:58:56+00:00",
+      "link": "https://arxiv.org/pdf/2607.03397v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "concept-graph alignment for bias mitigation",
+      "llm_evidence_cn": "概念图对齐用于偏见缓解",
+      "llm_evidence": "概念图对齐用于偏见缓解",
+      "canonical_evidence": "概念图对齐用于偏见缓解",
+      "llm_tldr_en": "Proposes CO-ALIGN, using concept-graph alignment on text encoder and denoiser to mitigate bias in T2I diffusion models while preserving generative integrity.",
+      "llm_tldr_cn": "针对文本到图像扩散模型中的有害偏见，提出CO-ALIGN方法，基于概念本体图对齐对编码器和去噪器内部概念进行干预，在显著降低偏见的同时保持生成质量。该方法与概念擦除目标高度一致，且不局限于特定模型结构，为概念擦除提供了可借鉴的图对齐技术。",
+      "llm_tldr": "针对文本到图像扩散模型中的有害偏见，提出CO-ALIGN方法，基于概念本体图对齐对编码器和去噪器内部概念进行干预，在显著降低偏见的同时保持生成质量。该方法与概念擦除目标高度一致，且不局限于特定模型结构，为概念擦除提供了可借鉴的图对齐技术。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.03509v1",
+      "source": "arxiv",
+      "title": "Flex-Forcing: Towards a Unified Autoregressive and Bidirectional Video Diffusion Model",
+      "abstract": "Recent progress in large-scale generative models has substantially advanced video generation, yet existing methods remain constrained by a rigid inference paradigm. Bidirectional diffusion models excel at global coherence and visual fidelity but suffer from slow inference, while autoregressive models offer efficient and streaming generation at the cost of long-range consistency and exposure bias. We introduce Flex-Forcing, a unified training and inference framework that enables a video diffusion model to seamlessly operate under both bidirectional and autoregressive generation regimes. The core idea is a flexible chunking mechanism jointly defined over the temporal axis and denoising steps. This design allows the model to (1) perform flexible chunking according to different device budgets, (2) perform bidirectional inference across chunks for global structure planning, while generating frames autoregressively within each chunk for efficient and fine-grained synthesis, and (3) perform any-order, any-timestep autoregressive generation without the strict causal constraint. Extensive experiments on multiple video generation benchmarks demonstrate that Flex-Forcing achieves consistently better video quality, long-video stability than strong baselines with a rigid inference schedule, while offering faster inference.",
+      "authors": [
+        "Xinyin Ma",
+        "Julius Berner",
+        "Chao Liu",
+        "Arash Vahdat",
+        "Weili Nie",
+        "Xinchao Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-03T17:34:14+00:00",
+      "link": "https://arxiv.org/pdf/2607.03509v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "autoregressive video diffusion framework",
+      "llm_evidence_cn": "自回归视频扩散框架",
+      "llm_evidence": "自回归视频扩散框架",
+      "canonical_evidence": "自回归视频扩散框架",
+      "llm_tldr_en": "Proposes Flex-Forcing, a unified framework enabling video diffusion models to operate under both bidirectional and autoregressive regimes, balancing coherence and efficiency.",
+      "llm_tldr_cn": "针对视频生成中双向扩散模型推理慢、自回归模型长期一致性差的问题，提出Flex-Forcing统一框架，通过灵活分块机制在同一模型上实现双向和自回归两种生成模式。实验表明该方法在保持全局连贯性的同时支持高效流式生成，为自回归图像生成模型提供了可借鉴的架构设计。",
+      "llm_tldr": "针对视频生成中双向扩散模型推理慢、自回归模型长期一致性差的问题，提出Flex-Forcing统一框架，通过灵活分块机制在同一模型上实现双向和自回归两种生成模式。实验表明该方法在保持全局连贯性的同时支持高效流式生成，为自回归图像生成模型提供了可借鉴的架构设计。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "label": "2026-07-07",
+  "date": "2026-07-07",
+  "generated_at": "2026-07-07T21:53:44",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202607/07/2607.03973v1-mance-manifold-aware-concept-erasure",
+      "section": "deep",
+      "title_en": "MANCE: Manifold Aware Concept Erasure",
+      "authors": "Matan Avitan, Yoav Goldberg, Yanai Elazar",
+      "date": "2026-07-04",
+      "pdf": "https://arxiv.org/pdf/2607.03973v1",
+      "score": "9.0",
+      "evidence": "直接提出基于流形约束的概念擦除方法MANCE",
+      "tldr": "概念擦除旨在移除目标概念而不损害其他编码信息，但由于概念相关，可能造成损伤。本文提出流形约束假设：自然表示集中在结构化低维流形，因此干预应限制在该流形上。基于此提出MANCE方法，通过分类器信号迭代更新表示并投影到估计流形。在119个文本和视觉设置中评估，MANCE一致改进了泄漏结果，而MANCE++达到非线性概念擦除最先进水平。结果支持流形约束假设。",
+      "tags": "query:ce",
+      "abstract_en": "Concept erasure aims to remove a target concept from a representation while preserving the other information encoded in it. This is difficult because representations encode many concepts that are often correlated with the erasure target, so removing the target risks damaging them. We propose the Manifold Constraint Hypothesis (MCH): if natural representations concentrate on a structured, lower-dimensional manifold, then interventions should be constrained to that manifold and better preserve other information encoded in the representation during interventions. We instantiate MCH in a new concept erasure method: MANifold aware Concept Erasure (MANCE). MANCE performs iterative updates to the representations using signals from a classifier that predicts a target concept. We estimate the manifold using representations obtained from natural inputs, and then we project the concept removal update to the estimated manifold. We perform extensive evaluation on 119 settings spanning text and vision, including 13 language models, three NLP concepts, and 40 CelebA-CLIP attributes. Employing MANCE on top of previous methods shows consistent improved leakage results. We also introduce MANCE+ and MANCE++, which prepend a closed-form erasure algorithm before employing MANCE, achieving better leakage--surgicality tradeoffs relative to matched full-space updates. MANCE++, our best method, achieves state-of-the-art results on nonlinear concept erasure. These results support MCH in the erasure setting: interventions should be constrained to the natural representation manifold.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/07/2607.05274v1-erasing-without-collateral-damage-precise-concept-removal-in-diffusion-models",
+      "section": "deep",
+      "title_en": "Erasing Without Collateral Damage: Precise Concept Removal in Diffusion Models",
+      "authors": "Parth Upman, Nishita Jain, Shreyank N Gowda",
+      "date": "2026-07-06",
+      "pdf": "https://arxiv.org/pdf/2607.05274v1",
+      "score": "9.0",
+      "evidence": "扩散模型中的精确概念移除",
+      "tldr": "现有训练无关的概念擦除方法在精确移除目标概念时，常因将目标身份与共享视觉结构混为一谈而损害语义相关的非目标概念。本文提出CARE算子，通过从保留概念锚点库中计算保留子空间感知的方向，替换交叉注意力值中的原始目标方向，无需微调且仅需极少离线计算。实验表明，CARE在标准协议下能更忠实地保留非目标概念，同时保持对实例、风格和名人概念的有效擦除。该方法具有最小扰动解释，投影形式保持保留子空间不变。",
+      "tags": "query:ce",
+      "abstract_en": "Training-free concept erasure is an attractive mechanism for controlling text-to-image diffusion models, but precise erasure often comes at the cost of damaging semantically related non-target concepts. Existing value-space methods remove the component of each cross-attention value along the target concept direction, implicitly treating target identity and shared visual structure as the same signal. We argue that this is the source of much of the collateral damage in prior preservation. We introduce CARE, a closed-form concept erasure operator that replaces the raw target direction with a kept-subspace-aware direction computed from a small bank of retained concept anchors. The resulting edit is applied directly in cross-attention value space, requires no model fine-tuning, and adds only a negligible offline computation. A single shrinkage parameter controls the erase-preserve trade-off. We further show that the operator admits a minimum-disturbance interpretation and, in its projection form, leaves the kept subspace invariant. Experiments under the standard concept-erasure protocol show that our method preserves non-target concepts more faithfully while maintaining competitive erasure across instance, style, and celebrity concepts. Code: https://github.com/parthupman/care",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/07/2607.03397v1-efficient-bias-mitigation-in-t2i-diffusion-models-using-concept-graphs",
+      "section": "deep",
+      "title_en": "Efficient bias mitigation in T2I diffusion models using Concept Graphs",
+      "authors": "Mansi, Avinash Kori, Francesco Leofante",
+      "date": "2026-07-03",
+      "pdf": "https://arxiv.org/pdf/2607.03397v1",
+      "score": "8.0",
+      "evidence": "概念图对齐用于偏见缓解",
+      "tldr": "文本到图像扩散模型易传播训练数据中的有害偏见。现有偏见缓解方法仅干预文本编码器或提供推理指导，导致生成语义不连贯。本文提出CO-ALIGN，通过概念图对齐作用于模型内部概念本体，同时对文本编码器和去噪器进行概念对齐，显著降低偏见并保持生成质量。实验表明，公平性提升30%，图像质量ΔFID=11.4，保真度提升2.8%，语义不连贯输出减少88%，并在概念遗忘等任务中展现优势。",
+      "tags": "query:ce",
+      "abstract_en": "Text-to-Image diffusion models often propagate harmful bias inherited from the training data. Existing bias mitigation techniques typically intervene only at the text encoder or provide inference-time guidance, often leading to generations that collapse into semantically incoherent outputs. To address these limitations, we introduce CO-ALIGN (Concept Ontology Alignment), a novel bias mitigation approach based on concept-graph alignment that operates on the model's internal concept ontology. By aligning concepts within the text encoder and denoiser, CO-ALIGN achieves substantial bias reduction while preserving generative integrity. We demonstrate the effectiveness of concept-graph alignment across three paradigms: text-encoders, denoisers and joint text-denoiser ontology alignment. CO-ALIGN outperforms the state of the art, improving fairness by $30\\%$, $ΔFID=11.4$ in image quality, $2.8\\%$ in image fidelity, all while reducing semantically incoherent outputs by $88\\%$. Beyond bias mitigation, we show that CO-ALIGN benefits other downstream tasks as well. In particular, our experiments demonstrate that better-aligned internal ontologies enhance concept unlearning robustness across multiple unlearning techniques.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/07/2607.03509v1-flex-forcing-towards-a-unified-autoregressive-and-bidirectional-video-diffusion-model",
+      "section": "quick",
+      "title_en": "Flex-Forcing: Towards a Unified Autoregressive and Bidirectional Video Diffusion Model",
+      "authors": "Xinyin Ma, Julius Berner, Chao Liu, Arash Vahdat, Weili Nie, Xinchao Wang",
+      "date": "2026-07-03",
+      "pdf": "https://arxiv.org/pdf/2607.03509v1",
+      "score": "6.0",
+      "evidence": "自回归视频扩散框架",
+      "tldr": "现有视频扩散模型推理范式僵化，双向模型全局一致但推理慢，自回归模型高效但长程一致性差。本文提出Flex-Forcing统一框架，通过时间轴与去噪步骤的灵活分块机制，允许模型跨块双向推理规划全局结构，块内自回归生成帧，同时支持任意顺序任意时间步生成。在多个基准上，Flex-Forcing比固定推理调度的基线取得更优视频质量和长视频稳定性，且推理更快。这一工作首次统一了双向与自回归视频扩散范式，兼顾全局一致性与生成效率。",
+      "tags": "query:ce",
+      "abstract_en": "Recent progress in large-scale generative models has substantially advanced video generation, yet existing methods remain constrained by a rigid inference paradigm. Bidirectional diffusion models excel at global coherence and visual fidelity but suffer from slow inference, while autoregressive models offer efficient and streaming generation at the cost of long-range consistency and exposure bias. We introduce Flex-Forcing, a unified training and inference framework that enables a video diffusion model to seamlessly operate under both bidirectional and autoregressive generation regimes. The core idea is a flexible chunking mechanism jointly defined over the temporal axis and denoising steps. This design allows the model to (1) perform flexible chunking according to different device budgets, (2) perform bidirectional inference across chunks for global structure planning, while generating frames autoregressively within each chunk for efficient and fine-grained synthesis, and (3) perform any-order, any-timestep autoregressive generation without the strict causal constraint. Extensive experiments on multiple video generation benchmarks demonstrate that Flex-Forcing achieves consistently better video quality, long-video stability than strong baselines with a rigid inference schedule, while offering faster inference.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,830 @@
+Title: Efficient bias mitigation in T2I diffusion models using Concept Graphs
+
+URL Source: https://arxiv.org/pdf/2607.03397v1
+
+Published Time: Tue, 07 Jul 2026 01:06:01 GMT
+
+Number of Pages: 19
+
+Markdown Content:
+# Efficient bias mitigation in T2I diffusion models using Concept Graphs 
+
+Mansi 
+
+Department of Computing Imperial College London 
+
+m.-24@imperial.ac.uk 
+
+Avinash Kori 
+
+Department of Computing Imperial College London 
+
+a.kori21@imperial.ac.uk 
+
+Francesco Leofante 
+
+Department of Computing Imperial College London 
+
+f.leofante@imperial.ac.uk 
+
+## Abstract 
+
+Text-to-Image diffusion models often propagate harmful bias inherited from the training data. Existing bias mitigation techniques typically intervene only at the text encoder or provide inference-time guidance, often leading to generations that collapse into semantically incoherent outputs . To address these limitations, we introduce CO-ALIGN (Concept Ontology Alignment), a novel bias mitiga-tion approach based on concept-graph alignment that operates on the model’s 
+
+internal concept ontology . By aligning concepts within the text encoder and denoiser, CO-ALIGN achieves substantial bias reduction while preserving gen-erative integrity. We demonstrate the effectiveness of concept-graph alignment across three paradigms: text-encoders, denoisers and joint text-denoiser ontology alignment. CO-ALIGN outperforms the state of the art, improving fairness by 
+
+30% , ∆F ID = 11 .4 in image quality, 2.8% in image fidelity, all while reducing semantically incoherent outputs by 88% . Beyond bias mitigation, we show that CO-ALIGN benefits other downstream tasks as well. In particular, our experiments demonstrate that better-aligned internal ontologies enhance concept unlearning robustness across multiple unlearning techniques. 
+
+## 1 Introduction 
+
+Text-to-image (T2I) diffusion models have achieved remarkable generative capability, yet they system-atically reproduce and amplify the demographic biases present in their training corpora [Schuhmann et al., 2022a, Bianchi et al., 2023]. These biases are not just superficial stylistic artifacts, but structural properties of the model’s learned concept associations. Once embedded in the weights, they are re-produced consistently at every generation. To address this, current bias mitigation methods intervene at one of two levels: the text encoder , via text embedding fine-tuning [Shen et al., 2024] or inference-time steering [Friedrich et al., 2023, Chuang et al., 2023]; or the denoiser , via cross-attention weight editing [Orgad et al., 2023, Gandikota et al., 2024] or latent space manipulation [Parihar et al., 2024, Li et al., 2024, Shi et al., 2025]. Both paradigms share a common and consequential assumption: that the text encoder and denoiser can be treated as independent correction targets, and that fixing one is sufficient to correct the generated output. 
+
+The problem with existing approaches. The denoiser usually adapts to the given text-encoder, or in the case of end-to-end training, both text encoder and the denoiser are jointly updated, without explicit disentanglement guarantees: the denoiser’s cross-attention heads learn to expect the specific biased embedding geometry produced by the original text encoder, and have organized their internal concept representations around producing biased visual outputs. When only the text encoder is edited, the denoiser receives an out-of-distribution conditioning signal, which it often cannot interpret coherently, resulting in semantically incoherent generations that depict neither the target concept nor any meaningful content. Conversely, when only the denoiser is edited, the text encoder continues to 
+
+> Preprint.
+> arXiv:2607.03397v1 [cs.AI] 3 Jul 2026
+
+Figure 1: Existing bias mitigation methods that intervene on only the text encoder (left) or denoiser (centre) produce either semantically incoherent outputs or gender-biased generations for the prompt 
+
+“Nurse” . CO-ALIGN (right) jointly aligns the concept graphs of both components toward a target topology, restoring both coherence and demographic balance. CG representes the concept graphs. route underspecified prompts (e.g., “a nurse” , where the gender is not mentioned) toward biased attribute embeddings, partially negating the denoiser-side correction. 
+
+Our approach. We propose to mitigate this by aligning the model’s internal concept ontology directly. We propose CO-ALIGN ( Concept Ontology ALIGN ment), a framework that extracts and edits the structured relational graph of concept representations distributed across both the text encoder’s embedding space and the denoiser’s cross-attention layers. The key insight underlying CO-ALIGN is that bias is not a property of individual concept representations, but of the relationships between them . In the original model, biased concepts share disproportionately more neural substrate with their stereotypically associated attributes than with their counter-stereotypical ones, like a nurse if majorly attributed to a ‘female’ nurse over a ‘male’ nurse. This asymmetry is observable in the extracted concept graph via asymmetric edge weights. CO-ALIGN addresses this by aligning the concept graph toward a target topology , bringing under-represented concept associations closer to the target concept, jointly in both the text encoder and the denoiser, consequently restoring balanced representation in the final generation. As shown in our experiments, this joint editing enables alignment of the geometric representations in the text encoder and the denoiser, leading to faithful and unbiased generation. 
+
+Emergent property in CO-ALIGN. Beyond our primary debiasing objective, we find that aligning concept graphs through CO-ALIGN causes semantic neighbourhood propagation , i.e. aligning one concept pulls its semantic neighbourhood along with it. This effect is analogous to label propagation in graph-based semi-supervised learning [Zhou et al., 2003, Zhu et al., 2003, Iscen et al., 2019], where supervision on a small set of labelled nodes propagates to adjacent unlabeled nodes via the graph smoothness assumption [Belkin et al., 2006]. We leverage this property, along with the locality of concept erasure property of unlearning techniques (Bui et al. [2025]), for a second downstream application of robust unlearning. By aligning a small set of adversarial bypass concepts toward the unlearning target, before applying any unlearning technique, CO-ALIGN significantly improves the robustness of post-hoc unlearning techniques against adversarial prompts. 
+
+Summary of contributions. Our main contributions can be summarized as follows. ❶ We show that current single-component debiasing techniques trade off bias for inconsistent generation and residual bias. ❷ Motivated by this analysis, we propose CO-ALIGN, a bias mitigation framework that extracts a concept-level graph from both the text encoder and the denoiser, and aligns it toward a target topology jointly across both components. ❸ We demonstrate that CO-ALIGN outperforms existing state of the art debiasing techniques in producing class balanced and coherent outputs while preserving the generative quality of the output. ❹ We empirically characterize a neighbourhood propagation effect and leverage it for significantly improving the adversarial robustness of existing unlearning techniques using CO-ALIGN. 
+
+## 2 Inherent Biases in T2I Diffusion Models 
+
+Dataset biases and their implications. Alike other generative models, biases in T2I diffusion models often originate from the large-scale web-scraped corpora used for training. LAION-5B [Schuhmann et al., 2022a], used for training Stable Diffusion, mirrors societal inequalities at internet scale across profession [Bianchi et al., 2023], race [Cho et al., 2023, Luccioni et al., 2023] and culture [Naik and Nushi, 2023]. These biases have shown to be amplified beyond the degree present in training 2data both during model training [Seshadri et al., 2024, Perera and Patel, 2023a] and inference [Roos et al., 2026]. Large scale deployment of these models in both human operated and automated systems have shown detrimental societal consequences of reinforcement of stereotypes [Bianchi et al., 2023], across gender, age, race, and geography simultaneously [Naik and Nushi, 2023]. 
+
+Bias mitigation techniques. Existing debiasing techniques can be broadly classified in two groups, depending on where in the generation pipeline they intervene, as summarised in Table 1. 
+
+Text encoder debiasing methods intervene solely at the text encoder. Shen et al. [Shen et al., 2024] fine-tune the text encoder directly using a distributional alignment loss on generated images. Fair Mapping [Li et al., 2025] learns a lightweight linear remap over conditioning embeddings to project them into a debiased subspace. Chuang et al. [Chuang et al., 2023] achieve a similar effect training-free, via a calibrated projection matrix that removes biased directions from text embeddings at inference time. Fair Diffusion [Friedrich et al., 2023] via SEGA [Brack et al., 2023], FairGen [Kang et al., 2025], and Kim et al. [Kim et al., 2025] take a softer approach, steering the conditioning signal or noise initialisation at inference without any weight modification. While efficient, all text-encoder-only methods leave the denoiser’s internal concept organization and the visual biases encoded. 
+
+Denoiser debiasing methods target the denoiser’s internal representations. TIME [Orgad et al., 2023] and UCE [Gandikota et al., 2024] edit cross-attention key-value projections in closed form to reroute underspecified prompts toward target attribute embeddings. Asyrp [Kwon et al., 2023a] establishes the UNet bottleneck (h-space) as a semantically linear space for controllable editing; building on this, Balancing Act [Parihar et al., 2024] trains a lightweight predictor on h-space features, Li et al. [Li et al., 2024] discover fairness-sensitive directions without external classifiers, Vardhana et al. [Vardhana et al., 2026] steer denoising toward a uniform attribute distribution in an unsupervised manner, and SCALEX [Zeng et al., 2026] maps conceptual structure via prompt-aligned latent directions. DIFFLENS [Shi et al., 2025] takes a mechanistic approach, using sparse autoencoders to identify and suppress neuron-level dimensions responsible for bias; BiasMap [Chakraborty et al., 2025], EFA [Park et al., 2025], and Yasser et al. [Yasser et al., 2026] further reveal that many such corrections reduce distributional gaps without disentangling the underlying concept coupling. MAS [Zhou et al., 2024] addresses the related problem of association-engendered stereotypes from co-generation of multiple concepts. While these methods edit the denoiser, they are applied independently of the text encoder, leaving the biased embedding geometry of underspecified prompts uncorrected. Table 1: Structured comparison of bias mitigation methods across six dimensions, encompassing training dynamics (columns [1–3]), editing region (columns [4–5]) and scalability (column [6]). CO-ALIGN edits both the text encoder and the denoiser while supporting multi-concept joint editing with no added inference cost.                                                                                                             
+
+> Method Weight Mod. [1]
+> Training Free [2]
+> Infer. Cost [3]
+> TE Edit [4]
+> Den. Edit [5]
+> Multi-Concept [6] Fair Diffusion Friedrich et al. [2023] ✗✓✓✗✗✗
+> Debiasing VLMs Chuang et al. [2023] ✗✓✓✓✗✗
+> FairGen Kang et al. [2025] ✗✓✓✗✗✗
+> Kim et al. Kim et al. [2025] ✗✓✓✗✗✗
+> EFA Park et al. [2025] ✗✓✓✗✓✗
+> H-Distribution Parihar et al. [2024] ✗✓✓✗✓✗
+> Latent Direction Li et al. [2024] ✗✓✓✗✓✗
+> SelfDebias Vardhana et al. [2026] ✗✓✓✗✓✗
+> SCALEX Zeng et al. [2026] ✗✓✓✗✓✗
+> DiffLens Shi et al. [2025] ✗✓✓✗✓✓
+> BiasMap Chakraborty et al. [2025] ✗✓✓✗✓✗
+> Asyrp Kwon et al. [2023a] ✗✓✓✗✓✗
+> Fair Mapping Li et al. [2025] ✓✗✗✓✗✗
+> TIME Orgad et al. [2023] ✓✓✗✗✓✗
+> UCE Gandikota et al. [2024] ✓✓✗✗✓✓
+> Finetuning Shen et al. [2024] ✓✗✗✓✗✗
+> MAS Zhou et al. [2024] ✓✗✗✓✗✓
+> CO-ALIGN (Ours) ✓✗✗✓✓✓
+
+3Figure 2: (a) the cosine similarity between the text encoder’s embeddings of concepts of Nurse, Female Nurse and Male Nurse; and (b) Figure comparing the class imbalance % (x-axis: lower is better) against Incoherence rate (y-axis: fraction of generations unclassifiable as the target, lower is better) for five debiasing methods and the base model. 
+
+## 3 Understanding bias 
+
+As discussed in section A, the major root cause for biased behavior arises from the inherent bias in the training dataset. Figure 6(in appendix) shows the distributional bias across occupations for gender, race and age in the LAION 2B dataset Schuhmann et al. [2022b] (with FairFace classifier [Kärkkäinen and Joo, 2021]) used for training Stable Diffusion 1.5. This bias is then amplified by the model during the training phase due to the tendency of the reverse diffusion process to navigate towards dominant modes Seshadri et al. [2024], Perera and Patel [2023a,b], resulting in the generation of biased content. 
+
+Is it a Query Understanding or Model Interpretation Problem? A fundamental question that divides the bias mitigation literature is whether the observed generative bias is primarily a failure of query understanding , i.e. , the text encoder misinterprets the input prompt, or a failure of model interpretation i.e. , the denoiser’s internal visual concept representations are themselves skewed, and would produce biased outputs regardless of prompt comprehension. Several observations from the literature suggest that both components are affected, but in structurally distinct ways. On the text encoder, underspecified prompts are implicitly enriched with demographic associations [Orgad et al., 2023], and removing biased directions from text embeddings alone produces measurably fairer outputs [Chuang et al., 2023]. Figure 2 (a) supports this argument, where we see that the cosine similarity between the text encoder’s embeddings of Nurse , Female Nurse , and Male Nurse reveals that the model’s query understanding of Nurse is inherently skewed toward the feminine. On the denoiser side, specific neuron-level dimensions in the denoiser’s h-space are independently responsible for demographic bias [Shi et al., 2025], and gender bias is present in the cross-attention layers regardless of the text conditioning signal [Wu et al., 2025]. While an analogous diagnostic does not yet exist for the denoiser, we hypothesize that a similar relational concept graph extracted from its cross-attention layers would reveal a structurally similar pattern. We later confirm this hypothesis empirically in Section 4, where CO-ALIGN extracts exactly such a graph and shows that the denoiser’s internal concept topology mirrors the text encoder’s bias. 
+
+Hypothesis: joint alignment is necessary. Single-component interventions are suboptimal because the text encoder and denoiser share an entangled geometric representation: correcting one without the other disrupts this alignment, degrading generation coherence even as class imbalance improves. Figure 2(b) illustrates this trade-off: text-encoder-only methods (Debias-VL [Chuang et al., 2023], Finetuning [Shen et al., 2024]) and denoiser-only methods (UCE [Gandikota et al., 2024], Latent Directions [Li et al., 2024]) all reduce class imbalance at the cost of a sharp increase in semantically incoherent generations. We therefore hypothesize that effective debiasing requires joint alignment of both components, preserving the geometric harmony between them. We later confirm this hypothesis empirically: CO-ALIGN achieves lower class imbalance than all single-component baselines while maintaining generation coherence comparable to the unedited base model. 4Figure 3: The Figure shows CO-ALIGN’s three staged finetuning pipeline. In the concept graphs the dotted nodes represent Target Concepts and solid nodes represent the Anchor Concepts. 
+
+## 4 Extraction of a Concept Graph 
+
+Background on Concept Neurons. Prior work [Basu et al., 2024, Fan et al., 2024, Liu et al., 2023b] has established that information about a specific concept is concentrated in a sparse subset of parameters within the CA projection matrices, termed concept neurons . Following TRUST [Mansi et al., 2026], we define a parameter θcu as a concept neuron for concept cu if perturbing its value produces a measurable change in the model’s alignment to cu, quantified via CLIP score: 
+
+Lcu = CLIPScore (Icu , c u), (1) 
+
+Mr (cu) = η(E[|∇ θ=θ0 Lcu |] > γ )r , (2) where Icu is an image generated conditioned on cu, η(·) is an element-wise indicator, and γ =
+
+ξ · σG + μG is an adaptive threshold over the gradient matrix G = |∇ θ=θ0 Lcu |r . CO-ALIGN uses concept neurons not for unlearning, but to construct a concept-level knowledge graph: nodes represent the cumulative strength of concept neuron populations per concept, and edges represent the shared neuron strength between concepts. Let C = {c1, . . . , c n} be a concept vocabulary. We represent the concept graph as a weighted, symmetric adjacency matrix A ∈ Rn×n, where Aij quantifies the shared neural substrate between ci
+
+and cj . We define such graphs separately for the text encoder (§4) and denoiser (§4), then jointly align them in §5. 
+
+Text Encoder. The concept representation of ci is the mean-pooled last hidden state of the text encoder fϕ:
+
+ei = 1
+
+LiLiX
+
+> ℓ=1
+
+fϕ(ci)ℓ ∈ Rd. (3) The text-encoder concept graph GTE = ( C, ATE ) is defined by pairwise cosine similarity of ℓ2-normalised embeddings: 
+
+ATE  
+
+> ij
+
+= e⊤ 
+
+> i
+
+ej
+
+∥ei∥ ∥ ej ∥ = ˆ e⊤ 
+
+> i
+
+ˆej , ATE = ˆE ˆE⊤, (4) where ˆE = [ˆ e1, . . . , ˆen]⊤ ∈ Rn×d. Off-diagonal entries lie in [−1, 1] and capture directional alignment of concept embeddings. 
+
+Denoiser. Unlike the text encoder, the denoiser has no single embedding per concept; concept binding is distributed across the cross-attention projection matrices WK , W Q, W V . We represent each concept’s position in the denoiser’s ontology by its concept neuron fingerprint — the masked gradient profile over cross-attention weights. For concept cu and projection type r ∈ { k, q, v }, the per-head importance of head h in layer ℓ is: 
+
+Gℓ,h r (cu) = E
+
+h
+
+∇W ℓ,h r Lcu
+
+i
+
+> mean
+
+. (5) Stacking over all L layers and H heads yields Gr (cu) ∈ RLH . The masked fingerprint is: 
+
+Mr (cu) = η(Gr (cu) > γ ) , γ = ξ · σ(Gr (cu)) + μ(Gr (cu)) , (6) 
+
+gr (cu) = Gr (cu) ⊙ M r (cu) ∈ RLH . (7) 5The denoiser concept graph GU = ( C, AU ) is then: 
+
+AU 
+
+> ij
+
+= 13
+
+X
+
+> r∈{ k, q, v }
+
+cos( gr (ci), gr (cj )) , (8) where a high AU 
+
+> ij
+
+indicates that ci and cj share disproportionate neural substrate in the denoiser’s cross-attention layers. 
+
+## 5 Concept Graphs for Bias Mitigation 
+
+Concept Graph Registration. The target graph AGT encodes the desired concept topology. The concept vocabulary is partitioned into a target concept c∗ (e.g. “Nurse”), free to adapt during training, and anchor concepts CS (e.g. {“Male Nurse”, “Female Nurse”}), held fixed via Lanchor .The registration encodes equal proximity of c∗ to all attribute concepts: 
+
+AGT  
+
+> c∗, c
+
+= s∗, ∀ c ∈ C S , (9) where s∗ ∈ [0 , 1] is the target similarity (typically s∗ = 1 .0). The supervised row set is S = {c∗}, so 
+
+Lrank propagates gradients only through the target concept’s row. Alignment is applied sequentially, first to the text encoder, then to the denoiser recalibrated to the updated geometry, as illustrated in Figure 4. Now that we have the target graph AGT , we define a specialized training objective to achieve its registration with ATE and AU .
+
+Training Objective. Let A denote either ATE or AU , and let AGT be a target adjacency matrix encoding the desired concept topology (§5). CO-ALIGN aligns A toward AGT via a differentiable ranking loss that operates row-wise over a supervised subset S ⊆ C . Differentiable ranking loss. 
+
+For each concept ci ∈ S , the adjacency matrix A induces a ranking of all concepts by proximity to 
+
+ci. We encode this via soft ranks using differentiable sigmoid pairwise comparisons, and align them to hard rank targets ¯rGT  
+
+> ij
+
+derived from AGT :
+
+˜rij = 1
+
+n 1 + 
+
+> n
+
+X
+
+> k=1
+
+σ
+
+ Aik − Aij 
+
+τ
+
+!
+
+, ˜rij ∈   1 
+
+> n
+
+, 1 , (10) 
+
+¯rGT  
+
+> ij
+
+= 1
+
+n · avgrank k
+
+ AGT  
+
+> ij
+
+row i , (11) 
+
+Lrank = 1
+
+|S| · n
+
+X
+
+> i∈S
+> n
+
+X
+
+> j=1
+
+ ˜rij − ¯rGT 
+
+> ij
+
+2 , (12) where τ > 0 controls sharpness and larger ˜rij indicates lower similarity rank relative to ci.
+
+Static anchor loss. A subset CS ⊂ C of anchor concepts retain their pre-alignment representations. For the text encoder and denoiser respectively: 
+
+LTE anchor = X
+
+> c∈C S
+
+λc e(0)  
+
+> c
+
+− ec
+
+> 2
+
+, (13) 
+
+LU 
+
+> anchor
+
+= X
+
+> c∈C S
+
+λc AU,(0) [c, :] − AU [c, :] 2, (14) where e(0)  
+
+> c
+
+and AU,(0) [c, :] are the embedding and CG row of c under the frozen base model. 
+
+Preservation loss. To prevent catastrophic forgetting of concepts outside C, we augment with the standard LDM noise-prediction loss on reference pairs Dpres :
+
+Lpres = E(x0,˜c),ϵ,t 
+
+h
+
+ϵ − ϵθ
+
+ √¯αt z0 + √1 − ¯αt ϵ, f ϕ(˜ c), t  2i
+
+, (15) where z0 = E(x0) is the VAE-encoded latent. 
+
+Total objective. 
+
+L = δ · L rank + γ · L pres + Lanchor , (16) where δ, γ ≥ 0 balance the relative contributions. 6Table 2: Evaluation of bias mitigation in text-to-image diffusion model Stable Diffusion Rombach et al. [2022], based on average performance across four occupations. We highlight the best results in 
+
+bold and the second-best with underlined text (excluding the “original”).                                                                                                                           
+
+> Method Gender (2) Age (3) Race (4) FD ↓FID ↓CLIP-I ↑CLIP-T ↑FD ↓FID ↓CLIP-I ↑CLIP-T ↑FD ↓FID ↓CLIP-I ↑CLIP-T ↑
+> Original 0.564 120.06 –0.6155 0.752 120.06 –0.6155 0.558 120.06 –0.6155 Asyrp Kwon et al. [2023b] 0.408 166.11 0.8253 0.6005 0.682 200.90 0.8527 0.6122 0.524 153.06 0.8804 0.6086 H-Distribution Parihar et al. [2024] 0.222 151.68 0.8475 0.6087 0.506 147.71 0.8345 0.6098 0.544 126.90 0.8255 0.6100 Latent Direction Li et al. [2024] 0.305 129.37 0.8058 0.6091 0.052 113.81 0.8151 0.6067 0.175 128.30 0.8211 0.6132 Finetuning Shen et al. [2024] 0.050 161.47 0.8779 0.6095 0.746 161.47 0.8779 0.6095 0.198 161.47 0.8779 0.6095 DiffLens Shi et al. [2025] 0.046 112.83 0.8501 0.6090 0.049 99.17 0.8778 0.6057 0.401 119.86 0.9096 0.6149 UCE Gandikota et al. [2024] 0.4117 132.60 0.7874 0.6155 0.5792 122.86 0.9169 0.6136 0.2073 110.94 0.9338 0.6144
+> CO-ALIGN (Ours) 0.032 98.88 0.9506 0.6153 0.054 97.42 0.9525 0.6192 0.043 101.45 0.9122 0.6219
+
+## 6 Experiments and Results 
+
+We now empirically evaluate our method, assessing both its effectiveness at mitigating bias and its impact on generation quality. 
+
+Experimental Setup Models and datasets. All experiments use Stable Diffusion v1.5 [Rombach et al., 2022] as the base generative model. For the debiasing evaluation we follow the protocol of DiffLens [Shi et al., 2025]: we generate 500 images per occupation prompt ( “face of a/an {occupation}” ) across four occupations, namely, nurse , doctor , fire fighter , and receptionist , and evaluate three demographic axes: gender (Male/Female), race (White, Black, Asian, Indian), and age (Young,Adult,Old). Demographic labels are obtained from the FairFace [Kärkkäinen and Joo, 2021] 4-race ResNet-34 classifier. 
+
+Baselines and metrics. We compare against five state-of-the-art debiasing baselines: Asyrp [Kwon et al., 2023b], H-Distribution [Parihar et al., 2024], Latent Directions [Li et al., 2024], Finetun-ing [Shen et al., 2024], and DiffLens [Shi et al., 2025]. We compute four metrics for comparing the fairness, and generation quality of CO-ALIGN against the baselines. We compute Fairness Discrepancy (FD) [Parihar et al., 2024] for evaluating the fairness of debiasing, FID [Heusel et al., 2017] for evauating the photorealism, and CLIP-I, and CLIP-T scores to evaluate the fidelity of generation. We discuss these metrics in detail in Appendix D 
+
+Evaluation Results Fairness. CO-ALIGN achieves the lowest FD for gender ( FD = 0 .032 , 30 .4% improvement over the next best) and race ( FD = 0 .043 , 75 .4% improvement over the next best), and a competitive FD for age (FD = 0 .054 ), on par with DiffLens. 
+
+Generation quality. On image quality CO-ALIGN achieves ∆FID = 11 .4 below the base model average, outperforming all baselines on FID. CLIP-I scores of 0.9506 (gender), 0.9525 (age), 0.9122 
+
+(race) confirm that the aligned model’s outputs remain close to those of the base model, representing a 2.8% improvement in image fidelity over the strongest baseline. CLIP-T scores are stable across all methods, indicating that prompt adherence is preserved throughout alignment, and is the best across all baselines. 
+
+Incoherence. A distinctive failure mode of single-component debiasing is semantic incoherence :generations that fail to depict the target concept, arising from the distribution shift between the edited and unedited components, measured as the fraction of generated images classified by LLaVA as off-target. Figure 2(b) shows that both text-encoder-only (Debias-VL, Finetuning) and denoiser-only (UCE, Latent Directions) methods trade fairness for incoherence, while CO-ALIGN is the only method in the ideal bottom-left region, reducing incoherence by 88% over the base model while achieving the best fairness. Figure 4 further illustrates this: text-encoder alignment alone produces incoherent outputs, which denoiser alignment resolves by reconfiguring the denoiser’s concept graph to match the updated embedding geometry. 
+
+## 7 Beyond Bias Mitigation: a Case Study on Unlearning 
+
+Post-hoc concept unlearning techniques erase a target concept cT by editing model parame-ters [Gandikota et al., 2023, 2024] or steering its latent representation [Yoon et al., 2025]. However, only concepts within a locality radius of cT in concept space are erased; adversarial bypass concepts 7Figure 4: The figure shows how alignment of just the text encoder leads to generation of incoherent output due to mismatch in representations between the text encoder and the denoising unit. The subsequent alignment of the denoiser reconfigures the representation geometry between the text encoder and the denoiser, thus regaining coherence. outside this neighbourhood N (cT ) remain unaffected, allowing attackers to recover unlearned content via semantically adjacent prompts. Table 3: Percentage of images flagged as nudity by VLM classifier under adversarial prompt categories ( lower is better ). Bold denotes best result per column within each group. CO-ALIGN pre-aligns adversarial concepts closer to nudity in the model’s concept space, substantially boosting the effectiveness of post-hoc unlearning.                                                             
+
+> Base Model Unlearning Technique Porn Star Nymph. Cream. Shirt. Att. Fem. Avg
+> SD v1.5 None 14.0 62.0 100.0 40.0 26.0 48.4
+> +UCE 2.0 40.0 88.0 10.0 8.0 29.6
+> +ESD 2.0 14.0 12.0 18.0 4.0 10.0
+> +SAFREE 0.0 0.0 94.0 0.0 0.0 18.8 SD v1.5
+> +CO-ALIGN
+> (Ours) None 16.0 100.0 100.0 60.0 26.0 60.4
+> +UCE 0.0 18.0 32.0 0.0 0.0 10.0
+> +ESD 0.0 0.0 2.0 2.0 0.0 0.8
+> +SAFREE 0.0 4.0 0.0 2.0 0.0 1.2
+
+We exploit CO-ALIGN’s concept topology editing to address this vulnerability. Before unlearning, we use CO-ALIGN to pull a set of known adversarial concepts Cadv (e.g., for 
+
+cT = Nudity : Cadv =
+
+{Nymphettes , Creampie })closer to cT in both the text encoder and denoiser concept graphs, bringing them within N (cT ) before any unlearning technique is applied. 
+
+Neighbourhood Pulling Effect 
+
+A key emergent property of concept graph alignment is semantic neighbourhood propagation :aligning a supervised concept c∗ ∈ C adv toward cT causes its unsupervised semantic neighbors to shift toward cT as well, without any direct supervision signal. Formally, let Nϵ(c∗) denote the set of concepts within concept distance ϵ of c∗ in the model’s concept graph before alignment. After aligning c∗ toward cT via Lrank , we observe that for all cn ∈ N ϵ(c∗):
+
+∆|cn, c T |CG = |cn, c T |CG after − | cn, c T |CG before > 0, (17) even though cn received no direct alignment supervision. This effect is analogous to label propagation in graph-based semi-supervised learning [Zhou et al., 2003, Zhu et al., 2003, Iscen et al., 2019]: the graph smoothness assumption propagates alignment from supervised nodes to adjacent unsupervised ones. Figure 5 visualizes this effect for both the text encoder and the UNet. Each line traces a concept’s similarity to Nudity before (z = 0 ) and after (z = 1 ) CO-ALIGN alignment. Red lines denote the two directly supervised concepts (Nymphettes, Creampie); blue lines denote unsupervised concepts (Erotic, Attractive Female, Jonny Sins, Shirtless). Despite receiving no direct supervision, all unsupervised concepts exhibit a measurable upward shift in similarity to Nudity ( +0 .15 to +0 .22 
+
+in the UNet graph), confirming that alignment of Cadv broadcasts into the surrounding concept neighborhood. 80.4              
+
+> 0.2
+> 0.0
+> 0.2
+> 0.4
+> Neighbourhood
+> (inter-concept similarity) 0.5
+> 0.6
+> 0.7
+> 0.8
+> 0.9
+> 1.0
+> Similarity to Nudity
+> Before
+> CO-ALIGN
+> After
+> CO-ALIGN
+> Nudity
+> Nymphette
+> Creampie
+> Porn Star Att. Female Erotic
+> +0.05
+> +0.06
+> +0.06
+> +0.21
+> +0.32
+> +0.00
+> Text Encoder
+> 0.6
+> 0.4
+> 0.2
+> 0.0
+> 0.2
+> 0.4
+> Neighbourhood
+> (inter-concept similarity) 0.35
+> 0.40
+> 0.45
+> 0.50
+> 0.55
+> 0.60
+> 0.65
+> 0.70
+> Similarity to Nudity
+> Before
+> CO-ALIGN
+> After
+> CO-ALIGN
+> Nudity
+> Nymphettes
+> Creampie
+> Erotic
+> Att. Female
+> Porn Star Shirtless
+> +0.15
+> +0.19
+> +0.22
+> +0.16
+> +0.20
+> +0.22
+> +0.19
+> UNet
+> CO-ALIGN Neighbourhood Pulling Effect 3D View
+> Z: before after |Y: similarity to Nudity |X: inter-concept neighbourhood
+> Nudity (anchor) Supervised (Nymphette/s, Creampie) Unsupervised pulled by neighbourhood
+
+Figure 5: The figure shows the Semantic Neighborhood Pulling Effect on Concept Graphs as a result of CO-ALIGN edit for both the Text encoder and the Unet. The Y-axis measures distance to Nudity; the X-axis reflects inter-concept neighbourhood structure via 1-D MDS (concepts closer in embedding space appear closer on X). 
+
+CO-ALIGN for Robust Unlearning 
+
+For the unlearning evaluation, we generate 500 images per adversarial concept and classify nudity presence with LLaVA [Liu et al., 2023a], following the prominent adversarial concepts from I2P dataset [Schramowski et al., 2023]. We evaluate three unlearning methods UCE [Gandikota et al., 2024], ESD [Gandikota et al., 2023], and SAFREE [Yoon et al., 2025] applied both to the base model and to a CO-ALIGN-aligned model. 
+
+Procedure. The CO-ALIGN pre-alignment brings Cadv and, via semantic neighborhood propagation, a broader set of unsupervised bypass concepts within the locality radius N (cT ) before unlearning is applied. Any subsequent unlearning technique that targets cT therefore also covers the pre-aligned bypass concepts, and their neighboring concepts, without requiring knowledge of those concepts at unlearning time. 
+
+Robustness of unlearning with CO-ALIGN. Table 3 reports the percentage of images flagged as nudity by the VLM classifier under five adversarial prompt categories. Across all three unlearning techniques, pre-aligning with CO-ALIGN substantially improves adversarial robustness. CO-ALIGN + ESD reduces the average nudity rate from 10 .0% to 0.8%; CO-ALIGN + SAFREE from 18 .8% to 1.2%; and CO-ALIGN + UCE from 29 .6% to 10 .0%. Notably, the Creampie prompt which achieves 88% -100% nudity generation against all baselines, drops to 0% -32% after CO-ALIGN pre-alignment, demonstrating that neighborhood propagation successfully relocates this adversarial bypass concept into the unlearning target’s erasure zone. 
+
+## 8 Conclusion 
+
+We presented CO-ALIGN, a bias mitigation framework that jointly aligns concept graphs extracted from the text encoder and denoiser toward a target topology. Our central hypothesis, that effective debiasing requires geometric harmony between both components, is confirmed empirically: single-component methods lie off the Pareto frontier of fairness and coherence, while CO-ALIGN achieves a 30% fairness improvement, ∆FID = 11 .4, 2.8% higher image fidelity, and an 88% reduction in semantically incoherent outputs, all without added inference cost. Beyond debiasing, the emergent neighborhood propagation effect improves adversarial robustness of post-hoc unlearning by up to 12 .5× without modifying the unlearning procedure. Limitations include the compute cost of denoiser graph extraction and the need to re-derive concept graph construction for transformer-based architectures such as DiT [Peebles and Xie, 2023] and SDXL [Podell et al., 2024], which we leave for future work. 9References 
+
+Samyadeep Basu, Keivan Rezaei, Priyatham Kattakinda, Vlad I Morariu, Nanxuan Zhao, Ryan A Rossi, Varun Manjunatha, and Soheil Feizi. On mechanistic knowledge localization in text-to-image generative models. In Proceedings of the 41st International Conference on Machine Learning , ICML’24. JMLR.org, 2024. Mikhail Belkin, Partha Niyogi, and Vikas Sindhwani. Manifold regularization: A geometric frame-work for learning from labeled and unlabeled examples. In Journal of Machine Learning Research ,volume 7, pages 2399–2434, 2006. Federico Bianchi, Pratyusha Kalluri, Esin Durmus, Faisal Ladhak, Myra Cheng, Debora Nozza, Tatsunori Hashimoto, Dan Jurafsky, James Zou, and Aylin Caliskan. Easily accessible text-to-image generation amplifies demographic stereotypes at large scale. In Proceedings of the 2023 ACM Conference on Fairness, Accountability, and Transparency , FAccT ’23, pages 1–12, New York, NY, USA, 2023. ACM. doi: 10.1145/3593013.3594095. Manuel Brack, Felix Friedrich, Dominik Hintersdorf, Lukas Struppek, Patrick Schramowski, and Kristian Kersting. SEGA: Instructing text-to-image models using semantic guidance. In Advances in Neural Information Processing Systems , volume 36, 2023. Anh Tuan Bui, Thuy-Trang Vu, Long Tung Vuong, Trung Le, Paul Montague, Tamas Abraham, Junae Kim, and Dinh Phung. Fantastic targets for concept erasure in diffusion models and where to find them. In The Thirteenth International Conference on Learning Representations , 2025. URL 
+
+https://openreview.net/forum?id=tZdqL5FH7w .Rajatsubhra Chakraborty, Xujun Che, Cori Faklaris, Xi Niu, Depeng Xu, and Shuhan Yuan. Bi-asMap: Leveraging cross-attentions to discover and mitigate hidden social biases in text-to-image generation. arXiv preprint arXiv:2509.13496 , 2025. Jaemin Cho, Abhay Zala, and Mohit Bansal. DALL-Eval: Probing the reasoning skills and so-cial biases of text-to-image generation models. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 3043–3054, 2023. Ching-Yao Chuang, Varun Jampani, Yuanzhen Li, Antonio Torralba, and Stefanie Jegelka. Debiasing vision-language models via biased prompts. In Advances in Neural Information Processing Systems ,volume 36, 2023. Chongyu Fan, Jiancheng Liu, Yihua Zhang, Eric Wong, Dennis Wei, and Sijia Liu. Salun: Em-powering machine unlearning via gradient-based weight saliency in both image classification and generation. In The Twelfth International Conference on Learning Representations , 2024. URL 
+
+https://openreview.net/forum?id=gn0mIhQGNM .Felix Friedrich, Manuel Brack, Lukas Struppek, Dominik Hintersdorf, Patrick Schramowski, Sasha Luccioni, and Kristian Kersting. Fair diffusion: Instructing text-to-image generation models on fairness. arXiv preprint arXiv:2302.10893 , 2023. Rohit Gandikota, Joanna Materzy´ nska, Jaden Fiotto-Kaufman, and David Bau. Erasing concepts from diffusion models. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 2400–2410, 2023. Rohit Gandikota, Hadas Orgad, Yonatan Belinkov, Joanna Materzy´ nska, and David Bau. Unified concept editing in diffusion models. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision , pages 5090–5100, 2024. Martin Heusel, Hubert Ramsauer, Thomas Unterthiner, Bernhard Nessler, and Sepp Hochreiter. GANs trained by a two time-scale update rule converge to a local Nash equilibrium. In Advances in Neural Information Processing Systems , volume 30, 2017. Ahmet Iscen, Giorgos Tolias, Yannis Avrithis, and Ondˇ rej Chum. Label propagation for deep semi-supervised learning. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 5070–5079, 2019. 10 Mintong Kang, Vinayshekhar Bannihatti Kumar, Shamik Roy, Abhishek Kumar, Sopan Khosla, Balakrishnan Murali Narayanaswamy, and Rashmi Gangadharaiah. FairGen: Controlling sensitive attributes for fair generations in diffusion models via adaptive latent guidance. In Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing , pages 25336–25350. Association for Computational Linguistics, 2025. Eunji Kim, Siwon Kim, Minjun Park, Rahim Entezari, and Sungroh Yoon. Rethinking training for de-biasing text-to-image generation: Unlocking the potential of stable diffusion. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2025. Mingi Kwon, Jaeseok Jeong, and Youngjung Uh. Diffusion models already have a semantic latent space. In International Conference on Learning Representations , 2023a. Mingi Kwon, Jaeseok Jeong, and Youngjung Uh. Diffusion models already have a semantic latent space. In The Eleventh International Conference on Learning Representations , 2023b. URL 
+
+https://openreview.net/forum?id=pd1P2eUBVfq .Kimmo Kärkkäinen and Jungseock Joo. Fairface: Face attribute dataset for balanced race, gender, and age for bias measurement and mitigation. In 2021 IEEE Winter Conference on Applications of Computer Vision (WACV) , pages 1547–1557, 2021. doi: 10.1109/WACV48630.2021.00159. Hang Li, Chengzhi Shen, Philip Torr, Volker Tresp, and Jindong Gu. Self-discovering interpretable dif-fusion latent directions for responsible text-to-image generation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 12006–12016, 2024. Jia Li, Lijie Hu, Jingfeng Zhang, Tianhang Zheng, Hua Zhang, and Di Wang. Fair text-to-image diffusion via fair mapping. In Proceedings of the AAAI Conference on Artificial Intelligence ,volume 39, pages 26256–26264, 2025. doi: 10.1609/aaai.v39i25.34823. Tsung-Yi Lin et al. Microsoft coco: Common objects in context. In ECCV , 2014. Haotian Liu, Chunyuan Li, Qingyang Wu, and Yong Jae Lee. Visual instruction tuning, 2023a. URL 
+
+https://arxiv.org/abs/2304.08485 .Haotian Liu, Chunyuan Li, Yuheng Li, and Yong Jae Lee. Llava-next: Improved rea-soning, ocr, and world knowledge, 2024. URL https://llava-vl.github.io/blog/ 2024-01-30-llava-next/ .Zhiheng Liu, Ruili Feng, Kai Zhu, Yifei Zhang, Kecheng Zheng, Yu Liu, Deli Zhao, Jingren Zhou, and Yang Cao. Cones: concept neurons in diffusion models for customized generation. In Proceedings of the 40th International Conference on Machine Learning , ICML’23. JMLR.org, 2023b. Alexandra Sasha Luccioni, Christopher Akiki, Margaret Mitchell, and Yacine Jernite. Stable bias: Analyzing societal representations in diffusion models. arXiv preprint arXiv:2303.11408 , 2023. Mansi, Avinash Kori, Francesca Toni, and Soteris Demetriou. Selective fine-tuning for targeted and robust concept unlearning, 2026. URL https://arxiv.org/abs/2602.07919 .Ranjita Naik and Besmira Nushi. Social biases through the text-to-image generation lens. arXiv preprint arXiv:2304.06034 , 2023. Hadas Orgad, Bahjat Kawar, and Yonatan Belinkov. Editing implicit assumptions in text-to-image diffusion models. In Proceedings of the IEEE/CVF International Conference on Computer Vision ,pages 7053–7061, 2023. Rishubh Parihar, Abhijnya Bhat, Abhipsa Basu, Saswat Mallick, Jogendra Nath Kundu, and R. Venkatesh Babu. Balancing act: Distribution-guided debiasing in diffusion models. In Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 6668–6678, 2024. Jeonghoon Park, Juyoung Lee, Chaeyeon Chung, Jaeseong Lee, Jaegul Choo, and Jindong Gu. Fair generation without unfair distortions: Debiasing text-to-image generation with entanglement-free attention. In Proceedings of the IEEE/CVF International Conference on Computer Vision , 2025. 11 William Peebles and Saining Xie. Scalable diffusion models with transformers. In 2023 IEEE/CVF International Conference on Computer Vision (ICCV) , pages 4172–4182, 2023. doi: 10.1109/ ICCV51070.2023.00387. Malsha V. Perera and Vishal M. Patel. Analyzing bias in diffusion-based face generation models. In 
+
+2023 IEEE International Joint Conference on Biometrics (IJCB) , pages 1–10. IEEE, 2023a. Malsha V. Perera and Vishal M. Patel. Analyzing bias in diffusion-based face generation models, 2023b. URL https://arxiv.org/abs/2305.06402 .Dustin Podell, Zion English, Kyle Lacey, Andreas Blattmann, Tim Dockhorn, Jonas Müller, Joe Penna, and Robin Rombach. SDXL: Improving latent diffusion models for high-resolution image synthesis. In The Twelfth International Conference on Learning Representations , 2024. URL 
+
+https://openreview.net/forum?id=di52zR8xgf .Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever. Learning transferable visual models from natural language supervision. In Marina Meila and Tong Zhang, editors, Proceedings of the 38th International Conference on Machine Learning, ICML 2021, 18-24 July 2021, Virtual Event , volume 139 of Proceedings of Machine Learning Research ,pages 8748–8763. PMLR, 2021. URL http://proceedings.mlr.press/v139/radford21a. html .Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Bjorn Ommer. High-Resolution Image Synthesis with Latent Diffusion Models . In 2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 10674–10685, Los Alamitos, CA, USA, June 2022. IEEE Computer Society. doi: 10.1109/CVPR52688.2022.01042. URL https: //doi.ieeecomputersociety.org/10.1109/CVPR52688.2022.01042 .Nathan Roos, Ekaterina Iakovleva, Ani Gjergji, Vito Paolo Pastore, and Enzo Tartaglione. How I met your bias: Investigating bias amplification in diffusion models. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision , 2026. Patrick Schramowski, Manuel Brack, Björn Deiseroth, and Kristian Kersting. Safe latent diffusion: Mitigating inappropriate degeneration in diffusion models. In 2023 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 22522–22531, 2023. doi: 10.1109/ CVPR52729.2023.02157. Christoph Schuhmann, Romain Beaumont, Richard Vencu, Cade Gordon, Ross Wightman, Mehdi Cherti, Theo Coombes, Aarush Katta, Clayton Mullis, Mitchell Wortsman, Patrick Schramowski, Srivatsa Kundurthy, Katherine Crowson, Ludwig Schmidt, Robert Kaczmarczyk, and Jenia Jitsev. LAION-5B: An open large-scale dataset for training next generation image-text models. In 
+
+Advances in Neural Information Processing Systems , volume 35, pages 25278–25294. Curran Associates, Inc., 2022a. Christoph Schuhmann, Romain Beaumont, Richard Vencu, Cade W Gordon, Ross Wightman, Mehdi Cherti, Theo Coombes, Aarush Katta, Clayton Mullis, Mitchell Wortsman, Patrick Schramowski, Srivatsa R Kundurthy, Katherine Crowson, Ludwig Schmidt, Robert Kaczmarczyk, and Jenia Jitsev. LAION-5b: An open large-scale dataset for training next generation image-text models. In Thirty-sixth Conference on Neural Information Processing Systems Datasets and Benchmarks Track , 2022b. URL https://openreview.net/forum?id=M3Y74vmsMcY .Preethi Seshadri, Sameer Singh, and Yanai Elazar. The bias amplification paradox in text-to-image generation. In Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers) , pages 6367–6384, Mexico City, Mexico, 2024. Association for Computational Linguistics. doi: 10.18653/v1/2024.naacl-long.353. Xudong Shen, Chao Du, Tianyu Pang, Min Lin, Yongkang Wong, and Mohan Kankanhalli. Fine-tuning text-to-image diffusion models for fairness. In International Conference on Learning Representations , 2024. 12 Yingdong Shi, Changming Li, Yifan Wang, Yongxiang Zhao, Anqi Pang, Sibei Yang, Jingyi Yu, and Kan Ren. Dissecting and mitigating diffusion bias via mechanistic interpretability. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 8192–8202, 2025. Korada Sri Vardhana, Shrikrishna Lolla, and Soma Biswas. Fully unsupervised self-debiasing of text-to-image diffusion models. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision , 2026. Patrick von Platen et al. Diffusers: State-of-the-art diffusion models. 2022. URL https://github. com/huggingface/diffusers .Yankun Wu, Yuta Nakashima, and Noa Garcia. Revealing gender bias from prompt to image in stable diffusion. Journal of Imaging , 11(2):35, 2025. doi: 10.3390/jimaging11020035. Alaa Yasser, Kittipat Phunjanna, Marcos Escudero Viñolo, Catarina Barata, and Jenny Benois-Pineau. Locating demographic bias at the attention-head level in CLIP’s vision encoder. arXiv preprint arXiv:2603.11793 , 2026. Jaehong Yoon, Shoubin Yu, Vaidehi Patil, Huaxiu Yao, and Mohit Bansal. SAFREE: Training-free and adaptive guard for safe text-to-image and video generation. In The Thirteenth International Conference on Learning Representations , 2025. URL https://openreview.net/forum?id= hgTFotBRKl .E. Zhixuan Zeng, Yuhao Chen, and Alexander Wong. SCALEX: Scalable concept and latent explo-ration for diffusion models. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision , 2026. Dengyong Zhou, Olivier Bousquet, Thomas Navin Lal, Jason Weston, and Bernhard Schölkopf. Learning with local and global consistency. In Advances in Neural Information Processing Systems , volume 16, 2003. Junlei Zhou, Jiashi Gao, Xiangyu Zhao, Xin Yao, and Xuetao Wei. Association of objects may engender stereotypes: Mitigating association-engendered stereotypes in text-to-image generation. In Advances in Neural Information Processing Systems , volume 37, 2024. Xiaojin Zhu, Zoubin Ghahramani, and John Lafferty. Semi-supervised learning using gaussian fields and harmonic functions. In Proceedings of the Twentieth International Conference on Machine Learning , pages 912–919, 2003. 
+
+## A Inherent Biases in T2I Diffusion Models Age Gender Race  
+
+> 0%
+> 20%
+> 40%
+> 60%
+> 80%
+> 100%
+> Proportion
+> Adult
+> 85%
+> Young
+> 11%
+> Old 4%
+> Male
+> 71%
+> Female
+> 29%
+> White
+> 71%
+> Asian
+> 16%
+> Black
+> 11%
+> Indian 2%
+> Demographic Distribution in LAION-2B
+> Dominant / over-represented group Other groups
+
+Figure 6: Demographic bias on randomly sampled 10k images from LAION 2B dataset. 
+
+Dataset biases and their implications. Alike other generative models, biases in T2I diffusion models often originate from the large-scale web-scraped cor-pora used for training. LAION-5B [Schuhmann et al., 2022a], used for training Stable Diffusion, mirrors societal inequalities at internet scale across profes-sion [Bianchi et al., 2023], race [Cho et al., 2023, Luccioni et al., 2023] and culture [Naik and Nushi, 2023]. These biases have shown to be amplified be-yond the degree present in training data both during model training [Seshadri et al., 2024, Perera and Pa-tel, 2023a] and inference [Roos et al., 2026]. Large scale deployment of these models in both human operated and automated systems have shown detri-mental societal consequences of reinforcement of stereotypes [Bianchi et al., 2023], across gender, age, race, and geography simultaneously [Naik and Nushi, 2023]. 13 Algorithm 1 Text Encoder Concept Graph Extraction 
+
+Require: Concept set C = {c1, . . . , c n}, text encoder fϕ
+
+Ensure: Adjacency matrix ATE ∈ Rn×n 
+
+> 1:
+
+for i = 1 to n do  
+
+> 2:
+
+Tokenise ci and compute hidden states via fϕ 
+
+> 3:
+
+ei ← MeanPool (LastHiddenState (fϕ(ci))) ▷ Eq. 3  
+
+> 4:
+
+ˆei ← ei / ∥ei∥2 
+
+> 5:
+
+end for  
+
+> 6:
+
+Assemble ˆE ← [ˆ e1, . . . , ˆen]⊤ 
+
+> 7:
+
+ATE ← ˆE ˆE⊤ ▷ A TE  
+
+> ij
+
+= ˆ e⊤ 
+
+> i
+
+ˆej , Eq. 4  
+
+> 8:
+
+return ATE 
+
+Bias mitigation techniques. Existing debiasing tech-niques can be broadly classified in two groups, depending on where in the generation pipeline they intervene, as summarised in Table 1. 
+
+Text encoder debiasing methods intervene solely at the text encoder. Shen et al. [Shen et al., 2024] fine-tune the text encoder directly using a distributional alignment loss on generated images. Fair Mapping [Li et al., 2025] learns a lightweight linear remap over conditioning embeddings to project them into a debiased subspace. Chuang et al. [Chuang et al., 2023] achieve a similar effect training-free, via a calibrated projection matrix that removes biased directions from text embeddings at inference time. Fair Diffusion [Friedrich et al., 2023] via SEGA [Brack et al., 2023], FairGen [Kang et al., 2025], and Kim et al. [Kim et al., 2025] take a softer approach, steering the conditioning signal or noise initialisation at inference without any weight modification. While efficient, all text-encoder-only methods leave the denoiser’s internal concept organization and the visual biases encoded. 
+
+Denoiser debiasing methods instead target just the denoiser’s internal representations. TIME [Orgad et al., 2023] edits the key and value projection matrices in the UNet’s cross-attention layers in closed form, rerouting underspecified prompts toward target attribute embeddings. UCE [Gandikota et al., 2024] extends this to performing multiple edits while only targeting the value projection matrices. Asyrp [Kwon et al., 2023a] establishes the UNet bottleneck (h-space) as a semantically linear latent space amenable to controllable editing. Building on this, Balancing Act [Parihar et al., 2024] train a lightweight Attribute Distribution Predictor on h-space features to guide debiased generation without weight modification, while Li et al. [Li et al., 2024] discover interpretable fairness-sensitive directions in h-space without external classifiers. Vardhana et al. [Vardhana et al., 2026] perform fully unsupervised debiasing by clustering image encoder embeddings and steering denoising toward a uniform attribute distribution. SCALEX [Zeng et al., 2026] maps the conceptual structure of diffusion models in h-space via prompt-aligned latent directions derived from Latent Consistency Models. DIFFLENS [Shi et al., 2025] takes a more mechanistic approach, decomposing h-space activations via sparse autoencoders to identify and suppress specific neuron-level dimensions responsible for bias. BiasMap [Chakraborty et al., 2025] and EFA [Park et al., 2025] further reveal that many denoiser-side corrections reduce output distributional gaps without disentangling the underlying concept coupling in cross-attention, leaving residual structural bias intact. Yasser et al. [Yasser et al., 2026] extend this mechanistic analysis to the CLIP vision encoder, identifying specific attention heads whose ablation reduces gender bias more surgically than age bias. MAS [Zhou et al., 2024] addresses the related problem of association-engendered stereotypes arising from the co-generation of multiple concepts. While these methods edit the denoiser’s internal representations, they are applied independently of the text encoder, leaving the biased embedding geometry of underspecified prompts uncorrected. These two lines of work are thus complementary but incomplete: text-encoder methods leave visual biases in the denoiser intact, while denoiser-side methods inherit a biased conditioning signal. This motivates a global approach that jointly debiases both components. 14 Algorithm 2 Denoiser Concept Graph Extraction 
+
+Require: Concept set C = {c1, . . . , c n}, denoiser ϵθ with L cross-attention layers ( H heads each), sensitivity ξ
+
+Ensure: Adjacency matrix AU ∈ Rn×n 
+
+> 1:
+
+for u = 1 to n do  
+
+> 2:
+
+Generate image Icu by running the full denoising chain conditioned on cu 
+
+> 3:
+
+Compute CLIP alignment loss Lcu = CLIPScore( Icu , c u) ▷ Eq. 1  
+
+> 4:
+
+for r ∈ { k, q, v } do  
+
+> 5:
+
+for ℓ = 1 to L, h = 1 to H do  
+
+> 6:
+
+Gℓ,h r (cu) ← mean 
+
+
+
+|∇ W ℓ,h r Lcu |
+
+
+
+▷ Eq. 5  
+
+> 7:
+
+end for  
+
+> 8:
+
+Flatten: Gr (cu) ← [G1,1 
+
+> r
+
+(cu), . . . , G L,H r (cu)] ⊤ 
+
+> 9:
+
+γr ← ξ · σ(Gr (cu)) + μ(Gr (cu)) ▷ Adaptive threshold, Eq. 6  
+
+> 10:
+
+Mr (cu) ← 1[Gr (cu) > γ r ] 
+
+> 11:
+
+gr (cu) ← Gr (cu) ⊙ M r (cu) ▷ Fingerprint, Eq. 7  
+
+> 12:
+
+end for  
+
+> 13:
+
+end for  
+
+> 14:
+
+for i = 1 to n, j = 1 to n do  
+
+> 15:
+
+AU 
+
+> ij
+
+← 13
+
+X
+
+> r∈{ k,q,v }
+
+cos( gr (ci), gr (cj )) ▷ Eq. 8  
+
+> 16:
+
+end for  
+
+> 17:
+
+return AU
+
+## B Algorithms C Background on T2I Diffusion Models 
+
+T2I Diffusion Models Latent diffusion models [Rombach et al., 2022] operate by learning to invert a fixed forward noising process. Given a data sample x0, a forward process corrupts it into Gaussian noise xT over T timesteps via: 
+
+q(xt|xt−1) := N (xt; √αt xt−1, (1 − αt)I) , (18) where αt ∈ (0 , 1) is the variance schedule. A denoiser ϵθ , parameterised as a conditional UNet, is trained to predict the added noise: 
+
+LLDM = Ezt,ϵ,t,c 
+
+∥ϵ − ϵθ (zt, c, t )∥2 , (19) where zt is the noisy latent at timestep t and c is a text embedding obtained from a pretrained CLIP text encoder [Radford et al., 2021]. 
+
+Cross-Attention. Semantic alignment between text and image is mediated by cross-attention (CA) at each layer of the denoiser. Given image-derived queries Q ∈ RN ×d and text-derived keys K ∈ RL×d,values V ∈ RL×d:Cross Attention (Q, K, V ) = softmax 
+
+ QK ⊤
+
+√d
+
+
+
+V, (20) where N is the number of spatial locations in zt and L is the number of text tokens. K and V are linear projections of the text embedding c, making the CA layers the primary site of text-visual concept binding [Orgad et al., 2023, Gandikota et al., 2024]. The projection matrices WK and 
+
+WV therefore encode the model’s concept representations and are the principal target of both bias mitigation and concept unlearning methods. 
+
+## D Evaluation Metrics 
+
+We use the following metrics for the bias mitigation accessment: • Fairness Discrepancy (FD) Parihar et al. [2024]: deviation of the predicted demographic distribution from the uniform target, FD = pP 
+
+> i
+
+(¯ pi − 1/K )2, where ¯pi is the mean predicted probability for class i and K is the number of classes. Lower is fairer. 15 Algorithm 3 Concept Graph Alignment (Text Encoder or Denoiser) 
+
+Require: Concept set C, target graph AGT , supervised rows S, anchor concepts CS , anchor weights 
+
+{λc}c∈C S , loss weights δ, γ , temperature τ , training steps T
+
+Ensure: Aligned model parameters θ∗ 
+
+> 1:
+
+Freeze parameters of the component not being aligned  
+
+> 2:
+
+Capture original anchor representations:  
+
+> 3:
+
+for c ∈ C S do a(0)  
+
+> c
+
+← current embedding or CG-row of c 
+
+> 4:
+
+end for  
+
+> 5:
+
+for t = 1 to T do  
+
+> 6:
+
+Extract current CG A (Alg. 1 or 2) retaining the computation graph  
+
+> 7:
+
+for i ∈ S , j = 1 to n do  
+
+> 8:
+
+Compute soft rank ˜rij ← 1
+
+> n
+
+
+
+1 + P 
+
+> k
+
+σ
+
+ Aik −Aij 
+
+> τ
+
+ 
+
+▷ Eq. 10  
+
+> 9:
+
+Compute hard rank target ¯rGT  
+
+> ij
+
+from AGT with average-rank tie-breaking ▷ Eq. 11  
+
+> 10:
+
+end for  
+
+> 11:
+
+Lrank ← 1
+
+|S| · n
+
+X
+
+> i∈S
+
+X
+
+> j
+
+ ˜rij − ¯rGT 
+
+> ij
+
+2 ▷ Eq. 12  
+
+> 12:
+
+Lanchor ← X
+
+> c∈C S
+
+λc ∥a(0)  
+
+> c
+
+− ac∥2 ▷ Eq. 13 or 14  
+
+> 13:
+
+Lpres ← E(x0,˜c)∼D pres , ϵ, t 
+
+∥ϵ − ϵθ (zt, f ϕ(˜ c), t )∥2 ▷ Eq. 15  
+
+> 14:
+
+L ← δ · L rank + γ · L pres + Lanchor ▷ Eq. 16  
+
+> 15:
+
+θ ← θ − η ∇θ L 
+
+> 16:
+
+end for  
+
+> 17:
+
+return θ
+
+• FID Heusel et al. [2017]: Fréchet Inception Distance against FFHQ as the reference distribution. Lower is better. • CLIP-I (image fidelity): mean cosine similarity between CLIP Radford et al. [2021] image embeddings of generated and base-model reference images, normalised to [0 , 1] . Higher indicates better content preservation. • CLIP-T (text alignment): mean cosine similarity between CLIP image and text embeddings for the generation prompt, normalised to [0 , 1] . Higher indicates better semantic fidelity to the prompt. 
+
+## E Reproducibility Statement: Hyperparameters, Implementation Details and Compute 
+
+Implementation details. Both stages of CO-ALIGN use AdamW with learning rate η = 10 −5,trained for 3 epochs of 300 steps each with batch size 4. The ranking loss temperature is τ = 0 .05 
+
+and the ranking loss weight is δ = 1 .0; the preservation loss is disabled during alignment as the static anchor penalty provides sufficient regularisation against representation collapse. Anchor concept weights are set uniformly to λc = 1 .0 for all c ∈ C S . The concept neuron sensitivity threshold uses 
+
+ξ = 2 .0 (i.e. two standard deviations above the mean gradient magnitude). 
+
+Text encoder stage. We inject LoRA adapters into the CLIP text encoder’s {Q, K, V, out } projection matrices with rank r = 8 and scaling α = 16 ; all other text encoder parameters are frozen. Concept neurons are identified using the CLIP-score loss Lcu .
+
+Denoiser stage. The UNet’s cross-attention {K, Q, V } projection weights are trained; all other parameters (including the text encoder and VAE) are frozen. The denoiser concept graph is computed via the accumulate-all-steps differentiable gradient scheme: at each training iteration, 5 denoising timesteps are sampled uniformly from the 35 -step DDIM trajectory, and the ranking loss gradient is accumulated over the sampled steps with a fresh random latent seed per iteration. Static concept graph rows are anchored at their pre-alignment values with λc = 1 .0.All experiments are run on a single NVIDIA A100 80GB GPU. The wall clock time for aligning the text encoder is roughly 5 minutes. The wall clock time for aligning the denoiser(UNet) is 3 hours. 16 Figure 7: This figure shows some qualitative results of the debiasing across gender, race and age for the professions of Doctor and Engineer. The images are sampled during the CO-ALIGN’s procedure. Observe the changes from left to right. 
+
+## F VLM-based evaluation for adversarial robustness 
+
+Two of our evaluation tasks require open-ended image understanding that rule-based classifiers cannot provide: measuring the incoherence rate (whether a generated image depicts the intended target concept) and measuring nudity bypass under adversarial prompts (whether a generated im-age contains harmful content). For both tasks we use LLaVA-v1.6-Mistral-7B Liu et al. [2024] (llava-hf/llava-v1.6-mistral-7b-hf ) as a zero-shot visual classifier, querying it with a struc-tured natural-language prompt for each generated image. Generation uses 30 DDIM steps with guidance scale 7.5; VLM decoding is greedy ( do_sample=False ). 
+
+Incoherence rate. For a generated image produced with prompt p (e.g. “Nurse” ), we ask the VLM to classify whether the image depicts the target concept or one of its attribute variants Ccheck (e.g. {“Male Nurse”, “Female Nurse”}). The prompt template is: 
+
+This image was generated with the prompt “{target}”. Which of the following best describes what is shown: {options}, or None? Answer with exactly one of: {options}, None. 
+
+The VLM response is matched to the closest concept in Ccheck via longest-first substring matching; images that match None are counted as incoherent. The incoherence rate is the fraction of images assigned None across all generated images for a given concept. 
+
+Nudity detection. For each adversarial concept c ∈ C adv (e.g. “Nymphettes” , “Creampie” ), we ask the VLM a binary question for each generated image: 
+
+Is there {concept} in this image? Answer only yes or no. 
+
+An image is flagged if the response begins with “yes” . The reported score is the percentage of flagged images per concept, averaged as shown in Table 3. Using a VLM rather than a nudity-specific classifier is deliberate: adversarial bypass concepts such as Creampie or Nymphettes are semantically indirect, and a VLM with broad visual understanding is better positioned to judge whether the generated content is harmful than a classifier trained only on explicit nudity labels. 
+
+## G Qualitative Results 
+
+Figure 7 shows debiasing using CO-ALIGN in the three paradigms of gender, race and age on the professions of nurse, doctor and engineer respectively. 
+
+Limitations. CO-ALIGN has two principal limitations. First, extracting the denoiser concept graph requires one full denoising trajectory per concept per training step, making UNet alignment more compute-intensive than text-encoder-only methods. Second, our experiments are conducted on Stable Diffusion v1.5; extension to DiT-based or SDXL architectures, where the text-image coupling geometry differs, requires re-deriving the concept graph extraction for transformer-based denoisers, which we leave to future work. 17 9. Licenses for Existing Assets 
+
+All assets used in this work are listed below with their respective licenses. • Stable Diffusion v1.5 Rombach et al. [2022] ( runwayml/stable-diffusion-v1-5 ): CreativeML Open RAIL-M License. We use this model as the base generative model for all experiments. • Diffusers library von Platen et al. [2022]: Apache License 2.0. Used for model loading, inference pipelines, and scheduler implementations. • CLIP Radford et al. [2021]: MIT License (OpenAI). Used as the text encoder within Stable Diffusion and for CLIP-I/CLIP-T metric computation. • FairFace classifier Kärkkäinen and Joo [2021]: CC BY 4.0. Used for demographic classification of generated faces across gender, race, and age axes. • LLaVA-v1.6-Mistral-7B Liu et al. [2024]: Apache License 2.0. Used as a zero-shot VLM classifier for incoherence rate and nudity bypass evaluation. • WordNet (Princeton): Princeton WordNet License (free for research use). Used to derive the ground-truth knowledge graph for general concept editing experiments. • UCE Gandikota et al. [2024] and ESD Gandikota et al. [2023]: MIT License. Used as post-hoc unlearning baselines. • SAFREE Yoon et al. [2025]: MIT License. Used as a post-hoc unlearning baseline. • Debias-VL Chuang et al. [2023]: MIT License. Used as a text-encoder debiasing baseline. • Finetuning baseline Shen et al. [2024]: MIT License. Used as a text-encoder debiasing baseline. • MS-COCO Lin et al. [2014]: CC BY 4.0. A subset of image-caption pairs is used as the preservation reference dataset Dpres during alignment. 
+
+## 10. Safeguards 
+
+CO-ALIGN edits the internal concept ontology of a generative model, which carries dual-use risk: the same mechanism that reduces demographic bias could in principle be used to amplify it, or to steer concept associations in harmful directions. We take the following precautions. 
+
+Release. We will release model checkpoints only for the debiased variants reported in the paper, together with the alignment configurations used to produce them. We do not release checkpoints from intermediate experiments or from the unlearning pre-alignment stage in isolation, as these represent partially edited models whose behaviour is harder to audit. 
+
+Scope of edits. All released configurations target occupational demographic bias (gender, race, age) and nudity unlearning, both well-studied, socially motivated editing objectives with established evaluation protocols. We do not release configurations that could be adapted to amplify bias or generate targeted harmful content. 
+
+Misuse of neighbourhood propagation. The neighbourhood pulling effect (§7) is an emergent property that could in principle be exploited to covertly shift concept associations beyond the declared edit scope. We document this effect explicitly so that auditors of CO-ALIGN-edited models can monitor the broader semantic neighbourhood of any edited concept, not only the directly supervised concepts. 
+
+Intended use. CO-ALIGN is intended for researchers and practitioners seeking to reduce demo-graphic bias in deployed T2I models or to improve the robustness of concept unlearning. Use of the method to produce, distribute, or enable the generation of content that is illegal, harmful, or discriminatory is explicitly out of scope and contrary to its design intent. 
+
+## 11. Broader Impacts 
+
+Positive impacts. Demographic bias in large-scale T2I models has documented societal conse-quences, reinforcing stereotypes at the scale of internet-wide deployment. CO-ALIGN offers a 18 practical route to post-hoc correction without retraining from scratch, lowering the barrier for prac-titioners to deploy fairer models. The mechanistic framing, bias as asymmetry in concept graph topology rather than as a property of individual parameters, also contributes to interpretability re-search by providing a structured diagnostic tool for auditing a model’s internal concept associations before deployment. The unlearning application further demonstrates that the same framework can strengthen existing safety mechanisms against adversarial prompt attacks, with implications for responsible deployment of generative models in consumer-facing systems. 
+
+Negative impacts and limitations. As noted in limitations, CO-ALIGN currently targets Stable Diffusion v1.5 and has not been validated on more recent architectures. Practitioners applying the method to other models should re-evaluate both the fairness gains and the incoherence trade-off before deployment. More broadly, no post-hoc bias mitigation technique, including CO-ALIGN, can fully compensate for the scale and variety of biases present in web-scraped training corpora; residual bias will remain, and the corrected model should not be treated as fully unbiased. Finally, the dual-use risk of concept graph editing (discussed in §10) warrants ongoing monitoring of deployed edited models, particularly the semantic neighbourhood of any edited concept, to detect unintended drift in adjacent concept associations. 19
