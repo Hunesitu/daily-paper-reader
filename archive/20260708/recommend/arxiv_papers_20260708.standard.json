@@ -1,0 +1,95 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-08T21:33:32.016217+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.06432v1",
+      "source": "arxiv",
+      "title": "TILDE: TILt-based Distributional Erasure for Concept Unlearning",
+      "abstract": "Concept unlearning in text-to-image diffusion models is critical for safe and practical deployment: with rising privacy concerns, copyright disputes, trademark constraints, and safety regulations, deployed systems must be able to suppress unwanted concepts after training. Existing methods often remove the target concept effectively, but practical unlearning also requires an equally fundamental property: the unlearned model should retain quality, diversity, and semantic coverage on benign generation. The gold standard is a retain-only model trained from scratch without the unwanted data. However, common erasure objectives do not specify which post-unlearning distribution should approximate this reference, leaving retention as an implicit consequence of the update rule. We propose TILDE, TILt-based Distributional Erasure, which formulates concept unlearning as a distributional alignment problem: the desired target is the minimum-deviation conditional distribution from the pretrained model under a forgetting constraint. This energy-tilted, anchor-free target suppresses concept-expressing images while preserving benign relative mass for each prompt. We instantiate this principle with residual $\\nabla$-GFlowNet training, which learns the score correction induced by the forget energy relative to the pretrained diffusion model. Across objects, artistic styles, and characters, TILDE achieves strong forgetting while improving retention and distributional fidelity over prior baselines.",
+      "authors": [
+        "Naveen George",
+        "Naoki Murata",
+        "Yuhta Takida",
+        "Konda Reddy Mopuri",
+        "Yuki Mitsufuji"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CV"
+      ],
+      "published": "2026-07-07T15:59:59+00:00",
+      "link": "https://arxiv.org/pdf/2607.06432v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "concept unlearning in diffusion models",
+      "llm_evidence_cn": "扩散模型中的概念擦除",
+      "llm_evidence": "扩散模型中的概念擦除",
+      "canonical_evidence": "扩散模型中的概念擦除",
+      "llm_tldr_en": "Proposes TILDE, a tilt-based distributional erasure method for concept unlearning in text-to-image diffusion models, effectively removing concepts while retaining generation quality.",
+      "llm_tldr_cn": "针对文本到图像扩散模型中概念擦除后模型生成质量下降的问题，提出TILDE方法，基于倾斜分布的分布擦除策略。实验表明，该方法能在有效移除目标概念的同时，保持模型在良性生成上的质量、多样性和语义覆盖，接近从头训练的无概念模型。该工作为扩散模型的安全部署提供了实用且有效的概念擦除方案。",
+      "llm_tldr": "针对文本到图像扩散模型中概念擦除后模型生成质量下降的问题，提出TILDE方法，基于倾斜分布的分布擦除策略。实验表明，该方法能在有效移除目标概念的同时，保持模型在良性生成上的质量、多样性和语义覆盖，接近从头训练的无概念模型。该工作为扩散模型的安全部署提供了实用且有效的概念擦除方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.05850v1",
+      "source": "arxiv",
+      "title": "Breaking Spurious Correlations via Generative Randomization and Cross-Variant Self-Supervised Learning",
+      "abstract": "Deep neural networks trained with Empirical Risk Minimization (ERM) often fail under distribution shifts because they exploit spurious correlations between object labels and background context. Recent generative approaches address this issue by creating counterfactual images with altered contexts, but typically use these samples as standard data augmentation, leaving the model free to retain background-sensitive representations. We propose a two-stage framework that uses generative intervention to explicitly learn background-invariant visual representations. First, we isolate the foreground object using zero-shot segmentation and generate context-shifted variants with a structure-preserving diffusion model, preserving object identity while varying the surrounding environment. We then introduce Cross-Variant Self-Supervised Learning, where variants of the same object under different backgrounds form positive pairs in a contrastive objective. This encourages the encoder to align object-centric representations while suppressing background-specific cues. Then, we fine-tune the pretrained encoder using an ERM warm-up followed by GroupDRO with layer-wise learning rates. Experiments on distribution-shift benchmarks demonstrate best worst-group performance, achieving 92.5% on Waterbirds, 81.7% on MetaShift, and 87.4% on NICO++. Code: https://github.com/surajyadav-research/GRSSL",
+      "authors": [
+        "Suraj Yadav",
+        "Anjaneya Sharma",
+        "Siddharth Yadav"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-07T05:13:26+00:00",
+      "link": "https://arxiv.org/pdf/2607.05850v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "generative intervention to erase spurious background correlations",
+      "llm_evidence_cn": "通过生成式干预消除虚假背景相关性",
+      "llm_evidence": "通过生成式干预消除虚假背景相关性",
+      "canonical_evidence": "通过生成式干预消除虚假背景相关性",
+      "llm_tldr_en": "Uses structure-preserving diffusion to generate context-shifted variants and learn background-invariant representations, effectively erasing spurious background concepts.",
+      "llm_tldr_cn": "该论文针对深度神经网络依赖背景等虚假相关性的问题，提出了一种两阶段框架：先通过零样本分割提取前景，再用结构保持扩散模型生成不同背景的变体，最后通过跨变体自监督学习得到背景不变的表征。实验表明该方法能有效消除背景概念的影响，提升模型在分布偏移下的鲁棒性。",
+      "llm_tldr": "该论文针对深度神经网络依赖背景等虚假相关性的问题，提出了一种两阶段框架：先通过零样本分割提取前景，再用结构保持扩散模型生成不同背景的变体，最后通过跨变体自监督学习得到背景不变的表征。实验表明该方法能有效消除背景概念的影响，提升模型在分布偏移下的鲁棒性。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

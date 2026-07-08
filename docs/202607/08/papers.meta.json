@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-08",
+  "date": "2026-07-08",
+  "generated_at": "2026-07-08T21:36:24",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/08/2607.06432v1-tilde-tilt-based-distributional-erasure-for-concept-unlearning",
+      "section": "deep",
+      "title_en": "TILDE: TILt-based Distributional Erasure for Concept Unlearning",
+      "authors": "Naveen George, Naoki Murata, Yuhta Takida, Konda Reddy Mopuri, Yuki Mitsufuji",
+      "date": "2026-07-07",
+      "pdf": "https://arxiv.org/pdf/2607.06432v1",
+      "score": "9.0",
+      "evidence": "扩散模型中的概念擦除",
+      "tldr": "文本到图像扩散模型中概念遗忘对安全部署至关重要，现有方法虽能有效移除目标概念，但常牺牲良性生成的多样性和语义覆盖。TILDE将概念遗忘形式化为分布对齐问题，通过能量倾斜的无锚目标抑制概念表达图像，同时保留每个提示下的良性相对质量。结合残差∇-GFlowNet训练学习预训练扩散模型的分数校正，在物体、艺术风格和角色上实现强遗忘，同时提升保留质量和分布保真度。",
+      "tags": "query:ce",
+      "abstract_en": "Concept unlearning in text-to-image diffusion models is critical for safe and practical deployment: with rising privacy concerns, copyright disputes, trademark constraints, and safety regulations, deployed systems must be able to suppress unwanted concepts after training. Existing methods often remove the target concept effectively, but practical unlearning also requires an equally fundamental property: the unlearned model should retain quality, diversity, and semantic coverage on benign generation. The gold standard is a retain-only model trained from scratch without the unwanted data. However, common erasure objectives do not specify which post-unlearning distribution should approximate this reference, leaving retention as an implicit consequence of the update rule. We propose TILDE, TILt-based Distributional Erasure, which formulates concept unlearning as a distributional alignment problem: the desired target is the minimum-deviation conditional distribution from the pretrained model under a forgetting constraint. This energy-tilted, anchor-free target suppresses concept-expressing images while preserving benign relative mass for each prompt. We instantiate this principle with residual $\\nabla$-GFlowNet training, which learns the score correction induced by the forget energy relative to the pretrained diffusion model. Across objects, artistic styles, and characters, TILDE achieves strong forgetting while improving retention and distributional fidelity over prior baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/08/2607.05850v1-breaking-spurious-correlations-via-generative-randomization-and-cross-variant-self-supervised-learning",
+      "section": "quick",
+      "title_en": "Breaking Spurious Correlations via Generative Randomization and Cross-Variant Self-Supervised Learning",
+      "authors": "Suraj Yadav, Anjaneya Sharma, Siddharth Yadav",
+      "date": "2026-07-07",
+      "pdf": "https://arxiv.org/pdf/2607.05850v1",
+      "score": "7.0",
+      "evidence": "通过生成式干预消除虚假背景相关性",
+      "tldr": "深度神经网络常利用对象与背景的虚假关联导致分布偏移下失败。本文提出两阶段框架：首先通过零样本分割和结构保持扩散模型生成背景变化的变体，然后采用跨变体自监督对比学习迫使模型关注对象本身，最后用ERM预热和GroupDRO微调。在Waterbirds、MetaShift、NICO++上分别达到92.5%、81.7%、87.4%的最差组准确率。该方法有效消除背景偏见，提升泛化鲁棒性。",
+      "tags": "query:ce",
+      "abstract_en": "Deep neural networks trained with Empirical Risk Minimization (ERM) often fail under distribution shifts because they exploit spurious correlations between object labels and background context. Recent generative approaches address this issue by creating counterfactual images with altered contexts, but typically use these samples as standard data augmentation, leaving the model free to retain background-sensitive representations. We propose a two-stage framework that uses generative intervention to explicitly learn background-invariant visual representations. First, we isolate the foreground object using zero-shot segmentation and generate context-shifted variants with a structure-preserving diffusion model, preserving object identity while varying the surrounding environment. We then introduce Cross-Variant Self-Supervised Learning, where variants of the same object under different backgrounds form positive pairs in a contrastive objective. This encourages the encoder to align object-centric representations while suppressing background-specific cues. Then, we fine-tune the pretrained encoder using an ERM warm-up followed by GroupDRO with layer-wise learning rates. Experiments on distribution-shift benchmarks demonstrate best worst-group performance, achieving 92.5% on Waterbirds, 81.7% on MetaShift, and 87.4% on NICO++. Code: https://github.com/surajyadav-research/GRSSL",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
