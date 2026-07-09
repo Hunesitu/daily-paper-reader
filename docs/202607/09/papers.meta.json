@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-09",
+  "date": "2026-07-09",
+  "generated_at": "2026-07-09T20:47:02",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/09/2607.01499v2-anti-prompt-image-protection-against-text-guided-image-to-video-generation",
+      "section": "deep",
+      "title_en": "Anti-Prompt: Image Protection against Text-Guided Image-to-Video Generation",
+      "authors": "Yeonghwan Song, Chanhui Lee, Jinsoo Park, Jeany Son",
+      "date": "2026-07-01",
+      "pdf": "https://arxiv.org/pdf/2607.01499v2",
+      "score": "8.0",
+      "evidence": "通过注入扰动保护图像以阻止生成，类似于概念擦除",
+      "tldr": "近期文本引导图像到视频（I2V）生成技术可将单张图像动画化为逼真视频，带来严重版权和隐私风险。本文提出Anti-Prompt，通过向图像添加不可察觉扰动，利用模型对文本引导的依赖，在去噪过程中削弱文本条件交互并增强视觉通路，诱导生成视频出现结构不一致和伪影。该方法在两种代表性I2V架构上实现强保护效果，且具有较高效率和跨模型迁移性。同时引入Video-LLM评估协议，提供可解释的帧级生成伪影分析。",
+      "tags": "query:ce",
+      "abstract_en": "Recent advances in Image-to-Video generation allow a single image to be animated into a convincing video under text guidance, raising serious copyright and privacy risks. We propose Anti-Prompt, an image protection approach that injects imperceptible perturbations into an image, inducing visible inconsistencies and structural failures in text-guided I2V generation. Our method is motivated by a simple empirical observation. When text guidance is removed from modern I2V models, generation quality degrades markedly, not only in motion realism but also in subject preservation, structural coherence, and temporal consistency. Building on this insight, Anti-Prompt exploits the model reliance on textual guidance by attenuating text-conditioned interactions during denoising while strengthening visual-only pathways. To further systematically evaluate protection effectiveness, we introduce a Video-LLM-assisted evaluation protocol that provides interpretable, frame-grounded analyses of generation artifacts and inconsistencies. Experiments on two representative I2V architectures demonstrate that our method achieves strong protection performance while improving efficiency and cross-model transferability.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/09/2607.02897v1-ppe-bench-a-benchmark-for-evaluating-mllm-unlearning-under-private-public-entanglement",
+      "section": "quick",
+      "title_en": "PPE-Bench: A Benchmark for Evaluating MLLM Unlearning under Private-Public Entanglement",
+      "authors": "Xianren Zhang, Delvin Ce Zhang, Dongwon Lee, Suhang Wang",
+      "date": "2026-07-03",
+      "pdf": "https://arxiv.org/pdf/2607.02897v1",
+      "score": "6.0",
+      "evidence": "多模态大语言模型的机器遗忘基准，涉及图像",
+      "tldr": "现有MLLM遗忘基准使用简化单目标图像和完全分离的遗忘/保留集，不符合真实复杂性。本文提出PPE-Bench，每张图像包含要遗忘的私密个体与要保留的公开信息（如公众人物、地标）的视觉纠缠。同时引入两种简单方法在遗忘时更好地保留公开信息。实验表明，现有遗忘方法虽降低私密泄露，但严重损害公开信息，凸显评估纠缠场景的必要性。",
+      "tags": "query:ce",
+      "abstract_en": "Multimodal Large Language Models (MLLMs) have shown strong capabilities, but they may memorize private information from web data, raising privacy concerns. Machine unlearning offers a way to remove such private knowledge without retraining from scratch. However, existing MLLM unlearning benchmarks have two major limitations. First, they rely on simplified images that contain only the single target individual, failing to reflect the visual complexity of real-world photos. Second, they typically assume that the forget set and retain set are fully separated, ignoring the fact that private information is often visually entangled with benign public information. For example, a private individual may appear with a public figure or in front of a well-known landmark, where unlearning the private target should not damage the public context. To address these limitations, we propose PPE-Bench, a new benchmark for evaluating MLLM unlearning under private-public entanglement. Each image contains a target individual to be forgotten and public information to be preserved, including public figure and landmark. We further introduce two simple but effective methods to better preserve public information during unlearning. Through experiments, we find that existing unlearning methods can reduce private information leakage, but often substantially harm adjacent public information.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

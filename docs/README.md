@@ -6,26 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-08
-- 运行时间：2026-07-08 21:36:18 UTC
+- 最新运行日期：2026-07-09
+- 运行时间：2026-07-09 20:46:54 UTC
 - 运行状态：成功
 - 本次总论文数：2
 - 精读区：1
 - 速读区：1
 
 ### 今日简报（AI）
-今日精读《TILDE》提出基于倾斜分布的擦除来消除概念，速读《打破虚假相关性》通过生成式随机化与交叉变体自监督学习提升鲁棒性。最值得关注9分高影响力方法TILDE，它在不破坏模型性能的前提下精准擦除敏感信息。建议普通读者优先阅读TILDE论文，了解如何安全移除AI中的特定概念。
-- 详情：[/202607/08/README](/202607/08/README)
+今日精读一篇图像防护论文，速读一篇多模态大模型遗忘基准研究，共2篇。重点推荐Anti-Prompt方法保护图像不被用于视频生成，及PPE-Bench评估大模型隐私遗忘能力。建议优先搞清Anti-Prompt实现机制，同时关注多模态隐私防护最新动向。
+- 详情：[/202607/09/README](/202607/09/README)
 
 ### 精读区论文标签
-1. [TILDE: TILt-based Distributional Erasure for Concept Unlearning](/202607/08/2607.06432v1-tilde-tilt-based-distributional-erasure-for-concept-unlearning)  
-   标签：评分：9.0/10、query:ce
-   evidence：扩散模型中的概念擦除
+1. [Anti-Prompt: Image Protection against Text-Guided Image-to-Video Generation](/202607/09/2607.01499v2-anti-prompt-image-protection-against-text-guided-image-to-video-generation)  
+   标签：评分：8.0/10、query:ce
+   evidence：通过注入扰动保护图像以阻止生成，类似于概念擦除
 
 ### 速读区论文标签
-1. [Breaking Spurious Correlations via Generative Randomization and Cross-Variant Self-Supervised Learning](/202607/08/2607.05850v1-breaking-spurious-correlations-via-generative-randomization-and-cross-variant-self-supervised-learning)  
-   标签：评分：7.0/10、query:ce
-   evidence：通过生成式干预消除虚假背景相关性
+1. [PPE-Bench: A Benchmark for Evaluating MLLM Unlearning under Private-Public Entanglement](/202607/09/2607.02897v1-ppe-bench-a-benchmark-for-evaluating-mllm-unlearning-under-private-public-entanglement)  
+   标签：评分：6.0/10、query:ce
+   evidence：多模态大语言模型的机器遗忘基准，涉及图像
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,812 @@
+Title: Anti-Prompt: Image Protection against Text-Guided Image-to-Video Generation
+
+URL Source: https://arxiv.org/pdf/2607.01499v2
+
+Published Time: Wed, 08 Jul 2026 00:23:03 GMT
+
+Number of Pages: 33
+
+Markdown Content:
+# Anti-Prompt: Image Protection against Text-Guided Image-to-Video Generation 
+
+Yeonghwan Song 1 Chanhui Lee 2 Jinsoo Park 2 Jeany Son 2⋆ 
+
+> 1
+
+GIST 2 POSTECH 
+
+https://yeonghwansong.github.io/Anti-prompt/ Prompt = “Harry and Voldemort suddenly lean in and kiss each other passionately ” 
+
+Original 
+
+Protected 
+
+Prompt = “On a plain at sunset, a woman runs away, leaving the man behind.” 
+
+Original 
+
+Protected 
+
+Prompt = “A red car carrying a golden retriever is moving on the road.” Protected 
+
+Original 
+
+Fig. 1: Text-guided I2V generation and protection. CogVideoX [61] generates videos from the original image (top) and our protected image (bottom). 
+
+Abstract. Recent advances in Image-to-Video (I2V) generation allow a single image to be animated into a convincing video under text guidance, raising serious copyright and privacy risks. We propose Anti-Prompt, an image protection approach that injects imperceptible perturbations into an image, inducing visible inconsistencies and structural failures in text-guided I2V generation. Our method is motivated by a simple em-pirical observation: when text guidance is removed from modern I2V models, generation quality degrades markedly, not only in motion re-alism but also in subject preservation, structural coherence, and tem-poral consistency. Building on this insight, Anti-Prompt exploits the model’s reliance on textual guidance by attenuating text-conditioned in-teractions during denoising while strengthening visual-only pathways. To further systematically evaluate protection effectiveness, we introduce a Video-LLM–assisted evaluation protocol that provides interpretable, frame-grounded analyses of generation artifacts and inconsistencies. Ex-periments on two representative I2V architectures demonstrate that our method achieves strong protection performance while improving effi-ciency and cross-model transferability. 
+
+Keywords: Safety and Privacy · Image Protection · I2V Generation  
+
+> ⋆
+
+Corresponding author. arXiv:2607.01499v2 [cs.CV] 6 Jul 2026 2 Song et al .
+
+## 1 Introduction 
+
+Diffusion models have rapidly advanced image synthesis [9,13,21,28,40–43,45,49] and video generation [4, 5, 17, 19, 20, 22, 48, 51, 54, 55, 61], making it increasingly easy to animate a single photograph into a realistic short video. Modern Image-to-Video (I2V) models [4, 7, 56, 60, 65] can generate temporally coherent motion and high visual fidelity from one image, guided by a text prompt. These capa-bilities enable compelling content creation, but they also introduce a practical risk for publicly shared images [6, 36, 52, 58]. Once an image is posted online, it becomes a reusable source that can be repeatedly animated under a wide range of prompts, without the owner’s intent. Compared to static misuse, video gener-ation can be more persuasive because it adds actions, expressions, and temporal narratives, thereby amplifying privacy and copyright risks [52]. This motivates proactive image protection [10, 14, 30, 46, 47] tailored to diffusion-based I2V dy-namics. In this work, we study I2V image protection. Given an image intended for sharing, the owner adds an imperceptible perturbation so that attempts to an-imate the image are less likely to produce a coherent and image-faithful video. Here, image-faithful refers to preserving the input image’s subject identity and overall structure throughout the generated video. A successful protection, there-fore, causes generated videos to exhibit noticeable inconsistencies or artifacts, making them unsuitable for convincing misuse. Figure 1 illustrates representative examples of such protected generations. Our approach is motivated by a simple empirical observation. In several mod-ern I2V models [17, 55, 61], removing the text prompt during generation causes severe degradation that extends beyond prompt-following. As illustrated in Fig-ure 2, prompt-free generation often exhibits subject deformation, structural col-lapse, and temporal incoherence. These failures are broad in scope: they affect not only motion quality but also subject preservation and structural consistency. This behavior suggests that text guidance plays a broader role in stabilizing gen-eration than typically assumed. Based on this insight, we propose Anti-Prompt, an image protection method that weakens the influence of text during I2V denoising. Rather than targeting specific prompts, our method targets the architectural pathways through which text affects generation. Concretely, our objective suppresses text-conditioned in-teractions while reinforcing visual-only pathways, shifting the model’s updates away from text guidance. We instantiate this idea for two common I2V architec-tures: full-attention models, where video tokens jointly attend to video, image, and text tokens, and cross-attention models, where text influences the latent through a dedicated residual branch. Our optimization operates on intermediate attention statistics rather than generated videos, eliminating the need for expen-sive reference video generation and significantly improving efficiency compared with prior approaches [14]. Finally, we introduce an evaluation protocol tailored to I2V protection. Stan-dard video benchmarks ( e.g ., VBench [23, 24, 66]) measure overall video quality but provide limited insight into how generation degrades on protected images. Anti-Prompt 3+Prompt +Prompt +Prompt         
+
+> Fig. 2: Empirical observation: prompt removal degrades I2V generation broadly. Top: prompt omitted (empty text). Bottom: standard text-guided generation with all other settings fixed. Removing text guidance causes failures that extend beyond motion quality to subject preservation, structural coherence, and temporal consistency. This pattern is observed across CogVideoX [61], LTX-Video [17], and Wan [55].
+
+In protection settings, success is inherently asymmetric: even a single salient error can render a generated video unsuitable for convincing misuse. To better capture such behaviors, we complement standard benchmarks with a Video-LLM–assisted evaluation protocol [2, 32, 35, 62, 63]. The protocol evaluates four interpretable dimensions, Subject Preservation, Structural Consistency, Dynamic Consistency, and Artifact Suppression , using structured outputs that cite frame-grounded observations before assigning discrete scores. Our contributions are summarized as follows: 
+
+– We propose Anti-Prompt, an I2V image protection method that attenuates text-conditioned interactions during denoising while amplifying visual-only pathways, instantiated for both full-attention and cross-attention I2V archi-tectures. 
+
+– We introduce a Video-LLM-assisted evaluation protocol that provides in-spectable, frame-grounded diagnoses of protection-induced failures across four visual dimensions. 
+
+– Our method achieves effective disruption of plausible animation with im-proved efficiency and high imperceptibility across two representative I2V architectures under our evaluation suite. 
+
+## 2 Related Work 
+
+Image-to-Video Generative Models. Modern image-to-video (I2V) synthe-sis is largely built by extending text-to-image diffusion backbones with temporal modules to synthesize temporally coherent frames from a single image. Early works such as Tune-A-Video [59] and AnimateDiff [16] demonstrated that in-jecting lightweight temporal components enables compelling image animation. Stable Video Diffusion [4] further scaled latent video diffusion and has served as a widely used open-source baseline. Recent models improve fidelity and con-trollability through stronger spatio-temporal architectures, including Lumiere [3] 4 Song et al .
+
+and large-scale diffusion transformers such as CogVideoX [61]. In parallel, LTX-Video [17] proposes efficiency-oriented designs and Wan [55] continues to reduce the barrier to high-quality I2V generation as a large-scale open source model. Community-driven efforts such as VideoCrafter2 [8] and Open-Sora [68] further broaden access to I2V capabilities. The increasing realism and accessibility of I2V generation have spurred interest in protecting images against video synthesis. 
+
+Image Protection against Generative Models. Protective perturbations aim to reduce the utility of images for downstream generation or editing by disrupting key components such as latent encoders, denoising dynamics, or at-tention. PhotoGuard [46] introduced diffusion-targeted image immunization to prevent unauthorized edits, and Distraction [34] improved practicality by focus-ing on attention-level objectives with reduced memory cost. DiffusionGuard [10] strengthens robustness under challenging masked-editing settings, while Adv-Paint [25] explicitly targets attention interactions to defend against inpainting manipulation. Beyond editing, Glaze [47] and AdvDM [31] protect against artis-tic style imitation, and PRIME [30] extends perturbation-based protection to video content. Most closely related to our setting, I2VGuard [14] studies safe-guards against diffusion-based I2V generation by degrading spatio-temporal con-sistency, but its optimization can require generating auxiliary videos and addi-tional model passes. These observations motivate more efficient I2V protection mechanisms that directly target text-dependent interactions to induce genera-tion failures. 
+
+## 3 Background 
+
+Diffusion Models. Diffusion models are trained to reverse a noise process that gradually corrupts data. A noisy latent zt at the timestep t is expressed as: 
+
+zt = √¯αt z0 + √1 − ¯αt ϵ, ϵ ∼ N (0 , I ), (1) where z0 is the clean latent and ¯αt is the noise schedule. A denoising network ϵθ
+
+(e.g ., U-Net [44], DiT [40]) is trained to predict ϵ from zt at timestep t, under conditioning input c (e.g ., text embeddings). In diffusion-based I2V systems, such conditioning is typically injected through attention mechanisms that control how signals from different modalities are combined [43, 53]. 
+
+Conditioning Mechanisms in Diffusion Models. We focus on two repre-sentative conditioning designs commonly used in diffusion-based I2V models: 
+
+Full-Attention and Cross-Attention . To describe both architectures with a uni-fied perspective, we distinguish text-dependent interactions that explicitly access text tokens, from visual-only interactions that operate on image and video tokens only. Anti-Prompt 5
+
+Full-Attention. In Full-Attention architectures ( e.g ., CogVideoX [61]), video tokens jointly attend to video, image, and text tokens under shared softmax nor-malization. Under a shared softmax, modalities compete for attention mass [53], which directly determines their relative contribution to the latent update. 
+
+[Az,z , Az,i , Az, txt ] = softmax ([ Az,z , A z,i , A z, txt ]) (2) 
+
+zℓF A = Az,z V ℓz + Az,i V ℓi + Az, txt V ℓ
+
+> txt
+
+, (3) where ℓ is the layer index. Here, Az, · denotes the pre-softmax attention logits grouped by modality, Az, · the corresponding post-softmax weights, and V ℓ 
+
+> ·
+
+the value projections. zℓF A denotes the output of the full-attention block. Under our criterion, the term Az, txt V ℓ 
+
+> txt
+
+is text-dependent , while Az,z V ℓz +Az,i V ℓi constitutes 
+
+visual-only contributions. 
+
+Cross-Attention. In Cross-Attention architectures ( e.g ., LTX-Video [17]), text enters through a dedicated cross-attention residual, while self-attention operates on image and video tokens: 
+
+zℓSA = SA ℓ([ zℓi , z ℓ]) (4) 
+
+zℓCA = CA ℓ([ zℓi , z ℓ] + zℓSA , c txt ) (5) 
+
+[zℓ+1  
+
+> i
+
+, z ℓ+1 ] = [ zℓi , z ℓ] + zℓSA + zℓCA , (6) where zℓ and zℓi denote the video latent and the image-condition latent in the ℓ-th layer, ctxt is the text condition, and SA and CA denote the self-attention and cross-attention modules, respectively. In this design, text affects the video la-tent only through the cross-attention residual zℓCA . Thus, zℓCA is text-dependent ,whereas zℓSA and the image-conditioned pathway are visual-only .
+
+## 4 Method 
+
+In this section, we describe our I2V image protection approach. Our method consists of (1) the proposed Anti-Prompt objective that attenuates text influence during denoising, (2) an encoder attack that further distorts image conditioning, and (3) the overall objective to optimize the perturbation. 
+
+4.1 Anti-Prompt Objective 
+
+The goal of I2V image protection is to induce salient failures in text-guided I2V generation from a protected image. As shown in Section 1, we observe that re-moving text prompts from I2V models produces broad generation failures not only in motion quality but also in subject preservation and structural coher-ence (Figure 2). Anti-Prompt exploits this sensitivity: it optimizes an adversar-ial perturbation that attenuates text-conditioned interactions during denoising, reproducing, and intensifying the failure patterns seen under prompt removal. 6 Song et al .(b) Cross-Attention     
+
+> Cross-Attention
+> 𝑧 ஼஺
+> 𝑐 ୲௫௧
+> 𝑧
+> 𝑧 ௌ஺
+> 𝑧 ௔ௗ௩
+> Self-Attention
+> 𝑐 ୲௫௧ 𝑧 ௔ௗ௩ 𝑧 C
+> 𝑄 ௜𝑄 ୲
+> 𝐾 ௜
+> 𝐾 ୲
+> 𝐾 ௭
+> 𝑄 ௭
+> C
+> Full-attention block
+> 𝐴 ௭,୲
+> 𝐴 ௭,௜
+> 𝐴 ௭,௭
+> 𝐴 ௜,୲
+> 𝐴 ௜,௜
+> 𝐴 ௜,௭
+> 𝐴 ௧,୲
+> 𝐴 ௧,௜
+> 𝐴 ௧,௭
+> 𝑧
+> 𝑐 ୲௫௧
+> ℒ୴୧ୱ
+> DiT Block
+> Visual
+> Dominance
+> Loss
+> ℒୱ୳୮
+> Text
+> Suppression
+> Loss
+> ℒ௩௜௦
+> x L
+> 𝑠𝑢𝑝 ℒ
+> Video Latent
+> 𝑥 + 𝛿
+> or
+> 𝑧 ௔ௗ௩ ℰ
+> Latent
+> Distortion
+> ∅
+> C
+> (c) Full-Attention (a) Anti-Prompt
+
+Fig. 3: Overview of Anti-Prompt. (a) We optimize an imperceptible perturbation to suppress text-dependent pathways and promote visual-only dominance. Latent dis-tortion corresponds to the encoder attack. (b) Cross-Attention: text enters via a cross-attention residual. We suppress this text-dependent residual and strengthen the self-attention (visual-only) residual. (c) Full-Attention: video tokens attend jointly to video, image, and text tokens under a shared softmax. We reduce video-to-text in-teractions and reinforce visual interactions to promote visual dominance. 
+
+Text Suppression. Text suppression denotes attenuating text-dependent in-teractions during denoising. Since text influence in diffusion models is mediated through attention interactions, these interactions provide a natural target for disruption. We suppress text influence by penalizing direct text-dependent in-teractions at each layer: 
+
+Lsup =
+
+> L
+
+X
+
+> ℓ=1
+
+τ ℓ. (7) Here, τ ℓ is a scalar that measures the strength of text-dependent pathways at layer ℓ. For Full-Attention , we set τ ℓ = E[Aℓz, txt ], i.e ., the average pre-softmax attention logits from video to text tokens, where E[·] denotes averaging over all attention heads and the corresponding token pairs. We suppress the text-related logits Aℓz, txt to attenuate text-conditioned pathways. For Cross-Attention , we set τ ℓ = E[∥zℓCA ∥22], i.e ., the energy of the cross-attention residual that injects text features into the video latent, thereby shrinking text-dependent residual updates. 
+
+Visual Dominance. Text suppression directly weakens text-conditioned path-ways, but its effect depends on the specific text tokens encountered during optimization and may transfer less reliably to unseen prompts. Visual dom-inance complements this by amplifying visual-only interactions regardless of prompt content, reducing the relative contribution of text guidance. By increas-ing the magnitude of activations that exclude text, we reduce textual influence through softmax competition in Full-Attention and residual dominance in Cross-Anti-Prompt 7
+
+Attention :
+
+Lvis = −
+
+> L
+
+X
+
+> ℓ=1
+
+νℓ. (8) Here, νℓ is a scalar that measures the strength of visual-only pathways at layer 
+
+ℓ. For Full-Attention , we set νℓ = E[Aℓz,z ] + E[Aℓz,i ], i.e ., the average pre-softmax attention logits from video to video and image tokens. Since these modalities compete under the shared softmax, increasing νℓ makes the visual terms more competitive and consequently decreases the relative contribution of text guid-ance. For Cross-Attention , we set νℓ = E[∥zℓSA ∥22], i.e ., the energy of the self-attention residual, encouraging it to dominate residual updates and reducing the relative contribution of cross-attention text features. These complementary strategies provide an intuitive realization of our pro-tection objective. Although the formulation differs for Full-Attention and Cross-Attention , both are designed to attenuate text-guided control and drive denoising toward failures that persist across unseen prompts. 
+
+4.2 Encoder Attack 
+
+Following [14], we adopt an encoder attack [46] to further weaken image condi-tioning. Empirically, while prompt omission often yields unstable outputs, some generations can still retain partial coherence depending on the pipeline and scene. To further reduce such residual image-conditioned coherence, we drive the en-coder representation toward an uninformative target. Specifically, we perturb the input so that E(x + δ) approaches E(xtar ) (e.g ., a black image), suppressing usable visual cues for generation: 
+
+Lenc = ∥E (x + δ) − E (xtar )∥22, (9) where x is the input image, δ the perturbation, E the VAE encoder, and xtar the uninformative target. 
+
+4.3 Overall Loss 
+
+To create the final protected image, we obtain the optimal imperceptible per-turbation δ by jointly optimizing all three loss components. The final objective is formulated as: 
+
+min  
+
+> δ
+
+L = Lsup + λ1Lvis + λ2Lenc , (10) s.t. ∥δ∥∞ ≤ ϵ, 
+
+where λ1 and λ2 are balancing hyperparameters, and the constraint ensures im-perceptibility. By jointly optimizing these objectives, our method learns a pertur-bation that reduces text-conditioned influence and makes text-guided generation more likely to exhibit visible failures. An overview of the proposed Anti-Prompt framework and its detailed optimization procedure is illustrated in Figure 3. 8 Song et al .
+
+## 5 Evaluation Protocol for Text-Guided I2V Protection 
+
+Evaluating I2V image protection is fundamentally different from evaluating video generation quality. Prior I2V protection work [14] evaluates performance using video generation benchmarks such as VBench I2V [23,24] designed to assess how well a generated video satisfies multiple perceptual criteria. In contrast, the ob-jective of protection is to break image-faithful animation of the protected input. Accordingly, protection effectiveness can often be established by identifying a single clear failure ( e.g ., subject drift, structural breakdown, temporal instabil-ity, and prominent artifacts) rather than by exhaustively scoring fine-grained quality. Motivated by this distinction, we introduce a failure-finding evaluation pro-tocol that characterizes how generated videos depart from an image-faithful an-imation. Our protocol scores videos along four interpretable visual dimensions that capture common I2V failure patterns. Each dimension is rated on a dis-crete 1–5 scale, where higher scores indicate more stable, coherent generation and lower scores indicate more severe failures. Thus, lower scores correspond to stronger protection. 
+
+5.1 Evaluation Dimensions 
+
+We score the following dimensions because protection can disrupt I2V gener-ation through distinct mechanisms, and mixing them obscures diagnosis. Each dimension is scored on a discrete 1–5 scale, where 5 indicates that the dimension is largely preserved and 1 indicates a severe failure. Accordingly, lower scores indicate stronger protection .
+
+Subject Preservation. We assess whether the main subject from the first frame remains present and recognizable across the video. This captures identity drift, disappearance, and replacement, which are often the most salient failures even when the overall rendering still looks plausible. 
+
+Structural Consistency. We examine whether the subject’s geometry and bound-aries remain stable across frames. This highlights warping, tearing, and part-level inconsistencies that can appear even when the subject is still identifiable. 
+
+Dynamic Consistency. We check whether motion and state transitions remain temporally coherent and physically plausible. This targets flicker, abrupt jumps, and implausible dynamics that may occur without large appearance changes. 
+
+Artifact Suppression. We assess how well visible artifacts are suppressed ( e.g ., checkerboard patterns, banding, flickering textures, unnatural noise, or rendering glitches). Higher scores indicate minimal visible artifacts, whereas lower scores indicate severe and dominant artifacts. Anti-Prompt 9
+
+Table 1: White-box quantitative results on VBench metrics [23, 24]. Lower indicates stronger protection efficacy, since our metrics are formulated to quantify deviations from an image-faithful animation.                                                  
+
+> Method I2V Subject I2V Background Subject Consistency Background Consistency Aesthetic Quality Imaging Quality Temporal Flickering Motion Smoothness
+> CogVideoX [61]
+> Clean 97.15 98.87 95.06 97.38 61.48 70.23 96.99 98.15 I2VGuard 94.58 97.14 93.32 96.17 58.61 65.30 96.47 97.61 Ours 91.20 94.28 87.54 93.16 54.72 63.71 94.47 95.66
+> LTX-Video [17]
+> Clean 97.70 98.15 95.09 97.87 60.87 68.22 99.04 99.36 I2VGuard 94.36 95.56 90.25 95.00 56.28 62.63 98.23 98.90 Ours 93.64 95.07 89.36 94.99 54.99 61.44 97.95 98.67
+
+Table 2: VBench [23, 24] results of generated videos with unseen prompt.                                                  
+
+> Method I2V Subject I2V Background Subject Consistency Background Consistency Aesthetic Quality Imaging Quality Temporal Flickering Motion Smoothness
+> CogVideoX [61]
+> Clean 96.87 97.65 94.88 97.40 60.84 70.21 97.41 98.31 I2VGuard 93.51 93.79 92.45 95.19 57.37 63.58 96.34 97.43 Ours 88.90 90.60 84.70 91.76 53.14 61.80 94.10 95.36
+> LTX-Video [17]
+> Clean 95.85 97.30 90.12 95.50 56.96 64.37 98.53 99.11 I2VGuard 91.83 92.09 83.46 90.28 50.69 56.36 97.35 98.40 Ours 91.14 91.38 82.47 90.14 49.92 55.85 96.93 98.06
+
+5.2 Video-LLM scoring with Inspectable Evidence 
+
+For each generated video, we uniformly sample 4 frames per second, including the first and last. Given the sampled frames, a Video-LLM produces (1) a small set of concrete observations grounded to frame indices, and then (2) a 1–5 score for each dimension. Requiring observations before scoring makes the output more inspectable and reduces arbitrary ratings [33, 67]. To evaluate videos at scale under this protocol, we employ Video-LLMs [2, 32, 35, 62, 63] as evaluators that inspect sampled frames from each generated video and assign dimension-wise scores based on observable visual evidence. The prompt requests a structured output containing frame-grounded observations and per-dimension scores. We release the prompt template and parsing scripts to facilitate reproducibility. We report both the per-dimension scores and their average as a compact summary statistic. Video-LLM–based evaluation is inherently imperfect and may exhibit model-specific biases or stochastic variability. We therefore complement it with standard VBench metrics and validate the reliability through a human study in Section 6. As shown in Table 6, the human judgments align well with our protocol-induced rankings, supporting its use as a scalable failure-finding evaluation. Additional evaluator repeatability and cross-evaluator consistency analyses are provided in the supplementary material. 10 Song et al .Original image 
+
+> I2VGuard
+> Ours
+> Original image
+> I2VGuard
+> Ours
+> Prompt = “A woman with long black hair is posing for a picture.”
+> Prompt = “A man sitting in the driver’s seat of a car wearing sunglasses.”
+
+Fig. 4: Qualitative results on CogVideoX [61]. We compare generations from the original image, I2VGuard [14], and Ours. 
+
+## 6 Experiments 
+
+Implementation Details. Following I2VGuard [14], we set the PGD hyper-parameters to K = 50 , ϵ = 8 /255 , and α = 1 /255 for all experiments. We unroll 
+
+T = 10 denoising steps during optimization. Unless specified otherwise, we set 
+
+λ1 = 1 and λ2 = 1 for CogVideoX [61], and use λ1 = 0 .1 and λ2 = 0 .01 for LTX-Video [17] to account for objective scale differences across architectures. For video generation, we use 720 × 480 resolution with 49 frames at 8 FPS for CogVideoX, and 704 × 480 with 121 frames at 25 FPS for LTX-Video. 
+
+Experimental Setup. We employ representative open-source image-to-video generators in our text-guided I2V setting. Specifically, we use CogVideoX-5B [61] (full-attention) and LTX-Video-2B [17] (cross-attention) as target models, as they cover the two common conditioning designs and remain feasible to run at scale under practical memory budgets. 
+
+Datasets and Metrics. We evaluate on 355 images from the VBench Image-to-Video dataset [24], using the ground-truth text prompts paired with each image for consistent evaluation. We report VBench [23, 24] metrics and our pro-posed failure-finding scores computed with an open-source Video-LLM evaluator Anti-Prompt 11 Prompt = “Two women eating pizza at a restaurant” 
+
+> Prompt = “A group of people in a yellow raft is rowing through turbulent waters”
+> Original image
+> I2VGuard
+> Ours
+> Original image
+> I2VGuard
+> Ours
+
+Fig. 5: Qualitative results on LTX-Video [17]. We compare generations from the original image, I2VGuard [14], and Ours. 
+
+(Qwen3-VL-8B [2]). We follow the official VBench implementation for metric computation; our failure-oriented evaluation protocol is described in Section 5. 
+
+Baselines. We compare our method with I2VGuard [14], which is designed to prevent unauthorized video generation. The original I2VGuard paper reports results on a non-public dataset, so exact numeric matching is not possible. We reproduce I2VGuard using the hyperparameters and design choices described in the paper, and evaluate all methods on the public VBench I2V benchmark under identical generation settings and perturbation budgets. In our setup, the reproduced I2VGuard achieves effectiveness broadly consistent with the reported results. For fair comparison, both methods use the encoder attack by default and share the same uninformative target (a black image). 
+
+Qualitative Results We compare generations from the original image and protected images optimized by I2VGuard [14] and Ours. Figures 4 and 5 show that our method more reliably induces salient failures and temporally unstable dynamics than the baseline across both CogVideoX and LTX-Video. Overall, videos generated from our protected images become incoherent and inconsis-tent across frames, while the input perturbations remain imperceptible. These failures are consistent with the degradation patterns observed under prompt re-12 Song et al .
+
+Table 3: Black-box transfer evaluation on VBench metrics [23, 24].                                                  
+
+> Method I2V Subject I2V Background Subject Consistency Background Consistency Aesthetic Quality Imaging Quality Temporal Flickering Motion Smoothness
+> Optimization: LTX-Video [17], Generation: CogVideoX [61]
+> Clean 97.15 98.87 95.06 97.38 61.48 70.23 96.99 98.15 I2VGuard 97.49 98.62 95.41 97.31 60.77 70.43 96.98 98.24 Ours 95.28 96.72 94.34 96.57 59.56 68.42 96.56 97.83
+> Optimization: CogVideoX [61], Generation: LTX-Video [17]
+> Clean 97.70 98.15 95.09 97.87 60.87 68.22 99.04 99.36 I2VGuard 94.52 95.33 90.98 95.33 55.78 61.42 98.29 98.90 Ours 94.61 95.60 89.87 94.98 55.40 62.63 98.14 98.83
+
+Table 4: White-box quantitative results under our I2V protection evaluation protocol. Lower scores indicate more severe failures. Higher scores indicate more faithful anima-tion of the input image. Scores are reported as a/b for seen/unseen prompts.                                 
+
+> Method Subject Preservation Structural Consistency Dynamic Consistency Artifact Suppression Average
+> CogVideoX [61]
+> Clean 4.86/4.72 4.55/4.22 4.19/3.91 4.79/4.66 4.58/4.38 I2VGuard 4.72/4.71 4.18/3.95 3.81/3.66 2.97/3.13 3.92/3.86 Ours 4.37 /4.26 3.24 /2.82 2.91 /2.61 2.49 /2.28 3.25 /2.99
+> LTX-Video [17]
+> Clean 4.64/3.78 4.01/2.83 3.70/2.85 4.17/3.08 4.13/3.13 I2VGuard 4.24/3.37 3.18/2.21 2.99/ 2.17 2.70/1.95 3.28/2.46 Ours 4.06 /3.21 3.02 /2.20 2.85 /2.17 2.58 /1.92 3.12 /2.38
+
+moval (Figure 2), further supporting our motivation of disrupting text-guided stabilization. 
+
+6.1 Quantitative Evaluation 
+
+We first evaluate on the standard VBench benchmark [23, 24]. Throughout this section, we use a unified convention: lower scores indicate more severe failures (stronger protection), since our metrics are formulated to quantify deviations from an image-faithful animation. As shown in Table 1, our approach improves protection effectiveness over I2VGuard across various I2V metrics. We further evaluate using our failure-finding protocol with an open-source Video-LLM eval-uator (Qwen3-VL-8B [2] in our implementation). As shown in Table 4, our method achieves consistently lower scores across the four dimensions, indicating stronger disruption of image-faithful generation. 
+
+Robustness against Unseen Prompts. In real-world scenarios, the defender has no access to the attacker’s prompt, making generalization to unseen prompts critical for dependable protection. Accordingly, we evaluate robustness under unseen generation prompts by using GPT-4 [1] to synthesize diverse, plausible video scenarios conditioned on each input image. We note that the generated unseen prompts are typically more informative and dynamic than the original Anti-Prompt 13 
+
+Table 5: Black-box transfer evaluation on our evaluation protocol.                                 
+
+> Method Subject Preservation Structural Consistency Dynamic Consistency Artifact Suppression Average
+> Optimization: LTX-Video [17], Generation: CogVideoX [61]
+> Clean 4.86 4.55 4.19 4.79 4.58 I2VGuard 4.84 4.44 4.09 4.50 4.47 Ours 4.84 4.31 3.92 3.51 4.15
+> Optimization: CogVideoX [61], Generation: LTX-Video [17]
+> Clean 4.64 4.01 3.70 4.17 4.13 I2VGuard 4.24 3.23 3.14 2.97 3.40 Ours 4.07 3.11 2.95 2.86 3.25
+
+Table 6: Human study and protocol alignment. The study uses a blinded triplet comparison over Clean, I2VGuard, and Ours. A higher worst rate indicates stronger protection-induced degradation. Method Cons. Rank ↓ Plaus. Rank ↓ Best (%) ↑ Worst (%) ↑                      
+
+> Clean 1.50 1.57 59.5 10.0 I2VGuard 1.77 1.74 33.5 10.9 Ours 2.72 2.69 7.0 79.1 Protocol–human ranking agreement Criterion Spearman ρKendall τ
+> Overall ranking 0.84 0.71 Consistency 0.81 0.68 Plausibility 0.79 0.66
+
+VBench [23] prompts, making generation itself more challenging. As a result, absolute scores tend to degrade for all methods, and this effect is particularly pronounced for LTX-Video [17]. Nevertheless, our method maintains a clear advantage over I2VGuard [14] in this harder regime, indicating that the learned perturbations transfer robustly even when the prompt distribution shifts (Table 2 and 4). We use the same unseen prompts for all methods and clean generations. The unseen prompts are provided in the supplementary material. 
+
+Black-box Transferability. We further conduct cross-architecture black-box experiments to assess protection transferability. As shown in Table 3, Anti-Prompt is generally favorable to I2VGuard [14] in black-box transfer. When op-timized on LTX-Video [17], it outperforms I2VGuard across all reported VBench metrics, while the CogVideoX [61]-to-LTX setting shows a few exceptions on iso-lated dimensions but still favors Anti-Prompt overall. In Table 5, Anti-Prompt exhibits a clearer and more consistent advantage under our evaluation protocol in Sec. 5. Taken together, these results indicate effective black-box transfer for Anti-Prompt, with its advantage appearing more consistently under the pro-posed failure-finding evaluation. 14 Song et al .
+
+Table 7: Imperceptibility comparison.                          
+
+> Model Method DISTS ↓LPIPS ↓PSNR ↑SSIM ↑
+> CogVideoX I2VGuard 0.138 0.246 32.86 0.838 Ours 0.111 0.196 35.10 0.906
+> LTX-Video I2VGuard 0.130 0.237 32.35 0.816 Ours 0.138 0.228 34.20 0.892
+
+Table 8: Ablation of Anti-Prompt components.                                          
+
+> Method I2V Subject I2V Background Subject Consistency Background Consistency Aesthetic Quality Imaging Quality Temporal Flickering Motion Smoothness Video-LLM [2] Average ↓Lenc 94.47 97.71 91.96 96.76 57.83 64.22 96.23 97.12 4.11
+> Lenc +Lsup 94.77 97.22 92.94 96.22 58.33 66.55 96.57 97.53 3.92
+> Lenc +Lvis 92.92 95.91 90.53 94.90 56.38 66.95 95.32 96.66 3.59 Ours 91.20 94.28 87.54 93.16 54.72 63.71 94.47 95.66 3.25
+
+Human Study and Protocol Alignment. To verify that the generated fail-ures are perceptually meaningful, we conduct a blinded human study on gen-erated video triplets. Participants compare the results from Clean, I2VGuard, and Ours for the same image and prompt, and select the best and worst videos based on consistency and plausibility. To reduce the cognitive burden of compar-ing video triplets, we ask participants to judge two higher-level criteria rather than all four protocol dimensions: consistency, which mainly reflects subject preservation and structural consistency, and plausibility, which mainly reflects dynamic consistency and artifact suppression. As shown in Table 6, generations from our protected images are most frequently selected as the worst, indicat-ing stronger human-perceived degradation. The protocol-induced rankings also agree well with aggregated human preferences across overall, consistency, and plausibility criteria. 
+
+6.2 Analysis on Imperceptibility 
+
+Beyond protection effectiveness, practical protective perturbation should be vi-sually imperceptible. We measure DISTS [12], LPIPS [64], PSNR, and SSIM [57], comparing our method with I2VGuard [14]. As shown in Table 7, our perturba-tions achieve consistently lower LPIPS and higher PSNR/SSIM across both mod-els, indicating improved perceptual fidelity. DISTS is improved on CogVideoX and is slightly higher on LTX-Video. 
+
+6.3 Ablation Studies Impact of Each Proposed Component. We conduct ablation experiments to evaluate the contribution of our two objectives, Lsup and Lvis , as shown in Table 8. In this analysis, the encoder attack ( Lenc ) is used as a baseline component. We evaluate the protection efficacy when adding Lsup only, Lvis 
+
+only, and both combined. All ablation experiments are conducted in the white-box setting on CogVideoX [61]. Anti-Prompt 15 
+
+Table 9: Efficiency comparison.                    
+
+> Model Method Video Gen. (PFLOPs)
+> δOptim. (PFLOPs) Total FLOPs (PFLOPs) Peak Memory (GB) CogVideoX-5B I2VGuard 16.96 37.29 54.25 51.56 Ours 026.82 26.82 48.98
+> LTX-Video-2B I2VGuard 1.896 3.517 5.413 35.18 Ours 02.609 2.609 28.86
+
+Adding Lsup alone shows mixed effects on VBench metrics, where some scores slightly increase, but consistently improve the Video-LLM failure score. This suggests that text suppression induces failures that are visible to a Video-LLM evaluator inspecting individual frames but are not fully captured by the au-tomated VBench pipeline. Adding Lvis alone produces consistent improvements across both evaluation frameworks. Their combination achieves the lowest scores on both VBench and the Video-LLM protocol, confirming that text suppression and visual dominance are complementary. 
+
+Efficiency Analysis. As shown in Table 9, our method significantly reduces runtime and memory consumption compared to I2VGuard [14]. This is because our losses operate on intermediate attention statistics within a single denoising pass, whereas I2VGuard requires generating a reference video as an additional forward pass. This reduced memory footprint makes the optimization feasible under practical GPU budgets and leaves headroom to scale to larger I2V models when more compute becomes available. 
+
+## 7 Conclusion 
+
+We introduced Anti-Prompt, an image protection strategy that aims to pre-vent unauthorized text-guided image-to-video generation from publicly shared images. Anti-Prompt combines text suppression to attenuate text-dependent interactions with a visual dominance loss that increases robustness to unseen prompts. We further propose a Video-LLM-based failure-finding evaluation pro-tocol that exposes protection-induced breakdowns along four visual dimensions. Extensive experiments on VBench and our protocol across cross-attention and full-attention I2V models demonstrate strong protection with high imperceptibil-ity and improved computational efficiency. Moreover, our method demonstrates generally stronger protection efficacy in unseen-prompt and model-shift evalua-tion settings. 16 Song et al .
+
+Acknowledgement 
+
+This work was supported by the AI Graduate School Program at POSTECH (RS-2019-II191906 (5%)), the NRF grants (RS-2025-24535146 (10%), RS-2026-25491789 (40%)), the IITP grants (RS-2022-II220926 (25%)) funded by MSIT, and the KRIT grant (No. 21-107-E00-009-02 (20%)) funded by DAPA, Korea. This work was also supported by the "Advanced GPU Utilization Support Pro-gram” funded by MSIT, Korea. 
+
+## References 
+
+1. Achiam, J., Adler, S., Agarwal, S., Ahmad, L., Akkaya, I., Aleman, F.L., Almeida, D., Altenschmidt, J., Altman, S., Anadkat, S., et al.: Gpt-4 technical report. arXiv preprint arXiv:2303.08774 (2023) 2. Bai, S., Cai, Y., Chen, R., Chen, K., Chen, X., Cheng, Z., Deng, L., Ding, W., Gao, C., Ge, C., et al.: Qwen3-vl technical report. arXiv preprint arXiv:2511.21631 (2025) 3. Bar-Tal, O., Chefer, H., Tov, O., Herrmann, C., Paiss, R., Zada, S., Ephrat, A., Hur, J., Liu, G., Raj, A., et al.: Lumiere: A space-time diffusion model for video generation. In: SIGGRAPH Asia (2024) 4. Blattmann, A., Dockhorn, T., Kulal, S., Mendelevitch, D., Kilian, M., Lorenz, D., Levi, Y., English, Z., Voleti, V., Letts, A., et al.: Stable video diffusion: Scaling latent video diffusion models to large datasets. arXiv preprint arXiv:2311.15127 (2023) 5. Blattmann, A., Rombach, R., Ling, H., Dockhorn, T., Kim, S.W., Fidler, S., Kreis, K.: Align your latents: High-resolution video synthesis with latent diffusion models. In: CVPR (2023) 6. Bommasani, R., Hudson, D.A., Adeli, E., Altman, R., Arora, S., von Arx, S., Bernstein, M.S., Bohg, J., Bosselut, A., Brunskill, E., et al.: On the opportunities and risks of foundation models. arXiv preprint arXiv:2108.07258 (2021) 7. Chen, H., Xia, M., He, Y., Zhang, Y., Cun, X., Yang, S., Xing, J., Liu, Y., Chen, Q., Wang, X., et al.: Videocrafter1: Open diffusion models for high-quality video generation. arXiv preprint arXiv:2310.19512 (2023) 8. Chen, H., Zhang, Y., Cun, X., Xia, M., Wang, X., Weng, C., Shan, Y.: Videocrafter2: Overcoming data limitations for high-quality video diffusion models. In: CVPR (2024) 9. Chen, J., Yu, J., Ge, C., Yao, L., Xie, E., Wu, Y., Wang, Z., Kwok, J., Luo, P., Lu, H., et al.: Pixart-α: Fast training of diffusion transformer for photorealistic text-to-image synthesis. arXiv preprint arXiv:2310.00426 (2023) 10. Choi, J.S., Lee, K., Jeong, J., Xie, S., Shin, J., Lee, K.: Diffusionguard: A robust defense against malicious diffusion-based image editing. In: ICML (2024) 11. Diaz, G.: Adverse cleaner extension (2025), https://github.com/gogodr/AdverseCleanerExtension 12. Ding, K., Ma, K., Wang, S., Simoncelli, E.P.: Image quality assessment: Unify-ing structure and texture similarity. IEEE Transactions on Pattern Analysis and Machine Intelligence 44 (5), 2567–2581 (2020) 13. Esser, P., Kulal, S., Blattmann, A., Entezari, R., Müller, J., Saini, H., Levi, Y., Lorenz, D., Sauer, A., Boesel, F., et al.: Scaling rectified flow transformers for high-resolution image synthesis. In: ICML (2024) Anti-Prompt 17 14. Gui, D., Guo, X., Zhou, W., Lu, Y.: I2vguard: Safeguarding images against misuse in diffusion-based image-to-video models. In: CVPR (2025) 15. Guo, C., Rana, M., Cisse, M., van der Maaten, L.: Countering adversarial images using input transformations. In: ICLR (2018) 16. Guo, Y., Yang, C., Rao, A., Liang, Z., Wang, Y., Qiao, Y., Agrawala, M., Lin, D., Dai, B.: Animatediff: Animate your personalized text-to-image diffusion models without specific tuning. In: ICLR (2024) 17. HaCohen, Y., Chiprut, N., Brazowski, B., Shalem, D., Moshe, D., Richardson, E., Levin, E., Shiran, G., Zabari, N., Gordon, O., et al.: Ltx-video: Realtime video latent diffusion. arXiv preprint arXiv:2501.00103 (2024) 18. Han, H., Li, S., Chen, J., Yuan, Y., Wu, Y., Deng, Y., Leong, C.T., Du, H., Fu, J., Li, Y., et al.: Video-bench: Human-aligned video generation benchmark. In: CVPR (2025) 19. He, Y., Yang, T., Zhang, Y., Shan, Y., Chen, Q.: Latent video diffusion models for high-fidelity long video generation. arXiv preprint arXiv:2211.13221 (2022) 20. Ho, J., Chan, W., Saharia, C., Whang, J., Gao, R., Gritsenko, A., Kingma, D.P., Poole, B., Norouzi, M., Fleet, D.J., et al.: Imagen video: High definition video generation with diffusion models. arXiv preprint arXiv:2210.02303 (2022) 21. Ho, J., Jain, A., Abbeel, P.: Denoising diffusion probabilistic models. In: NeurIPS (2020) 22. Ho, J., Salimans, T., Gritsenko, A., Chan, W., Norouzi, M., Fleet, D.J.: Video diffusion models. In: NeurIPS (2022) 23. Huang, Z., He, Y., Yu, J., Zhang, F., Si, C., Jiang, Y., Zhang, Y., Wu, T., Jin, Q., Chanpaisit, N., et al.: Vbench: Comprehensive benchmark suite for video genera-tive models. In: CVPR (2024) 24. Huang, Z., Zhang, F., Xu, X., He, Y., Yu, J., Dong, Z., Ma, Q., Chanpaisit, N., Si, C., Jiang, Y., et al.: Vbench++: Comprehensive and versatile benchmark suite for video generative models. arXiv preprint arXiv:2411.13503 (2024) 25. Jeon, J., Kim, W.J., Ha, S., Son, S., Yoon, S.e.: Advpaint: Protecting images from inpainting manipulation via adversarial attention disruption. In: ICLR (2025) 26. Kendall, M.G.: A new measure of rank correlation. Biometrika 30 (1-2), 81–93 (1938) 27. Kendall, M.G., Babington Smith, B.: The problem of m rankings. The Annals of Mathematical Statistics 10 (3), 275–287 (1939). https://doi.org/10.1214/aoms/ 1177732186 
+
+28. Labs, B.F., Batifol, S., Blattmann, A., Boesel, F., Consul, S., Diagne, C., Dock-horn, T., English, J., English, Z., Esser, P., et al.: Flux. 1 kontext: Flow match-ing for in-context image generation and editing in latent space. arXiv preprint arXiv:2506.15742 (2025) 29. Lee, C., Shin, S., Choi, D., Jeon, H.g., Son, J.: Universal image immuniza-tion against diffusion-based image editing via semantic injection. arXiv preprint arXiv:2602.14679 (2026) 30. Li, G., Yang, S., Zhang, J., Zhang, T.: Prime: Protect your videos from malicious editing. arXiv preprint arXiv:2402.01239 (2024) 31. Liang, C., Wu, X., Hua, Y., Zhang, J., Xue, Y., Song, T., Xue, Z., Ma, R., Guan, H.: Adversarial example does good: preventing painting imitation from diffusion models via adversarial examples. In: ICML (2023) 32. Lin, B., Ye, Y., Zhu, B., Cui, J., Ning, M., Jin, P., Yuan, L.: Video-llava: Learning united visual representation by alignment before projection. In: EMNLP (2024) 33. Liu, Y., Iter, D., Xu, Y., Wang, S., Xu, R., Zhu, C.: G-eval: Nlg evaluation using gpt-4 with better human alignment. In: EMNLP (2023) 18 Song et al .34. Lo, L., Yeo, C.Y., Shuai, H.H., Cheng, W.H.: Distraction is all you need: Memory-efficient image immunization against diffusion-based image editing. In: CVPR (2024) 35. Maaz, M., Rasheed, H., Khan, S., Khan, F.: Video-chatgpt: Towards detailed video understanding via large vision and language models. In: ACL (2024) 36. Mirsky, Y., Lee, W.: The creation and detection of deepfakes: A survey. ACM computing surveys (CSUR) 54 (1), 1–41 (2021) 37. Moosavi-Dezfooli, S.M., Fawzi, A., Fawzi, O., Frossard, P.: Universal adversarial perturbations. In: CVPR (2017) 38. OpenAI: Using gpt-5 (gpt-5 model family) — openai api documentation. https: //developers.openai.com/api/docs/guides/latest-model/ 
+
+39. Pearson, K.: Note on regression and inheritance in the case of two parents. Pro-ceedings of the Royal Society of London 58 , 240–242 (1895) 40. Peebles, W., Xie, S.: Scalable diffusion models with transformers. In: ICCV (2023) 41. Podell, D., English, Z., Lacey, K., Blattmann, A., Dockhorn, T., Müller, J., Penna, J., Rombach, R.: Sdxl: Improving latent diffusion models for high-resolution image synthesis. arXiv preprint arXiv:2307.01952 (2023) 42. Ramesh, A., Dhariwal, P., Nichol, A., Chu, C., Chen, M.: Hierarchical text-conditional image generation with clip latents. arXiv preprint arXiv:2204.06125 (2022) 43. Rombach, R., Blattmann, A., Lorenz, D., Esser, P., Ommer, B.: High-resolution image synthesis with latent diffusion models. In: CVPR (2022) 44. Ronneberger, O., Fischer, P., Brox, T.: U-net: Convolutional networks for biomed-ical image segmentation. In: MICCAI (2015) 45. Saharia, C., Chan, W., Saxena, S., Li, L., Whang, J., Denton, E.L., Ghasemipour, K., Gontijo Lopes, R., Karagol Ayan, B., Salimans, T., et al.: Photorealistic text-to-image diffusion models with deep language understanding. NeurIPS (2022) 46. Salman, H., Khaddaj, A., Leclerc, G., Ilyas, A., Madry, A.: Raising the cost of malicious ai-powered image editing. In: ICML (2023) 47. Shan, S., Cryan, J., Wenger, E., Zheng, H., Hanocka, R., Zhao, B.Y.: Glaze: Pro-tecting artists from style mimicry by {Text-to-Image } models. In: USENIX Secu-rity (2023) 48. Singer, U., Polyak, A., Hayes, T., Yin, X., An, J., Zhang, S., Hu, Q., Yang, H., Ashual, O., Gafni, O., et al.: Make-a-video: Text-to-video generation without text-video data. arXiv preprint arXiv:2209.14792 (2022) 49. Song, J., Meng, C., Ermon, S.: Denoising diffusion implicit models. arXiv preprint arXiv:2010.02502 (2020) 50. Spearman, C.: The proof and measurement of association between two things. The American Journal of Psychology 15 (1), 72–101 (1904). https://doi.org/10. 2307/1412159 
+
+51. Teng, H., Jia, H., Sun, L., Li, L., Li, M., Tang, M., Han, S., Zhang, T., Zhang, W., Luo, W., et al.: Magi-1: Autoregressive video generation at scale. arXiv preprint arXiv:2505.13211 (2025) 52. Tolosana, R., Vera-Rodriguez, R., Fierrez, J., Morales, A., Ortega-Garcia, J.: Deep-fakes and beyond: A survey of face manipulation and fake detection. Information fusion 64 , 131–148 (2020) 53. Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, Ł., Polosukhin, I.: Attention is all you need. NeurIPS (2017) 54. Villegas, R., Babaeizadeh, M., Kindermans, P.J., Moraldo, H., Zhang, H., Saffar, M.T., Castro, S., Kunze, J., Erhan, D.: Phenaki: Variable length video generation from open domain textual description. arXiv preprint arXiv:2210.02399 (2022) Anti-Prompt 19 55. Wan, T., Wang, A., Ai, B., Wen, B., Mao, C., Xie, C.W., Chen, D., Yu, F., Zhao, H., Yang, J., Zeng, J., Wang, J., Zhang, J., Zhou, J., Wang, J., Chen, J., Zhu, K., Zhao, K., Yan, K., Huang, L., Feng, M., Zhang, N., Li, P., Wu, P., Chu, R., Feng, R., Zhang, S., Sun, S., Fang, T., Wang, T., Gui, T., Weng, T., Shen, T., Lin, W., Wang, W., Wang, W., Zhou, W., Wang, W., Shen, W., Yu, W., Shi, X., Huang, X., Xu, X., Kou, Y., Lv, Y., Li, Y., Liu, Y., Wang, Y., Zhang, Y., Huang, Y., Li, Y., Wu, Y., Liu, Y., Pan, Y., Zheng, Y., Hong, Y., Shi, Y., Feng, Y., Jiang, Z., Han, Z., Wu, Z.F., Liu, Z.: Wan: Open and advanced large-scale video generative models. arXiv preprint arXiv:2503.20314 (2025) 56. Wang, X., Yuan, H., Zhang, S., Chen, D., Wang, J., Zhang, Y., Shen, Y., Zhao, D., Zhou, J.: Videocomposer: Compositional video synthesis with motion control-lability. NeurIPS (2023) 57. Wang, Z., Bovik, A.C., Sheikh, H.R., Simoncelli, E.P.: Image quality assessment: from error visibility to structural similarity. IEEE transactions on image processing 
+
+13 (4), 600–612 (2004) 58. Weidinger, L., Rauh, M., Marchal, N., Manzini, A., Hendricks, L.A., Mateos-Garcia, J., Bergman, S., Kay, J., Griffin, C., Bariach, B., et al.: Sociotechnical safety evaluation of generative ai systems. arXiv preprint arXiv:2310.11986 (2023) 59. Wu, J.Z., Ge, Y., Wang, X., Lei, S.W., Gu, Y., Shi, Y., Hsu, W., Shan, Y., Qie, X., Shou, M.Z.: Tune-a-video: One-shot tuning of image diffusion models for text-to-video generation. In: ICCV (2023) 60. Xing, J., Xia, M., Zhang, Y., Chen, H., Yu, W., Liu, H., Liu, G., Wang, X., Shan, Y., Wong, T.T.: Dynamicrafter: Animating open-domain images with video diffusion priors. In: ECCV (2024) 61. Yang, Z., Teng, J., Zheng, W., Ding, M., Huang, S., Xu, J., Yang, Y., Hong, W., Zhang, X., Feng, G., et al.: Cogvideox: Text-to-video diffusion models with an expert transformer. In: ICLR (2025) 62. Zhang, B., Li, K., Cheng, Z., Hu, Z., Yuan, Y., Chen, G., Leng, S., Jiang, Y., Zhang, H., Li, X., et al.: Videollama 3: Frontier multimodal foundation models for image and video understanding. arXiv preprint arXiv:2501.13106 (2025) 63. Zhang, H., Li, X., Bing, L.: Video-llama: An instruction-tuned audio-visual lan-guage model for video understanding. In: EMNLP (2023) 64. Zhang, R., Isola, P., Efros, A.A., Shechtman, E., Wang, O.: The unreasonable effectiveness of deep features as a perceptual metric. In: CVPR (2018) 65. Zhang, S., Wang, J., Zhang, Y., Zhao, K., Yuan, H., Qin, Z., Wang, X., Zhao, D., Zhou, J.: I2vgen-xl: High-quality image-to-video synthesis via cascaded diffusion models. arXiv preprint arXiv:2311.04145 (2023) 66. Zheng, D., Huang, Z., Liu, H., Zou, K., He, Y., Zhang, F., Gu, L., Zhang, Y., He, J., Zheng, W.S., et al.: Vbench-2.0: Advancing video generation benchmark suite for intrinsic faithfulness. arXiv preprint arXiv:2503.21755 (2025) 67. Zheng, L., Chiang, W.L., Sheng, Y., Zhuang, S., Wu, Z., Zhuang, Y., Lin, Z., Li, Z., Li, D., Xing, E., et al.: Judging llm-as-a-judge with mt-bench and chatbot arena. NeurIPS (2023) 68. Zheng, Z., Peng, X., Yang, T., Shen, C., Li, S., Liu, H., Zhou, Y., Li, T., You, Y.: Open-sora: Democratizing efficient video production for all. arXiv preprint arXiv:2412.20404 (2024) 69. Zhu, J., Wang, W., Chen, Z., Liu, Z., Ye, S., Gu, L., Tian, H., Duan, Y., Su, W., Shao, J., et al.: Internvl3: Exploring advanced training and test-time recipes for open-source multimodal models. arXiv preprint arXiv:2504.10479 (2025) 20 Song et al .
+
+## 8 Efficiency Analysis 
+
+Our implementation is designed to minimize computational overhead during pro-tection optimization. For CogVideoX [61], we apply the proposed losses only to the middle 50% of attention layers, which provides a favorable trade-off between computational cost and protection effectiveness. This configuration is used for all CogVideoX experiments reported in the main paper. Although I2VGuard [14] applies its loss to a single middle attention layer, its computational cost remains substantially higher than ours (see Table 9 in the main manuscript). This is because I2VGuard requires generating a full target video and performing dual forward passes for each training sample. For LTX-Video [17], both our method and I2VGuard operate on the full set of cross-attention layers. Nevertheless, our approach still achieves significantly lower optimization cost. We additionally report the wall-clock time required to optimize the protec-tion perturbation for a single image. All experiments are measured on a single NVIDIA A100 GPU. Our method requires approximately 7 minutes for CogVideoX and 1.5 min-utes for LTX-Video, while I2VGuard requires approximately 13 minutes and 3 minutes, respectively. These runtime measurements are consistent with the FLOPs analysis reported in the main paper and indicate that our approach substantially reduces the protection optimization cost. 
+
+## 9 A Unified Perspective on the Loss Design 
+
+Although our implementation differs between full-attention and cross-attention architectures, both variants are derived from the same protection objective: re-ducing the influence of text-conditioned signals so that visual-only pathways dominate the generation process. The specific loss forms differ because the two architectures combine text and visual information in structurally different ways. In this section, we show how both architectures can be interpreted through a common decomposition into text-dependent and visual-only components, and how our loss design naturally follows from this view. 
+
+Full-Attention. In full-attention architectures, text-dependent and visual-only contributions are mixed within a single attention operation: 
+
+zℓ+1 = zℓ + W ℓo
+
+Az,z Vz + Az,i Vi
+
+| {z }
+
+> visual-only
+
++ Az,t Vt
+
+| {z } 
+
+> text-dependent
+
+ , (11) where zℓ denotes the video latent at layer ℓ, W ℓo is the output projection, Az, ·
+
+denotes the attention weights associated with video latent, and V· is the corre-sponding value vector for each modality. Anti-Prompt 21 
+
+The key property of full attention is that these contributions compete through softmax normalization: 
+
+Az,t = exp( Az,t )exp( Az,z ) + exp( Az,i ) + exp( Az,t ) , (12) where Az, · denotes the corresponding pre-softmax attention logits. To make the text-dependent contribution Az,t Vt small, it is natural to reduce Az,t relative to the visual terms. This occurs when 
+
+exp( Az,z ) + exp( Az,i ) ≫ exp( Az,t ). (13) This decomposition directly motivates our loss design for full-attention mod-els: we suppress the text-dependent score Az,t while simultaneously increasing the visual-only scores Az,z and Az,i . Under softmax competition, this reduces the effective contribution of text-conditioned signals and shifts attention toward visual-only pathways. 
+
+Cross-Attention. In cross-attention architectures, text-dependent and visual-only operations are separated into different modules: 
+
+zℓ+1 = zℓ + zℓ
+
+> SA
+
+|{z} 
+
+> visual-only
+
++ zℓ
+
+> CA
+
+|{z} 
+
+> text-dependent
+
+, (14) where zℓ 
+
+> SA
+
+is produced by self-attention over visual tokens only, and zℓ 
+
+> CA
+
+is produced by cross-attention conditioned on the text input. Unlike full attention, the two components are combined additively rather than through softmax competition. As a result, suppressing text influence amounts to reducing the relative contribution of the cross-attention term: 
+
+∥zℓ
+
+> CA
+
+∥ ≪ ∥ zℓ
+
+> SA
+
+∥. (15) When the self-attention contribution dominates in magnitude, the influence of the text-conditioned branch becomes relatively small in the final representation. This leads to the analogous design principle for cross-attention models: reduce the magnitude of the text-dependent term ∥zℓ
+
+> CA
+
+∥ while enlarging the visual-only term ∥zℓ
+
+> SA
+
+∥. Although the mechanism differs from full attention, the objective is the same: make the final representation rely more on visual-only pathways and less on the text-conditioned branch. 
+
+Unified Perspective. The two architectures, therefore, differ mainly in how text and visual information are combined. In full attention, the competition is normalized through softmax, so relatively small changes in pre-softmax logits can be amplified into large changes in effective attention. In cross attention, the two branches are combined linearly, so dominance is governed more directly by the relative magnitudes of the self-attention and cross-attention outputs. Despite this structural difference, both variants of our method follow the same underlying principle: weakening text-conditioned contributions while strength-ening visual-only pathways. This unified view also helps explain the empirical 22 Song et al .
+
+trend in Table 1 of the main paper, where full-attention architectures tend to exhibit stronger protection effects. This behavior is consistent with the stronger competitive suppression induced by softmax-normalized attention. 
+
+## 10 Evaluation Protocol 
+
+10.1 Complementarity with Quality Benchmarks 
+
+We observe several mismatch cases between quality-oriented benchmarks and our Video-LLM-based failure-finding evaluation. These examples suggest that the two evaluation paradigms capture different aspects of generated videos. First, we observe cases where highly dynamic yet semantically plausible videos receive relatively low scores from VBench metrics [23,24], while the Video-LLM evaluator does not identify clear failures. In such examples, the generated video exhibits substantial temporal variation or rapid scene changes, which can lower quality-oriented scores even when the main subject identity and scene semantics remain largely consistent. Conversely, we also observe cases where VBench metrics remain relatively fa-vorable even though the generated video exhibits semantic inconsistencies, struc-tural distortions, or physically implausible motion over time. This is plausible because VBench primarily measures perceptual quality and temporal continu-ity, whereas a Video-LLM is trained for video understanding and can better capture higher-level failure signals related to object identity, structure, action, and physical plausibility. To illustrate these complementary behaviors, we provide representative mis-match examples on the project page. The visualization contains twelve cases, including both VBench-low/Qwen-high and VBench-high/Qwen-low examples. For ease of interpretation, each video example reports both raw and normal-ized scores. The normalized score for each dimension is computed by percentile-based ranking over the full pool of generated videos used in our experiments, including both protected and unprotected samples across all evaluated settings. This allows each example to be interpreted relative to the broader evaluation distribution rather than only within the selected mismatch subset. Each video example contains the following information. The left panel shows the video title (prompt), the average Qwen score (orange bar), and short textual descriptions from the Video-LLM evaluator. For Qwen-low cases, these descrip-tions highlight the failure dimensions identified by the evaluator, whereas for Qwen-high cases they provide concise summaries of the generated video content. The center panel shows the generated video itself. The right panel shows the normalized average VBench score and the three most influential VBench dimen-sions for that sample, including both raw metric values and percentile-normalized scores. 
+
+10.2 Human Study Alignment 
+
+Table 6 of the main paper reports the human preference results and their align-ment with our evaluation protocol. Here, we provide additional details on the Anti-Prompt 23                                    
+
+> Table 10: Stability of the Video-LLM evaluator [2] across repeated runs. We report the mean and standard deviation over five independent evaluations of the same videos generated from protected images. All evaluations use stochastic decoding with temper-ature 0.2, top-p0.9, and top-k20. CogVideoX LTX-Video Dimension Mean ±Std. Mean ±Std.
+> Overall 3.251 ±0.0161 4 .380 ±0.0091
+> Subject Preservation 4.366 ±0.0380 4 .056 ±0.0321
+> Structural Consistency 3.239 ±0.0491 3 .017 ±0.0136
+> Dynamic Consistency 2.907 ±0.0195 2 .845 ±0.0268
+> Artifact Suppression 2.494 ±0.0126 2 .580 ±0.0100
+
+study design, including participant recruitment, triplet construction, blinding, randomization, and the mapping between our protocol dimensions and human evaluation criteria. We conduct a user study to verify that the proposed evaluation protocol aligns with human judgment. Thirty participants are recruited from the com-puter vision community, and each participant evaluates 20 video triplets sampled from the full set of 355 generations. Each triplet contains three videos generated from the same input image and text prompt, corresponding to Clean , I2VGuard ,and Ours . The study is fully blinded: method identities are hidden from partic-ipants, and the presentation order of the three videos is independently random-ized for each triplet to mitigate position bias. For each triplet, participants select the best and worst results in terms of consistency and plausibility , following the provided instructions. To reduce the cognitive burden of human evaluation, we do not ask par-ticipants to separately assess all four dimensions used in our protocol. Instead, we group them into two higher-level concepts that are more natural for human comparison. Specifically, consistency reflects whether the main subject and its structure remain faithful and stable throughout the video, and therefore primar-ily corresponds to subject preservation and structural consistency . In contrast, 
+
+plausibility reflects whether the generated video appears temporally natural and visually coherent overall, and thus mainly relates to dynamic consistency and 
+
+artifact suppression . This simplification is used only for the human study to obtain reliable comparative judgments across multiple videos, while our full pro-tocol retains four interpretable dimensions for finer-grained failure analysis. Due to the cognitive load of video comparison, each participant evaluates a representative subset of 20 triplets, focusing on dynamic scenes and human activities. Responses marked as No preference are excluded from the preference statistics. 24 Song et al .
+
+Table 11: Stability and agreement of Video-LLM evaluator [2] across repeated stochas-tic runs. We report multi-run agreement using Kendall’s W [27] and average pairwise correlations using Pearson’s r [39], Spearman’s ρ [50], and Kendall’s τb [26], computed over five independent evaluations.                                                  
+
+> CogVideoX LTX-Video Dimension WrρτbWrρτb
+> Overall 0.9379 0.9299 0.9223 0.8220 0.9695 0.9646 0.9618 0.8827
+> Subject Preservation 0.8511 0.8250 0.8141 0.7840 0.9158 0.9151 0.8947 0.8556
+> Structural Consistency 0.8807 0.8561 0.8508 0.8009 0.9231 0.9210 0.9038 0.8564
+> Dynamic Consistency 0.8057 0.7997 0.7571 0.7042 0.8539 0.8690 0.8175 0.7669
+> Artifact Suppression 0.8561 0.8788 0.8201 0.7859 0.8803 0.9032 0.8504 0.8079
+
+10.3 Evaluator Consistency Analysis 
+
+While Section 5 introduces the failure-finding evaluation protocol, here we ex-amine its empirical stability. Unlike conventional video quality grading, which often requires subtle perceptual judgments, the proposed protocol focuses on detecting clear failure evidence grounded in observable frames. This formulation makes the evaluation less sensitive to small variations in the evaluator’s output and reduces reliance on fine-grained subjective interpretation. An additional practical advantage of our protocol is that it uses a unified evaluation query and rubric across all samples. Unlike QA-style benchmarks [18, 66] that often rely on sample-specific questions, our formulation evaluates every generated video using the same failure criteria, making the protocol easier to apply beyond a fixed benchmark. Empirically, we observe that the evaluation outcomes remain highly stable across repeated runs. When running the same Video-LLM evaluator [2] mul-tiple times on identical videos, the resulting scores exhibit very low variance, with standard deviations below 0.05 on a 5-point scale across all dimensions in Table 10. These results suggest that the proposed failure-finding formulation provides stable evaluation trends even under stochastic decoding. In addition to score variance, we also examine whether the relative ranking of methods remains consistent across repeated runs. Despite stochastic decoding, the evaluator produces generally consistent method orderings across indepen-dent evaluations (Table 11), suggesting that the proposed protocol yields stable comparative trends. 
+
+10.4 Cross-Evaluator Consistency 
+
+We use Qwen3-VL-8B [2] as the primary evaluator. To assess robustness to evaluator choice, we additionally include VideoLLaMA3-7B [62] and InternVL3-9B [69] as open-source evaluators, and GPT-5-mini [38] as a commercial evalu-ator for cross-model validation. The evaluation set is constructed from all 355 source images in the VBench Image-to-Video dataset. For each source image, we collect 20 generated videos Anti-Prompt 25                                          
+
+> Table 12: Cross-evaluator consistency measured using rank-based metrics. We com-pare the rankings induced by different Video-LLM evaluators on the same set of gener-ated videos. High correlation and pairwise agreement indicate that the relative ordering of methods remains consistent across evaluators. Evaluator Pair Spearman ρKendall τbPairwise Agreement Qwen – GPT 0.965 0.869 0.935 Qwen – VideoLLaMA3 0.920 0.791 0.895 Qwen – InternVL3 0.950 0.843 0.922 GPT – VideoLLaMA3 0.965 0.869 0.935 GPT – InternVL3 0.977 0.895 0.948 VideoLLaMA3 – InternVL3 0.969 0.895 0.948
+> Multiway Kendall’s W0.968
+> Table 13: Dimension-wise multiway agreement across evaluators measured by Kendall’s coefficient of concordance ( W). High values indicate that different evalu-ators induce similar method rankings for each failure dimension. Dimension Kendall’s W
+> Subject Preservation 0.953 Structural Consistency 0.972 Dynamic Consistency 0.919 Artifact Suppression 0.928
+
+covering clean generation as well as white-box protection, black-box protection, and purification-based pipelines for both Ours and I2VGuard .All evaluators are applied to the same set of generated videos using the same evaluation prompt and rubric. As shown in Table 12, the evaluator-induced rankings exhibit high agreement across models. We also observe consistently high multiway agreement across evaluators and across individual dimensions (Table 13). These results suggest that the proposed failure-finding protocol yields stable comparative conclusions across different Video-LLM evaluators. 
+
+## 11 Additional Experiments 
+
+11.1 Robustness under Prompt-Free Settings 
+
+Given that our method aims to suppress text influence, an important question is whether the protection effect depends on the specific prompts used during perturbation generation. To investigate this, we conduct an ablation study in which perturbations are optimized using empty prompts, representing an ex-treme prompt-agnostic setting. We compare this with prior work and our full method with prompts in Table 14, and further report the results under our failure-finding evaluation protocol in Table 15. 26 Song et al .
+
+Table 14: Additional experiments on the absence of text prompts. ∗ denotes pertur-bations optimized without text prompts.                                                  
+
+> Method I2V Subject I2V Background Subject Consistency Background Consistency Aesthetic Quality Imaging Quality Temporal Flickering Motion Smoothness
+> CogVideoX [61]
+> I2VGuard [14] 94.58 97.14 93.32 96.17 58.61 65.30 96.47 97.61 Ours ∗92.37 95.67 89.56 94.40 56.08 66.51 94.96 96.19 Ours 91.20 94.28 87.54 93.16 54.72 63.71 94.47 95.66
+> LTX-Video [17]
+> I2VGuard [14] 94.36 95.56 90.25 95.00 56.28 62.63 98.23 98.90 Ours ∗93.76 95.28 89.52 94.78 55.01 61.66 97.98 98.71 Ours 93.64 95.07 89.36 94.99 54.99 61.44 97.95 98.67
+
+Table 15: Additional experiments on the absence of text prompts with our evaluation protocol. ∗ denotes perturbations optimized without text prompts. 
+
+Method Subject Preservation Structural Consistency Dynamic Consistency Artifact Suppression Average 
+
+CogVideoX [61] 
+
+I2VGuard 4.72 4.18 3.81 2.97 3.92 Ours ∗ 4.57 3.49 3.18 2.84 3.52 Ours 4.37 3.24 2.91 2.49 3.25 
+
+LTX-Video [17] 
+
+I2VGuard 4.24 3.18 2.99 2.70 3.28 Ours ∗ 4.16 3.14 2.96 2.66 3.23 Ours 4.06 3.02 2.85 2.58 3.12 
+
+Even without textual input during optimization, our method remains more effective than the baseline across both VBench metrics and our evaluation pro-tocol. This suggests that the proposed objective does not rely heavily on the specific prompts used during perturbation generation. Instead, it appears to tar-get architectural pathways through which text affects generation, allowing the protection effect to generalize beyond the prompts seen during optimization. 
+
+11.2 Robustness to Purification 
+
+To evaluate robustness under purification defenses, we apply post-processing techniques, including Crop-and-Resize [15], JPEG compression [15], and ADV-Clean [11] to protected images before video generation. We report the comparison under purification using both VBench metrics (Table 16) and our failure-finding evaluation protocol (Table 17). We note that the purification settings used here are relatively aggressive. In particular, Crop-and-Resize keeps only 80% of the original width and height before resizing back, JPEG compression is applied with a quality factor of 60, and ADVClean also constitutes a strong purification setting. Accordingly, the absolute score drop under purification should be interpreted with this severity in mind. Anti-Prompt 27 
+
+Table 16: Robustness to purification defenses measured by VBench metrics. We con-sider Crop-and-Resize (retain ratio: 80% in both width and height), JPEG compression (quality factor: 60), and ADVClean [11] before video generation. Lower scores indicate stronger protection.                                                                                                   
+
+> Method I2V Subject I2V Background Subject Consistency Background Consistency Aesthetic Quality Imaging Quality Temporal Flickering Motion Smoothness
+> Crop and Resize [15] + CogVideoX [61]
+> I2VGuard [14] 92.92 94.95 94.15 96.46 59.51 65.60 96.40 97.61 Ours 92.89 94.89 93.46 96.30 58.26 67.53 95.95 97.22
+> JPEG Compression [15] + CogVideoX [61]
+> I2VGuard [14] 93.95 96.44 92.92 95.66 58.78 65.38 96.03 97.25 Ours 93.85 96.30 91.96 95.15 57.45 67.10 95.48 96.78
+> ADVClean [11] + CogVideoX [61]
+> I2VGuard [14] 94.94 97.48 93.79 96.27 56.97 66.02 96.75 97.69 Ours 93.71 97.07 91.84 95.71 56.97 67.04 95.65 96.83
+> Crop and Resize [15] + LTX-Video [17]
+> I2VGuard [14] 93.32 94.32 90.36 95.11 55.68 61.82 98.21 98.90 Ours 92.19 93.65 88.59 94.71 53.92 59.96 97.79 98.56
+> JPEG Compression [15] + LTX-Video [17]
+> I2VGuard [14] 92.04 94.60 85.71 93.48 53.03 58.69 97.38 98.14 Ours 91.58 93.89 85.46 93.23 52.02 57.96 97.25 98.02
+> ADVClean [11] + LTX-Video [17]
+> I2VGuard [14] 96.08 96.71 93.71 96.92 58.59 64.31 98.97 99.33 Ours 95.78 96.44 92.94 96.67 57.31 63.35 98.76 99.20 Immunized Image Generated Frames
+
+Fig. 6: Failure cases on static or low-motion scenes. Our method shows reduced ef-fectiveness when the expected video dynamics are minimal, making visible animation failures harder to induce. 
+
+Despite the overall degradation caused by purification, our method remains more effective than I2VGuard on most semantic, structural, and motion-related dimensions. At the same time, we observe that I2VGuard sometimes attains lower scores on artifact-sensitive dimensions such as Imaging Quality and Arti-fact Suppression, especially for CogVideoX. A plausible explanation is that, for CogVideoX, I2VGuard starts from more perceptible perturbations, which is also consistent with the visibility metrics re-ported in Table 7 of the main paper (higher DISTS/LPIPS and lower PSNR/SSIM for CogVideoX). As a result, purification may still leave stronger residual high-frequency patterns for I2VGuard, which can be penalized heavily by dimensions such as Imaging Quality and Artifact Suppression. 28 Song et al .
+
+Table 17: Robustness to purification defenses measured by our failure-finding evalu-ation protocol.                                                               
+
+> Method Subject Preservation Structural Consistency Dynamic Consistency Artifact Suppression Average
+> Crop and Resize [15] + CogVideoX [61]
+> I2VGuard 4.78 4.26 3.93 3.27 4.06 Ours 4.75 4.20 3.85 3.41 4.05
+> JPEG Compression [15] + CogVideoX [61]
+> I2VGuard 4.71 4.16 3.78 3.44 4.03 Ours 4.71 4.02 3.70 3.59 4.01
+> ADVClean [11] + CogVideoX [61]
+> I2VGuard 4.72 4.18 3.86 3.94 4.17 Ours 4.61 3.79 3.65 3.96 4.00
+> Crop and Resize [15] + LTX-Video [17]
+> I2VGuard 4.23 3.23 3.03 2.60 3.27 Ours 4.01 3.01 2.85 2.44 3.08
+> JPEG Compression [15] + LTX-Video [17]
+> I2VGuard 3.65 2.72 2.65 2.51 2.88 Ours 3.62 2.60 2.51 2.47 2.80
+> ADVClean [11] + LTX-Video [17]
+> I2VGuard 4.46 3.62 3.32 3.62 3.76 Ours 4.31 3.44 3.28 3.43 3.62 Clean
+> I2VGuard
+> Ours
+
+Fig. 7: Generation results from JPEG-purified images using CogVideoX. After purifi-cation, I2VGuard often leaves residual high-frequency noise, whereas our method more often leads to structural collapse or abnormal motion. This illustrates that purification can weaken both methods while altering their dominant failure modes in different ways. 
+
+## 12 Limitation 
+
+Our method has several limitations. First, although it is more efficient than I2VGuard, the proposed protection still relies on per-image optimization and therefore cannot provide instantaneous protection. Developing universal protec-tion mechanisms [29, 37] remains an important direction for future work. Second, the protection effect can be reduced in static or low-motion scenes. When the prompt induces minimal motion, the generated video may remain visually close to the input image, making it more difficult for protection signals to manifest as clear animation failures (Figure 6). This limitation is partly inherent to failure-based protection, since visible disruption is harder to expose when the desired animation itself is minimal. Anti-Prompt 29 Prompt = “A tiger     
+
+> drinking the stagnant
+> water before the tree”
+> Prompt = “A man riding
+> a motorcycle on a
+> racing circuit”
+> Prompt = “ A man flying
+> on a snowboard over
+> the snowy mountain”
+> Prompt = “A woman
+> playing a saxophone in
+> front of the church”
+> Original image Editing prompt Clean edit I2VGuard Ours
+
+Fig. 8: Qualitative examples on an image editing model (FLUX.1 [28]). Although not systematically evaluated, we observe that protected images can lead to editing results that differ from clean editing results. 
+
+Third, purification techniques such as JPEG compression or adversarial clean-ing can partially weaken the protection effect (Table 16). This highlights the difficulty of maintaining protection effectiveness under post-processing defenses. As shown in Figure 7, purification can also change the dominant failure mode: I2VGuard often leaves residual high-frequency noise, whereas our method more often induces structural collapse or abnormal motion. Recent image protection methods for editing and inpainting have explored purification-aware designs to improve robustness against post-processing defenses, and adapting similar ideas to text-guided image-to-video protection may be a promising direction for future work. 
+
+## 13 Discussion 
+
+Our evaluation adopts a failure-finding perspective rather than a traditional video quality benchmarking framework. Instead of measuring fine-grained per-ceptual quality, the goal is to identify clear signals that image-faithful animation has broken down. Interpreting artifacts, therefore, requires some nuance. Mild artifacts, such as residual noise introduced by purification, may degrade perceptual quality without necessarily indicating a semantic failure of image-faithful animation. In contrast, severe artifacts that dominate the frame, occlude the subject, or disrupt scene structure typically correspond to clear generation breakdowns. Because failure can manifest in multiple ways, a single binary criterion does not always capture its full range. 30 Song et al .
+
+Within this framework, the average of dimension scores serves as a practical summary of failure severity. Such averages can still reflect protection effectiveness reasonably well, but they should not be interpreted as a definitive definition of failure. Rather, they provide an operational summary of failure trends, while the broader question of what constitutes a clear failure in image-to-video generation remains open. As an additional qualitative result, we examine protected images with an image editing model (FLUX.1 [28]). As shown in Figure 8, protected inputs can produce editing results that differ noticeably from the corresponding clean edits. Since this effect is not systematically evaluated in this work, we leave a more careful investigation to future work. 
+
+## 14 Broader Impact 
+
+This work is motivated by the growing risk of unintended reuse of publicly shared images in text-guided image-to-video generation systems. By weakening prompt-conditioned generation from a given image, our approach aims to help content owners better protect their images from producing misleading or unde-sired videos. However, it operates by protecting the image itself rather than filtering prompts. As a result, it may also weaken benign or authorized prompt-conditioned uses of the same image. Developing more selective protection mechanisms that better distinguish malicious use from benign use remains an important direction for future work. 
+
+## 15 Reproducibility 
+
+To facilitate reproducibility, we provide the key components required to repro-duce our experiments. Algorithm 1 describes the protection optimization pro-cedure used to generate protected images. Table 18 presents representative ex-amples of unseen prompt construction used in robustness evaluation. Figures 9– 13 show the shared Video-LLM evaluation prompt template together with the dimension-specific scoring criteria. The complete source code and evaluation pipeline are provided in the supple-mentary material package included with this submission. Hyperparameters for protection optimization and video generation are reported in the main paper. Anti-Prompt 31 
+
+Algorithm 1 Image Protection against Text-Guided I2V 
+
+Input: Image x, uninformative target image xtar , text condition ctxt (optional; if absent, use ∅), generative model G, VAE encoder E, step size α, perturbation bound 
+
+ϵ, number of outer iterations N , number of denoising steps T , total number of PGD updates K with K = N × T .
+
+Output: Protected image xadv .1: Initialize perturbation δ0 ∼ U (−ϵ, ϵ )
+
+2: Initialize update counter k = 0 
+
+3: Precompute target latent ztar = E(xtar )
+
+4: for n = 1 to N do 
+
+5: Initialize video latent zT ∼ N (0 , I )
+
+6: for t = T to 1 do 
+
+7: xadv = Clip( x + δk , 0, 1) 
+
+8: zadv = E(xadv )
+
+9: ϵθ = G(zt, z adv , c txt , t )
+
+10: Compute total loss L(zadv , z tar ) via Eq. (10) 11: gk = ∇δk L
+
+12: δk+1 = δk − α · sign( gk )
+
+13: δk+1 = Clip( δk+1 , −ϵ, ϵ )
+
+14: zt−1 = SchedulerStep( zt, ϵ θ , t )
+
+15: k = k + 1 
+
+16: end for 
+
+17: end for 
+
+18: xadv = Clip( x + δK , 0, 1) 
+
+19: return xadv 
+
+Table 18: Representative examples of unseen prompt construction. Each unseen prompt introduces a new motion instruction while preserving the original scene se-mantics.                   
+
+> #Original Prompt Unseen Prompt
+> 1A little girl sits quietly on a bus A little girl makes a quick gesture, then relaxes 2A man rides a bike down a street A man rides forward, then briefly turns around 3A woman carries plants over her head A woman speeds up, then slows and shifts direction 4A tiger walks through a wooded area A tiger trots ahead, then suddenly changes direction 5A giraffe walks in a field A giraffe bounds ahead and briefly shakes its body 6A small monkey holds food in its mouth A small monkey darts forward, then pauses and turns its head 7A blue train travels through a green area A blue train accelerates, then eases to a steady pace 8A red sports car drives through sand A red sports car speeds up, then slows and shifts lanes
+
+32 Song et al .
+
+Video-LLM Evaluation Prompt Template System Message: 
+
+You are an expert evaluator for AI-generated Image-to-Video outputs. 
+
+Strict Protocol: 
+
+1. First, provide up to three concrete observations with timestamps or frame indices. 2. Then, and only then, assign a discrete score from 1 to 5 based only on those observations. 3. Assign the lowest score supported by the observed evidence. 4. If no clear failure is observed, assign 5. 5. If evidence is insufficient or ambiguous, set "uncertain": true and use score 3. 6. Output only valid JSON. Do not speculate beyond what is visible. 
+
+Input Context Provided to the Model: – Video ID: $VIDEO_ID 
+
+– Prompt (context only): $PROMPT_STR 
+
+– Assume FIRST frame is the input image. 
+
+– A sequence of sampled frames, each preceded by a textual marker such as Frame $FRAME_INDEX (t=$TIMESTAMP s) 
+
+Dimension-Specific Fields Injected into the Shared Template: – Dimension: $DIMENSION_NAME 
+
+– Definition: $DIMENSION_DEFINITION 
+
+– Anti-contamination rule: $ANTI_CONTAMINATION_RULE 
+
+– Representative failure signs: $FAILURE_SIGNS 
+
+– Scoring rubric (1–5, discrete): $RUBRIC_TEXT 
+
+Task Instruction: 
+
+1. Provide up to three concrete observations with timestamps or frame indices. 2. Based only on those observations, assign the score. 3. If uncertain due to insufficient evidence, set "uncertain": true and use score 3. 
+
+Required Output Schema: 
+
+{"observations": [ {"time": "e.g., 2.0s or frame#25", "description": "what is visibly observed"} ], "score": 1, "uncertain": false }
+
+Fig. 9: Shared prompt template used for Video-LLM evaluator. 
+
+Subject Preservation Definition: Identity-level consistency: whether the main subject from the first frame remains present and recognizable. 
+
+Anti-contamination rule: Evaluate only subject identity and presence. Ignore rendering noise, blur, flicker, motion smoothness, boundary tearing, and geometry deformation unless they directly make the subject unrecognizable or replaced. 
+
+Representative failure signs: – Main subject disappears 
+
+– Subject is replaced by a different object, person, or class 
+
+– Major identity drift in face, clothing, color, or material 
+
+– Unexpected duplication or splitting of the subject 
+
+– Subject merges into the background or becomes unrecognizable 
+
+Rubric: – 5: Subject identity fully preserved across sampled frames 
+
+– 4: Minor identity drift, but still clearly the same subject 
+
+– 3: Noticeable identity inconsistencies affecting recognition 
+
+– 2: Major identity change or partial disappearance 
+
+– 1: Subject missing or replaced 
+
+Fig. 10: Subject Preservation evaluation criteria. Anti-Prompt 33 
+
+Structural Consistency Definition: Geometry- and boundary-level stability: whether the subject’s shape, proportions, and boundaries remain consistent across frames. 
+
+Anti-contamination rule: Evaluate only shape, geometry, and boundary stability. Ignore global flicker or brightness shifts, generic blur or noise, and physical plausibility unless they manifest as structural deformation. 
+
+Representative failure signs: – Implausible stretching or shrinking of proportions 
+
+– Parts appear or disappear, such as extra limbs or missing parts 
+
+– Holes, tearing, or fragmentation in the silhouette 
+
+– Boundary tearing, ghosting, or halo trails 
+
+– Rigid objects wobble, melt, or undergo severe geometry warping 
+
+– Motion bleeding across boundaries that breaks boundary coherence 
+
+Rubric: – 5: Stable shape and boundaries across frames 
+
+– 4: Minor distortions without affecting the overall structure 
+
+– 3: Noticeable shape or boundary instability 
+
+– 2: Severe deformation or tearing across multiple frames 
+
+– 1: Structural collapse; the subject breaks apart or becomes unrecognizable 
+
+Fig. 11: Structural Consistency evaluation criteria. 
+
+Dynamic Consistency Definition: Temporal and physical coherence: whether motion and state transitions across frames are temporally stable and physically plausible. 
+
+Anti-contamination rule: Evaluate only time and physics coherence, including flicker, abrupt jumps, teleport-like changes, and physical implausibility. Ignore identity replacement and pure rendering artifacts unless they directly create apparent temporal flashing. 
+
+Representative failure signs: – Flickering, flashing, or sudden global brightness or color shifts 
+
+– Abrupt appearance or position jumps 
+
+– Severe frame-to-frame jitter 
+
+– Gravity violations or impossible articulation 
+
+– Objects passing through each other 
+
+– Unrealistic acceleration or speed changes without a physical cause 
+
+Rubric: – 5: Temporally stable and physically plausible dynamics 
+
+– 4: Minor temporal instability or minor physical oddities 
+
+– 3: Noticeable temporal instability or noticeable physical violations 
+
+– 2: Severe flicker, jumps, or severe physical violations 
+
+– 1: Dynamics critically broken 
+
+Fig. 12: Dynamic Consistency evaluation criteria. 
+
+Artifact Suppression Definition: Rendering-level defects independent of identity, geometry, or temporal coherence. 
+
+Anti-contamination rule: Evaluate only rendering defects such as blur, noise, grid artifacts, blockiness, and banding. Ignore identity replacement, shape deformation, and coherent motion unless the rendering artifact itself is the primary issue. 
+
+Representative failure signs: – Blur, pixelation, or noise 
+
+– Texture melting or warping as a rendering defect 
+
+– Checkerboard, tiling, or grid artifacts 
+
+– Compression-like blockiness 
+
+– Color bleeding or unnatural banding 
+
+– Glitches unrelated to coherent motion, such as render seams or corruption 
+
+Rubric: – 5: No visible artifacts 
+
+– 4: Minor artifacts 
+
+– 3: Noticeable artifacts affecting visual quality 
+
+– 2: Severe artifacts that strongly degrade viewing quality 
+
+– 1: Critically broken rendering 
+
+Fig. 13: Artifact Suppression evaluation criteria.
