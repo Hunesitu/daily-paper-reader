@@ -6,26 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-09
-- 运行时间：2026-07-09 20:46:54 UTC
+- 最新运行日期：2026-07-10
+- 运行时间：2026-07-10 21:25:49 UTC
 - 运行状态：成功
-- 本次总论文数：2
+- 本次总论文数：1
 - 精读区：1
-- 速读区：1
+- 速读区：0
 
 ### 今日简报（AI）
-今日精读一篇图像防护论文，速读一篇多模态大模型遗忘基准研究，共2篇。重点推荐Anti-Prompt方法保护图像不被用于视频生成，及PPE-Bench评估大模型隐私遗忘能力。建议优先搞清Anti-Prompt实现机制，同时关注多模态隐私防护最新动向。
-- 详情：[/202607/09/README](/202607/09/README)
+今日精读了一篇高分论文《AutoAnchor》，提出利用交叉注意力作为流形代理实现稳定扩散模型的遗忘学习。
+
+该论文的核心价值在于高效移除模型中的特定概念（如版权内容），同时保持生成质量不受影响，是AI安全与隐私保护的重要进展。
+
+建议关注该流形代理思路在模型版权清除与风险移除中的应用，可尝试复现以验证其在实际场景中的效果。
+- 详情：[/202607/10/README](/202607/10/README)
 
 ### 精读区论文标签
-1. [Anti-Prompt: Image Protection against Text-Guided Image-to-Video Generation](/202607/09/2607.01499v2-anti-prompt-image-protection-against-text-guided-image-to-video-generation)  
+1. [AutoAnchor: Stable Diffusion Unlearning Using Cross-Attention as a Manifold Surrogate](/202607/10/2607.08337v1-autoanchor-stable-diffusion-unlearning-using-cross-attention-as-a-manifold-surrogate)  
    标签：评分：8.0/10、query:ce
-   evidence：通过注入扰动保护图像以阻止生成，类似于概念擦除
+   evidence：图像生成的扩散模型遗忘
 
 ### 速读区论文标签
-1. [PPE-Bench: A Benchmark for Evaluating MLLM Unlearning under Private-Public Entanglement](/202607/09/2607.02897v1-ppe-bench-a-benchmark-for-evaluating-mllm-unlearning-under-private-public-entanglement)  
-   标签：评分：6.0/10、query:ce
-   evidence：多模态大语言模型的机器遗忘基准，涉及图像
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">

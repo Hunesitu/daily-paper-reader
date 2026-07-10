@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-10",
+  "date": "2026-07-10",
+  "generated_at": "2026-07-10T21:25:58",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/10/2607.08337v1-autoanchor-stable-diffusion-unlearning-using-cross-attention-as-a-manifold-surrogate",
+      "section": "deep",
+      "title_en": "AutoAnchor: Stable Diffusion Unlearning Using Cross-Attention as a Manifold Surrogate",
+      "authors": "Siyuan Wen, Jiahao Zeng, Ningning Ding",
+      "date": "2026-07-09",
+      "pdf": "https://arxiv.org/pdf/2607.08337v1",
+      "score": "8.0",
+      "evidence": "图像生成的扩散模型遗忘",
+      "tldr": "扩散模型遗忘因缺乏流形近端锚点而不稳定，现有方法依赖人工锚点或空提示存在偏见或失效。AutoAnchor通过交叉注意力一致性损失作为流形邻近性代理，自动合成最优锚点，实现稳健无偏遗忘。实验显示目标概念移除提升31.04% CLIP得分，非目标效用提升4.18%。该方法可集成至现有遗忘方法，平均提升6.30%移除率和6.65%效用。",
+      "tags": "query:ce",
+      "abstract_en": "Diffusion unlearning is essential for mitigating the generation of harmful or copyrighted content in text-to-image models. Current diffusion unlearning techniques determine the model update direction by either using alternatives of the target concept as an anchor or using empty prompts. The anchor-based method relies on manually and semantically-chosen anchors that risk biased unlearning, while the anchor-free method inherently suffers from unrobust unlearning due to unconstrained latent updates. In this work, we theoretically formalize such unstable diffusion unlearning issues under the manifold hypothesis and prove that lacking a manifold-proximal anchor inevitably induces significant normal-space drift that degrades unlearning performance. To achieve stable unlearning, we propose \\mysysn, a two-stage framework that automatically synthesizes manifold-proximal anchors. However, direct geometric manifold optimization is computationally intractable. To address this challenge, \\mysys introduces a novel cross-attention consistency loss which serves as a highly efficient surrogate of manifold proximity. Experimental results demonstrate that \\mysys effectively achieves robust and unbiased unlearning across various state-of-the-art baselines, significantly improving targeted concept removal (by up to 31.04\\% in CLIP score) and non-target utility (by up to 4.18\\% in CLIP score). Moreover, \\mysys can also be easily integrated into existing diffusion unlearning methods to enhance their unlearning performance (by 6.30\\% for concept removal and 6.65\\% for utility on average).",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
