@@ -1,0 +1,59 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-11T20:59:43.736550+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.06649v1",
+      "source": "arxiv",
+      "title": "POPS: Recovering Unlearned Multi-Modality Knowledge in MLLMs with Prompt-Optimized Parameter Shaking",
+      "abstract": "Multimodal Large Language Models (MLLMs) have demonstrated impressive performance on cross-modal tasks by jointly training on large-scale textual and visual data, where privacy-sensitive examples could be unintentionally encoded, raising concerns about privacy or copyright violation. To this end, Multi-modality Machine Unlearning (MMU) was proposed as a mitigation that can effectively force MLLMs to forget private information. However, the robustness of such unlearning methods is not fully exploited when the model is published and accessible to malicious users. In this paper, we propose a novel adversarial strategy, namely Prompt-Optimized Parameter Shaking (POPS), aiming to recover the supposedly unlearned multi-modality knowledge from the MLLMs. Our method elicits the victim MLLMs to generate potential private examples via prompt-suffix optimization, and then exploits these synthesized outputs to fine-tune the models so they disclose the true private information. The experiments on the different MMU benchmarks reveal substantial weaknesses in the existing MMU algorithms. Our POPS can even achieve a near-complete recovery of supposedly erased sensitive information on the unlearned MLLMs, exposing fundamental vulnerabilities that challenge the foundational robustness of representative MMU-based privacy protections.",
+      "authors": [
+        "Zhangheng LI",
+        "Jianing Zhu",
+        "Junyuan Hong",
+        "Sungmin Eum",
+        "Shuowen Hu",
+        "Suya You",
+        "Zhangyang Wang"
+      ],
+      "primary_category": "cs.CR",
+      "categories": [
+        "cs.CR",
+        "cs.LG"
+      ],
+      "published": "2026-07-07T16:28:54+00:00",
+      "link": "https://arxiv.org/pdf/2607.06649v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "studies robustness of machine unlearning for MLLMs",
+      "llm_evidence_cn": "研究多模态大模型中机器遗忘的鲁棒性",
+      "llm_evidence": "研究多模态大模型中机器遗忘的鲁棒性",
+      "canonical_evidence": "研究多模态大模型中机器遗忘的鲁棒性",
+      "llm_tldr_en": "Proposes an adversarial attack to recover unlearned knowledge in multimodal LLMs, revealing vulnerabilities in current unlearning methods.",
+      "llm_tldr_cn": "该论文提出一种名为POPS的对抗性策略，通过优化提示和参数抖动来恢复多模态大语言模型中已被遗忘的知识。实验表明，当前机器遗忘方法在面对攻击时并不鲁棒，这揭示了隐私保护的潜在风险，为设计更安全的遗忘机制提供了重要警示。",
+      "llm_tldr": "该论文提出一种名为POPS的对抗性策略，通过优化提示和参数抖动来恢复多模态大语言模型中已被遗忘的知识。实验表明，当前机器遗忘方法在面对攻击时并不鲁棒，这揭示了隐私保护的潜在风险，为设计更安全的遗忘机制提供了重要警示。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

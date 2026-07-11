@@ -6,28 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-10
-- 运行时间：2026-07-10 21:25:49 UTC
+- 最新运行日期：2026-07-11
+- 运行时间：2026-07-11 21:00:51 UTC
 - 运行状态：成功
 - 本次总论文数：1
-- 精读区：1
-- 速读区：0
+- 精读区：0
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读了一篇高分论文《AutoAnchor》，提出利用交叉注意力作为流形代理实现稳定扩散模型的遗忘学习。
-
-该论文的核心价值在于高效移除模型中的特定概念（如版权内容），同时保持生成质量不受影响，是AI安全与隐私保护的重要进展。
-
-建议关注该流形代理思路在模型版权清除与风险移除中的应用，可尝试复现以验证其在实际场景中的效果。
-- 详情：[/202607/10/README](/202607/10/README)
+1) 今日聚焦多模态大模型遗忘知识恢复新方案。  
+2) 值得关注：《POPS》通过提示优化与参数抖动，高效找回MLLM中被遗忘的多模态知识。  
+3) 若关心模型遗忘问题，可进一步测试该方法在不同场景下的泛化能力。
+- 详情：[/202607/11/README](/202607/11/README)
 
 ### 精读区论文标签
-1. [AutoAnchor: Stable Diffusion Unlearning Using Cross-Attention as a Manifold Surrogate](/202607/10/2607.08337v1-autoanchor-stable-diffusion-unlearning-using-cross-attention-as-a-manifold-surrogate)  
-   标签：评分：8.0/10、query:ce
-   evidence：图像生成的扩散模型遗忘
+- 本次无精读推荐。
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [POPS: Recovering Unlearned Multi-Modality Knowledge in MLLMs with Prompt-Optimized Parameter Shaking](/202607/11/2607.06649v1-pops-recovering-unlearned-multi-modality-knowledge-in-mllms-with-prompt-optimized-parameter-shaking)  
+   标签：评分：7.0/10、query:ce
+   evidence：研究多模态大模型中机器遗忘的鲁棒性
 
 
 <div class="dpr-home-promo-card">

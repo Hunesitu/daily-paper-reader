@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-11",
+  "date": "2026-07-11",
+  "generated_at": "2026-07-11T21:00:59",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/11/2607.06649v1-pops-recovering-unlearned-multi-modality-knowledge-in-mllms-with-prompt-optimized-parameter-shaking",
+      "section": "quick",
+      "title_en": "POPS: Recovering Unlearned Multi-Modality Knowledge in MLLMs with Prompt-Optimized Parameter Shaking",
+      "authors": "Zhangheng LI, Jianing Zhu, Junyuan Hong, Sungmin Eum, Shuowen Hu, Suya You, Zhangyang Wang",
+      "date": "2026-07-07",
+      "pdf": "https://arxiv.org/pdf/2607.06649v1",
+      "score": "7.0",
+      "evidence": "研究多模态大模型中机器遗忘的鲁棒性",
+      "tldr": "多模态大模型在训练中无意编码隐私敏感样本，机器遗忘旨在强制擦除这些信息，但遗忘鲁棒性未被充分检验。本文提出提示优化参数抖动（POPS）攻击，通过优化可学习提示后缀迫使模型输出潜在隐私样本，再利用这些合成数据微调以完整恢复已被遗忘的知识。在多个MMU基准上，POPS几乎完全恢复了本应被擦除的敏感信息，暴露了现有遗忘方法的根本缺陷。该工作揭示了多模态遗忘机制的安全脆弱性，对隐私保护研究具有重要意义。",
+      "tags": "query:ce",
+      "abstract_en": "Multimodal Large Language Models (MLLMs) have demonstrated impressive performance on cross-modal tasks by jointly training on large-scale textual and visual data, where privacy-sensitive examples could be unintentionally encoded, raising concerns about privacy or copyright violation. To this end, Multi-modality Machine Unlearning (MMU) was proposed as a mitigation that can effectively force MLLMs to forget private information. However, the robustness of such unlearning methods is not fully exploited when the model is published and accessible to malicious users. In this paper, we propose a novel adversarial strategy, namely Prompt-Optimized Parameter Shaking (POPS), aiming to recover the supposedly unlearned multi-modality knowledge from the MLLMs. Our method elicits the victim MLLMs to generate potential private examples via prompt-suffix optimization, and then exploits these synthesized outputs to fine-tune the models so they disclose the true private information. The experiments on the different MMU benchmarks reveal substantial weaknesses in the existing MMU algorithms. Our POPS can even achieve a near-complete recovery of supposedly erased sensitive information on the unlearned MLLMs, exposing fundamental vulnerabilities that challenge the foundational robustness of representative MMU-based privacy protections.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
