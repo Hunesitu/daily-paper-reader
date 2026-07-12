@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-12",
+  "date": "2026-07-12",
+  "generated_at": "2026-07-12T20:59:37",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/12/2607.07907v1-multimodal-unlearning-across-vision-language-video-and-audio-survey-of-methods-datasets-and-benchmarks",
+      "section": "deep",
+      "title_en": "Multimodal Unlearning Across Vision, Language, Video, and Audio: Survey of Methods, Datasets, and Benchmarks",
+      "authors": "Nobin Sarwar, Shubhashis Roy Dipta, Zheyuan Liu, Vaidehi Patil",
+      "date": "2026-07-08",
+      "pdf": "https://arxiv.org/pdf/2607.07907v1",
+      "score": "8.0",
+      "evidence": "多模态遗忘综述，涵盖图像生成领域",
+      "tldr": "多模态基础模型从训练数据中继承敏感、版权或偏见关联，重训成本高且不切实际。本文综述多模态遗忘方法，覆盖视觉、语言、音频和视频，提出统一分类法对比不同架构与模态。通过分类法系统性分析删除强度、保留效用、效率、可逆性和鲁棒性等权衡。最后指出开放问题并发布开源资源库，为未来研究提供参考。",
+      "tags": "query:ce",
+      "abstract_en": "With the growing adoption of VLMs, DMs, LLMs, and AFMs, these multimodal foundation models can inadvertently encode sensitive, copyrighted, biased, or unsafe cross-modal associations that originate from their training data. Retraining after deletion requests or policy updates is often impractical, and targeted forgetting remains difficult because knowledge is distributed across shared representations. Multimodal unlearning addresses this challenge by enabling selective removal across modalities while retaining overall utility. This survey offers a unified, system-oriented view of multimodal unlearning across vision, language, audio, and video, grounded in recent advances, emerging applications, and open problems. Our taxonomy enables systematic comparison across model architectures and modalities, clarifying trade-offs among deletion strength, retention, efficiency, reversibility, and robustness. This survey highlights open problems and practical considerations to support future research and deployment of multimodal unlearning. We release a curated repository: https://smsnobin77.github.io/Awesome-Multimodal-Unlearning/",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
