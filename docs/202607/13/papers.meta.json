@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-13",
+  "date": "2026-07-13",
+  "generated_at": "2026-07-13T20:55:26",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/13/2607.09236v1-forget-narrowly-retain-broadly-unlearning-as-an-asymmetric-generalization-problem",
+      "section": "deep",
+      "title_en": "Forget Narrowly, Retain Broadly: Unlearning as an Asymmetric Generalization Problem",
+      "authors": "Amit Peleg, Naman Deep Singh, Naama Pearl, Bibhabasu Mohapatra, Matthias Hein",
+      "date": "2026-07-10",
+      "pdf": "https://arxiv.org/pdf/2607.09236v1",
+      "score": "8.0",
+      "evidence": "聚焦于机器遗忘评估和不对称泛化问题",
+      "tldr": "现有LLM机器遗忘基准存在欠遗忘和过遗忘问题，原因是未考虑遗忘的不对称泛化特性。本文提出SUITE协议和训练语料，精准标注遗忘-保留边界，并设计JensUn++算法。实验表明，该方法在三个LLM上取得最佳遗忘-保留权衡，显著优于现有方案。贡献在于揭示了数据对遗忘效果的重要性，并提供了实用评估工具。",
+      "tags": "query:ce",
+      "abstract_en": "Machine unlearning in LLMs is the targeted removal of specific knowledge while preserving all other capabilities, critical for privacy and safety. Yet existing benchmarks measure it unreliably. They miss knowledge that resurfaces under paraphrased or indirect queries, a failure we call under-forgetting, and lack the semantic, syntactic, and lexical probes needed to verify that unrelated knowledge is preserved, a failure we call over-forgetting. Both failures reflect an asymmetric generalization problem. Forget evaluation must cover diverse query formulations of the same target facts, testing whether forgetting holds beyond exact training prompts. Retain evaluation must probe a far larger and implicitly defined set, namely every fact disjoint from the forget target. The retain set thus defines the effective forget set, yet current datasets provide no fine-grained annotation of this forget-retain boundary. We address this with SUITE, an evaluation protocol and training corpus that captures forget-retain structure for real-world factual domains. Methods trained on SUITE improve substantially, showing that training data is as important as algorithmic design. Building on the obtained insights, we introduce JensUn++, an unlearning algorithm that achieves the best forget-retain utility trade-off across three LLMs, in both sequential and joint unlearning settings. Code and datasets are available at https://amitpeleg.github.io/forget-narrowly-retain-broadly",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

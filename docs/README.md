@@ -6,21 +6,23 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-12
-- 运行时间：2026-07-12 20:59:30 UTC
+- 最新运行日期：2026-07-13
+- 运行时间：2026-07-13 20:55:20 UTC
 - 运行状态：成功
 - 本次总论文数：1
 - 精读区：1
 - 速读区：0
 
 ### 今日简报（AI）
-精读了一篇关于多模态遗忘方法的综合综述，涵盖视觉、语言、视频和音频四大模态。这篇8分论文系统梳理了现有遗忘方法、数据集与基准测试，值得研究者重点关注。建议跟进该领域后续工作，以应对日益重要的AI隐私与合规需求。
-- 详情：[/202607/12/README](/202607/12/README)
+今日精读1篇高分论文，聚焦机器学习中的“遗忘”难题。  
+研究发现，将反学习视为非对称泛化问题，核心结论是“窄遗忘、宽保留”——精确移除特定数据而不损害模型整体能力。  
+建议关注如何设计遗忘算法时平衡局部删除与全局性能，这是实际部署隐私保护模型的关键。
+- 详情：[/202607/13/README](/202607/13/README)
 
 ### 精读区论文标签
-1. [Multimodal Unlearning Across Vision, Language, Video, and Audio: Survey of Methods, Datasets, and Benchmarks](/202607/12/2607.07907v1-multimodal-unlearning-across-vision-language-video-and-audio-survey-of-methods-datasets-and-benchmarks)  
+1. [Forget Narrowly, Retain Broadly: Unlearning as an Asymmetric Generalization Problem](/202607/13/2607.09236v1-forget-narrowly-retain-broadly-unlearning-as-an-asymmetric-generalization-problem)  
    标签：评分：8.0/10、query:ce
-   evidence：多模态遗忘综述，涵盖图像生成领域
+   evidence：聚焦于机器遗忘评估和不对称泛化问题
 
 ### 速读区论文标签
 - 本次无速读推荐。

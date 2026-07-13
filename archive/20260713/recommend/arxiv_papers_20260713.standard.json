@@ -1,0 +1,55 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-13T20:53:28.151059+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2607.09236v1",
+      "source": "arxiv",
+      "title": "Forget Narrowly, Retain Broadly: Unlearning as an Asymmetric Generalization Problem",
+      "abstract": "Machine unlearning in LLMs is the targeted removal of specific knowledge while preserving all other capabilities, critical for privacy and safety. Yet existing benchmarks measure it unreliably. They miss knowledge that resurfaces under paraphrased or indirect queries, a failure we call under-forgetting, and lack the semantic, syntactic, and lexical probes needed to verify that unrelated knowledge is preserved, a failure we call over-forgetting. Both failures reflect an asymmetric generalization problem. Forget evaluation must cover diverse query formulations of the same target facts, testing whether forgetting holds beyond exact training prompts. Retain evaluation must probe a far larger and implicitly defined set, namely every fact disjoint from the forget target. The retain set thus defines the effective forget set, yet current datasets provide no fine-grained annotation of this forget-retain boundary. We address this with SUITE, an evaluation protocol and training corpus that captures forget-retain structure for real-world factual domains. Methods trained on SUITE improve substantially, showing that training data is as important as algorithmic design. Building on the obtained insights, we introduce JensUn++, an unlearning algorithm that achieves the best forget-retain utility trade-off across three LLMs, in both sequential and joint unlearning settings. Code and datasets are available at https://amitpeleg.github.io/forget-narrowly-retain-broadly",
+      "authors": [
+        "Amit Peleg",
+        "Naman Deep Singh",
+        "Naama Pearl",
+        "Bibhabasu Mohapatra",
+        "Matthias Hein"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-07-10T09:31:29+00:00",
+      "link": "https://arxiv.org/pdf/2607.09236v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Focuses on machine unlearning evaluation and asymmetric generalization problem",
+      "llm_evidence_cn": "聚焦于机器遗忘评估和不对称泛化问题",
+      "llm_evidence": "聚焦于机器遗忘评估和不对称泛化问题",
+      "canonical_evidence": "聚焦于机器遗忘评估和不对称泛化问题",
+      "llm_tldr_en": "This paper identifies under-forgetting and over-forgetting as an asymmetric generalization problem in LLM unlearning, proposing that forget evaluation must cover diverse query formulations and retain evaluation must probe a large set of facts. It provides a framework for reliable unlearning benchmarks, relevant to concept erasure in ML models.",
+      "llm_tldr_cn": "针对大语言模型的机器遗忘评估，本文指出现有基准存在欠遗忘（知识在间接询问下浮现）和过遗忘（无关知识受损）两种不对称泛化问题。它提出遗忘评估需覆盖多种查询形式，保留评估需广泛探测无关知识。该工作为可靠的概念擦除评估提供了理论框架，虽然聚焦于语言模型，但其方法论可直接迁移到其他模态的概念擦除。",
+      "llm_tldr": "针对大语言模型的机器遗忘评估，本文指出现有基准存在欠遗忘（知识在间接询问下浮现）和过遗忘（无关知识受损）两种不对称泛化问题。它提出遗忘评估需覆盖多种查询形式，保留评估需广泛探测无关知识。该工作为可靠的概念擦除评估提供了理论框架，虽然聚焦于语言模型，但其方法论可直接迁移到其他模态的概念擦除。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
