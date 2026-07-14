@@ -1,0 +1,190 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-14T21:19:51.284334+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2607.09892v1",
+      "source": "arxiv",
+      "title": "Next-Dense-Stride Prediction for Multimodal Autoregressive Visual Modeling",
+      "abstract": "We introduce DenseAR, a new generative paradigm that reformulates autoregressive image generation as coarse-to-fine next-dense-stride prediction using a compact single-scale tokenizer. Our key insight is that traversing a single-scale latent grid with progressively denser strides naturally captures the transition from global structure to fine detail. This addresses two limitations of existing autoregressive models at once: the slow inference of raster-order autoregression, which DenseAR avoids by predicting multiple tokens in parallel, and the heavy cost of multi-scale approaches, which need long, multi-resolution token sequences to achieve coarse-to-fine prediction. Building on our efficient framework and the flexibility of autoregressive modeling, we further extend DenseAR to a unified model that handles multiple modalities and imaging tasks within a single backbone. We validate DenseAR on both medical and natural images. On multi-contrast brain MRI, a single DenseAR model unifies cross-modal translation, modality-conditioned generation, and tumor segmentation, while remaining competitive with task-specific methods. On ImageNet, DenseAR improves class-conditional generation quality (FID and IS) over both a single-grid baseline without stride ordering and a multi-scale tokenizer-based baseline.",
+      "authors": [
+        "Chicago Y. Park",
+        "Jialin Mao",
+        "Xiaojian Xu",
+        "Taha Kass-Hout",
+        "Ulugbek S. Kamilov",
+        "Cao Xiao"
+      ],
+      "primary_category": "eess.IV",
+      "categories": [
+        "eess.IV",
+        "cs.AI"
+      ],
+      "published": "2026-07-10T18:32:27+00:00",
+      "link": "https://arxiv.org/pdf/2607.09892v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "new autoregressive image generation model using dense-stride prediction",
+      "llm_evidence_cn": "使用稠密步长预测的新自回归图像生成模型",
+      "llm_evidence": "使用稠密步长预测的新自回归图像生成模型",
+      "canonical_evidence": "使用稠密步长预测的新自回归图像生成模型",
+      "llm_tldr_en": "Proposes DenseAR, an autoregressive image generation method via coarse-to-fine next-dense-stride prediction, improving speed and quality.",
+      "llm_tldr_cn": "该论文提出DenseAR，一种新的自回归图像生成范式，通过粗到细的下一步稠密步长预测，使用紧凑的单尺度分词器。它同时解决了现有自回归模型推理慢和多尺度模型开销大的问题。实验表明DenseAR在生成质量和效率上均取得进步。该方法直接贡献于自回归图像生成领域，但未涉及概念擦除。",
+      "llm_tldr": "该论文提出DenseAR，一种新的自回归图像生成范式，通过粗到细的下一步稠密步长预测，使用紧凑的单尺度分词器。它同时解决了现有自回归模型推理慢和多尺度模型开销大的问题。实验表明DenseAR在生成质量和效率上均取得进步。该方法直接贡献于自回归图像生成领域，但未涉及概念擦除。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.10535v1",
+      "source": "arxiv",
+      "title": "Improving Sample Diversity in Autoregressive Text-to-Image Generation via Cluster Truncation",
+      "abstract": "While diffusion models achieve state-of-the-art image quality for text-to-image (T2I) generation, recent work has demonstrated that they suffer from sample diversity collapse. In this work, we investigate whether autoregressive (AR) image generation models can push the Pareto frontier between image quality and sample diversity. With recent advances in quality and efficiency, AR models have emerged as a viable alternative to diffusion-based image generation. Beyond enabling new use cases such as interleaved image-text generation, their sequential generation process makes them compatible with a wide range of token-based decoding strategies originally developed to improve diversity in text generation. Motivated by the potential of a better diversity-quality tradeoff in the AR paradigm, we present the first systematic study of sample diversity in AR image generation models. We show that two key properties of AR image generation, persistently high token-level entropy and substantial redundancy in visual token spaces, limit the effectiveness of existing token-level decoding methods for diversity enhancement. We therefore propose $p$-less cluster, a new decoding strategy that performs entropy-based truncation sampling at cluster level rather than at token level. We evaluate our approach and baseline decoding methods across four autoregressive T2I models and two datasets using a comprehensive suite of metrics spanning image quality, prompt alignment, and diversity. Our results show that $p$-less cluster unlocks the greatest diversity across most evaluated autoregressive T2I models and datasets while maintaining image quality and prompt alignment.",
+      "authors": [
+        "Trang Nguyen",
+        "Shuang Wu",
+        "Runyan Tan",
+        "Phillip Howard"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-12T02:14:16+00:00",
+      "link": "https://arxiv.org/pdf/2607.10535v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "directly addresses autoregressive text-to-image generation diversity",
+      "llm_evidence_cn": "直接研究自回归文本到图像生成的多样性问题",
+      "llm_evidence": "直接研究自回归文本到图像生成的多样性问题",
+      "canonical_evidence": "直接研究自回归文本到图像生成的多样性问题",
+      "llm_tldr_en": "Explores cluster truncation to improve sample diversity in autoregressive text-to-image generation, showing AR models can achieve better diversity-quality trade-off.",
+      "llm_tldr_cn": "该论文研究自回归文本到图像生成模型的样本多样性。提出聚类截断策略，利用自回归模型的顺序生成特性，从文本解码策略中借鉴方法。实验表明自回归模型能在多样性与质量之间取得更优的帕累托前沿。论文直接关注自回归文本到图像生成，但未涉及概念擦除。",
+      "llm_tldr": "该论文研究自回归文本到图像生成模型的样本多样性。提出聚类截断策略，利用自回归模型的顺序生成特性，从文本解码策略中借鉴方法。实验表明自回归模型能在多样性与质量之间取得更优的帕累托前沿。论文直接关注自回归文本到图像生成，但未涉及概念擦除。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.11233v1",
+      "source": "arxiv",
+      "title": "Structure-Detail Decoupled Autoregressive Generation for Fast and High-Fidelity Virtual Try-On",
+      "abstract": "Virtual try-on (VTON) is a bi-conditional image generation problem that requires not only accurate person preservation but also faithful garment deformation and detail synthesis. Diffusion-based VTON methods can jointly model these factors in a compressed latent space, but suffer from high-frequency detail loss due to inherent latent compression, even with costly multi-step denoising. Recent visual autoregressive (VAR) models offer a promising alternative for high-quality generation with faster inference, yet remain unexplored for VTON due to the lack of effective bi-conditioning mechanisms. To bridge this gap, we first introduce VAR-VTON, a VAR-based VTON model that incorporates garment conditioning and structural guidance for efficient latent-space VTON. Despite its efficacy, latent-space generation still struggles to preserve fine-grained garment details. We argue that different VTON sub-tasks should be addressed in different representation spaces: structural synthesis such as garment warping and person layout is suited to the latent space, whereas fine-grained detail recovery should be tackled in the pixel space. Motivated by this insight, we further propose STAR-VTON, a Two-Stage AutoRegressive framework that builds upon VAR-VTON by decoupling latent-space structural synthesis from pixel-space detail recovery. Our idea is to resort to a matching-informed refiner to establish dense correspondences between the stage-one generation and the source garment to directly map fine-grained pixel-space details. Extensive experiments show that STAR-VTON achieves an impressive efficiency-fidelity trade-off: VAR-VTON runs at least $4\\times$ faster than diffusion-based counterparts without degrading quality, and the pixel-space refiner effectively restores fine details and acts as a plug-and-play module that can benefit existing VTON approaches.",
+      "authors": [
+        "Lu Yang",
+        "Xiaonan Hu",
+        "Yanan Li",
+        "Daqi Liu",
+        "Xiang Bai",
+        "Hao Lu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-13T08:21:43+00:00",
+      "link": "https://arxiv.org/pdf/2607.11233v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "uses visual autoregressive (VAR) models for image generation",
+      "llm_evidence_cn": "使用视觉自回归（VAR）模型进行图像生成",
+      "llm_evidence": "使用视觉自回归（VAR）模型进行图像生成",
+      "canonical_evidence": "使用视觉自回归（VAR）模型进行图像生成",
+      "llm_tldr_en": "Proposes VAR-VTON, a virtual try-on model based on visual autoregressive (VAR) models, demonstrating autoregressive image generation for conditional tasks.",
+      "llm_tldr_cn": "虚拟试穿（VTON）是一个双条件图像生成问题。现有的扩散方法存在高频细节丢失和推理慢的问题。本文首次将视觉自回归模型（VAR）引入VTON，提出VAR-VTON，通过服装条件与结构引导实现快速、高质量的图像生成。实验表明，VAR-VTON在保真度和速度上优于扩散方法，为自回归图像生成在条件生成任务中的应用提供了新范式。",
+      "llm_tldr": "虚拟试穿（VTON）是一个双条件图像生成问题。现有的扩散方法存在高频细节丢失和推理慢的问题。本文首次将视觉自回归模型（VAR）引入VTON，提出VAR-VTON，通过服装条件与结构引导实现快速、高质量的图像生成。实验表明，VAR-VTON在保真度和速度上优于扩散方法，为自回归图像生成在条件生成任务中的应用提供了新范式。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.11643v1",
+      "source": "arxiv",
+      "title": "Xiaomi-Robotics-U0: Unified Embodied Synthesis with World Foundation Model",
+      "abstract": "Recent foundation image and video generation models offer strong generalization and controllability, but their direct application to embodied scenarios is limited by requirements for multi-view consistency, geometric coherence, and robot embodiment constraints. Existing methods typically adapt foundation models with limited robot data, often sacrificing visual knowledge acquired during large-scale pre-training. We present Xiaomi-Robotics-U0, a 38-billion-parameter multimodal autoregressive model for unified embodied synthesis. It treats embodied generation as an extension of foundation image and video generation and jointly optimizes text-to-image generation, image editing, embodied scene generation, embodied transfer, and embodied video generation. This unified framework preserves the generalization of the pre-trained world foundation model while adapting it to embodied settings. Xiaomi-Robotics-U0 is the first model to support high-quality multi-view scene generation across multiple robot embodiments and to introduce structured, controllable embodied transfer for fine-grained editing while preserving multi-view consistency and interaction dynamics. It achieves state-of-the-art results on single-step and sequential generation tasks, outperforming GPT-Image-2.0 in human evaluations of embodied scene generation and transfer, ranking first on World Arena for embodied video generation, and improving the out-of-distribution success rate of pi_0.5 from 36.9% to 63.2% on challenging real-world manipulation tasks. These results show that foundation world models can serve both as embodied world models and scalable data engines for embodied intelligence. Code and checkpoints are available at https://robotics.xiaomi.com/xiaomi-robotics-u0.html.",
+      "authors": [
+        "Xinghang Li",
+        "Jun Guo",
+        "Qiwei Li",
+        "Long Qian",
+        "Hang Lai",
+        "Yueze Wang",
+        "Hongyu Yan",
+        "Jiahang Cao",
+        "Xi Chen",
+        "Jingen Qu",
+        "Jiaxi Song",
+        "Nan Sun",
+        "Hanye Zhao",
+        "Futeng Liu",
+        "Wanli Peng",
+        "Heyun Wang",
+        "Yunhong Wang",
+        "Caoyu Xia",
+        "Jack Zhao",
+        "Diyun Xiang",
+        "Hangjun Ye",
+        "Heng Qu",
+        "Huaping Liu",
+        "Jason Li"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-07-13T14:57:58+00:00",
+      "link": "https://arxiv.org/pdf/2607.11643v1",
+      "tags": [
+        "keyword:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal autoregressive model for text-to-image generation",
+      "llm_evidence_cn": "多模态自回归模型用于文本到图像生成",
+      "llm_evidence": "多模态自回归模型用于文本到图像生成",
+      "canonical_evidence": "多模态自回归模型用于文本到图像生成",
+      "llm_tldr_en": "Xiaomi-Robotics-U0 is a 38B-parameter multimodal autoregressive model that handles text-to-image generation among other tasks.",
+      "llm_tldr_cn": "该论文提出小米机器人U0，一个380亿参数的多模态自回归模型，统一处理文本到图像生成、图像编辑、具身场景生成等多种任务。它从基础图像和视频生成模型出发，通过联合优化保持预训练知识。模型在多个生成任务上表现优越，展现了自回归模型在具身合成中的潜力。论文未涉及概念擦除，但直接贡献于自回归文本到图像生成领域。",
+      "llm_tldr": "该论文提出小米机器人U0，一个380亿参数的多模态自回归模型，统一处理文本到图像生成、图像编辑、具身场景生成等多种任务。它从基础图像和视频生成模型出发，通过联合优化保持预训练知识。模型在多个生成任务上表现优越，展现了自回归模型在具身合成中的潜力。论文未涉及概念擦除，但直接贡献于自回归文本到图像生成领域。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

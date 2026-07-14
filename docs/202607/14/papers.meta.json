@@ -1,0 +1,69 @@
+{
+  "label": "2026-07-14",
+  "date": "2026-07-14",
+  "generated_at": "2026-07-14T21:23:43",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202607/14/2607.09892v1-next-dense-stride-prediction-for-multimodal-autoregressive-visual-modeling",
+      "section": "deep",
+      "title_en": "Next-Dense-Stride Prediction for Multimodal Autoregressive Visual Modeling",
+      "authors": "Chicago Y. Park, Jialin Mao, Xiaojian Xu, Taha Kass-Hout, Ulugbek S. Kamilov, Cao Xiao",
+      "date": "2026-07-10",
+      "pdf": "https://arxiv.org/pdf/2607.09892v1",
+      "score": "8.0",
+      "evidence": "使用稠密步长预测的新自回归图像生成模型",
+      "tldr": "针对自回归图像生成中光栅顺序推理慢、多尺度方法成本高的问题，提出DenseAR，通过粗到细的下一密集步长预测，利用单尺度tokenizer并行预测多个token，实现高效生成。该方法扩展到多模态统一模型，在脑MRI上同时完成跨模态翻译、条件生成和肿瘤分割，在ImageNet上提升类条件生成质量，优于单网格基线和多尺度基线。",
+      "tags": "query:ce",
+      "abstract_en": "We introduce DenseAR, a new generative paradigm that reformulates autoregressive image generation as coarse-to-fine next-dense-stride prediction using a compact single-scale tokenizer. Our key insight is that traversing a single-scale latent grid with progressively denser strides naturally captures the transition from global structure to fine detail. This addresses two limitations of existing autoregressive models at once: the slow inference of raster-order autoregression, which DenseAR avoids by predicting multiple tokens in parallel, and the heavy cost of multi-scale approaches, which need long, multi-resolution token sequences to achieve coarse-to-fine prediction. Building on our efficient framework and the flexibility of autoregressive modeling, we further extend DenseAR to a unified model that handles multiple modalities and imaging tasks within a single backbone. We validate DenseAR on both medical and natural images. On multi-contrast brain MRI, a single DenseAR model unifies cross-modal translation, modality-conditioned generation, and tumor segmentation, while remaining competitive with task-specific methods. On ImageNet, DenseAR improves class-conditional generation quality (FID and IS) over both a single-grid baseline without stride ordering and a multi-scale tokenizer-based baseline.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/14/2607.10535v1-improving-sample-diversity-in-autoregressive-text-to-image-generation-via-cluster-truncation",
+      "section": "deep",
+      "title_en": "Improving Sample Diversity in Autoregressive Text-to-Image Generation via Cluster Truncation",
+      "authors": "Trang Nguyen, Shuang Wu, Runyan Tan, Phillip Howard",
+      "date": "2026-07-12",
+      "pdf": "https://arxiv.org/pdf/2607.10535v1",
+      "score": "8.0",
+      "evidence": "直接研究自回归文本到图像生成的多样性问题",
+      "tldr": "扩散模型在文本到图像生成中虽质量高但样本多样性不足。自回归模型有潜力改善多样性-质量权衡，但其高令牌熵和视觉令牌冗余限制了现有解码策略。本文提出p-less cluster，在聚类层面进行熵基截断采样，显著提升四个自回归模型的多样性，同时保持图像质量和提示对齐。",
+      "tags": "query:ce",
+      "abstract_en": "While diffusion models achieve state-of-the-art image quality for text-to-image (T2I) generation, recent work has demonstrated that they suffer from sample diversity collapse. In this work, we investigate whether autoregressive (AR) image generation models can push the Pareto frontier between image quality and sample diversity. With recent advances in quality and efficiency, AR models have emerged as a viable alternative to diffusion-based image generation. Beyond enabling new use cases such as interleaved image-text generation, their sequential generation process makes them compatible with a wide range of token-based decoding strategies originally developed to improve diversity in text generation. Motivated by the potential of a better diversity-quality tradeoff in the AR paradigm, we present the first systematic study of sample diversity in AR image generation models. We show that two key properties of AR image generation, persistently high token-level entropy and substantial redundancy in visual token spaces, limit the effectiveness of existing token-level decoding methods for diversity enhancement. We therefore propose $p$-less cluster, a new decoding strategy that performs entropy-based truncation sampling at cluster level rather than at token level. We evaluate our approach and baseline decoding methods across four autoregressive T2I models and two datasets using a comprehensive suite of metrics spanning image quality, prompt alignment, and diversity. Our results show that $p$-less cluster unlocks the greatest diversity across most evaluated autoregressive T2I models and datasets while maintaining image quality and prompt alignment.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/14/2607.11233v1-structure-detail-decoupled-autoregressive-generation-for-fast-and-high-fidelity-virtual-try-on",
+      "section": "deep",
+      "title_en": "Structure-Detail Decoupled Autoregressive Generation for Fast and High-Fidelity Virtual Try-On",
+      "authors": "Lu Yang, Xiaonan Hu, Yanan Li, Daqi Liu, Xiang Bai, Hao Lu",
+      "date": "2026-07-13",
+      "pdf": "https://arxiv.org/pdf/2607.11233v1",
+      "score": "8.0",
+      "evidence": "使用视觉自回归（VAR）模型进行图像生成",
+      "tldr": "现有扩散式虚拟试穿因潜在压缩损失高频细节，且推理慢。本文提出VAR-VTON，利用视觉自回归模型实现高效潜在空间合成，并进一步提出STAR-VTON，将结构合成与细节恢复解耦至不同空间：首阶段在潜在空间进行人物保持和衣物变形，次阶段在像素空间通过匹配信息从源衣物映射精细细节。实验表明，VAR-VTON比扩散方法快4倍以上且质量不降，像素精调器能有效恢复细节，可即插即用提升现有方法。",
+      "tags": "query:ce",
+      "abstract_en": "Virtual try-on (VTON) is a bi-conditional image generation problem that requires not only accurate person preservation but also faithful garment deformation and detail synthesis. Diffusion-based VTON methods can jointly model these factors in a compressed latent space, but suffer from high-frequency detail loss due to inherent latent compression, even with costly multi-step denoising. Recent visual autoregressive (VAR) models offer a promising alternative for high-quality generation with faster inference, yet remain unexplored for VTON due to the lack of effective bi-conditioning mechanisms. To bridge this gap, we first introduce VAR-VTON, a VAR-based VTON model that incorporates garment conditioning and structural guidance for efficient latent-space VTON. Despite its efficacy, latent-space generation still struggles to preserve fine-grained garment details. We argue that different VTON sub-tasks should be addressed in different representation spaces: structural synthesis such as garment warping and person layout is suited to the latent space, whereas fine-grained detail recovery should be tackled in the pixel space. Motivated by this insight, we further propose STAR-VTON, a Two-Stage AutoRegressive framework that builds upon VAR-VTON by decoupling latent-space structural synthesis from pixel-space detail recovery. Our idea is to resort to a matching-informed refiner to establish dense correspondences between the stage-one generation and the source garment to directly map fine-grained pixel-space details. Extensive experiments show that STAR-VTON achieves an impressive efficiency-fidelity trade-off: VAR-VTON runs at least $4\\times$ faster than diffusion-based counterparts without degrading quality, and the pixel-space refiner effectively restores fine details and acts as a plug-and-play module that can benefit existing VTON approaches.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/14/2607.11643v1-xiaomi-robotics-u0-unified-embodied-synthesis-with-world-foundation-model",
+      "section": "deep",
+      "title_en": "Xiaomi-Robotics-U0: Unified Embodied Synthesis with World Foundation Model",
+      "authors": "Xinghang Li, Jun Guo, Qiwei Li, Long Qian, Hang Lai, Yueze Wang, Hongyu Yan, Jiahang Cao, Xi Chen, Jingen Qu, Jiaxi Song, Nan Sun, Hanye Zhao, Futeng Liu, Wanli Peng, Heyun Wang, Yunhong Wang, Caoyu Xia, Jack Zhao, Diyun Xiang, Hangjun Ye, Heng Qu, Huaping Liu, Jason Li",
+      "date": "2026-07-13",
+      "pdf": "https://arxiv.org/pdf/2607.11643v1",
+      "score": "8.0",
+      "evidence": "多模态自回归模型用于文本到图像生成",
+      "tldr": "现有基础图像/视频模型泛化强但难以直接用于具身场景，受限于多视图一致性、几何连贯性和机器人形态约束。本文提出Xiaomi-Robotics-U0，一个380亿参数的多模态自回归模型，将具身生成视为基础生成的扩展，联合优化文本到图像、图像编辑、具身场景生成、转移和视频生成。该模型首次支持多机器人形态的高质量多视图场景生成，并引入结构化可控的具身转移，实现细粒度编辑同时保持多视图一致性和交互动态。在单步和序列生成任务上达到最优，在具身场景生成和转移的人体评估中超越GPT-Image-2.0，在World Arena具身视频生成中排名第一，将pi0.5在挑战性真实操控任务上的分布外成功率从36.9%提升至63.2%。",
+      "tags": "query:ce",
+      "abstract_en": "Recent foundation image and video generation models offer strong generalization and controllability, but their direct application to embodied scenarios is limited by requirements for multi-view consistency, geometric coherence, and robot embodiment constraints. Existing methods typically adapt foundation models with limited robot data, often sacrificing visual knowledge acquired during large-scale pre-training. We present Xiaomi-Robotics-U0, a 38-billion-parameter multimodal autoregressive model for unified embodied synthesis. It treats embodied generation as an extension of foundation image and video generation and jointly optimizes text-to-image generation, image editing, embodied scene generation, embodied transfer, and embodied video generation. This unified framework preserves the generalization of the pre-trained world foundation model while adapting it to embodied settings. Xiaomi-Robotics-U0 is the first model to support high-quality multi-view scene generation across multiple robot embodiments and to introduce structured, controllable embodied transfer for fine-grained editing while preserving multi-view consistency and interaction dynamics. It achieves state-of-the-art results on single-step and sequential generation tasks, outperforming GPT-Image-2.0 in human evaluations of embodied scene generation and transfer, ranking first on World Arena for embodied video generation, and improving the out-of-distribution success rate of pi_0.5 from 36.9% to 63.2% on challenging real-world manipulation tasks. These results show that foundation world models can serve both as embodied world models and scalable data engines for embodied intelligence. Code and checkpoints are available at https://robotics.xiaomi.com/xiaomi-robotics-u0.html.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
