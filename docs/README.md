@@ -6,33 +6,27 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-14
-- 运行时间：2026-07-14 21:23:39 UTC
+- 最新运行日期：2026-07-15
+- 运行时间：2026-07-15 21:07:13 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：4
-- 速读区：0
+- 本次总论文数：2
+- 精读区：0
+- 速读区：2
 
 ### 今日简报（AI）
-今日精读2篇均分8.0的自回归视觉建模论文，聚焦多模态密集步长预测与文本到图像生成的样本多样性优化。建议关注自回归视觉生成中如何平衡生成质量与多样性的前沿方法。
-- 详情：[/202607/14/README](/202607/14/README)
+今日完成2篇速读，聚焦风格内容解耦与不可学习示例平衡。最值得关注的是《Contrastive-Augmented Flow Matching》中的流匹配解耦方法（7.0分）。建议优先精读该文，理解对比增强对解耦效果的提升机制。
+- 详情：[/202607/15/README](/202607/15/README)
 
 ### 精读区论文标签
-1. [Next-Dense-Stride Prediction for Multimodal Autoregressive Visual Modeling](/202607/14/2607.09892v1-next-dense-stride-prediction-for-multimodal-autoregressive-visual-modeling)  
-   标签：评分：8.0/10、query:ce
-   evidence：使用稠密步长预测的新自回归图像生成模型
-2. [Improving Sample Diversity in Autoregressive Text-to-Image Generation via Cluster Truncation](/202607/14/2607.10535v1-improving-sample-diversity-in-autoregressive-text-to-image-generation-via-cluster-truncation)  
-   标签：评分：8.0/10、query:ce
-   evidence：直接研究自回归文本到图像生成的多样性问题
-3. [Structure-Detail Decoupled Autoregressive Generation for Fast and High-Fidelity Virtual Try-On](/202607/14/2607.11233v1-structure-detail-decoupled-autoregressive-generation-for-fast-and-high-fidelity-virtual-try-on)  
-   标签：评分：8.0/10、query:ce
-   evidence：使用视觉自回归（VAR）模型进行图像生成
-4. [Xiaomi-Robotics-U0: Unified Embodied Synthesis with World Foundation Model](/202607/14/2607.11643v1-xiaomi-robotics-u0-unified-embodied-synthesis-with-world-foundation-model)  
-   标签：评分：8.0/10、query:ce
-   evidence：多模态自回归模型用于文本到图像生成
+- 本次无精读推荐。
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Contrastive-Augmented Flow Matching for Style-Content Disentanglement](/202607/15/2607.12404v1-contrastive-augmented-flow-matching-for-style-content-disentanglement)  
+   标签：评分：7.0/10、query:ce
+   evidence：风格-内容解耦可用于概念擦除
+2. [DiffUE: Enhancing Utility-Unlearnability Trade-off of Unlearnable Examples via Diffusion Autoencoders](/202607/15/2607.10580v1-diffue-enhancing-utility-unlearnability-trade-off-of-unlearnable-examples-via-diffusion-autoencoders)  
+   标签：评分：6.0/10、query:ce
+   evidence：利用扩散自编码器增强不可学习示例的效用与不可学习性权衡
 
 
 <div class="dpr-home-promo-card">

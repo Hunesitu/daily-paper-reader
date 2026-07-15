@@ -1,0 +1,95 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-15T21:06:02.297718+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.12404v1",
+      "source": "arxiv",
+      "title": "Contrastive-Augmented Flow Matching for Style-Content Disentanglement",
+      "abstract": "Learning representations that separate content and style is crucial for controllable generation and compositional generalization. However, diffusion and flow-based models trained primarily with generative objectives often produce entangled or misaligned factors. To address this gap, we introduce Contrastive Augmented Flow Matching (CAtFM), a framework that integrates contrastive regularization into an invertible flow matching formulation to promote structured content-style representations. Rather than constraining intermediate latents or velocity fields, we apply contrastive supervision to predicted endpoints during training, enforcing semantic consistency across transported distributions while allowing disentanglement to emerge implicitly, without assuming strictly pure or fully factorized content and style representations. Our main experiments operate in the CLIP embedding space, with additional validation using frozen DINO and ALIGN encoders. Across synthetic data, in-domain styles, and real-world benchmarks (ImageNet, WikiArt, DomainNet, and DTD), CAtFM improves content and style retrieval, enhances embedding cluster separation, and achieves stronger open-set robustness compared to generative and discriminative baselines. Overall, CAtFM provides a simple way to couple discriminative constraints with deterministic transport, improving disentanglement and robustness under distribution shift.",
+      "authors": [
+        "Yusong Li",
+        "Pingchuan Ma",
+        "Ming Gui",
+        "Vincent Tao Hu",
+        "Björn Ommer"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-14T06:23:52+00:00",
+      "link": "https://arxiv.org/pdf/2607.12404v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "style-content disentanglement can enable concept erasure",
+      "llm_evidence_cn": "风格-内容解耦可用于概念擦除",
+      "llm_evidence": "风格-内容解耦可用于概念擦除",
+      "canonical_evidence": "风格-内容解耦可用于概念擦除",
+      "llm_tldr_en": "Proposes contrastive augmented flow matching to disentangle style and content, which is transferable to concept erasure tasks.",
+      "llm_tldr_cn": "该论文针对扩散模型和流模型在表示学习中内容与风格纠缠的问题，提出了对比增强流匹配（CAtFM）框架。通过将对比正则化集成到可逆流匹配中，隐式地促进内容与风格的解耦表示学习。实验表明该方法在可控生成和组合泛化上取得效果，其解耦思路可迁移至概念擦除场景，为从生成模型中移除特定概念提供了方法论支撑。",
+      "llm_tldr": "该论文针对扩散模型和流模型在表示学习中内容与风格纠缠的问题，提出了对比增强流匹配（CAtFM）框架。通过将对比正则化集成到可逆流匹配中，隐式地促进内容与风格的解耦表示学习。实验表明该方法在可控生成和组合泛化上取得效果，其解耦思路可迁移至概念擦除场景，为从生成模型中移除特定概念提供了方法论支撑。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.10580v1",
+      "source": "arxiv",
+      "title": "DiffUE: Enhancing Utility-Unlearnability Trade-off of Unlearnable Examples via Diffusion Autoencoders",
+      "abstract": "AI models are increasingly trained on personal images scraped from social media and public platforms, often without consent, leading to serious privacy violations, such as unauthorized facial recognition and targeted advertising. To counter this, researchers have developed unlearnable examples (UEs), images modified with imperceptible noise to prevent AI models from extracting meaningful information. However, existing UE methods primarily rely on pixel-space noise, which can be bypassed by relearning strategies such as adversarial training, image transformation, and compression. While some techniques improve robustness, they often come at the expense of significant degradation in image utility and perceptual quality. In this paper, we introduce DiffUE to overcome these limitations by injecting noise into the semantic space of images instead of the pixel space. Instead of corrupting pixel values, DiffUE modifies high-level semantic features of images, ensuring robust unlearnability while preserving visual quality and utility. By leveraging a diffusion-based autoencoder framework to manipulate semantic features, DiffUE generates purposeful, natural-looking modifications that effectively resist advanced relearning strategies. Extensive experiments on four datasets, CIFAR-10, CIFAR-100, CelebA-HQ, and ImageNet, as well as a subjective user study, demonstrate that DiffUE significantly enhances the trade-off between image quality and unlearnability, offering a more robust and effective solution for safeguarding personal data in an increasingly exploitative AI landscape.",
+      "authors": [
+        "Syed Irfan Ali Meerza",
+        "Oktay Ozturk",
+        "Amir Sadovnik",
+        "Jian Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-07-12T05:34:17+00:00",
+      "link": "https://arxiv.org/pdf/2607.10580v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "unlearnable examples to prevent image learning via diffusion autoencoders",
+      "llm_evidence_cn": "利用扩散自编码器增强不可学习示例的效用与不可学习性权衡",
+      "llm_evidence": "利用扩散自编码器增强不可学习示例的效用与不可学习性权衡",
+      "canonical_evidence": "利用扩散自编码器增强不可学习示例的效用与不可学习性权衡",
+      "llm_tldr_en": "DiffUE enhances the utility-unlearnability trade-off of unlearnable examples using diffusion autoencoders, providing a more robust privacy protection for images.",
+      "llm_tldr_cn": "本文提出DiffUE方法，利用扩散自编码器来生成不可学习示例（UEs），以解决现有方法在实用性（图像质量）和不可学习性之间的权衡问题。该方法通过扩散模型在潜在空间中添加噪声，使得模型难以从中学习有效信息，同时保持了较高的图像质量。实验证明，DiffUE在抵御各种再学习攻击时更加鲁棒，保护了图像隐私而不严重损害视觉效用。",
+      "llm_tldr": "本文提出DiffUE方法，利用扩散自编码器来生成不可学习示例（UEs），以解决现有方法在实用性（图像质量）和不可学习性之间的权衡问题。该方法通过扩散模型在潜在空间中添加噪声，使得模型难以从中学习有效信息，同时保持了较高的图像质量。实验证明，DiffUE在抵御各种再学习攻击时更加鲁棒，保护了图像隐私而不严重损害视觉效用。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

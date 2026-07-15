@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-15",
+  "date": "2026-07-15",
+  "generated_at": "2026-07-15T21:07:18",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/15/2607.12404v1-contrastive-augmented-flow-matching-for-style-content-disentanglement",
+      "section": "quick",
+      "title_en": "Contrastive-Augmented Flow Matching for Style-Content Disentanglement",
+      "authors": "Yusong Li, Pingchuan Ma, Ming Gui, Vincent Tao Hu, Björn Ommer",
+      "date": "2026-07-14",
+      "pdf": "https://arxiv.org/pdf/2607.12404v1",
+      "score": "7.0",
+      "evidence": "风格-内容解耦可用于概念擦除",
+      "tldr": "现有生成模型难以分离内容与风格表示。提出CAtFM框架，在可逆流匹配中引入对比正则化，通过监督预测终点隐式促进解耦。在CLIP嵌入空间上实验，CAtFM在内容/风格检索、聚类分离和开放集鲁棒性上均优于基线。该方法简单有效，耦合了判别约束与确定性传输，显著提升了解耦能力与分布偏移下的鲁棒性。",
+      "tags": "query:ce",
+      "abstract_en": "Learning representations that separate content and style is crucial for controllable generation and compositional generalization. However, diffusion and flow-based models trained primarily with generative objectives often produce entangled or misaligned factors. To address this gap, we introduce Contrastive Augmented Flow Matching (CAtFM), a framework that integrates contrastive regularization into an invertible flow matching formulation to promote structured content-style representations. Rather than constraining intermediate latents or velocity fields, we apply contrastive supervision to predicted endpoints during training, enforcing semantic consistency across transported distributions while allowing disentanglement to emerge implicitly, without assuming strictly pure or fully factorized content and style representations. Our main experiments operate in the CLIP embedding space, with additional validation using frozen DINO and ALIGN encoders. Across synthetic data, in-domain styles, and real-world benchmarks (ImageNet, WikiArt, DomainNet, and DTD), CAtFM improves content and style retrieval, enhances embedding cluster separation, and achieves stronger open-set robustness compared to generative and discriminative baselines. Overall, CAtFM provides a simple way to couple discriminative constraints with deterministic transport, improving disentanglement and robustness under distribution shift.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/15/2607.10580v1-diffue-enhancing-utility-unlearnability-trade-off-of-unlearnable-examples-via-diffusion-autoencoders",
+      "section": "quick",
+      "title_en": "DiffUE: Enhancing Utility-Unlearnability Trade-off of Unlearnable Examples via Diffusion Autoencoders",
+      "authors": "Syed Irfan Ali Meerza, Oktay Ozturk, Amir Sadovnik, Jian Liu",
+      "date": "2026-07-12",
+      "pdf": "https://arxiv.org/pdf/2607.10580v1",
+      "score": "6.0",
+      "evidence": "利用扩散自编码器增强不可学习示例的效用与不可学习性权衡",
+      "tldr": "现有不可学习示例依赖像素级噪声，易被重学习策略绕过且损害图像质量。DiffUE将噪声注入语义空间，通过扩散自编码器修改高级语义特征。该方法在保持视觉质量的同时，有效抵抗对抗训练等攻击。在多个数据集上显著提升了效用与不可学习性的权衡。",
+      "tags": "query:ce",
+      "abstract_en": "AI models are increasingly trained on personal images scraped from social media and public platforms, often without consent, leading to serious privacy violations, such as unauthorized facial recognition and targeted advertising. To counter this, researchers have developed unlearnable examples (UEs), images modified with imperceptible noise to prevent AI models from extracting meaningful information. However, existing UE methods primarily rely on pixel-space noise, which can be bypassed by relearning strategies such as adversarial training, image transformation, and compression. While some techniques improve robustness, they often come at the expense of significant degradation in image utility and perceptual quality. In this paper, we introduce DiffUE to overcome these limitations by injecting noise into the semantic space of images instead of the pixel space. Instead of corrupting pixel values, DiffUE modifies high-level semantic features of images, ensuring robust unlearnability while preserving visual quality and utility. By leveraging a diffusion-based autoencoder framework to manipulate semantic features, DiffUE generates purposeful, natural-looking modifications that effectively resist advanced relearning strategies. Extensive experiments on four datasets, CIFAR-10, CIFAR-100, CelebA-HQ, and ImageNet, as well as a subjective user study, demonstrate that DiffUE significantly enhances the trade-off between image quality and unlearnability, offering a more robust and effective solution for safeguarding personal data in an increasingly exploitative AI landscape.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
