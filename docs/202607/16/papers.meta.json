@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-16",
+  "date": "2026-07-16",
+  "generated_at": "2026-07-16T20:44:57",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/16/2607.08766v1-opsd-v-on-policy-self-distillation-for-post-training-few-step-autoregressive-video-generators",
+      "section": "deep",
+      "title_en": "OPSD-V: On-Policy Self-Distillation for Post-Training Few-Step Autoregressive Video Generators",
+      "authors": "Hongyu Liu, Chun Wang, Feng Gao, Xuanhua He, Yue Ma, Ziyu Wan, Yong Zhang, Xiaoming Wei, Qifeng Chen",
+      "date": "2026-07-09",
+      "pdf": "https://arxiv.org/pdf/2607.08766v1",
+      "score": "8.0",
+      "evidence": "自回归视频生成的同策略自蒸馏方法",
+      "tldr": "自回归视频生成模型在少步推理时存在误差累积和运动退化。提出OPSD-V，一种在线自蒸馏方法，利用真实长视频提供密集轨迹监督，在训练中模拟推理过程，通过教师网络提供更干净的缓存目标，无需改变推理流程。在Self-Forcing和LongLive上实验，视觉质量和运动动态显著提升，用户偏好率达66%。该方法有效缓解长视频生成退化，保持低延迟。",
+      "tags": "query:ce",
+      "abstract_en": "We propose OPSD-V, an on-policy self-distillation paradigm for post-training few-step autoregressive (AR) video diffusion models. Existing few-step AR video generators can produce long videos with low latency, but still suffer from error accumulation and weakened motion dynamics during long autoregressive rollout. OPSD-V reduces long-horizon degradation while preserving the original few-step inference path. The key idea is to introduce real long-video data as temporal context during training and use it to provide dense trajectory-level supervision. Specifically, the student follows the exact inference-time rollout, generating each chunk conditioned on its own previously generated KV cache. In parallel, the teacher is evaluated at the same student-visited denoising states, but uses a cleaner AR-consistent temporal cache in which older history can be replaced by real-video context. This provides dense denoising-level corrective targets under on-policy AR cache dynamics, without changing the sampler, number of denoising steps, or inference-time cache mechanism. We apply OPSD-V to representative few-step AR video models, including Self-Forcing and LongLive. Experiments show consistent improvements in visual quality, motion dynamics, and VBenchLong scores. A user study with 10 participants comparing 20 video pairs shows that OPSD-V is preferred over the base models in 66.0% of overall-preference judgments (82.5% excluding ties).",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

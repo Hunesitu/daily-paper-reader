@@ -6,27 +6,24 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-15
-- 运行时间：2026-07-15 21:07:13 UTC
+- 最新运行日期：2026-07-16
+- 运行时间：2026-07-16 20:44:51 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：0
-- 速读区：2
+- 本次总论文数：1
+- 精读区：1
+- 速读区：0
 
 ### 今日简报（AI）
-今日完成2篇速读，聚焦风格内容解耦与不可学习示例平衡。最值得关注的是《Contrastive-Augmented Flow Matching》中的流匹配解耦方法（7.0分）。建议优先精读该文，理解对比增强对解耦效果的提升机制。
-- 详情：[/202607/15/README](/202607/15/README)
+今日精读一篇关于自回归视频生成器后训练中少步自蒸馏的高分论文。该方法通过在线自蒸馏实现仅需少量推理步即可生成高质量视频。建议关注视频生成效率的研究者深入阅读其训练策略与效果。
+- 详情：[/202607/16/README](/202607/16/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [OPSD-V: On-Policy Self-Distillation for Post-Training Few-Step Autoregressive Video Generators](/202607/16/2607.08766v1-opsd-v-on-policy-self-distillation-for-post-training-few-step-autoregressive-video-generators)  
+   标签：评分：8.0/10、query:ce
+   evidence：自回归视频生成的同策略自蒸馏方法
 
 ### 速读区论文标签
-1. [Contrastive-Augmented Flow Matching for Style-Content Disentanglement](/202607/15/2607.12404v1-contrastive-augmented-flow-matching-for-style-content-disentanglement)  
-   标签：评分：7.0/10、query:ce
-   evidence：风格-内容解耦可用于概念擦除
-2. [DiffUE: Enhancing Utility-Unlearnability Trade-off of Unlearnable Examples via Diffusion Autoencoders](/202607/15/2607.10580v1-diffue-enhancing-utility-unlearnability-trade-off-of-unlearnable-examples-via-diffusion-autoencoders)  
-   标签：评分：6.0/10、query:ce
-   evidence：利用扩散自编码器增强不可学习示例的效用与不可学习性权衡
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
