@@ -1,0 +1,131 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-17T20:19:14.302297+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.14521v1",
+      "source": "arxiv",
+      "title": "Uni-AdaVD: Universal Concept Erasure for Visual Generation via Orthogonal Value Decomposition",
+      "abstract": "Visual generative models inevitably absorb undesirable concepts from uncurated pretraining data, making concept erasure essential for safe deployment. Existing erasure methods, however, are often architecture-specific and struggle to remove target concepts while preserving non-target content and generative priors. We present Uni-AdaVD, a universal inference-time concept erasure framework for visual generation. Uni-AdaVD treats the value space of multimodal attention as a unified intervention space and introduces encoder-aware target representation construction to localize target semantics across heterogeneous text encoders. It further combines orthogonal value decomposition with an adaptive erasing shift to suppress target semantic directions without updating the original model weights. Extensive experiments on U-Net-, DiT-, and autoregressive image generators, as well as text-to-video models, demonstrate strong performance on single- and multi-concept erasure while preserving non-target priors. These results suggest that Uni-AdaVD provides an efficient and adaptable safety mechanism for modern visual generative models. Our code is available at https://github.com/QifanZhou/Uni-AdaVD.",
+      "authors": [
+        "Qifan Zhou",
+        "Yuan Wang",
+        "Yanbin Hao",
+        "Xiang Wang",
+        "Kuien Liu",
+        "Richang Hong",
+        "Meng Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-16T03:16:51+00:00",
+      "link": "https://arxiv.org/pdf/2607.14521v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "universal concept erasure framework for visual generation",
+      "llm_evidence_cn": "视觉生成中的通用概念擦除框架",
+      "llm_evidence": "视觉生成中的通用概念擦除框架",
+      "canonical_evidence": "视觉生成中的通用概念擦除框架",
+      "llm_tldr_en": "Uni-AdaVD introduces a universal inference-time concept erasure framework for visual generation, using orthogonal value decomposition and adaptive erasing shift to suppress target semantics while preserving generative priors.",
+      "llm_tldr_cn": "针对视觉生成模型从非curated数据中吸收不良概念的问题，现有擦除方法架构特定且难以平衡。本文提出Uni-AdaVD，一个通用推理时概念擦除框架，通过对多模态注意力值空间进行正交值分解和自适应擦除偏移，有效抑制目标语义，同时保持生成先验。实验证明其在多种视觉生成架构上均有效，为安全部署提供了通用解决方案。",
+      "llm_tldr": "针对视觉生成模型从非curated数据中吸收不良概念的问题，现有擦除方法架构特定且难以平衡。本文提出Uni-AdaVD，一个通用推理时概念擦除框架，通过对多模态注意力值空间进行正交值分解和自适应擦除偏移，有效抑制目标语义，同时保持生成先验。实验证明其在多种视觉生成架构上均有效，为安全部署提供了通用解决方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.14194v1",
+      "source": "arxiv",
+      "title": "Inference-Time Concept Suppression and Video-Centric Evaluation for Text-to-Video Models",
+      "abstract": "Text-to-video (T2V) generators can synthesize realistic and temporally coherent videos, but controllably removing a target concept from a generator remains difficult.   Unlike text-to-image concept erasure, T2V unlearning must suppress a target concept that may persist across frames while preserving non-target subjects, actions, scenes, and temporal structure.   We propose \\textbf{SIRUS}, a training-free inference-time framework for concept-level T2V unlearning.   Given textual aliases of a target concept, SIRUS localizes target-related prompt evidence and suppresses target expression during sampling, without updating the text encoder or denoising network.   We further introduce a video-oriented evaluation framework for T2V unlearning that separately measures target forgetting, non-target preservation, video quality, jailbreak robustness, and efficiency, using video-level failure criteria, frame-level residue statistics, paired preservation analysis, VBench-based quality diagnostics, and deployment overhead measurement.   Across five safety, object, and style concepts on CogVideoX, SIRUS reaches 70.4\\% average forgetting success and 25.7\\% average frame hit, compared with 44.4\\% / 47.2\\% for VideoEraser, while reducing the average VBench quality drop from -0.043 to -0.016, yielding the strongest forgetting-quality trade-off among fully evaluated baselines.   Transfer experiments on Wan2.2 further suggest that SIRUS generalizes across modern T2V backbones.",
+      "authors": [
+        "Wenxuan Chen",
+        "Wenjie Feng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-07-15T16:26:09+00:00",
+      "link": "https://arxiv.org/pdf/2607.14194v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Inference-time concept suppression for T2V unlearning, directly relevant to machine unlearning for image generation",
+      "llm_evidence_cn": "推理时概念抑制用于文本到视频遗忘，与图像生成机器遗忘直接相关",
+      "llm_evidence": "推理时概念抑制用于文本到视频遗忘，与图像生成机器遗忘直接相关",
+      "canonical_evidence": "推理时概念抑制用于文本到视频遗忘，与图像生成机器遗忘直接相关",
+      "llm_tldr_en": "Proposes SIRUS, a training-free inference-time framework for concept-level unlearning in text-to-video models, preserving non-target content while suppressing target concepts across frames.",
+      "llm_tldr_cn": "针对文本到视频生成模型中难以可控移除目标概念的问题，本文提出SIRUS，一种无需训练的推理时概念抑制框架。它通过定位提示中目标相关证据并在采样过程中抑制其表达，无需更新模型参数。同时引入视频中心评估框架。该方法为视频生成领域的机器遗忘提供了高效方案。",
+      "llm_tldr": "针对文本到视频生成模型中难以可控移除目标概念的问题，本文提出SIRUS，一种无需训练的推理时概念抑制框架。它通过定位提示中目标相关证据并在采样过程中抑制其表达，无需更新模型参数。同时引入视频中心评估框架。该方法为视频生成领域的机器遗忘提供了高效方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.14945v1",
+      "source": "arxiv",
+      "title": "Introspective Attention Modulation for Safe Text-to-Image Generation",
+      "abstract": "State-of-the-art flow based text-to-image (T2I) models exhibit remarkable generative abilities but remain vulnerable to producing unsafe content. Prior safety efforts range from concept erasure and prompt filtering to classifier-based gating. However, simple techniques like parameter efficient adaptations of the models easily bypass such guardrails. We introduce a unique principled approach that achieves safety by regulating the model's attention dynamics through inference-time introspection, exhibiting intrinsic robustness. Our method analyzes and rebalances attention activations throughout image synthesis, steering generations away from unsafe concepts while preserving semantic alignment. This introspective control ensures safety of deployed models. Across standard and adversarial safety benchmarks, our approach achieves remarkable safety scores while maintaining or even improving alignment and perceptual quality. Our results reveal that attention-space regulation offers a considerably more promising path to safer diffusion transformer based image generation than the existing concept erasing mechanism.Our code can be accessed at https://basim-azam.github.io/iam/",
+      "authors": [
+        "Basim Azam",
+        "Hossein Rahmani",
+        "Naveed Akhtar"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-16T12:53:45+00:00",
+      "link": "https://arxiv.org/pdf/2607.14945v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "inference-time attention modulation to avoid unsafe concepts in T2I",
+      "llm_evidence_cn": "推理时注意力调制避免T2I中的不安全概念",
+      "llm_evidence": "推理时注意力调制避免T2I中的不安全概念",
+      "canonical_evidence": "推理时注意力调制避免T2I中的不安全概念",
+      "llm_tldr_en": "Introspective Attention Modulation regulates attention dynamics during inference to steer text-to-image generation away from unsafe concepts while preserving semantic alignment, offering intrinsic safety.",
+      "llm_tldr_cn": "现有文本到图像安全方法容易被参数高效微调绕过。本文提出一种推理时内省注意力调制方法，通过分析和重新平衡图像合成过程中的注意力激活，引导生成远离不安全概念，同时保持语义对齐。该方法无需训练，具有内在鲁棒性，实验验证了其在不安全概念避免上的有效性。",
+      "llm_tldr": "现有文本到图像安全方法容易被参数高效微调绕过。本文提出一种推理时内省注意力调制方法，通过分析和重新平衡图像合成过程中的注意力激活，引导生成远离不安全概念，同时保持语义对齐。该方法无需训练，具有内在鲁棒性，实验验证了其在不安全概念避免上的有效性。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

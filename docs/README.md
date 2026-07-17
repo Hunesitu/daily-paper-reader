@@ -6,24 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-16
-- 运行时间：2026-07-16 20:44:51 UTC
+- 最新运行日期：2026-07-17
+- 运行时间：2026-07-17 20:22:49 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：1
-- 速读区：0
+- 本次总论文数：3
+- 精读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读一篇关于自回归视频生成器后训练中少步自蒸馏的高分论文。该方法通过在线自蒸馏实现仅需少量推理步即可生成高质量视频。建议关注视频生成效率的研究者深入阅读其训练策略与效果。
-- 详情：[/202607/16/README](/202607/16/README)
+1. 今日聚焦视觉生成安全，精读两篇顶会级论文，涵盖统一概念擦除与推理时视频内容抑制。
+2. 最值得关注《Uni-AdaVD》的通用正交值分解方法（满分10分）与《Inference-Time Concept Suppression》的视频模型抑制策略（8分）。
+3. 普通读者可优先精读这两篇，实践时注意概念擦除与抑制的互补应用。
+- 详情：[/202607/17/README](/202607/17/README)
 
 ### 精读区论文标签
-1. [OPSD-V: On-Policy Self-Distillation for Post-Training Few-Step Autoregressive Video Generators](/202607/16/2607.08766v1-opsd-v-on-policy-self-distillation-for-post-training-few-step-autoregressive-video-generators)  
+1. [Uni-AdaVD: Universal Concept Erasure for Visual Generation via Orthogonal Value Decomposition](/202607/17/2607.14521v1-uni-adavd-universal-concept-erasure-for-visual-generation-via-orthogonal-value-decomposition)  
+   标签：评分：10.0/10、query:ce
+   evidence：视觉生成中的通用概念擦除框架
+2. [Inference-Time Concept Suppression and Video-Centric Evaluation for Text-to-Video Models](/202607/17/2607.14194v1-inference-time-concept-suppression-and-video-centric-evaluation-for-text-to-video-models)  
    标签：评分：8.0/10、query:ce
-   evidence：自回归视频生成的同策略自蒸馏方法
+   evidence：推理时概念抑制用于文本到视频遗忘，与图像生成机器遗忘直接相关
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Introspective Attention Modulation for Safe Text-to-Image Generation](/202607/17/2607.14945v1-introspective-attention-modulation-for-safe-text-to-image-generation)  
+   标签：评分：6.0/10、query:ce
+   evidence：推理时注意力调制避免T2I中的不安全概念
 
 
 <div class="dpr-home-promo-card">
