@@ -6,24 +6,22 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-18
-- 运行时间：2026-07-18 21:06:06 UTC
+- 最新运行日期：2026-07-19
+- 运行时间：2026-07-19 20:22:22 UTC
 - 运行状态：成功
-- 本次总论文数：1
+- 本次总论文数：0
 - 精读区：0
-- 速读区：1
+- 速读区：0
 
 ### 今日简报（AI）
-今日速读1篇图像生成论文，聚焦负提示优化与潜在分类器引导。值得关注的是负提示优化和潜在分类器引导两个技术方向，可提升图像生成质量与可控性。建议优先了解负提示优化的基本原理，对实际生成任务有直接帮助。
-- 详情：[/202607/18/README](/202607/18/README)
+> 今日无新推荐，系统未产出可展示论文。
+- 详情：[/202607/19/README](/202607/19/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Advanced Image Generation: Negative Prompt Optimization and Latent Classifier Guidance](/202607/18/2607.14580v1-advanced-image-generation-negative-prompt-optimization-and-latent-classifier-guidance)  
-   标签：评分：6.0/10、query:ce
-   evidence：通过负提示优化实现图像生成中的概念抑制
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
