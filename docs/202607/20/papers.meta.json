@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-20",
+  "date": "2026-07-20",
+  "generated_at": "2026-07-20T21:03:58",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/20/2607.15933v1-distributional-matching-for-vector-quantization-a-unified-theoretical-and-empirical-framework",
+      "section": "quick",
+      "title_en": "Distributional Matching for Vector Quantization: A Unified Theoretical and Empirical Framework",
+      "authors": "Xianghong Fang, Litao Guo, Hengchao Chen, Yuxuan Zhang, XiaofanXia, Dingjie Song, Yexin Liu, Hao Wang, Harry Yang, Qiang Sun, Yuan Yuan",
+      "date": "2026-07-17",
+      "pdf": "https://arxiv.org/pdf/2607.15933v1",
+      "score": "7.0",
+      "evidence": "改进了对自回归图像生成模型至关重要的向量量化",
+      "tldr": "向量量化（VQ）对现代视觉表示学习至关重要，但存在训练不稳定和码本坍缩问题，二者均源于特征向量与码本向量之间的分布不匹配。本文提出分布匹配框架，通过Wasserstein距离（高斯近似闭式解）或最大均值差异（MMD）对齐两者分布，从理论上统一了缓解梯度失配和码本利用不足的机制。实验在视觉标记化基准上验证了该方法有效稳定训练并提升码本效率。该框架为VQ提供了坚实的理论支撑与实用方案。",
+      "tags": "query:ce",
+      "abstract_en": "The effectiveness of modern visual representation learning and autoregressive models critically depends on vector quantization (VQ), which discretizes continuous feature representations using a learnable codebook. Despite its widespread use, existing VQ methods often suffer from training instability and codebook collapse, arising from gradient mismatch induced by the straight-through estimator and the under-utilization of code vectors. In this work, we show that both issues can be traced to a fundamental mismatch between the distributions of feature vectors and code vectors, leading to inefficient representation and information loss. Building on this observation, we propose a distributional matching framework for vector quantization. We introduce principled criteria for desirable VQ behavior and demonstrate through theoretical analysis and empirical evaluation that aligning feature and code vector distributions provides a unifying mechanism for mitigating training instability and codebook collapse. We instantiate this framework using a Wasserstein-based objective with an efficient closed-form under a mild Gaussian approximation, and further show that a nonparametric alternative based on maximum mean discrepancy yields comparable performance. Extensive experiments on visual tokenization benchmarks support the effectiveness and robustness of the proposed approach.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
