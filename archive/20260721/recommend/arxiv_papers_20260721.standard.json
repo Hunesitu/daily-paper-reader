@@ -1,0 +1,215 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-21T20:03:05.439441+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2607.16442v1",
+      "source": "arxiv",
+      "title": "One Modality to Forget Them All: Enhancing Cross-Modal Unlearning in Vision-Language Models",
+      "abstract": "Machine unlearning is widely used to remove hazardous knowledge from large language models. Modern Vision-Language Models (VLMs), however, process both text and visual inputs, raising a fundamental security question: does unlearning in one modality transfer to the other? We present the first systematic, bidirectional study of cross-modal unlearning transfer across three VLM architectures: LLaVA-1.5 (MLP projection), InstructBLIP (Q-Former), and IDEFICS (gated cross-attention). We find that unlearning transfers across modalities, but the transfer is asymmetric and incomplete. In some cases, text unlearning strongly transfers to vision. However, this robustness is not preserved under typographic attacks that manipulate the visual presentation of text. Under such attacks, previously unlearned knowledge can be readily recovered, indicating shallow unlearning.   To address the transfer gap and shallow robustness, we propose \\textsc{CrossInf}, an influence-guided mitigation strategy. Motivated by the observation that different model components contribute unequally to cross-modal transfer, \\textsc{CrossInf} focuses unlearning on transformer blocks that most influence cross-modal generalization. It reduces the transfer gap by more than half in architectures with strong fusion, while preserving model utility. It also improves robustness under typographic attacks, reducing the attack success rate to near zero. We further conduct human evaluation with three annotators ($κ{=}0.77$) to validate our findings. Finally, we analyze shallow unlearning using Centered Kernel Alignment (CKA), providing insights into the observed transfer behavior and robustness limitations.",
+      "authors": [
+        "Sudharshan Balaji",
+        "Yili Ren",
+        "Guangjing Wang",
+        "Yimin Chen",
+        "Ning Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.CL",
+        "cs.CR"
+      ],
+      "published": "2026-07-17T18:44:02+00:00",
+      "link": "https://arxiv.org/pdf/2607.16442v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "studies cross-modal unlearning transfer in vision-language models",
+      "llm_evidence_cn": "研究视觉语言模型中的跨模态遗忘转移",
+      "llm_evidence": "研究视觉语言模型中的跨模态遗忘转移",
+      "canonical_evidence": "研究视觉语言模型中的跨模态遗忘转移",
+      "llm_tldr_en": "Systematically studies cross-modal unlearning transfer in VLMs, finding asymmetric transfer and proposing enhancements for more robust unlearning across modalities.",
+      "llm_tldr_cn": "本文首次系统研究视觉语言模型中跨模态遗忘的转移机制，发现遗忘在文本和视觉模态间转移不对称且不完整。实验表明，文本遗忘可以较强地迁移到视觉输入，但易受字体攻击破坏。该工作揭示了多模态遗忘的脆弱性，并提出增强方案以改进VLM中概念擦除的鲁棒性。",
+      "llm_tldr": "本文首次系统研究视觉语言模型中跨模态遗忘的转移机制，发现遗忘在文本和视觉模态间转移不对称且不完整。实验表明，文本遗忘可以较强地迁移到视觉输入，但易受字体攻击破坏。该工作揭示了多模态遗忘的脆弱性，并提出增强方案以改进VLM中概念擦除的鲁棒性。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "machine unlearning for image generation",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.16824v1",
+      "source": "arxiv",
+      "title": "Test-Time Registers as Global Priors for Tokenized Image Generation",
+      "abstract": "Attention-based models often develop attention sinks, where a small number of tokens repeatedly attract attention and accumulate unusually large activations. In vision transformers, these outliers are closely related to registers, which have been diagnostically linked to global, low-frequency image structure. Existing work has largely studied registers through interpretability analyses and linear probes, leaving open whether they can be operationalized as plug-and-play signals for generation without retraining. We revisit this question in tokenized image generation. Using OpenCLIP and DINOv2 on ImageNet, we find that test-time register features exhibit stronger low-frequency concentration than both [CLS] readouts and patch-mean features, and show a consistent (albeit moderate) correlation with pixel-space DCT low-frequency energy. Motivated by these diagnostics, we introduce RegToken, a training-free procedure that converts register structure into a small set of global prior tokens by (i) NFN-based layer localization, (ii) TokenRank-guided subspace extraction, and (iii) a projection-and-conservation update on the register subspace. Inserted into a frozen compact 1D token generation pipeline, RegToken improves ImageNet generation and alignment metrics (e.g., FID-5k 20.5 to 20.1, SigLIP 3.6 to 3.9) without modifying pretrained weights, and accelerates test-time optimization (Steps@$τ$ 74 to 52). Overall, our results suggest that structures often viewed as attention artifacts can be repurposed as lightweight global priors for tokenized generation.",
+      "authors": [
+        "Cheng-Yao Hong",
+        "Yifan Wang",
+        "Yuewei Lin",
+        "Chenyu You"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-18T13:56:19+00:00",
+      "link": "https://arxiv.org/pdf/2607.16824v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "tokenized image generation enables autoregressive modeling",
+      "llm_evidence_cn": "基于令牌的图像生成支持自回归建模",
+      "llm_evidence": "基于令牌的图像生成支持自回归建模",
+      "canonical_evidence": "基于令牌的图像生成支持自回归建模",
+      "llm_tldr_en": "Proposes test-time registers as global priors to improve tokenized image generation, a core technique for autoregressive models.",
+      "llm_tldr_cn": "该论文针对令牌化图像生成中视觉Transformer的注意力汇问题，提出测试时寄存器作为全局先验，无需重训练即可增强图像生成质量。在ImageNet上的实验表明，寄存器特征比[CLS]读出头和平均特征具有更强的低频集中性，能够有效提升生成图像的全局一致性。这项工作为自回归图像生成模型提供了一种即插即用的改进方案。",
+      "llm_tldr": "该论文针对令牌化图像生成中视觉Transformer的注意力汇问题，提出测试时寄存器作为全局先验，无需重训练即可增强图像生成质量。在ImageNet上的实验表明，寄存器特征比[CLS]读出头和平均特征具有更强的低频集中性，能够有效提升生成图像的全局一致性。这项工作为自回归图像生成模型提供了一种即插即用的改进方案。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive image generation models",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.17890v1",
+      "source": "arxiv",
+      "title": "Stress Testing Concept Erasure with Large Language Model Agents",
+      "abstract": "Concept erasure aims to remove semantic concepts from a trained generative model and is increasingly important for responsible AI deployment. However, verifying whether a model has robustly removed targeted concepts remains a critical challenge. Existing evaluation methods are typically pre-defined and static, failing to expose vulnerabilities under diverse natural-language probes and challenging conditions. Moreover, manually designed evaluation strategies can be biased and difficult to scale. We posit that concept erasure evaluation is best formulated as an adaptive hypothesis search, operationalised by agents that iteratively propose, critique, and verify tests to systematically expand coverage of failure modes. To this end, we propose Stress Testing Agents for Concept Erasure (STACE), a framework that autonomously stress-tests concept-erased models using multiple Large Language Model (LLM) agents, by iteratively generating and verifying stress-testing hypotheses grounded by external knowledge. We also introduce a suite of metrics for assessing the performance and efficiency of LLM-agent-powered stress-testing frameworks. Our extensive experiments show that STACE outperforms five LLM-based evaluation baselines on four concept categories. Further analysis across two T2I models, six concept erasure approaches, and various erasure strengths show that STACE is robust for different settings. We also show that STACE can be adapted beyond concept erasure evaluation to other problem domains, such as LLM jailbreaking. Our code is available anonymously.",
+      "authors": [
+        "Yuyang Xue",
+        "Feng Chen",
+        "Zhihua Liu",
+        "Edward Moroshko",
+        "Jingyu Sun",
+        "Steven McDonagh",
+        "Sotirios A. Tsaftaris"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-20T12:38:50+00:00",
+      "link": "https://arxiv.org/pdf/2607.17890v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "stress testing concept erasure with LLM agents",
+      "llm_evidence_cn": "用LLM代理压力测试概念擦除",
+      "llm_evidence": "用LLM代理压力测试概念擦除",
+      "canonical_evidence": "用LLM代理压力测试概念擦除",
+      "llm_tldr_en": "This work proposes an adaptive hypothesis search framework using LLM agents to stress-test concept erasure in generative models, systematically exposing vulnerabilities that static evaluations miss.",
+      "llm_tldr_cn": "概念擦除的鲁棒性验证是重要挑战，现有静态评估方法难以发现多样自然语言探针下的漏洞。本文将概念擦除评估形式化为自适应假设搜索，由LLM代理迭代提出、批评和验证测试案例。实验表明该方法能系统性地揭示多种失败模式，比传统基准更全面地评估擦除鲁棒性。",
+      "llm_tldr": "概念擦除的鲁棒性验证是重要挑战，现有静态评估方法难以发现多样自然语言探针下的漏洞。本文将概念擦除评估形式化为自适应假设搜索，由LLM代理迭代提出、批评和验证测试案例。实验表明该方法能系统性地揭示多种失败模式，比传统基准更全面地评估擦除鲁棒性。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.14765v1",
+      "source": "arxiv",
+      "title": "Rare Concept Generation via Counterfactual Inference in Diffusion Models",
+      "abstract": "Rare concept generation focuses on synthesizing customized images conditioned on text prompts that describe objects with unusual attributes. Previous works failed to align the generated images with rare concepts, resulting in incorrect attribute rendering or inconsistent composition of concepts. Such failures, as we observed, stem from the inherent common knowledge bias in the training stage of diffusion models, where objects are strongly associated with their common attributes, making it difficult to break these associations when generating rare concepts. To address such challenges, in this paper, we propose a novel Counterfactual Inference-based Diffusion approach, dubbed CI-Diff. CI-Diff blocks the interference of the model's inherent common knowledge bias and utilizes the Natural Direct Effect to capture the independent influence of the text prompt of rare concepts on image generation so that decoupling the unusual attributes from the rare concepts. To this end, we reformulate the classifier-free guidance mechanism to highlight the atypical attributes. To the best of our knowledge, we are the first to introduce causal inference into the rare concept generation task. Extensive experiments on the RareBench benchmark validate the superiority of CI-Diff over state-of-the-art diffusion models. Our code can be accessed from https://github.com/200204jzy/CI-Diff.",
+      "authors": [
+        "Zhengyuan Jiang",
+        "Haipeng Liu",
+        "Meng Wang",
+        "Yang Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-16T09:49:06+00:00",
+      "link": "https://arxiv.org/pdf/2607.14765v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "counterfactual inference block common knowledge bias, related to concept erasure",
+      "llm_evidence_cn": "反事实推理阻断常见知识偏见，与概念擦除相关",
+      "llm_evidence": "反事实推理阻断常见知识偏见，与概念擦除相关",
+      "canonical_evidence": "反事实推理阻断常见知识偏见，与概念擦除相关",
+      "llm_tldr_en": "CI-Diff uses counterfactual inference to block common knowledge bias in diffusion models for rare concept generation, relevant to concept erasure by breaking strong associations.",
+      "llm_tldr_cn": "论文针对扩散模型生成罕见概念时出现常见知识偏见的问题，提出反事实推理方法CI-Diff。该方法在生成过程中阻断模型对常见属性的强关联，从而实现属性解耦。虽然目标是生成罕见概念，但其阻断常见关联的机制可直接迁移到概念擦除任务中，通过干预模型中的知识偏见移除不需要的概念。",
+      "llm_tldr": "论文针对扩散模型生成罕见概念时出现常见知识偏见的问题，提出反事实推理方法CI-Diff。该方法在生成过程中阻断模型对常见属性的强关联，从而实现属性解耦。虽然目标是生成罕见概念，但其阻断常见关联的机制可直接迁移到概念擦除任务中，通过干预模型中的知识偏见移除不需要的概念。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "concept erasure in machine learning models",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.16409v1",
+      "source": "arxiv",
+      "title": "Think, Plan, Paint: Layout-Aware Reasoning for Controllable Image Generation in Unified Models",
+      "abstract": "Unified Multimodal Large Language Models (MLLMs) offer a promising paradigm for unifying visual understanding and generation, yet they still struggle to follow complex spatial instructions and logical constraints in controllable image generation. To address this gap, we present ATLAS, a unified framework that equips MLLMs with a human-like \"Think, Plan, and Paint\" paradigm. We adopt layout as the shared representation that connects the three stages, enabling the model to reason about spatial requirements, plan explicit object arrangements, and render the final image. We further improve plan-to-image fidelity with reinforcement-learning-based layout alignment. We instantiate ATLAS at 7B and 80B scales, achieving state-of-the-art performance among MLLMs on image generation benchmarks and an average 65.31% improvement over existing layout-based unified MLLMs. On spatially related tasks, ATLAS obtains an average 23.06% gain over the base models. Through the same layout interface, ATLAS also supports instruction-guided editing and multimodal grounding. We further introduce ATLAS-Reasoning, a benchmark for evaluating generation under complex spatial instructions.",
+      "authors": [
+        "Junhao Liu",
+        "Jian-Wei Zhang",
+        "Tao Huang",
+        "Miles Yang",
+        "Zhao Zhong",
+        "Liefeng Bo"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-07-17T18:02:44+00:00",
+      "link": "https://arxiv.org/pdf/2607.16409v1",
+      "tags": [
+        "keyword:ce",
+        "query:ce"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "proposes a unified MLLM framework for autoregressive text-to-image generation",
+      "llm_evidence_cn": "提出一个统一多模态大语言模型框架用于自回归文本到图像生成",
+      "llm_evidence": "提出一个统一多模态大语言模型框架用于自回归文本到图像生成",
+      "canonical_evidence": "提出一个统一多模态大语言模型框架用于自回归文本到图像生成",
+      "llm_tldr_en": "Presents ATLAS, a unified MLLM framework for controllable text-to-image generation that uses layout as an intermediate representation to improve spatial reasoning and fidelity.",
+      "llm_tldr_cn": "本文提出ATLAS框架，赋予统一多模态大语言模型“思考-规划-绘制”能力，通过布局作为中间表示，将空间推理、规划与图像生成结合。利用强化学习对齐布局与图像，在7B和80B规模上达到最先进的可控文本到图像生成效果。该方法展示了自回归模型在复杂指令遵循上的潜力。",
+      "llm_tldr": "本文提出ATLAS框架，赋予统一多模态大语言模型“思考-规划-绘制”能力，通过布局作为中间表示，将空间推理、规划与图像生成结合。利用强化学习对齐布局与图像，在7B和80B规模上达到最先进的可控文本到图像生成效果。该方法展示了自回归模型在复杂指令遵循上的潜力。",
+      "llm_tags": [
+        "query:ce"
+      ],
+      "matched_query_tag": "query:ce",
+      "matched_query_text": "autoregressive model for text to image generation",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

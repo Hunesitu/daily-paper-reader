@@ -6,26 +6,37 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-20
-- 运行时间：2026-07-20 21:03:51 UTC
+- 最新运行日期：2026-07-21
+- 运行时间：2026-07-21 20:08:17 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
-- 速读区：1
+- 本次总论文数：5
+- 精读区：3
+- 速读区：2
 
 ### 今日简报（AI）
-今日精读向量量化领域新论文，提出分布匹配统一框架，评分7.0。  
-核心贡献在于从理论和实证上统一了向量量化的优化目标，对改进生成模型中的离散表示学习有重要启示。  
-建议读者重点关注该方法在VQ-VAE等模型中的具体实现，并与传统码本学习方式对比效果。
-- 详情：[/202607/20/README](/202607/20/README)
+今日聚焦多模态遗忘与图像生成两大前沿，重点挖掘跨模态知识消除和测试时全局先验技术。  
+精读建议优先看《One Modality to Forget Them All》和《Test-Time Registers as Global Priors》，思路新颖且评分高。  
+若想快速跟进，可速读《Rare Concept Generation》和《Think, Plan, Paint》了解反事实推理和布局可控生成。
+- 详情：[/202607/21/README](/202607/21/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [One Modality to Forget Them All: Enhancing Cross-Modal Unlearning in Vision-Language Models](/202607/21/2607.16442v1-one-modality-to-forget-them-all-enhancing-cross-modal-unlearning-in-vision-language-models)  
+   标签：评分：9.0/10、query:ce
+   evidence：研究视觉语言模型中的跨模态遗忘转移
+2. [Test-Time Registers as Global Priors for Tokenized Image Generation](/202607/21/2607.16824v1-test-time-registers-as-global-priors-for-tokenized-image-generation)  
+   标签：评分：8.0/10、query:ce
+   evidence：基于令牌的图像生成支持自回归建模
+3. [Stress Testing Concept Erasure with Large Language Model Agents](/202607/21/2607.17890v1-stress-testing-concept-erasure-with-large-language-model-agents)  
+   标签：评分：8.0/10、query:ce
+   evidence：用LLM代理压力测试概念擦除
 
 ### 速读区论文标签
-1. [Distributional Matching for Vector Quantization: A Unified Theoretical and Empirical Framework](/202607/20/2607.15933v1-distributional-matching-for-vector-quantization-a-unified-theoretical-and-empirical-framework)  
-   标签：评分：7.0/10、query:ce
-   evidence：改进了对自回归图像生成模型至关重要的向量量化
+1. [Rare Concept Generation via Counterfactual Inference in Diffusion Models](/202607/21/2607.14765v1-rare-concept-generation-via-counterfactual-inference-in-diffusion-models)  
+   标签：评分：6.0/10、query:ce
+   evidence：反事实推理阻断常见知识偏见，与概念擦除相关
+2. [Think, Plan, Paint: Layout-Aware Reasoning for Controllable Image Generation in Unified Models](/202607/21/2607.16409v1-think-plan-paint-layout-aware-reasoning-for-controllable-image-generation-in-unified-models)  
+   标签：评分：6.0/10、query:ce
+   evidence：提出一个统一多模态大语言模型框架用于自回归文本到图像生成
 
 
 <div class="dpr-home-promo-card">
